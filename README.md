@@ -25,7 +25,7 @@ $ cd cmake-3.13.2
 $ ./bootstrap && make && sudo make install 
 ```
 
-#### install openjij 
+### Install openjij 
 ```
 $ git clone git@github.com:OpenJij/OpenJij.git
 $ cd openjij
