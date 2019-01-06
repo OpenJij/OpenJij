@@ -12,21 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import numpy as np
 import cxxjij as cj
 
 class Response:
-    def __init__(self, states, energies, var_type="spin"):
+    def __init__(self, states, energies, spin_type="ising"):
         self.states = states
         self.energies = energies
 
-        if var_type == "bit":
-            pass
+        if spin_type == "qubo":
+            qubo_state = [list(np.array(np.array(state)+1).astype(np.int)) for state in states]
+            self.states = qubo_state
 
 
 class Sampler:
     def __init__(self, model):
         self.indices = model.indices
         self.N = len(model.indices)
+
+        self.spin_type = model.spin_type 
+
         # make interaction matrix
         ising_int = model.ising_interactions()
 

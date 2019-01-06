@@ -18,7 +18,10 @@ import warnings
 import cxxjij as cj
 
 class BinaryQuadraticModel:
-    def __init__(self, h, J, spin_type='ising'):
+    def __init__(self, h, J, spin_type='ising'): 
+
+        if not spin_type in ('ising', 'qubo'):
+            raise ValueError('spin_type should be "ising" or "qubo"')
 
         index_set = set(h.keys())
         warning_called = False
@@ -66,3 +69,10 @@ class BinaryQuadraticModel:
                 interactions[j, i] = jval
 
         return interactions
+
+    def calc_energy(self, state):
+        if self.spin_type == 'ising':
+            int_mat = self.ising_interactions()
+        else: # spin_type == qubo
+            int_mat = self.interactions()
+        return np.dot(state, np.dot(int_mat, state)) + np.dot(np.diag(int_mat), -1+np.array(state))
