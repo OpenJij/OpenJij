@@ -31,6 +31,24 @@ TEST(OpenJijTest, spin_matrix){
     ASSERT_EQ(int_mat(0, 0), 1.0);
     EXPECT_ANY_THROW({int_mat(4, 0) = 1.0;});
 }
+
+TEST(OpenJijTest, energy){
+	int N = 3;
+	openjij::Spins spins(N, 1);
+	openjij::SquareMatrix<double> int_mat{N, 0.0};
+	// H = -s0 * s1 - s1 * s2 - s0 - s2
+	int_mat(0, 0) = -1.0;
+	int_mat(0, 1) = -1.0;
+	int_mat(1, 0) = -1.0;
+	int_mat(1, 2) = -1.0;
+	int_mat(2, 1) = -1.0;
+	int_mat(2, 2) = -1.0;
+
+	openjij::sampler::Sampler samp(int_mat);
+	double energy = samp.calc_energy(spins);
+	ASSERT_EQ(energy, -4.0);
+
+}
 //---------------------------------------------
 
 // ---------- Updater Test -------------------------

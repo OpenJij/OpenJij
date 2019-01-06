@@ -67,12 +67,12 @@ namespace openjij{
 
         // optimization
         void Sampler::simulated_annealing(double beta_min, double beta_max, int step_length, int step_num, int iter, Results& resu){
-            Spins spins = random_initialize(int_mat.size());
             double r_beta = pow(beta_max/beta_min, 1.0/static_cast<double>(step_num));
             auto updater = select_updater("single_spin_flip");
 
             for(int r=0; r < iter; r++){
                 double beta = beta_min;
+            	Spins spins = random_initialize(int_mat.size());
                 while(beta <= beta_max){
                     for(int i=0; i < step_length; i++)
                         updater->spins_update(spins, beta);
@@ -83,11 +83,11 @@ namespace openjij{
         } 
 
         void Sampler::simulated_quantum_annealing(double beta, double gamma_min, double gamma_max, int trotter, int step_length, int step_num, int iter, Results& resu){
-            std::vector<Spins> trotterized_spins(trotter, random_initialize(int_mat.size()));
             double r_g = pow(gamma_min/gamma_max, 1.0/static_cast<double>(step_num));
             auto updater = select_updater("single_spin_flip");
 
             for(int r=0; r < iter; r++){
+            	std::vector<Spins> trotterized_spins(trotter, random_initialize(int_mat.size()));
                 double gamma = gamma_max;
                 while(gamma >= gamma_min){
                     for(int i=0; i < step_length; i++)
@@ -110,12 +110,15 @@ namespace openjij{
 
 		double Sampler::calc_energy(Spins& spins) const {
 			// calculate energy
+			const int N = int_mat.size();
 			double energy = 0.0;
-			for(int i=0; i < int_mat.size()-1; i++){
-			   for(int j=i+1; j < int_mat.size(); j++){
+			for(int i=0; i < N-1; i++){
+			   for(int j=i+1; j < N; j++){
 				   energy += int_mat(i,j) * spins[i] * spins[j];
 			   }
+			   energy += int_mat(i, i) * spins[i];
 			}
+			energy += int_mat(N-1, N-1); 
 			return energy;
 		}
 
