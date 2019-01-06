@@ -37,15 +37,15 @@ class Sampler:
                 self.int_mat.set(i, j, ising_int[i, j])
                 self.int_mat.set(j, i, ising_int[j, i])
 
-    def sampling(self, beta, observe_num, burn_out=1000):
+    def sampling(self, beta, observe_num, burn_in=1000):
         samp = cj.Sampler(self.int_mat)
         resu = cj.Results()
-        samp.sampling(beta, burn_out, observe_num, resu)
+        samp.sampling(beta, burn_in, observe_num, resu)
 
         return Response(states=resu.states, energies=resu.energies)
 
 
-    def simulated_annealing(self, beta_min=0.1, beta_max=1.0, step_length=10, step_num=100, iteration=1):
+    def simulated_annealing(self, beta_min=0.1, beta_max=5.0, step_length=10, step_num=100, iteration=1):
         samp = cj.Sampler(self.int_mat)
         resu = cj.Results()
         samp.simulated_annealing(beta_min, beta_max, step_length, step_num, iteration, resu)
