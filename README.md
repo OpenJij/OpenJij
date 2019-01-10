@@ -66,6 +66,10 @@ print("SQA results: ", response.states[min_index])
 #### benchmarking optimizer
 OpenJij can take benchmarking any annealing solver.
 ```python 
+import numpy as np
+import openjij as oj
+import matplotlib.pyplot as plt
+
 # make target instance
 N = 10
 h = {0: 1, 1: 1}
