@@ -1,3 +1,3 @@
-from .sampler import Sampler
+from .sampler import Sampler, SASampler, SQASampler
 from .model import BinaryQuadraticModel
 from .utils import *
