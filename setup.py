@@ -93,9 +93,15 @@ setup(
     description='Framework for ising model and QUBO',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
+    install_requires=['numpy'],
     ext_modules=[CMakeExtension('cxxjij')],
     cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand),
     packages=find_packages(exclude=('tests', 'docs')),
     license='Apache License 2.0',
+    classifires=[
+        'License :: OSI Approved :: Apache Software License',
+        'Intended Audience :: Science/Research',
+        'Programming Language :: Python',
+    ],
     zip_safe=False
 )
