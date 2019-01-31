@@ -1,0 +1,37 @@
+\hypertarget{structopenjij_1_1updater_1_1_updater}{}\section{openjij\+::updater\+::Updater Struct Reference}
+\label{structopenjij_1_1updater_1_1_updater}\index{openjij::updater::Updater@{openjij::updater::Updater}}
+Inheritance diagram for openjij\+::updater\+::Updater\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{structopenjij_1_1updater_1_1_updater}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structopenjij_1_1updater_1_1_updater_a92a1aba09a5604c300350ffd4dfa544d}\label{structopenjij_1_1updater_1_1_updater_a92a1aba09a5604c300350ffd4dfa544d}} 
+{\bfseries Updater} (const \mbox{\hyperlink{structopenjij_1_1_square_matrix}{Square\+Matrix}}$<$ double $>$ \&int\+\_\+mat)
+\item 
+\mbox{\Hypertarget{structopenjij_1_1updater_1_1_updater_a5824c1c2091670658bdb3188137d1575}\label{structopenjij_1_1updater_1_1_updater_a5824c1c2091670658bdb3188137d1575}} 
+virtual void {\bfseries spins\+\_\+update} (Spins \&spins, double beta)=0
+\item 
+\mbox{\Hypertarget{structopenjij_1_1updater_1_1_updater_af18bd04eeac0a00d5cc435aa03f89dff}\label{structopenjij_1_1updater_1_1_updater_af18bd04eeac0a00d5cc435aa03f89dff}} 
+virtual void {\bfseries quantum\+\_\+spins\+\_\+update} (std\+::vector$<$ Spins $>$ \&trotterized\+\_\+spins, double beta, double gamma)=0
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structopenjij_1_1updater_1_1_updater_abc0bc39509a6787c46cce948c3751f55}\label{structopenjij_1_1updater_1_1_updater_abc0bc39509a6787c46cce948c3751f55}} 
+const int {\bfseries N}
+\item 
+\mbox{\Hypertarget{structopenjij_1_1updater_1_1_updater_a6edd50dda95164725c17debf9f6aed01}\label{structopenjij_1_1updater_1_1_updater_a6edd50dda95164725c17debf9f6aed01}} 
+const \mbox{\hyperlink{structopenjij_1_1_square_matrix}{Square\+Matrix}}$<$ double $>$ \& {\bfseries int\+\_\+mat}
+\item 
+\mbox{\Hypertarget{structopenjij_1_1updater_1_1_updater_a03efaec3843b7209742b81f7987e8324}\label{structopenjij_1_1updater_1_1_updater_a03efaec3843b7209742b81f7987e8324}} 
+std\+::vector$<$ std\+::vector$<$ int $>$ $>$ {\bfseries adj\+\_\+mat}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/updater/updater.\+h\end{DoxyCompactItemize}

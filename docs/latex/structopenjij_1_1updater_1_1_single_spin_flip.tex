@@ -1,0 +1,44 @@
+\hypertarget{structopenjij_1_1updater_1_1_single_spin_flip}{}\section{openjij\+::updater\+::Single\+Spin\+Flip Struct Reference}
+\label{structopenjij_1_1updater_1_1_single_spin_flip}\index{openjij::updater::SingleSpinFlip@{openjij::updater::SingleSpinFlip}}
+Inheritance diagram for openjij\+::updater\+::Single\+Spin\+Flip\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{structopenjij_1_1updater_1_1_single_spin_flip}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structopenjij_1_1updater_1_1_single_spin_flip_a605251e291c2fbc39272ae1b95245b85}\label{structopenjij_1_1updater_1_1_single_spin_flip_a605251e291c2fbc39272ae1b95245b85}} 
+{\bfseries Single\+Spin\+Flip} (const \mbox{\hyperlink{structopenjij_1_1_square_matrix}{Square\+Matrix}}$<$ double $>$ \&int\+\_\+mat)
+\item 
+\mbox{\Hypertarget{structopenjij_1_1updater_1_1_single_spin_flip_a90832724b251f31d67c65444224febb0}\label{structopenjij_1_1updater_1_1_single_spin_flip_a90832724b251f31d67c65444224febb0}} 
+{\bfseries Single\+Spin\+Flip} (const \mbox{\hyperlink{structopenjij_1_1_square_matrix}{Square\+Matrix}}$<$ double $>$ \&int\+\_\+mat, int seed)
+\item 
+\mbox{\Hypertarget{structopenjij_1_1updater_1_1_single_spin_flip_a8ad783a9ccbe56d2d8bd79161daaf3f5}\label{structopenjij_1_1updater_1_1_single_spin_flip_a8ad783a9ccbe56d2d8bd79161daaf3f5}} 
+virtual void {\bfseries spins\+\_\+update} (Spins \&spins, double beta) override
+\item 
+\mbox{\Hypertarget{structopenjij_1_1updater_1_1_single_spin_flip_a1a8f0f57e0621192721c355d60a1b81d}\label{structopenjij_1_1updater_1_1_single_spin_flip_a1a8f0f57e0621192721c355d60a1b81d}} 
+virtual void {\bfseries quantum\+\_\+spins\+\_\+update} (std\+::vector$<$ Spins $>$ \&trotterized\+\_\+spins, double beta, double gamma) override
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structopenjij_1_1updater_1_1_single_spin_flip_a2a65df51711d25ec8455e433aa0328ad}\label{structopenjij_1_1updater_1_1_single_spin_flip_a2a65df51711d25ec8455e433aa0328ad}} 
+void {\bfseries metropolis\+\_\+update} (Spins \&spins, double beta, int flip, double e\+\_\+bias)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structopenjij_1_1updater_1_1_single_spin_flip_aee12f5270888d3297a738054704b6697}\label{structopenjij_1_1updater_1_1_single_spin_flip_aee12f5270888d3297a738054704b6697}} 
+std\+::mt19937 {\bfseries mt}
+\item 
+\mbox{\Hypertarget{structopenjij_1_1updater_1_1_single_spin_flip_ae3af58aea3b554be2baf53c41f53b87d}\label{structopenjij_1_1updater_1_1_single_spin_flip_ae3af58aea3b554be2baf53c41f53b87d}} 
+std\+::uniform\+\_\+real\+\_\+distribution$<$ double $>$ {\bfseries urd} \{0.\+0, 1.\+0\}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/updater/single\+\_\+spin\+\_\+flip.\+h\item 
+src/updater/single\+\_\+spin\+\_\+flip.\+cpp\end{DoxyCompactItemize}
