@@ -1,7 +1,7 @@
 import numpy as np
 import time 
 
-def benchmark(true_ground_states, ground_energy, solver, param_list, iterations=1000):
+def benchmark(true_ground_states, ground_energy, solver, time_param_list, iteration=1000):
     
     if not (isinstance(true_ground_states, list) and isinstance(true_ground_states[0], list)):
         raise ValueError("true_ground_states should be list of list which stored each spin state.")
@@ -12,14 +12,14 @@ def benchmark(true_ground_states, ground_energy, solver, param_list, iterations=
     
     tlist = []
     
-    for param in param_list:
-        print('parameter: ', param)
+    for time_param in time_param_list:
+        print('time parameter: ', time_param)
         start = time.time()
-        response = solver(param=param, iterations=iterations)
+        response = solver(time_param, iteration=iteration)
         tlist.append( time.time() - start )
 
         # error probability
-        error_prob = 1.0 - sum([1 if state in true_ground_states else 0 for state in response.states]) /iterations
+        error_prob = 1.0 - sum([1 if state in true_ground_states else 0 for state in response.states]) /iteration
 
         # residual energy
         e_res = (np.mean(response.energies) - ground_energy)
@@ -32,7 +32,7 @@ def benchmark(true_ground_states, ground_energy, solver, param_list, iterations=
         elif error_prob == 1.0:
             tts = np.inf
         else:
-            tts = t/iterations * np.log(1-pd)/np.log(error_prob) 
+            tts = t/iteration * np.log(1-pd)/np.log(error_prob) 
         
         error_prob_list.append(error_prob)
         e_res_list.append(e_res)
