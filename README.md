@@ -1,8 +1,15 @@
-# OpenJij : Framework for Ising model and QUBO.
+# OpenJij : Framework for the Ising model and QUBO.
 
 cmake >= 3.11
 
+Documents : https://openjij.github.io/OpenJij/
+
 ## install
+
+### pip
+```
+$ pip install openjij
+```
 
 ### cmake setup
 

@@ -86,10 +86,11 @@ class GoogleTestCommand(TestCommand):
                         shell=True)
 
 setup(
-    name='openjij',
+    name='OpenJij',
     version='0.0.1',
     author='Jij Inc.',
     author_email='openjij@j-ij.com',
+    url = 'https://openjij.github.io/OpenJij/',
     description='Framework for ising model and QUBO',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
