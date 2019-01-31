@@ -4,11 +4,12 @@ import numpy as np
 import openjij as oj
 
 class UtilsTest(unittest.TestCase):
+
+
     def test_benchmark(self):
         h = {0: 1}
         J = {(0, 1):-1.0, (1,2): -1.0}
 
-        bqm = oj.BinaryQuadraticModel(h, J)
         sa_samp = oj.SASampler()
 
         def solver(time_param, iteration):
@@ -17,7 +18,7 @@ class UtilsTest(unittest.TestCase):
             return sa_samp.sample_ising(h, J)
 
         ground_state = [-1, -1, -1]
-        ground_energy = bqm.calc_energy(ground_state)
+        ground_energy = oj.BinaryQuadraticModel(h, J).calc_energy(ground_state)
         step_num_list = np.linspace(10, 50, 5, dtype=np.int)
         bm_res = oj.benchmark([ground_state], ground_energy, solver, time_param_list=step_num_list)
         self.assertTrue(set(bm_res) >= {'time', 'error', 'e_res', 'tts', 'tts_threshold_prob'})

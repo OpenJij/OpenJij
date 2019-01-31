@@ -40,3 +40,6 @@ def benchmark(true_ground_states, ground_energy, solver, time_param_list, iterat
         
     return {'time':tlist, 'error':error_prob_list, 'e_res':e_res_list, 'tts':tts_list, 
              'tts_threshold_prob': pd}
+
+    
+
