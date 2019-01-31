@@ -23,13 +23,24 @@ class Response:
         self.energies = energies
 
         if spin_type == "qubo":
-            qubo_state = [list(np.array(np.array(state) + 1).astype(np.int)) for state in states]
+            qubo_state = [list(np.array((np.array(state) + 1)/2).astype(np.int)) for state in states]
             self.states = qubo_state
 
 
 class BaseSampler:
-    def _make_int_mat(self, h, J):
-        model = BinaryQuadraticModel(h, J)
+    def _make_int_mat(self, Q=None, h=None, J=None, spin_type='ising'):
+        if spin_type=='qubo':
+            if not isinstance(Q, dict):
+                ValueError('Q should be dictionary.')
+            h = {}
+            J = {}
+            for (i,j),qij in Q.items():
+                if i==j:
+                    h[i] = qij
+                else:
+                    J[(i, j)] = qij
+            
+        model = BinaryQuadraticModel(h, J, spin_type=spin_type)
         self.indices = model.indices
         self.N = len(model.indices)
 
@@ -55,11 +66,11 @@ class Sampler(BaseSampler):
         self.observe_num = observe_num
         self.burn_in = burn_in
 
-    def sampling(self, h, J):
-        self._make_int_mat(h, J)
+    def sampling(self, h, J, spin_type='ising'):
+        self._make_int_mat(h=h, J=J, spin_type=spin_type)
         self.samp.sampling(self.beta, self.burn_in, self.observe_num, self.resu)
 
-        return Response(states=self.resu.states, energies=self.resu.energies)
+        return Response(states=self.resu.states, energies=self.resu.energies, spin_type=spin_type)
 
 
 class SASampler(BaseSampler):
@@ -72,11 +83,20 @@ class SASampler(BaseSampler):
         self.iteration = iteration
 
     def sample_ising(self, h, J):
-        self._make_int_mat(h, J)
+        self._make_int_mat(h=h, J=J, spin_type='ising')
         self.samp.simulated_annealing(
             self.beta_min, self.beta_max, self.step_length,
             self.step_num, self.iteration, self.resu)
         return Response(states=self.resu.states, energies=self.resu.energies)
+
+    def sample_qubo(self, Q):
+        self._make_int_mat(Q, spin_type='qubo')
+        self.samp.simulated_annealing(
+            self.beta_min, self.beta_max, self.step_length,
+            self.step_num, self.iteration, self.resu)
+        return Response(states=self.resu.states, energies=self.resu.energies, spin_type='qubo')
+        
+
 
 
 class SQASampler(BaseSampler):
@@ -91,8 +111,15 @@ class SQASampler(BaseSampler):
         self.iteration = iteration
 
     def sample_ising(self, h, J):
-        self._make_int_mat(h, J)
+        self._make_int_mat(h=h, J=J, spin_type='ising')
         self.samp.simulated_quantum_annealing(
             self.beta, self.gamma_min, self.gamma_max, self.trotter,
             self.step_length, self.step_num, self.iteration, self.resu)
         return Response(states=self.resu.states, energies=self.resu.energies)
+
+    def sample_qubo(self, Q):
+        self._make_int_mat(Q, spin_type='qubo')
+        self.samp.simulated_quantum_annealing(
+            self.beta, self.gamma_min, self.gamma_max, self.trotter,
+            self.step_length, self.step_num, self.iteration, self.resu)
+        return Response(states=self.resu.states, energies=self.resu.energies, spin_type='qubo')
