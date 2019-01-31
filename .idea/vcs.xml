@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/temp.macosx-10.7-x86_64-3.6/_deps/googletest-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/temp.macosx-10.7-x86_64-3.6/_deps/pybind11-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/temp.macosx-10.7-x86_64-3.6/_deps/pybind11-src/tools/clang" vcs="Git" />
+  </component>
+</project>

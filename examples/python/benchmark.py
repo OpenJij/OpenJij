@@ -14,17 +14,18 @@ if __name__ == "__main__":
             J[(i, j)] = -1.0
     
     true_ground_state = [-1]*N
-    bqm = oj.BinaryQuadraticModel(h, J)
-    samp = oj.Sampler(bqm)
+    sa_samp = oj.SASampler()
     
-    ising_int = np.triu(bqm.ising_interactions())
-    ground_energy = bqm.calc_energy(true_ground_state)
+    ground_energy = oj.BinaryQuadraticModel(h, J).calc_energy(true_ground_state)
 
     # make benchmark target solver
-    solver = lambda param, iterations: samp.simulated_annealing(step_num=param, iteration=iterations)
+    def solver(time_param, iteration):
+        sa_samp.step_num = time_param 
+        sa_samp.iteration = iteration
+        return sa_samp.sample_ising(h, J)
 
     # benchmarking
-    b_res = oj.benchmark([true_ground_state], ground_energy, solver, param_list=np.arange(1, 161, 50))
+    b_res = oj.benchmark([true_ground_state], ground_energy, solver, time_param_list=np.arange(1, 161, 50))
 
     plt.xlabel('annealing time')
     plt.ylabel('error probability')

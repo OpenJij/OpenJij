@@ -32,7 +32,7 @@ class BinaryQuadraticModel:
 
             # When the same index add to index set, check the existence of inverse indices in the J
             if warning_called or (len(index_set) - indices_len < 2 and (v2, v1) in J):
-                warn_message = 'Two connections of J[(a, b)] and J[(b, a)] are defined. ' \
+                warn_message = 'Two connections J[(a, b)] and J[(b, a)] are defined. ' \
                                'Adopt the (lower index, higher index) connection. ' \
                                'Please pay attention to the symmetry of interaction J.'
                 warnings.warn(warn_message, SyntaxWarning)
