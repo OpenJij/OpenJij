@@ -1,0 +1,30 @@
+language: python
+
+dist: trusty
+
+sudo: false
+
+python:
+  - "2.7"
+  - "3.6"
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-8
+      - g++-8
+env:
+  - CMAKE_DIR="${HOME}/cmake" PATH="${CMAKE_DIR}/:${CMAKE_DIR}/bin:$PATH"
+
+before_install:
+  - travis_retry wget -q https://cmake.org/files/v3.13/cmake-3.13.3-Linux-x86_64.tar.gz
+  - tar -xvf cmake-3.13.3-Linux-x86_64.tar.gz > /dev/null
+  - mv cmake-3.13.3-Linux-x86_64 "${CMAKE_DIR}"
+
+install:
+  - python setup.py install
+
+script:
+  - python tests/test.py
