@@ -1,5 +1,7 @@
 # OpenJij : Framework for the Ising model and QUBO.
 
+[![Build Status](https://travis-ci.org/OpenJij/OpenJij.svg?branch=master)](https://travis-ci.org/OpenJij/OpenJij)
+
 cmake >= 3.11
 
 Documents : https://openjij.github.io/OpenJij/
