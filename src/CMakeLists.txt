@@ -1,3 +1,4 @@
+add_library(graph SHARED graph/graph.cpp)
 add_library(dense SHARED graph/dense.cpp)
 add_library(sparse SHARED graph/sparse.cpp)
 add_library(square SHARED graph/square.cpp)

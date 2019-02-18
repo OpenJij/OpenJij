@@ -3,9 +3,8 @@
 
 namespace openjij {
 	namespace algorithm {
-		using namespace openjij::updater;
 
-		void SA::exec(ClassicalUpdater& updater, const std::string& algo){
+		void SA::exec(updater::ClassicalUpdater& updater, const std::string& algo){
 			double r_beta = pow(beta_max/beta_min, 1.0/step_num);
 			double beta = beta_min;
 			//anneal

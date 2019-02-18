@@ -3,9 +3,8 @@
 
 namespace openjij {
 	namespace algorithm {
-		using namespace openjij::updater;
 
-		void SQA::exec(QuantumUpdater& updater, const std::string& algo){
+		void SQA::exec(updater::QuantumUpdater& updater, const std::string& algo){
 			double r_g = pow(gamma_min/gamma_max, 1.0/step_num);
 			double gamma = gamma_max;
 			//anneal

@@ -6,7 +6,7 @@
 namespace openjij {
 	namespace method {
 
-		ClassicalIsing::ClassicalIsing(const Sparse<double>& interaction)
+		ClassicalIsing::ClassicalIsing(const graph::Sparse<double>& interaction)
 			: spins(interaction.gen_spin()), interaction(interaction), urd{0.0, 1.0}{
 				//random number generator
 				std::random_device rd;
@@ -45,7 +45,7 @@ namespace openjij {
 			sa.exec(*this, algo);
 		}
 
-		const Spins ClassicalIsing::get_spins() const{
+		const graph::Spins ClassicalIsing::get_spins() const{
 			return spins;
 		}
 	} // namespace method

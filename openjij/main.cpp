@@ -13,34 +13,67 @@
 //    limitations under the License.
 
 
-#include "../src/sampler/sampler.h"
-#include "../src/model.h"
+#include "../src/graph/dense.h"
+#include "../src/graph/sparse.h"
+#include "../src/graph/square.h"
+#include "../src/graph/chimera.h"
+#include "../src/method/classical_ising.h"
+#include "../src/method/quantum_ising.h"
+#include "../src/updater/classical_updater.h"
+#include "../src/updater/quantum_updater.h"
+#include "../src/algorithm/sa.h"
+#include "../src/algorithm/sqa.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 
 namespace py = pybind11;
 
+using namespace py::literals;
+using namespace openjij;
+
 PYBIND11_MODULE(cxxjij, m){
 	m.doc() = "openjij is framework of ising and qubo";
 
-	py::class_<openjij::SquareMatrix<double>>(m, "SquareMatrix")
-		.def(py::init<int, double>())
-		.def("__call__", [](openjij::SquareMatrix<double>& sqm, int x, int y){ return sqm(x, y); })
-		.def("set", &openjij::SquareMatrix<double>::set);
+	//graph 
+	py::class_<graph::Graph>(m, "Graph")
+		.def(py::init<size_t>(), "num_spins"_a)
+		.def("gen_spin", &graph::Graph::gen_spin, "random_initialize"_a=true)
+		.def("get_num_spins", &graph::Graph::get_num_spins);
 
-	py::class_<openjij::sampler::Results>(m, "Results")
-		.def(py::init<>())
-		.def_readwrite("states", &openjij::sampler::Results::states)
-		.def_readwrite("quantum_states", &openjij::sampler::Results::quantum_states)
-		.def_readwrite("energies", &openjij::sampler::Results::energies);
+	py::class_<graph::Dense<double>, graph::Graph>(m, "Dense")
+		.def(py::init<size_t>())
+		.def(py::init<const graph::Dense<double>&>(), "other"_a)
+		.def(py::init<const graph::Sparse<double>&>(), "other"_a)
+		.def("set_J", [](graph::Dense<double>& self, size_t i, size_t j, double val){ self.J(i, j) = val; return;}, "i"_a, "j"_a, "val"_a)
+		.def("get_J", [](const graph::Dense<double>& self, size_t i, size_t j){ return self.J(i, j);}, "i"_a, "j"_a)
+		.def("set_h", [](graph::Dense<double>& self, size_t i, double val){ self.h(i) = val; return;}, "i"_a, "val"_a)
+		.def("get_h", [](const graph::Dense<double>& self, size_t i){ return self.h(i);}, "i"_a);
 
-	py::class_<openjij::sampler::Sampler>(m, "Sampler")
-		.def(py::init<const openjij::SquareMatrix<double>&>())
-		.def("sampling", &openjij::sampler::Sampler::sampling)
-		.def("quantum_sampling", &openjij::sampler::Sampler::quantum_sampling)
-		.def("simulated_annealing", &openjij::sampler::Sampler::simulated_annealing)
-		.def("simulated_quantum_annealing", &openjij::sampler::Sampler::simulated_quantum_annealing);
+	py::class_<graph::Sparse<double>, graph::Graph>(m, "Sparse")
+		.def(py::init<size_t, size_t>())
+		.def(py::init<size_t>())
+		.def(py::init<const graph::Sparse<double>&>(), "other"_a)
+		.def(py::init<const graph::Dense<double>&>(), "other"_a)
+		.def("adj_nodes", &graph::Sparse<double>::adj_nodes)
+		.def("get_num_edges", &graph::Sparse<double>::get_num_edges)
+		.def("calc_energy", &graph::Sparse<double>::calc_energy)
+		.def("set_J", [](graph::Sparse<double>& self, size_t i, size_t j, double val){ self.J(i, j) = val; return;}, "i"_a, "j"_a, "val"_a)
+		.def("get_J", [](const graph::Sparse<double>& self, size_t i, size_t j){ return self.J(i, j);}, "i"_a, "j"_a)
+		.def("set_h", [](graph::Sparse<double>& self, size_t i, double val){ self.h(i) = val; return;}, "i"_a, "val"_a)
+		.def("get_h", [](const graph::Sparse<double>& self, size_t i){ return self.h(i);}, "i"_a);
+
+	//TODO: Square, Chimera
+	
+	py::class_<method::ClassicalIsing>(m, "ClassicalIsing")
+		.def(py::init<const graph::Sparse<double>&>(), "other"_a)
+		.def("simulated_annealing", &method::ClassicalIsing::simulated_annealing, "beta_min"_a, "beta_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
+		.def("get_spins", &method::ClassicalIsing::get_spins);
+
+	py::class_<method::QuantumIsing>(m, "QuantumIsing")
+		.def(py::init<const graph::Sparse<double>&, size_t>(), "other"_a, "num_trotter_slices"_a)
+		.def("simulated_quantum_annealing", &method::QuantumIsing::simulated_quantum_annealing, "beta"_a, "gamma_min"_a, "gamma_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
+		.def("get_spins", &method::QuantumIsing::get_spins);
 }
 
 

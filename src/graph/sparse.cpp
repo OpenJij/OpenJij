@@ -11,7 +11,6 @@ namespace openjij {
 
 		template<typename FloatType>
 			void Sparse<FloatType>::set_adj_node(Index from, Index to){
-				//TODO: add exception
 				assert(from < this->get_num_spins());
 				assert(to < this->get_num_spins());
 
@@ -20,7 +19,6 @@ namespace openjij {
 				//check if the node "to" exists in the nodes 
 				if(std::find(nodes.begin(), nodes.end(), to)==nodes.end()){
 					//limit of the size of the nodes
-					//TODO: add exception
 					assert(nodes.size() < num_edges);
 					//add node
 					nodes.push_back(to);
@@ -32,7 +30,6 @@ namespace openjij {
 		template<typename FloatType>
 			Sparse<FloatType>::Sparse(size_t num_spins, size_t num_edges)
 			: Graph(num_spins), num_edges(num_edges), list_adj_nodes(num_spins){
-				//TODO: add exception
 				assert(num_spins >= num_edges);
 				//initialize list_adj_nodes
 				for(auto& elem : list_adj_nodes){
@@ -78,8 +75,8 @@ namespace openjij {
 
 		template<typename FloatType>
 			const Nodes& Sparse<FloatType>::adj_nodes(Index ind) const{
-				//TODO: add exception
 				assert(ind < this->get_num_spins());
+
 				return list_adj_nodes[ind];
 			}
 
@@ -106,9 +103,9 @@ namespace openjij {
 		template<typename FloatType>
 			FloatType& Sparse<FloatType>::J(Index i, Index j){
 				//check if i and j are smaller than num_spins
-				//TODO: add exception
 				assert(i < get_num_spins());
 				assert(j < get_num_spins());
+
 				//i <= j
 				//add node if it does not exist
 				set_adj_node(i, j);
@@ -118,9 +115,9 @@ namespace openjij {
 		template<typename FloatType>
 			const FloatType& Sparse<FloatType>::J(Index i, Index j) const{
 				//check if i and j are smaller than num_spins
-				//TODO: add exception
 				assert(i < get_num_spins());
 				assert(j < get_num_spins());
+
 				//i <= j
 				return m_J.at(std::make_pair(std::min(i, j), std::max(i, j)));
 			}
@@ -128,7 +125,6 @@ namespace openjij {
 		template<typename FloatType>
 			FloatType& Sparse<FloatType>::h(Index i){
 				//check if i is smaller than num_spins
-				//TODO: add exception
 				assert(i < get_num_spins());
 
 				set_adj_node(i, i);
@@ -138,7 +134,6 @@ namespace openjij {
 		template<typename FloatType>
 			const FloatType& Sparse<FloatType>::h(Index i) const{
 				//check if i is smaller than num_spins
-				//TODO: add exception
 				assert(i < get_num_spins());
 
 				return m_J.at(std::make_pair(i, i));

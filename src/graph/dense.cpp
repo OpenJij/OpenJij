@@ -2,14 +2,13 @@
 #include <random>
 #include "dense.h"
 #include "sparse.h"
+#include <stdexcept>
 
 namespace openjij{
 	namespace graph{
 
 		template<typename FloatType>
 			inline size_t Dense<FloatType>::convert_index(Index i, Index j) const{
-
-				//TODO: add exception
 				assert(i<=j);
 				return get_num_spins()*i-i*(i-1)/2+j-i;
 			}
@@ -53,7 +52,6 @@ namespace openjij{
 		template<typename FloatType>
 			FloatType& Dense<FloatType>::J(Index i, Index j){
 				//check if i and j are smaller than num_spins
-				//TODO: add exception
 				assert(i < get_num_spins());
 				assert(j < get_num_spins());
 				//i <= j
@@ -63,7 +61,6 @@ namespace openjij{
 		template<typename FloatType>
 			const FloatType& Dense<FloatType>::J(Index i, Index j) const{
 				//check if i and j are smaller than num_spins
-				//TODO: add exception
 				assert(i < get_num_spins());
 				assert(j < get_num_spins());
 				//i <= j
@@ -73,7 +70,6 @@ namespace openjij{
 		template<typename FloatType>
 			FloatType& Dense<FloatType>::h(Index i){
 				//check if i is smaller than num_spins
-				//TODO: add exception
 				assert(i < get_num_spins());
 
 				return m_J[convert_index(i, i)];
@@ -82,7 +78,6 @@ namespace openjij{
 		template<typename FloatType>
 			const FloatType& Dense<FloatType>::h(Index i) const{
 				//check if i is smaller than num_spins
-				//TODO: add exception
 				assert(i < get_num_spins());
 
 				return m_J[convert_index(i, i)];

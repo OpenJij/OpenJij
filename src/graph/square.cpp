@@ -19,9 +19,9 @@ namespace openjij {
 		template<typename FloatType>
 			inline Index Square<FloatType>::to_ind(int64_t r, int64_t c) const{
 				//row-major matrix
-				//TODO: add exception
 				assert(-1 <= r && r <= (int64_t)num_row);
 				assert(-1 <= c && c <= (int64_t)num_column);
+
 				return num_column * mod_r(r) + mod_c(c);
 			}
 
