@@ -6,7 +6,7 @@
 namespace openjij {
 	namespace method {
 
-		ClassicalIsing::ClassicalIsing(const graph::Sparse<double>& interaction)
+		ClassicalIsing::ClassicalIsing(const graph::Dense<double>& interaction)
 			: spins(interaction.gen_spin()), interaction(interaction), urd{0.0, 1.0}{
 				//random number generator
 				std::random_device rd;

@@ -1,5 +1,5 @@
 #pragma once
-#include "../graph/sparse.h"
+#include "../graph/dense.h"
 #include "method.h"
 #include "../updater/quantum_updater.h"
 #include <random>
@@ -14,7 +14,7 @@ namespace openjij {
 
 			private:
 				TrotterSpins spins; //spins with trotter slices
-				graph::Sparse<double> interaction; //original interaction
+				graph::Dense<double> interaction; //original interaction
 
 				//random number generators
 				//TODO: use MT or xorshift?
@@ -27,7 +27,7 @@ namespace openjij {
 				inline size_t mod_t(int64_t a) const;
 
 			public:
-				QuantumIsing(const graph::Sparse<double>& interaction, size_t num_trotter_slices);
+				QuantumIsing(const graph::Dense<double>& interaction, size_t num_trotter_slices);
 
 				virtual double update(double beta, double gamma, const std::string& algo = "") override;
 

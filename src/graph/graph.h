@@ -4,11 +4,14 @@
 
 namespace openjij {
 	namespace graph {
+
 		//type aliases
 		//TODO: Spin must take value +1 or -1
 		using Spin = int;
 		using Spins = std::vector<Spin>;
 		using Index = size_t;
+
+		using Nodes = std::vector<Index>;
 
 		//Abstract graph class
 		class Graph{

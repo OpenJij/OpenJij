@@ -1,5 +1,5 @@
 #include <cassert>
-#include <random>
+#include <algorithm>
 #include "dense.h"
 #include "sparse.h"
 #include <stdexcept>
@@ -14,10 +14,39 @@ namespace openjij{
 			}
 
 		template<typename FloatType>
+			void Dense<FloatType>::set_adj_node(Index from, Index to){
+				assert(from < this->get_num_spins());
+				assert(to < this->get_num_spins());
+
+				//get adjacent nodes of node "from"
+				Nodes& nodes = list_adj_nodes[from];
+				//check if the node "to" exists in the nodes 
+				if(std::find(nodes.begin(), nodes.end(), to)==nodes.end()){
+					//limit of the size of the nodes
+					assert(nodes.size() < num_edges);
+					//add node
+					nodes.push_back(to);
+					//add node from "to" to "from"
+					set_adj_node(to, from);
+				}
+			}
+
+		template<typename FloatType>
+			Dense<FloatType>::Dense(size_t num_spins)
+			: Graph(num_spins), m_J(num_spins*(num_spins+1)/2), list_adj_nodes(num_spins)
+			{
+				//initialize list_adj_nodes
+				for(auto& elem : list_adj_nodes){
+					elem.reserve(num_spins); //not resize()
+				}
+			}
+
+
+		template<typename FloatType>
 			Dense<FloatType>::Dense(const Sparse<FloatType>& s)
-			: Graph(s.get_num_spins()), m_J(s.get_num_spins()*(s.get_num_spins()+1)/2){
+			: Graph(s.get_num_spins()), m_J(s.get_num_spins()*(s.get_num_spins()+1)/2), list_adj_nodes(s.get_num_spins()){
 				for(Index i=0; i<get_num_spins(); i++){
-					for(Index j=i; j<get_num_spins(); j++){
+					for(Index j : s.adj_nodes(i)){
 						J(i, j) = s.J(i, j);
 					}
 				}
@@ -25,12 +54,19 @@ namespace openjij{
 
 		template<typename FloatType>
 			Dense<FloatType>::Dense(Sparse<FloatType>&& s)
-			: Graph(s.get_num_spins()), m_J(s.get_num_spins()*(s.get_num_spins()+1)/2){
+			: Graph(s.get_num_spins()), m_J(s.get_num_spins()*(s.get_num_spins()+1)/2), list_adj_nodes(s.get_num_spins()){
 				for(Index i=0; i<get_num_spins(); i++){
-					for(Index j=i; j<get_num_spins(); j++){
+					for(Index j : s.adj_nodes(i)){
 						J(i, j) = s.J(i, j);
 					}
 				}
+			}
+
+		template<typename FloatType>
+			const Nodes& Dense<FloatType>::adj_nodes(Index ind) const{
+				assert(ind < this->get_num_spins());
+
+				return list_adj_nodes[ind];
 			}
 
 		template<typename FloatType>
@@ -55,6 +91,8 @@ namespace openjij{
 				assert(i < get_num_spins());
 				assert(j < get_num_spins());
 				//i <= j
+				//add node if it does not exist
+				set_adj_node(i, j);
 				return m_J[convert_index(std::min(i, j), std::max(i, j))];
 			}
 
@@ -64,7 +102,7 @@ namespace openjij{
 				assert(i < get_num_spins());
 				assert(j < get_num_spins());
 				//i <= j
-				return m_J[convert_index(std::min(i, j), std::max(i, j))];
+				return m_J.at(convert_index(std::min(i, j), std::max(i, j)));
 			}
 
 		template<typename FloatType>
@@ -72,6 +110,8 @@ namespace openjij{
 				//check if i is smaller than num_spins
 				assert(i < get_num_spins());
 
+				//add node if it does not exist
+				set_adj_node(i, i);
 				return m_J[convert_index(i, i)];
 			}
 
@@ -80,7 +120,7 @@ namespace openjij{
 				//check if i is smaller than num_spins
 				assert(i < get_num_spins());
 
-				return m_J[convert_index(i, i)];
+				return m_J.at(convert_index(i, i));
 			}
 
 		//instantiations

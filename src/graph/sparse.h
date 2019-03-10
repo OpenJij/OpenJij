@@ -11,9 +11,6 @@ namespace openjij {
 		template<typename FloatType>
 			class Dense;
 
-		//type aliases
-		using Nodes = std::vector<Index>;
-
 		//two-body intereactions with O(1) connectivity
 		template<typename FloatType>
 			class Sparse : public Graph{

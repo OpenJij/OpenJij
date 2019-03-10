@@ -45,6 +45,8 @@ PYBIND11_MODULE(cxxjij, m){
 		.def(py::init<size_t>())
 		.def(py::init<const graph::Dense<double>&>(), "other"_a)
 		.def(py::init<const graph::Sparse<double>&>(), "other"_a)
+		.def("adj_nodes", &graph::Dense<double>::adj_nodes)
+		.def("calc_energy", &graph::Dense<double>::calc_energy)
 		.def("set_J", [](graph::Dense<double>& self, size_t i, size_t j, double val){ self.J(i, j) = val; return;}, "i"_a, "j"_a, "val"_a)
 		.def("get_J", [](const graph::Dense<double>& self, size_t i, size_t j){ return self.J(i, j);}, "i"_a, "j"_a)
 		.def("set_h", [](graph::Dense<double>& self, size_t i, double val){ self.h(i) = val; return;}, "i"_a, "val"_a)
@@ -65,12 +67,15 @@ PYBIND11_MODULE(cxxjij, m){
 
 	//TODO: Square, Chimera
 	
+	//algorithm
 	py::class_<method::ClassicalIsing>(m, "ClassicalIsing")
+		.def(py::init<const graph::Dense<double>&>(), "other"_a)
 		.def(py::init<const graph::Sparse<double>&>(), "other"_a)
 		.def("simulated_annealing", &method::ClassicalIsing::simulated_annealing, "beta_min"_a, "beta_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
 		.def("get_spins", &method::ClassicalIsing::get_spins);
 
 	py::class_<method::QuantumIsing>(m, "QuantumIsing")
+		.def(py::init<const graph::Dense<double>&, size_t>(), "other"_a, "num_trotter_slices"_a)
 		.def(py::init<const graph::Sparse<double>&, size_t>(), "other"_a, "num_trotter_slices"_a)
 		.def("simulated_quantum_annealing", &method::QuantumIsing::simulated_quantum_annealing, "beta"_a, "gamma_min"_a, "gamma_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
 		.def("get_spins", &method::QuantumIsing::get_spins);

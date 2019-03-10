@@ -12,7 +12,7 @@ namespace openjij {
 			return (a+spins.size())%spins.size();
 		}
 
-		QuantumIsing::QuantumIsing(const graph::Sparse<double>& interaction, size_t num_trotter_slices)
+		QuantumIsing::QuantumIsing(const graph::Dense<double>& interaction, size_t num_trotter_slices)
 			:spins(num_trotter_slices), interaction(interaction), urd{0.0, 1.0}{
 				//TODO: add exception
 				for(auto& elem : spins){

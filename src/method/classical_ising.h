@@ -1,5 +1,5 @@
 #pragma once
-#include "../graph/sparse.h"
+#include "../graph/dense.h"
 #include "method.h"
 #include "../updater/classical_updater.h"
 #include <random>
@@ -12,7 +12,7 @@ namespace openjij {
 			//general classical ising model
 			private:
 				graph::Spins spins;
-				graph::Sparse<double> interaction;
+				graph::Dense<double> interaction;
 				//random number generator
 				//TODO: use MT or xorshift
 				std::mt19937 mt;
@@ -20,7 +20,7 @@ namespace openjij {
 				std::uniform_real_distribution<> urd;
 
 			public:
-				ClassicalIsing(const graph::Sparse<double>& interaction);
+				ClassicalIsing(const graph::Dense<double>& interaction);
 
 				virtual double update(double beta, const std::string& algo = "") override;
 
