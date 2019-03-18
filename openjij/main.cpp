@@ -43,7 +43,7 @@ PYBIND11_MODULE(cxxjij, m){
 
 	//dense
 	py::class_<graph::Dense<double>, graph::Graph>(m, "Dense")
-		.def(py::init<size_t>())
+		.def(py::init<size_t>(), "num_spins"_a)
 		.def(py::init<const graph::Dense<double>&>(), "other"_a)
 		.def(py::init<const graph::Sparse<double>&>(), "other"_a)
 		.def("adj_nodes", &graph::Dense<double>::adj_nodes)
@@ -55,8 +55,8 @@ PYBIND11_MODULE(cxxjij, m){
 
 	//sparse
 	py::class_<graph::Sparse<double>, graph::Graph>(m, "Sparse")
-		.def(py::init<size_t, size_t>())
-		.def(py::init<size_t>())
+		.def(py::init<size_t, size_t>(), "num_spins"_a, "num_edges"_a)
+		.def(py::init<size_t>(),  "num_spins"_a)
 		.def(py::init<const graph::Sparse<double>&>(), "other"_a)
 		.def(py::init<const graph::Dense<double>&>(), "other"_a)
 		.def("adj_nodes", &graph::Sparse<double>::adj_nodes)
@@ -66,6 +66,10 @@ PYBIND11_MODULE(cxxjij, m){
 		.def("__getitem__", [](const graph::Sparse<double>& self, const std::pair<size_t, size_t>& key){return self.J(key.first, key.second);}, "key"_a)
 		.def("__setitem__", [](graph::Sparse<double>& self, size_t key, double val){self.h(key) = val;}, "key"_a, "val"_a)
 		.def("__getitem__", [](const graph::Sparse<double>& self, size_t key){return self.h(key);}, "key"_a);
+
+	//square
+	//py::class_<graph::Square<double>, graph::Sparse<double>>(m, "Square")
+	//	.def(py::init<size_t, size_t, double>(), "num_row"_a, "num_column"_a, "init_val"_a)
 
 	//algorithm
 	
