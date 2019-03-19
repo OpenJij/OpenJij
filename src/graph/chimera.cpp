@@ -80,80 +80,82 @@ namespace openjij {
 			}
 
 		template<typename FloatType>
-			FloatType& Chimera<FloatType>::J(size_t r, size_t c, size_t i, ChimeraDirection dir){
+			FloatType& Chimera<FloatType>::J(size_t r, size_t c, size_t i, ChimeraDir dir){
 				//TODO: add exception
 				assert(r<num_row);
 				assert(c<num_column);
 				assert(i<num_in_chimera);
 
 				switch (dir) {
-					case ChimeraDirection::MINUS_R:
+					case ChimeraDir::MINUS_R:
 						//TODO: add exception
 						assert(i < 4);
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind((int64_t)r-1,c,i));
-					case ChimeraDirection::MINUS_C:
+					case ChimeraDir::MINUS_C:
 						//TODO: add exception
 						assert(4 <= i);
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,(int64_t)c-1,i));
-					case ChimeraDirection::PLUS_R:
+					case ChimeraDir::PLUS_R:
 						//TODO: add exception
 						assert(i < 4);
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind((int64_t)r+1,c,i));
-					case ChimeraDirection::PLUS_C:
+					case ChimeraDir::PLUS_C:
 						//TODO: add exception
 						assert(4 <= i);
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,(int64_t)c+1,i));
 
-					case ChimeraDirection::IN_0or4:
+					case ChimeraDir::IN_0or4:
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,c,(i < 4)?4:0));
-					case ChimeraDirection::IN_1or5:
+					case ChimeraDir::IN_1or5:
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,c,(i < 4)?5:1));
-					case ChimeraDirection::IN_2or6:
+					case ChimeraDir::IN_2or6:
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,c,(i < 4)?6:2));
-					case ChimeraDirection::IN_3or7:
+					case ChimeraDir::IN_3or7:
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,c,(i < 4)?7:3));
 
 					default:
 						assert(false);
+						return init_val;
 				}
 			}
 
 		template<typename FloatType>
-			const FloatType& Chimera<FloatType>::J(size_t r, size_t c, size_t i, ChimeraDirection dir) const{
+			const FloatType& Chimera<FloatType>::J(size_t r, size_t c, size_t i, ChimeraDir dir) const{
 				//TODO: add exception
 				assert(r<num_row);
 				assert(c<num_column);
 				assert(i<num_in_chimera);
 
 				switch (dir) {
-					case ChimeraDirection::MINUS_R:
+					case ChimeraDir::MINUS_R:
 						//TODO: add exception
 						assert(i < 4);
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind((int64_t)r-1,c,i));
-					case ChimeraDirection::MINUS_C:
+					case ChimeraDir::MINUS_C:
 						//TODO: add exception
 						assert(4 <= i);
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,(int64_t)c-1,i));
-					case ChimeraDirection::PLUS_R:
+					case ChimeraDir::PLUS_R:
 						//TODO: add exception
 						assert(i < 4);
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind((int64_t)r+1,c,i));
-					case ChimeraDirection::PLUS_C:
+					case ChimeraDir::PLUS_C:
 						//TODO: add exception
 						assert(4 <= i);
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,(int64_t)c+1,i));
 
-					case ChimeraDirection::IN_0or4:
+					case ChimeraDir::IN_0or4:
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,c,(i < 4)?4:0));
-					case ChimeraDirection::IN_1or5:
+					case ChimeraDir::IN_1or5:
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,c,(i < 4)?5:1));
-					case ChimeraDirection::IN_2or6:
+					case ChimeraDir::IN_2or6:
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,c,(i < 4)?6:2));
-					case ChimeraDirection::IN_3or7:
+					case ChimeraDir::IN_3or7:
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,c,(i < 4)?7:3));
 
 					default:
 						assert(false);
+						return init_val;
 				}
 			}
 

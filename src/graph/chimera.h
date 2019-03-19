@@ -23,7 +23,7 @@ namespace openjij {
 
 		using ChimeraIndex = std::tuple<size_t, size_t, size_t>;
 
-		enum class ChimeraDirection{
+		enum class ChimeraDir{
 			PLUS_R,  //(r  , c  , ind) -> (r+1, c  , ind)
 			MINUS_R, //(r  , c  , ind) -> (r-1, c  , ind)
 			PLUS_C,  //(r  , c  , ind) -> (r  , c+1, ind)
@@ -55,9 +55,9 @@ namespace openjij {
 					Chimera(const Chimera<FloatType>&) = default;
 					Chimera(Chimera<FloatType>&&) = default;
 
-					FloatType& J(size_t r, size_t c, size_t i, ChimeraDirection dir);
+					FloatType& J(size_t r, size_t c, size_t i, ChimeraDir dir);
 
-					const FloatType& J(size_t r, size_t c, size_t i, ChimeraDirection dir) const;
+					const FloatType& J(size_t r, size_t c, size_t i, ChimeraDir dir) const;
 
 					FloatType& h(size_t r, size_t c, size_t i);
 

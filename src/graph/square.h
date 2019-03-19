@@ -8,7 +8,7 @@ namespace openjij {
 
 		using RowColumn = std::pair<size_t, size_t>;
 
-		enum class Direction{
+		enum class Dir{
 			PLUS_R,  //(r  , c  ) -> (r+1, c  )
 			MINUS_R, //(r  , c  ) -> (r-1, c  )
 			PLUS_C,  //(r  , c  ) -> (r  , c+1)
@@ -36,9 +36,9 @@ namespace openjij {
 					Square(const Square<FloatType>&) = default;
 					Square(Square<FloatType>&&) = default;
 
-					FloatType& J(size_t r, size_t c, Direction dir);
+					FloatType& J(size_t r, size_t c, Dir dir);
 
-					const FloatType& J(size_t r, size_t c, Direction dir) const;
+					const FloatType& J(size_t r, size_t c, Dir dir) const;
 
 					FloatType& h(size_t r, size_t c);
 

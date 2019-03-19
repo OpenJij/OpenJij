@@ -73,12 +73,12 @@ namespace openjij{
 			FloatType Dense<FloatType>::calc_energy(const Spins& spins) const{
 
 				FloatType ret = 0;
-				for(Index i=0; i<get_num_spins(); i++){
-					for(Index j=i; j<get_num_spins(); j++){
-						if(i != j)
-							ret += J(i, j) * spins[i] * spins[j];
+				for(size_t ind=0; ind<this->get_num_spins(); ind++){
+					for(auto& adj_ind : list_adj_nodes[ind]){
+						if(ind != adj_ind)
+							ret += (1./2) * this->J(ind, adj_ind) * spins[ind] * spins[adj_ind];
 						else
-							ret += h(i) * spins[i];
+							ret += this->h(ind) * spins[ind];
 					}
 				}
 

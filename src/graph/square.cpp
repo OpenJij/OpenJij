@@ -66,46 +66,46 @@ namespace openjij {
 			}
 
 		template<typename FloatType>
-			FloatType& Square<FloatType>::J(size_t r, size_t c, Direction dir){
+			FloatType& Square<FloatType>::J(size_t r, size_t c, Dir dir){
 				//TODO: add exception
 				assert(r<num_row);
 				assert(c<num_column);
 
 				switch (dir) {
-					case Direction::MINUS_R:
+					case Dir::MINUS_R:
 						return this->Sparse<FloatType>::J(to_ind(r,c), to_ind((int64_t)r-1,c));
-					case Direction::MINUS_C:
+					case Dir::MINUS_C:
 						return this->Sparse<FloatType>::J(to_ind(r,c), to_ind(r,(int64_t)c-1));
-					case Direction::PLUS_R:
+					case Dir::PLUS_R:
 						return this->Sparse<FloatType>::J(to_ind(r,c), to_ind((int64_t)r+1,c));
-					case Direction::PLUS_C:
+					case Dir::PLUS_C:
 						return this->Sparse<FloatType>::J(to_ind(r,c), to_ind(r,(int64_t)c+1));
 					default:
 						//TODO: add exception
 						assert(false);
-
+						return init_val;
 				}
 			}
 
 		template<typename FloatType>
-			const FloatType& Square<FloatType>::J(size_t r, size_t c, Direction dir) const{
+			const FloatType& Square<FloatType>::J(size_t r, size_t c, Dir dir) const{
 				//TODO: add exception
 				assert(r<num_row);
 				assert(c<num_column);
 
 				switch (dir) {
-					case Direction::MINUS_R:
+					case Dir::MINUS_R:
 						//TODO: access m_J directly to improve performance?
 						return this->Sparse<FloatType>::J(to_ind(r,c), to_ind((int64_t)r-1,c));
-					case Direction::MINUS_C:
+					case Dir::MINUS_C:
 						return this->Sparse<FloatType>::J(to_ind(r,c), to_ind(r,(int64_t)c-1));
-					case Direction::PLUS_R:
+					case Dir::PLUS_R:
 						return this->Sparse<FloatType>::J(to_ind(r,c), to_ind((int64_t)r+1,c));
-					case Direction::PLUS_C:
+					case Dir::PLUS_C:
 						return this->Sparse<FloatType>::J(to_ind(r,c), to_ind(r,(int64_t)c+1));
 					default:
 						assert(false);
-
+						return init_val;
 				}
 			}
 
