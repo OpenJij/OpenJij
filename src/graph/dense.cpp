@@ -22,8 +22,6 @@ namespace openjij{
 				Nodes& nodes = list_adj_nodes[from];
 				//check if the node "to" exists in the nodes 
 				if(std::find(nodes.begin(), nodes.end(), to)==nodes.end()){
-					//limit of the size of the nodes
-					assert(nodes.size() < num_edges);
 					//add node
 					nodes.push_back(to);
 					//add node from "to" to "from"
@@ -102,7 +100,7 @@ namespace openjij{
 				assert(i < get_num_spins());
 				assert(j < get_num_spins());
 				//i <= j
-				return m_J.at(convert_index(std::min(i, j), std::max(i, j)));
+				return m_J[convert_index(std::min(i, j), std::max(i, j))];
 			}
 
 		template<typename FloatType>
@@ -120,7 +118,7 @@ namespace openjij{
 				//check if i is smaller than num_spins
 				assert(i < get_num_spins());
 
-				return m_J.at(convert_index(i, i));
+				return m_J[convert_index(i, i)];
 			}
 
 		//instantiations
