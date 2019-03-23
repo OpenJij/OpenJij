@@ -13,7 +13,6 @@ namespace openjij {
 		: interaction(interaction), num_trotter_slices(num_trotter_slices), row(interaction.get_num_row()), col(interaction.get_num_column()){
 			//num_trotter_slices must be even.
 
-			std::cout << "init chimeragpu" << std::endl;
 			size_t num_in_chimera = interaction.get_num_in_chimera();
 
 			assert(num_trotter_slices%2 == 0);
@@ -22,13 +21,10 @@ namespace openjij {
 			assert(col%2 == 0);
 			//overflow?
 			assert((uint64_t)0xFFFFFFFF >= (uint64_t)num_trotter_slices*row*col*8);
-			std::cout << "start to set device" << std::endl;
 			//set device
 			cuda_set_device(gpudevice);
 			//init GPU
-			std::cout << "set device" << std::endl;
 			cuda_init(num_trotter_slices, row, col);
-			std::cout << "init gpu" << std::endl;
 
 			//init parameters;
 			uint32_t localsize = row*col*8;
@@ -40,12 +36,9 @@ namespace openjij {
 			std::vector<float> J_in_3(localsize);
 			std::vector<float> H(localsize);
 
-			std::cout << "start to init variables" << std::endl;
-
 			for(size_t r=0; r<row; r++){
 				for(size_t c=0; c<col; c++){
 					for(size_t i=0; i<num_in_chimera; i++){
-						std::cout << r << " " << c << " " << i << " " << std::endl;
 						//open boundary
 						if(r > 0 && i < 4){
 							//MINUS_R (0<=i<4)
@@ -76,7 +69,6 @@ namespace openjij {
 				}
 			}
 
-			std::cout << "finish init variables" << std::endl;
 
 			//init interactions
 			cuda_init_interactions(
@@ -89,12 +81,9 @@ namespace openjij {
 					H.data()
 					);
 
-			std::cout << "finish init variables gpu" << std::endl;
-
 			//init_spins
 			cuda_init_spin();
 
-			std::cout << "finish init spin" << std::endl;
 		}
 
 		ChimeraGPUQuantum::~ChimeraGPUQuantum(){

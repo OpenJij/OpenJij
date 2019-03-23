@@ -1139,7 +1139,6 @@ __global__ void cuda_metropolis(
 //set device
 
 void cuda_set_device(int device){
-	std::cout << "set_device: " << device << std::endl;
 	HANDLE_ERROR(cudaSetDevice(device));
 }
 
