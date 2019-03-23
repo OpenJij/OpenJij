@@ -55,6 +55,10 @@ namespace openjij {
 					Chimera(const Chimera<FloatType>&) = default;
 					Chimera(Chimera<FloatType>&&) = default;
 
+					size_t get_num_row() const{return num_row;}
+					size_t get_num_column() const{return num_column;}
+					size_t get_num_in_chimera() const{return num_in_chimera;}
+
 					FloatType& J(size_t r, size_t c, size_t i, ChimeraDir dir);
 
 					const FloatType& J(size_t r, size_t c, size_t i, ChimeraDir dir) const;

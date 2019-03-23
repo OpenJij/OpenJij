@@ -7,7 +7,6 @@
 namespace openjij {
 	namespace method {
 
-		using TrotterSpins = std::vector<graph::Spins>;
 		//TODO: double -> FloatType (template)
 		class QuantumIsing : public Method, public updater::QuantumUpdater{
 			//general transverse-field ising model with discrete trotter slices

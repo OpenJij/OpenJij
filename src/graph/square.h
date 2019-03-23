@@ -36,6 +36,9 @@ namespace openjij {
 					Square(const Square<FloatType>&) = default;
 					Square(Square<FloatType>&&) = default;
 
+					size_t get_num_row(){return num_row;}
+					size_t get_num_column(){return num_column;}
+
 					FloatType& J(size_t r, size_t c, Dir dir);
 
 					const FloatType& J(size_t r, size_t c, Dir dir) const;
