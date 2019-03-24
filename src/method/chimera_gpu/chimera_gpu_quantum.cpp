@@ -22,9 +22,9 @@ namespace openjij {
 			//overflow?
 			assert((uint64_t)0xFFFFFFFF >= (uint64_t)num_trotter_slices*row*col*8);
 			//set device
-			cuda_set_device(gpudevice);
+			chimera_gpu::cuda_set_device(gpudevice);
 			//init GPU
-			cuda_init(num_trotter_slices, row, col);
+			chimera_gpu::cuda_init(num_trotter_slices, row, col);
 
 			//init parameters;
 			uint32_t localsize = row*col*8;
@@ -71,7 +71,7 @@ namespace openjij {
 
 
 			//init interactions
-			cuda_init_interactions(
+			chimera_gpu::cuda_init_interactions(
 					J_out_p.data(),
 					J_out_n.data(),
 					J_in_0.data(),
@@ -82,17 +82,17 @@ namespace openjij {
 					);
 
 			//init_spins
-			cuda_init_spin();
+			chimera_gpu::cuda_init_spin();
 
 		}
 
 		ChimeraGPUQuantum::~ChimeraGPUQuantum(){
-			cuda_free();
+			chimera_gpu::cuda_free();
 		}
 
 		double ChimeraGPUQuantum::update(double beta, double gamma, const std::string& algo){
 			if(algo == "gpu_metropolis" or algo == ""){
-				cuda_run(beta, gamma);
+				chimera_gpu::cuda_run(beta, gamma);
 			}
 			return 0;
 		}
@@ -105,14 +105,14 @@ namespace openjij {
 
 		TrotterSpins ChimeraGPUQuantum::get_spins() const{
 			//cudaMemcpy
-			copy_spins();
+			chimera_gpu::copy_spins();
 			TrotterSpins ret_spins(num_trotter_slices);
 			for(size_t t=0; t<num_trotter_slices; t++){
 				ret_spins[t] = graph::Spins(interaction.get_num_spins());
 				for(size_t r=0; r<row; r++){
 					for(size_t c=0; c<col; c++){
 						for(size_t i=0; i<8; i++){
-							ret_spins[t][interaction.to_ind(r,c,i)] = get_spin(t, r, c, i);
+							ret_spins[t][interaction.to_ind(r,c,i)] = chimera_gpu::get_spin(t, r, c, i);
 						}
 					}
 				}
