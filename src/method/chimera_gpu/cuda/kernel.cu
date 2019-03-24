@@ -11,8 +11,8 @@
 #include <cfloat>
 
 //HANDLE ERROR
-cudaError_t err;
-curandStatus_t st;
+static cudaError_t err;
+static curandStatus_t st;
 
 /***************************
   macro for detecting errors 
