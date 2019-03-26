@@ -1,6 +1,7 @@
 #pragma once 
 
 #include"../graph/graph.h"
+#include <cstddef>
 
 namespace openjij {
 	namespace method {
