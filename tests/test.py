@@ -63,4 +63,6 @@ class SamplerOptimizeTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    pass
+    # test is currently disabled. TODO: write test!
+    #unittest.main()
