@@ -1,0 +1,9 @@
+include *.cmake
+include FetchContent/*.cmake.in
+include CMakeLists.txt
+
+recursive-include openjij *
+recursive-include tests *
+recursive-include src *
+
+

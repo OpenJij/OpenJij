@@ -10,7 +10,7 @@ Documents : https://openjij.github.io/OpenJij/
 
 ### pip
 ```
-$ pip install OpenJij
+$ pip install openjij
 ```
 
 ### cmake setup

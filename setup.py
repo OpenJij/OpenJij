@@ -88,7 +88,7 @@ class GoogleTestCommand(TestCommand):
                         shell=True)
 
 setup(
-    name='OpenJij',
+    name='openjij',
     version='0.0.1',
     author='Jij Inc.',
     author_email='openjij@j-ij.com',
@@ -101,7 +101,7 @@ setup(
     cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand),
     packages=find_packages(exclude=('tests', 'docs')),
     license='Apache License 2.0',
-    classifires=[
+    classifiers=[
         'License :: OSI Approved :: Apache Software License',
         'Intended Audience :: Science/Research',
         'Programming Language :: Python',
