@@ -73,6 +73,14 @@ if(USE_CUDA)
 endif()
 
 add_subdirectory(src)
+
+# shared libs
+add_custom_target(shared
+	DEPENDS graph 
+	DEPENDS algorithm 
+	DEPENDS method
+)
+
 add_subdirectory(openjij)
 add_subdirectory(tests)
 

@@ -8,3 +8,7 @@ set_target_properties(cxxjij PROPERTIES
 
 target_link_libraries(cxxjij PRIVATE graph_static algorithm_static method_static)
 target_link_libraries(cxxjij PRIVATE pybind11::module)
+
+add_custom_target(python
+	DEPENDS cxxjij
+)
