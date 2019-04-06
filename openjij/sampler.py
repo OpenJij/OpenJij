@@ -50,13 +50,15 @@ class BaseSampler:
         ising_int = model.ising_interactions()
 
         # todo: Rewrite the following converting handle into more efficient code.
-        self.int_mat = cj.SquareMatrix(self.N, 0.0)
+        # self.int_mat = cj.SquareMatrix(self.N, 0.0)
+        self.graph = cj.graph.Dense(self.N)
         for i in range(self.N):
             for j in range(i, self.N):
-                self.int_mat.set(i, j, ising_int[i, j])
-                self.int_mat.set(j, i, ising_int[j, i])
+                # self.int_mat.set(i, j, ising_int[i, j])
+                # self.int_mat.set(j, i, ising_int[j, i])
+                self.graph[i,j] = ising_int[i,j]
 
-        self.samp = cj.Sampler(self.int_mat)
+        self.samp = cj.Sampler(self.graph)
         self.resu = cj.Results()
 
 

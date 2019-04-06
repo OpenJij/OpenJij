@@ -15,8 +15,6 @@
 import numpy as np
 import warnings
 
-import cxxjij as cj
-
 class BinaryQuadraticModel:
     def __init__(self, h, J, spin_type='ising'): 
 
