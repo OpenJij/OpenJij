@@ -8,7 +8,7 @@ Documents : https://openjij.github.io/OpenJij/
 
 ## install
 
-> Notice：
+> Notice：  
 > Because current version v.0.0.1 support only the interface of 'cxxjij modules', you have to read header files in `src/*`
 
 ### pip
@@ -49,8 +49,8 @@ $ python setup.py install
 ### Python example
 
 ```python
-from openjij import graph as G
-from openjij import method as M
+from openjij import graph as G   # or import cxxjij.graph as G
+from openjij import method as M  # or import cxxjij.method as M
 ising = G.Dense(10)
 for i in range(10):
     for j in range(i+1, 10):
