@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import numpy as np
+import cxxjij.graph as cjg
 import warnings
 
 class BinaryQuadraticModel:
@@ -74,3 +75,22 @@ class BinaryQuadraticModel:
         else: # spin_type == qubo
             int_mat = self.interactions()
         return np.dot(state, np.dot(int_mat, state)) + np.dot(np.diag(int_mat), -1+np.array(state))
+
+    def convert_to_dense_graph(self) -> cjg.Dense:
+        """
+        Convert to cxxjij.graph.Dense class from Python dictionary (h, J) or Q
+        """
+        N = len(self.indices)
+        ising_int = self.ising_interactions()
+
+        # cxxjij.graph.dense
+        cxx_dense_ising = cjg.Dense(N)
+        for i in range(N):
+            if ising_int[i,i] != 0.0:
+                cxx_dense_ising[i,i] = ising_int[i,i]
+            for j in range(i+1, N):
+                if ising_int[i,j] != 0.0:
+                    cxx_dense_ising[i,j] = ising_int[i,j]
+        
+        return cxx_dense_ising
+
