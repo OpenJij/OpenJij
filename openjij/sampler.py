@@ -23,6 +23,9 @@ class Response:
         self.energies = []
         self.spin_type = spin_type
 
+        self.q_states = []
+        self.q_energies = []
+
     def __str__(self):
         ground_energy = min(self.energies) if len(self.energies) != 0 else None
         return "number of state : {}, minimum energy : {}, spin_type : {}".format(
@@ -34,6 +37,19 @@ class Response:
         else:  # qubo
             self.states.append(list(np.array((np.array(state) + 1)/2).astype(np.int)))
         self.energies.append(energy)
+
+    def add_quantum_state_energy(self, trotter_states, energies):
+        if self.spin_type == 'ising':
+            self.q_states.append(trotter_states)
+        else:
+            self.q_states.append([list(np.array((np.array(state) + 1)/2).astype(np.int)) for state in trotter_states])
+        self.q_energies.append(energies)
+
+        # save minimum energy state
+        min_e_indices = np.argmin(self.q_energies, axis=1)
+        self.states = [states[min_e_i] for states, min_e_i in zip(self.q_states, min_e_indices)]
+        self.energies = list(np.array(self.q_energies)[min_e_indices])
+
 
 class BaseSampler:
     def _make_dense_graph(self, Q=None, h=None, J=None, spin_type='ising'):
@@ -72,7 +88,7 @@ class SASampler(BaseSampler):
 
     def sample_qubo(self, Q):
         spin_type = 'qubo'
-        ising_dense_graph = self._make_dense_graph(Q, spin_type=spin_type)
+        ising_dense_graph = self._make_dense_graph(Q=Q, spin_type=spin_type)
         return self._sampling(ising_dense_graph, spin_type=spin_type)
 
     def _sampling(self, ising_dense_graph, spin_type):
@@ -95,68 +111,27 @@ class SQASampler(BaseSampler):
         self.step_num = step_num
         self.iteration = iteration
 
+    def sample_ising(self, h, J):
+        spin_type = 'ising'
+        ising_dense_graph = self._make_dense_graph(h=h, J=J, spin_type=spin_type)
+        return self._sampling(ising_dense_graph, spin_type=spin_type)
+
+    def sample_qubo(self, Q):
+        spin_type = 'qubo'
+        ising_dense_graph = self._make_dense_graph(Q=Q, spin_type=spin_type)
+        return self._sampling(ising_dense_graph, spin_type=spin_type)
+
+    def _sampling(self, ising_dense_graph, spin_type):
+        response = Response(spin_type=spin_type)
+        method = cj.method.QuantumIsing(ising_dense_graph, num_trotter_slices=self.trotter)
+        for _ in range(self.iteration):
+            method.simulated_quantum_annealing(
+                self.beta, 
+                self.gamma_min, self.gamma_max,
+                self.step_length, self.step_num)
+            q_state = method.get_spins()
+            energies = [ising_dense_graph.calc_energy(state) for state in q_state]
+            response.add_quantum_state_energy(q_state, energies)
+        return response
 
 
-# class Sampler(BaseSampler):
-#     def __init__(self, beta, observe_num, burn_in=1000):
-#         self.beta = beta
-#         self.observe_num = observe_num
-#         self.burn_in = burn_in
-
-#     def sampling(self, h, J, spin_type='ising'):
-#         self._make_int_mat(h=h, J=J, spin_type=spin_type)
-#         self.samp.sampling(self.beta, self.burn_in, self.observe_num, self.resu)
-
-#         return Response(states=self.resu.states, energies=self.resu.energies, spin_type=spin_type)
-
-
-# class SASampler(BaseSampler):
-#     def __init__(self, beta_min=0.1, beta_max=5.0,
-#                  step_length=10, step_num=100, iteration=1):
-#         self.beta_min = beta_min
-#         self.beta_max = beta_max
-#         self.step_length = step_length
-#         self.step_num = step_num
-#         self.iteration = iteration
-
-#     def sample_ising(self, h, J):
-#         self._make_int_mat(h=h, J=J, spin_type='ising')
-#         self.samp.simulated_annealing(
-#             self.beta_min, self.beta_max, self.step_length,
-#             self.step_num, self.iteration, self.resu)
-#         return Response(states=self.resu.states, energies=self.resu.energies)
-
-#     def sample_qubo(self, Q):
-#         self._make_int_mat(Q, spin_type='qubo')
-#         self.samp.simulated_annealing(
-#             self.beta_min, self.beta_max, self.step_length,
-#             self.step_num, self.iteration, self.resu)
-#         return Response(states=self.resu.states, energies=self.resu.energies, spin_type='qubo')
-        
-
-
-
-# class SQASampler(BaseSampler):
-#     def __init__(self, beta=5.0, gamma_min=0.1, gamma_max=10.0,
-#                  trotter=5, step_length=10, step_num=100, iteration=1):
-#         self.beta = beta
-#         self.gamma_min = gamma_min
-#         self.gamma_max = gamma_max
-#         self.trotter = trotter
-#         self.step_length = step_length
-#         self.step_num = step_num
-#         self.iteration = iteration
-
-#     def sample_ising(self, h, J):
-#         self._make_int_mat(h=h, J=J, spin_type='ising')
-#         self.samp.simulated_quantum_annealing(
-#             self.beta, self.gamma_min, self.gamma_max, self.trotter,
-#             self.step_length, self.step_num, self.iteration, self.resu)
-#         return Response(states=self.resu.states, energies=self.resu.energies)
-
-#     def sample_qubo(self, Q):
-#         self._make_int_mat(Q, spin_type='qubo')
-#         self.samp.simulated_quantum_annealing(
-#             self.beta, self.gamma_min, self.gamma_max, self.trotter,
-#             self.step_length, self.step_num, self.iteration, self.resu)
-#         return Response(states=self.resu.states, energies=self.resu.energies, spin_type='qubo')
