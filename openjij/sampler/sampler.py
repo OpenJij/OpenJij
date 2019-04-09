@@ -14,7 +14,7 @@
 
 import numpy as np
 import cxxjij as cj
-from .model import BinaryQuadraticModel
+from openjij import BinaryQuadraticModel
 
 
 class Response:

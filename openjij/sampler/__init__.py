@@ -1,2 +1,2 @@
-from sampler import *
-from gpu_sampler import *
+from .sampler import *
+from .gpu_sampler import *
