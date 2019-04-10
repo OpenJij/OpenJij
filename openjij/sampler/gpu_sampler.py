@@ -20,7 +20,7 @@ import numpy as np
 
 class GPUSQASampler(BaseSampler):
     def __init__(self, graph=None, beta=5.0, gamma_min=0.1, gamma_max=10.0,
-                 trotter=5, step_length=10, step_num=100, iteration=1):
+                 trotter=4, step_length=10, step_num=100, iteration=1):
 
         if graph is not None:
             if not isinstance(graph, cj.graph.Chimera):

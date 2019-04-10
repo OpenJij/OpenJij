@@ -100,7 +100,7 @@ class SASampler(BaseSampler):
 
 class SQASampler(BaseSampler):
     def __init__(self, beta=5.0, gamma_min=0.1, gamma_max=10.0,
-                 trotter=5, step_length=10, step_num=100, iteration=1):
+                 trotter=4, step_length=10, step_num=100, iteration=1):
         self.beta = beta
         self.gamma_min = gamma_min
         self.gamma_max = gamma_max
