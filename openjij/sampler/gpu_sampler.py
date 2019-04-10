@@ -15,6 +15,7 @@
 import cxxjij as cj
 from openjij.sampler import BaseSampler
 from openjij.model import BinaryQuadraticModel
+from .sampler import Response
 import numpy as np
 
 class GPUSQASampler(BaseSampler):
@@ -24,17 +25,29 @@ class GPUSQASampler(BaseSampler):
         if graph is not None:
             if not isinstance(graph, cj.graph.Chimera):
                 raise ValueError("'graph' should be cxxjij.graph.Chimera, not {}".format(type(graph)))
+        self.graph = graph
         
         self.beta = beta
         self.gamma_min = gamma_min
         self.gamma_max = gamma_max
+        # GPU Sampler allows only even trotter number
+        if trotter % 2 != 0:
+            raise ValueError('GPU Sampler allows only even trotter number')
         self.trotter = trotter
         self.step_length = step_length
         self.step_num = step_num
         self.iteration = iteration
+        self.energy_bias = 0.0
+        self.spin_type = 'ising'
 
-    def sample_ising(self, h, J, chimera_L):
-        chimera = self._chimera_graph(h, J, chimera_L)
+    def sampling(self, chimera=None):
+        response = Response(spin_type=self.spin_type, indices=self.indices)
+        if chimera is None:
+            if self.graph is None:
+                raise ValueError('Input "chimera" graph: .sampling(chimera)')
+            else:
+                chimera = self.graph
+
         gpu_sqa = cj.method.ChimeraGPUQuantum(chimera, num_trotter_slices=self.trotter)
         for _ in range(self.iteration):
             gpu_sqa.simulated_quantum_annealing(
@@ -46,19 +59,32 @@ class GPUSQASampler(BaseSampler):
             response.add_quantum_state_energy(q_state, energies)
         return response
 
+    def sample_ising(self, h, J, chimera_L):
+        model = BinaryQuadraticModel(h=h, J=J, spin_type='ising')
+        self.spin_type = 'ising'
+        chimera = self._chimera_graph(model, chimera_L)
+        return self.sampling(chimera)
 
-    def _chimera_graph(self, h, J, chimera_L):
-        model = BinaryQuadraticModel(h=h, J=J)
-        if not model.validate_chimera():
+    def sample_qubo(self, Q, chimera_L):
+        model = BinaryQuadraticModel(Q=Q, spin_type='qubo')
+        self.spin_type = 'qubo'
+        chimera = self._chimera_graph(model, chimera_L)
+        return self.sampling(chimera)
+        
+
+    def _chimera_graph(self, model, chimera_L):
+        if not model.validate_chimera(chimera_L):
             raise ValueError("Problem graph incompatible with chimera graph.")
         _h, _J = model.ising_dictionary()
+
+        self.energy_bias = model.energy_bias
+
         chimera = cj.graph.Chimera(chimera_L, chimera_L)
         for i, hi in _h.items():
-            xi, yi, zi = model._index_chimera(i)
-            chimera[xi, yi, zi] = hi
+            xi, yi, zi = model._index_chimera(i, unit_num_L=chimera_L)
         for (i, j), Jij in _J.items():
-            xi, yi, zi = model._index_chimera(i)
-            xj, yj, zj = model._index_chimera(j)
+            xi, yi, zi = model._index_chimera(i, unit_num_L=chimera_L)
+            xj, yj, zj = model._index_chimera(j, unit_num_L=chimera_L)
             if xi == xj and yi == yj:
                 if zj in [0, 4]:
                     chimera[xi, yi, cj.graph.ChimeraDir.IN_0or4] = Jij
@@ -79,5 +105,3 @@ class GPUSQASampler(BaseSampler):
         return chimera
         
 
-    def sampling(self):
-        pass

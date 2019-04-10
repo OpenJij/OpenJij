@@ -18,13 +18,14 @@ from openjij.model import BinaryQuadraticModel
 
 
 class Response:
-    def __init__(self, spin_type):
+    def __init__(self, spin_type, indices):
         self.states = []
         self.energies = []
         self.spin_type = spin_type
 
         self.q_states = []
         self.q_energies = []
+        self.indices = indices
 
     def __str__(self):
         ground_energy = min(self.energies) if len(self.energies) != 0 else None
@@ -52,19 +53,15 @@ class Response:
 
 
 class BaseSampler:
-    def _make_dense_graph(self, Q=None, h=None, J=None, spin_type='ising'):
+    def _make_dense_graph(self, h=None, J=None, Q=None, spin_type='ising'):
         if spin_type=='qubo':
-            if not isinstance(Q, dict):
-                ValueError('Q should be dictionary.')
-            h = {}
-            J = {}
-            for (i,j),qij in Q.items():
-                if i==j:
-                    h[i] = qij
-                else:
-                    J[(i, j)] = qij
-            
-        model = BinaryQuadraticModel(h, J, spin_type=spin_type)
+            if Q is None:
+                raise ValueError('Input QUBO matrix: Q')
+            model = BinaryQuadraticModel(Q=Q, spin_type='qubo')
+        elif spin_type=='ising':
+            if h is None or J is None:
+                raise ValueError('Input h and J')
+            model = BinaryQuadraticModel(h=h, J=J, spin_type='ising')
         self.indices = model.indices
         self.N = len(model.indices)
         self.energy_bias = model.energy_bias
@@ -93,7 +90,7 @@ class SASampler(BaseSampler):
         return self._sampling(ising_dense_graph, spin_type=spin_type)
 
     def _sampling(self, ising_dense_graph, spin_type):
-        response = Response(spin_type=spin_type)
+        response = Response(spin_type=spin_type, indices=self.indices)
         sa_method = cj.method.ClassicalIsing(ising_dense_graph)
         for _ in range(self.iteration):
             sa_method.simulated_annealing(self.beta_min, self.beta_max, self.step_length, self.step_num)
@@ -123,7 +120,7 @@ class SQASampler(BaseSampler):
         return self._sampling(ising_dense_graph, spin_type=spin_type)
 
     def _sampling(self, ising_dense_graph, spin_type):
-        response = Response(spin_type=spin_type)
+        response = Response(spin_type=spin_type, indices=self.indices)
         method = cj.method.QuantumIsing(ising_dense_graph, num_trotter_slices=self.trotter)
         for _ in range(self.iteration):
             method.simulated_quantum_annealing(

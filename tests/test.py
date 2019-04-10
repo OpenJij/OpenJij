@@ -47,10 +47,8 @@ class ModelTest(unittest.TestCase):
         self.assertFalse(bqm.validate_chimera(unit_num_L=3))
 
     def test_ising_dict(self):
-        h = {}
-        J = {(0,4): -1.0, (6,2): -3.0}
-        bqm = oj.BinaryQuadraticModel(h=h, J=J, spin_type='qubo')
-        print(bqm.ising_dictionary()) 
+        Q = {(0,4): -1.0, (6,2): -3.0}
+        bqm = oj.BinaryQuadraticModel(Q=Q, spin_type='qubo')
 
 
 class SamplerOptimizeTest(unittest.TestCase):
@@ -78,6 +76,13 @@ class SamplerOptimizeTest(unittest.TestCase):
         response = oj.SQASampler().sample_qubo(self.Q)
         self.assertEqual(len(response.states), 1)
         self.assertListEqual(response.states[0], [0,0,0])
+
+    def test_gpu_sqa(self):
+        gpu_sampler = oj.GPUSQASampler()
+        h = {0: -1}
+        J = {(0, 4): -1, (0, 5): -1, (2, 5): -1}
+        model = oj.BinaryQuadraticModel(h, J, spin_type='ising')
+        chimera = gpu_sampler._chimera_graph(model, chimera_L=10)
 
 
 if __name__ == '__main__':

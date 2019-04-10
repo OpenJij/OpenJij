@@ -17,9 +17,22 @@ import cxxjij.graph as cjg
 import warnings
 
 class BinaryQuadraticModel:
-    def __init__(self, h, J, spin_type='ising'): 
+    def __init__(self, h=None, J=None, Q=None, spin_type='ising'): 
 
-        if not spin_type in ('ising', 'qubo'):
+        if spin_type == 'ising':
+            if (h is None) and (J is None):
+                raise ValueError('Input h and J.')
+        elif spin_type=='qubo':
+            if not isinstance(Q, dict) or Q is None:
+                raise ValueError('Q should be dictionary.')
+            h = {}
+            J = {}
+            for (i,j),qij in Q.items():
+                if i==j:
+                    h[i] = qij
+                else:
+                    J[(i, j)] = qij
+        else:
             raise ValueError('spin_type should be "ising" or "qubo"')
 
         index_set = set(h.keys())
@@ -153,4 +166,4 @@ class BinaryQuadraticModel:
         z_i = i % 8
         x_i = (i - z_i) % unit_num_L / 8
         y_i = (i-(8*x_i + z_i))/(8 * unit_num_L)
-        return x_i, y_i, z_i
+        return int(x_i), int(y_i), int(z_i)
