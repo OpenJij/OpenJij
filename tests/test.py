@@ -26,15 +26,32 @@ import openjij as oj
 #         self.assertEqual(len(bm_res) ,len(step_num_list))
 
 
-# class ModelTest(unittest.TestCase):
-#     def test_bqm(self):
-#         h = {}
-#         J = {(0,1): -1.0, (1,2): -3.0}
-#         bqm = oj.BinaryQuadraticModel(h=h, J=J)
+class ModelTest(unittest.TestCase):
+    def test_bqm(self):
+        h = {}
+        J = {(0,1): -1.0, (1,2): -3.0}
+        bqm = oj.BinaryQuadraticModel(h=h, J=J)
 
-#         self.assertEqual(type(bqm.ising_interactions()), np.ndarray)
-#         correct_mat = np.array([[0, -1, 0,],[-1, 0, -3],[0, -3, 0]])
-#         np.testing.assert_array_equal(bqm.ising_interactions(), correct_mat.astype(np.float))
+        self.assertEqual(type(bqm.ising_interactions()), np.ndarray)
+        correct_mat = np.array([[0, -1, 0,],[-1, 0, -3],[0, -3, 0]])
+        np.testing.assert_array_equal(bqm.ising_interactions(), correct_mat.astype(np.float))
+    
+    def test_chimera(self):
+        h = {}
+        J = {(0,4): -1.0, (6,2): -3.0}
+        bqm = oj.BinaryQuadraticModel(h=h, J=J)
+        self.assertTrue(bqm.validate_chimera(unit_num_L=3))
+
+        J = {(0, 1): -1}
+        bqm = oj.BinaryQuadraticModel(h=h, J=J)
+        self.assertFalse(bqm.validate_chimera(unit_num_L=3))
+
+    def test_ising_dict(self):
+        h = {}
+        J = {(0,4): -1.0, (6,2): -3.0}
+        bqm = oj.BinaryQuadraticModel(h=h, J=J, spin_type='qubo')
+        print(bqm.ising_dictionary()) 
+
 
 class SamplerOptimizeTest(unittest.TestCase):
 

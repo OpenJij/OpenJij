@@ -14,7 +14,7 @@
 
 import numpy as np
 import cxxjij as cj
-from openjij import BinaryQuadraticModel
+from openjij.model import BinaryQuadraticModel
 
 
 class Response:
@@ -67,6 +67,7 @@ class BaseSampler:
         model = BinaryQuadraticModel(h, J, spin_type=spin_type)
         self.indices = model.indices
         self.N = len(model.indices)
+        self.energy_bias = model.energy_bias
 
         self.spin_type = model.spin_type
 
@@ -97,7 +98,7 @@ class SASampler(BaseSampler):
         for _ in range(self.iteration):
             sa_method.simulated_annealing(self.beta_min, self.beta_max, self.step_length, self.step_num)
             state = sa_method.get_spins()
-            response.add_state_energy(state, ising_dense_graph.calc_energy(state))
+            response.add_state_energy(state, ising_dense_graph.calc_energy(state) + self.energy_bias)
         return response
 
 class SQASampler(BaseSampler):
@@ -130,7 +131,7 @@ class SQASampler(BaseSampler):
                 self.gamma_min, self.gamma_max,
                 self.step_length, self.step_num)
             q_state = method.get_spins()
-            energies = [ising_dense_graph.calc_energy(state) for state in q_state]
+            energies = [ising_dense_graph.calc_energy(state) + self.energy_bias for state in q_state]
             response.add_quantum_state_energy(q_state, energies)
         return response
 
