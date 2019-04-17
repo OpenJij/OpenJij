@@ -8,9 +8,6 @@ Documents : https://openjij.github.io/OpenJij/
 
 ## install
 
-> Notice：  
-> Because current version v.0.0.1 support only the interface of 'cxxjij modules', you have to read header files in `src/*`
-
 ### pip
 ```
 $ pip install openjij
