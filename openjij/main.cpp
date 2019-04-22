@@ -126,15 +126,19 @@ PYBIND11_MODULE(cxxjij, m){
 	py::class_<method::ClassicalIsing>(m_method, "ClassicalIsing")
 		.def(py::init<const graph::Dense<double>&>(), "other"_a)
 		.def(py::init<const graph::Sparse<double>&>(), "other"_a)
+		.def(py::init<const graph::Sparse<double>&, graph::Spins&>(), "other"_a, "init_state"_a)
 		.def("simulated_annealing", &method::ClassicalIsing::simulated_annealing, "beta_min"_a, "beta_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
-		.def("get_spins", &method::ClassicalIsing::get_spins);
+		.def("get_spins", &method::ClassicalIsing::get_spins)
+		.def("initilize_spins", &method::ClassicalIsing::initilize_spins);
 
 	//QuantumIsing
 	py::class_<method::QuantumIsing>(m_method, "QuantumIsing")
 		.def(py::init<const graph::Dense<double>&, size_t>(), "other"_a, "num_trotter_slices"_a)
 		.def(py::init<const graph::Sparse<double>&, size_t>(), "other"_a, "num_trotter_slices"_a)
+		.def(py::init<const graph::Sparse<double>&, size_t, graph::Spins&>(), "other"_a, "num_trotter_slices"_a, "init_state"_a)
 		.def("simulated_quantum_annealing", &method::QuantumIsing::simulated_quantum_annealing, "beta"_a, "gamma_min"_a, "gamma_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
-		.def("get_spins", &method::QuantumIsing::get_spins);
+		.def("get_spins", &method::QuantumIsing::get_spins)
+		.def("initilize_spins", &method::QuantumIsing::initilize_spins);
 
 #ifdef USE_CUDA
 	py::class_<method::ChimeraGPUQuantum>(m_method, "ChimeraGPUQuantum")

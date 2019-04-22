@@ -23,7 +23,7 @@ namespace openjij {
 				ClassicalIsing(const graph::Dense<double>& interaction);
 				ClassicalIsing(const graph::Dense<double>& interaction, graph::Spins& spins);
 
-				void initialze_spins();
+				void initilize_spins();
 
 				virtual double update(double beta, const std::string& algo = "") override;
 

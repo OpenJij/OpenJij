@@ -49,7 +49,7 @@ TEST(OpenJijTest, classicalIsing_initilize){
     openjij::method::ClassicalIsing cising(dense);
     openjij::graph::Spins spins = cising.get_spins();
 
-    cising.initialze_spins();
+    cising.initilize_spins();
 
     openjij::graph::Spins new_spins = cising.get_spins();
 
