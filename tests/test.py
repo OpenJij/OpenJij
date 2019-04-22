@@ -98,6 +98,11 @@ class CXXTest(unittest.TestCase):
             not_eq = spins == new_spins
             self.assertFalse(not_eq)
 
+        initial_state = [1] * N
+        q_ising.set_spins(initial_state)
+        for spin in q_ising.get_spins():
+            self.assertEqual(initial_state, spin)
+
 
 if __name__ == '__main__':
     # test is currently disabled. TODO: write test!

@@ -25,6 +25,9 @@ namespace openjij {
 		void ClassicalIsing::initilize_spins(){
 			spins = interaction.gen_spin();
 		}
+		void ClassicalIsing::set_spins(graph::Spins& initial_spins){
+			spins = initial_spins;
+		}
 
 		double ClassicalIsing::update(double beta, const std::string& algo){
 			double totaldE = 0;

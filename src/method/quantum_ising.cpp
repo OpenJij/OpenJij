@@ -18,6 +18,15 @@ namespace openjij {
 			}
 		}
 
+		void QuantumIsing::set_spins(graph::Spins& initial_spin){
+			if(spins[0].size() != initial_spin.size()){
+				throw "Exception : spin size not match.";
+			}
+			for (auto& elem : spins){
+				elem = initial_spin;
+			}
+		}
+
 		QuantumIsing::QuantumIsing(const graph::Dense<double>& interaction, size_t num_trotter_slices, graph::Spins& classical_spins)
 		:spins(num_trotter_slices), interaction(interaction), urd{0.0, 1.0}{
 			for(auto& elem : spins){

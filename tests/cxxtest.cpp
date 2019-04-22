@@ -84,6 +84,15 @@ TEST(OpenJijTest, quantumIsing_initilize){
     for(openjij::graph::Spins c_spin : spins){
         EXPECT_EQ(init_classical_spins, c_spin);
     }
+
+    openjij::graph::Spins c_spin(N, 1);
+    qising.set_spins(c_spin);
+    for(openjij::graph::Spins cc_spins : qising.get_spins()){
+        EXPECT_EQ(cc_spins, c_spin);
+    }
+
+    openjij::graph::Spins small_state(5, 1);
+    ASSERT_ANY_THROW(qising.set_spins(small_state));
 }
 
 
