@@ -14,6 +14,18 @@ namespace openjij {
 				uid = std::uniform_int_distribution<>{0,(int)spins.size()-1};
 			}
 
+		ClassicalIsing::ClassicalIsing(const graph::Dense<double>& interaction, graph::Spins& spins)
+			: spins(spins), interaction(interaction), urd{0.0, 1.0}{
+				//random number generator
+				std::random_device rd;
+				mt = std::mt19937(rd());
+				uid = std::uniform_int_distribution<>{0,(int)spins.size()-1};
+			}
+
+		void ClassicalIsing::initialze_spins(){
+			spins = interaction.gen_spin();
+		}
+
 		double ClassicalIsing::update(double beta, const std::string& algo){
 			double totaldE = 0;
 			size_t num_spins = spins.size();

@@ -43,24 +43,49 @@ TEST(OpenJijTest, spin_matrix){
     // EXPECT_ANY_THROW({int_mat(4, 0) = 1.0;});
 }
 
-// TEST(OpenJijTest, energy){
-// 	int N = 3;
-// 	openjij::Spins spins(N, 1);
-// 	openjij::SquareMatrix<double> int_mat{N, 0.0};
-// 	// H = -s0 * s1 - s1 * s2 - s0 - s2
-// 	int_mat(0, 0) = -1.0;
-// 	int_mat(0, 1) = -1.0;
-// 	int_mat(1, 0) = -1.0;
-// 	int_mat(1, 2) = -1.0;
-// 	int_mat(2, 1) = -1.0;
-// 	int_mat(2, 2) = -1.0;
+TEST(OpenJijTest, classicalIsing_initilize){
+    size_t N=10;
+    openjij::graph::Dense<double> dense(N);
+    openjij::method::ClassicalIsing cising(dense);
+    openjij::graph::Spins spins = cising.get_spins();
 
-// 	openjij::sampler::Sampler samp(int_mat);
-// 	double energy = samp.calc_energy(spins);
-// 	ASSERT_EQ(energy, -4.0);
+    cising.initialze_spins();
 
-// }
-// //---------------------------------------------
+    openjij::graph::Spins new_spins = cising.get_spins();
+
+    EXPECT_NE(spins, new_spins);
+
+    // input initial state
+    openjij::graph::Spins init_spins(N, 1);
+    openjij::method::ClassicalIsing input_cising(dense, init_spins);
+    spins = input_cising.get_spins();
+    EXPECT_EQ(init_spins, spins); 
+}
+
+TEST(OpenJijTest, quantumIsing_initilize){
+    size_t N=10;
+    size_t trotter = 5;
+    openjij::graph::Dense<double> dense(N);
+    openjij::method::QuantumIsing qising(dense, trotter);
+    openjij::method::TrotterSpins spins = qising.get_spins();
+
+    qising.initilize_spins();
+
+    openjij::method::TrotterSpins new_spins = qising.get_spins();
+
+    for(int i=0; i < spins.size(); i++){
+        EXPECT_NE(spins[i], new_spins[i]);
+    }
+
+    // input initial state
+    openjij::graph::Spins init_classical_spins(N, 1);
+    openjij::method::QuantumIsing input_qising(dense, trotter, init_classical_spins);
+    spins = input_qising.get_spins();
+    for(openjij::graph::Spins c_spin : spins){
+        EXPECT_EQ(init_classical_spins, c_spin);
+    }
+}
+
 
 // // ---------- Updater Test -------------------------
 // class UpdaterTest: public ::testing::Test{
