@@ -12,7 +12,7 @@ namespace openjij {
 			return (a+spins.size())%spins.size();
 		}
 
-		void QuantumIsing::initilize_spins(){
+		void QuantumIsing::initialize_spins(){
 			for (auto& elem : spins){
 				elem = interaction.gen_spin();
 			}

@@ -92,7 +92,7 @@ class CXXTest(unittest.TestCase):
         graph = cj.graph.Dense(N)
         q_ising = cj.method.QuantumIsing(graph, 3)
         spins = q_ising.get_spins()
-        q_ising.initilize_spins()
+        q_ising.initialize_spins()
         new_spins = q_ising.get_spins()
         for spin, n_spin in zip(spins, new_spins):
             not_eq = spins == new_spins

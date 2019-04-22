@@ -22,7 +22,7 @@ namespace openjij {
 				uid = std::uniform_int_distribution<>{0,(int)spins.size()-1};
 			}
 
-		void ClassicalIsing::initilize_spins(){
+		void ClassicalIsing::initialize_spins(){
 			spins = interaction.gen_spin();
 		}
 		void ClassicalIsing::set_spins(graph::Spins& initial_spins){

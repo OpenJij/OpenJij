@@ -43,13 +43,13 @@ TEST(OpenJijTest, spin_matrix){
     // EXPECT_ANY_THROW({int_mat(4, 0) = 1.0;});
 }
 
-TEST(OpenJijTest, classicalIsing_initilize){
+TEST(OpenJijTest, classicalIsing_initialize){
     size_t N=10;
     openjij::graph::Dense<double> dense(N);
     openjij::method::ClassicalIsing cising(dense);
     openjij::graph::Spins spins = cising.get_spins();
 
-    cising.initilize_spins();
+    cising.initialize_spins();
 
     openjij::graph::Spins new_spins = cising.get_spins();
 
@@ -62,14 +62,14 @@ TEST(OpenJijTest, classicalIsing_initilize){
     EXPECT_EQ(init_spins, spins); 
 }
 
-TEST(OpenJijTest, quantumIsing_initilize){
+TEST(OpenJijTest, quantumIsing_initialize){
     size_t N=10;
     size_t trotter = 5;
     openjij::graph::Dense<double> dense(N);
     openjij::method::QuantumIsing qising(dense, trotter);
     openjij::method::TrotterSpins spins = qising.get_spins();
 
-    qising.initilize_spins();
+    qising.initialize_spins();
 
     openjij::method::TrotterSpins new_spins = qising.get_spins();
 
