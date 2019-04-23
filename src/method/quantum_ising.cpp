@@ -12,6 +12,35 @@ namespace openjij {
 			return (a+spins.size())%spins.size();
 		}
 
+		void QuantumIsing::initialize_spins(){
+			for (auto& elem : spins){
+				elem = interaction.gen_spin();
+			}
+		}
+
+		void QuantumIsing::set_spins(graph::Spins& initial_spin){
+			if(spins[0].size() != initial_spin.size()){
+				throw "Exception : spin size not match.";
+			}
+			for (auto& elem : spins){
+				elem = initial_spin;
+			}
+		}
+
+		QuantumIsing::QuantumIsing(const graph::Dense<double>& interaction, size_t num_trotter_slices, graph::Spins& classical_spins)
+		:spins(num_trotter_slices), interaction(interaction), urd{0.0, 1.0}{
+			for(auto& elem : spins){
+				elem = classical_spins;
+
+				//random number generators
+				std::random_device rd;
+				mt = std::mt19937(rd());
+				uid = std::uniform_int_distribution<>{0, (int)elem.size()-1};
+				uid_trotter = std::uniform_int_distribution<>{0, (int)num_trotter_slices-1};
+			}
+			assert(spins.size() != 0 and spins[0].size() != 0);
+		}
+
 		QuantumIsing::QuantumIsing(const graph::Dense<double>& interaction, size_t num_trotter_slices)
 			:spins(num_trotter_slices), interaction(interaction), urd{0.0, 1.0}{
 				//TODO: add exception

@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 
 import openjij as oj
+import cxxjij as cj
 
 # class UtilsTest(unittest.TestCase):
 
@@ -83,6 +84,24 @@ class SamplerOptimizeTest(unittest.TestCase):
         J = {(0, 4): -1, (0, 5): -1, (2, 5): -1}
         model = oj.BinaryQuadraticModel(h, J, spin_type='ising')
         chimera = gpu_sampler._chimera_graph(model, chimera_L=10)
+
+
+class CXXTest(unittest.TestCase):
+    def test_system(self):
+        N = 10
+        graph = cj.graph.Dense(N)
+        q_ising = cj.method.QuantumIsing(graph, 3)
+        spins = q_ising.get_spins()
+        q_ising.initialize_spins()
+        new_spins = q_ising.get_spins()
+        for spin, n_spin in zip(spins, new_spins):
+            not_eq = spins == new_spins
+            self.assertFalse(not_eq)
+
+        initial_state = [1] * N
+        q_ising.set_spins(initial_state)
+        for spin in q_ising.get_spins():
+            self.assertEqual(initial_state, spin)
 
 
 if __name__ == '__main__':

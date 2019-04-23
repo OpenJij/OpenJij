@@ -27,6 +27,10 @@ namespace openjij {
 
 			public:
 				QuantumIsing(const graph::Dense<double>& interaction, size_t num_trotter_slices);
+				QuantumIsing(const graph::Dense<double>& interaction, size_t num_trotter_slices, graph::Spins& classical_spins);
+
+				void initialize_spins();
+				void set_spins(graph::Spins& initial_spin);
 
 				virtual double update(double beta, double gamma, const std::string& algo = "") override;
 
