@@ -27,10 +27,16 @@ class Response:
         self.q_energies = []
         self.indices = indices
 
+        self.info = {}
+
     def __str__(self):
         ground_energy = min(self.energies) if len(self.energies) != 0 else None
-        return "number of state : {}, minimum energy : {}, spin_type : {}".format(
+        str_content =  "number of state : {}, minimum energy : {}, spin_type : {}".format(
             len(self.states), ground_energy, self.spin_type)
+        str_content += "\ninfo:"
+        for key, value in self.info.items():
+            str_content += "\n\t{}: {}".format(key, value)
+        return str_content
 
     def add_state_energy(self, state, energy):
         if self.spin_type == 'ising':
