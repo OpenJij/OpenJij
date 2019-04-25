@@ -57,6 +57,10 @@ class Response:
         self.states = [states[min_e_i] for states, min_e_i in zip(self.q_states, min_e_indices)]
         self.energies = list(np.array(self.q_energies)[min_e_indices])
 
+    def state_reformat_to_qubo(self):
+        if spin_type == "qubo":
+            self.states = [list(np.array((np.array(state) + 1)/2).astype(np.int)) for state in self.states]
+
 
 class BaseSampler:
     def _make_dense_graph(self, h=None, J=None, Q=None, spin_type='ising'):

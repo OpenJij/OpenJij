@@ -50,6 +50,20 @@ class ModelTest(unittest.TestCase):
         Q = {(0,4): -1.0, (6,2): -3.0}
         bqm = oj.BinaryQuadraticModel(Q=Q, spin_type='qubo')
 
+    def test_king_graph(self):
+        h = {}
+        J = {(0,1): -1.0, (1,2): -3.0}
+        king_interaction = [[0,0, 1,0, -1.0], [1,0, 2,0, -3.0]]
+
+        king_graph = oj.KingGraph(machine_type="ASIC", h=h, J=J)
+        correct_mat = np.array([[0, -1, 0,],[-1, 0, -3],[0, -3, 0]])
+        np.testing.assert_array_equal(king_graph.ising_interactions(), correct_mat.astype(np.float))
+        np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
+
+        king_graph = oj.KingGraph(machine_type="ASIC", king_graph=king_interaction)
+        np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
+
+
 
 class SamplerOptimizeTest(unittest.TestCase):
 
@@ -83,6 +97,9 @@ class SamplerOptimizeTest(unittest.TestCase):
         J = {(0, 4): -1, (0, 5): -1, (2, 5): -1}
         model = oj.BinaryQuadraticModel(h, J, spin_type='ising')
         chimera = gpu_sampler._chimera_graph(model, chimera_L=10)
+
+    def test_cmos(self):
+        cmos = oj.CMOSAnnealer(token="")
 
 
 if __name__ == '__main__':
