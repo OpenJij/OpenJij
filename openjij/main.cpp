@@ -44,7 +44,8 @@ PYBIND11_MODULE(cxxjij, m){
 	//graph 
 	py::class_<graph::Graph>(m_graph, "Graph")
 		.def(py::init<size_t>(), "num_spins"_a)
-		.def("gen_spin", &graph::Graph::gen_spin, "random_initialize"_a=true)
+		.def("gen_spin", [](const graph::Graph& self, uint_fast32_t seed){return self.gen_spin(seed);})
+		.def("gen_spin", [](const graph::Graph& self){return self.gen_spin();})
 		.def("get_num_spins", &graph::Graph::get_num_spins);
 
 	//dense
