@@ -100,6 +100,7 @@ class SamplerOptimizeTest(unittest.TestCase):
 
     def test_cmos(self):
         cmos = oj.CMOSAnnealer(token="")
+        
 
 
 if __name__ == '__main__':
