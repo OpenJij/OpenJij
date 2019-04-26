@@ -2,7 +2,6 @@ import unittest
 import numpy as np
 
 import openjij as oj
-import cxxjij as cj
 
 # class UtilsTest(unittest.TestCase):
 
@@ -51,6 +50,20 @@ class ModelTest(unittest.TestCase):
         Q = {(0,4): -1.0, (6,2): -3.0}
         bqm = oj.BinaryQuadraticModel(Q=Q, spin_type='qubo')
 
+    def test_king_graph(self):
+        h = {}
+        J = {(0,1): -1.0, (1,2): -3.0}
+        king_interaction = [[0,0, 1,0, -1.0], [1,0, 2,0, -3.0]]
+
+        king_graph = oj.KingGraph(machine_type="ASIC", h=h, J=J)
+        correct_mat = np.array([[0, -1, 0,],[-1, 0, -3],[0, -3, 0]])
+        np.testing.assert_array_equal(king_graph.ising_interactions(), correct_mat.astype(np.float))
+        np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
+
+        king_graph = oj.KingGraph(machine_type="ASIC", king_graph=king_interaction)
+        np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
+
+
 
 class SamplerOptimizeTest(unittest.TestCase):
 
@@ -85,23 +98,9 @@ class SamplerOptimizeTest(unittest.TestCase):
         model = oj.BinaryQuadraticModel(h, J, spin_type='ising')
         chimera = gpu_sampler._chimera_graph(model, chimera_L=10)
 
-
-class CXXTest(unittest.TestCase):
-    def test_system(self):
-        N = 10
-        graph = cj.graph.Dense(N)
-        q_ising = cj.method.QuantumIsing(graph, 3)
-        spins = q_ising.get_spins()
-        q_ising.initialize_spins()
-        new_spins = q_ising.get_spins()
-        for spin, n_spin in zip(spins, new_spins):
-            not_eq = spins == new_spins
-            self.assertFalse(not_eq)
-
-        initial_state = [1] * N
-        q_ising.set_spins(initial_state)
-        for spin in q_ising.get_spins():
-            self.assertEqual(initial_state, spin)
+    def test_cmos(self):
+        cmos = oj.CMOSAnnealer(token="")
+        
 
 
 if __name__ == '__main__':
