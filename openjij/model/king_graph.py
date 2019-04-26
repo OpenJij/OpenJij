@@ -78,7 +78,7 @@ class KingGraph(BinaryQuadraticModel):
             sys_size = len(ising_int)
             self._ising_king_graph = []
             for i in range(sys_size):
-                for j in range(i+1, sys_size):
+                for j in range(i, sys_size):
                     if ising_int[i][j] == 0:
                         continue
                     x1, y1 = self._convert_to_xy(self.indices[i])

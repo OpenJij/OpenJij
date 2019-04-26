@@ -64,6 +64,11 @@ class ModelTest(unittest.TestCase):
         np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
 
 
+        king_graph = oj.KingGraph(machine_type="ASIC", Q={(0,1): -1}, spin_type="qubo")
+        king_interaction = [[0, 0, 0, 0, -0.25], [0,0,1,0,-0.25], [1,0,1,0,-0.25]]
+        np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
+
+
 
 class SamplerOptimizeTest(unittest.TestCase):
 
