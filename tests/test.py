@@ -90,7 +90,7 @@ class CXXTest(unittest.TestCase):
     def test_system(self):
         N = 10
         graph = cj.graph.Dense(N)
-        q_ising = cj.method.QuantumIsing(graph, 3)
+        q_ising = cj.system.QuantumIsing(graph, 3)
         spins = q_ising.get_spins()
         q_ising.initialize_spins()
         new_spins = q_ising.get_spins()

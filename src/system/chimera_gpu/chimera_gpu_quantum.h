@@ -1,12 +1,12 @@
 #pragma once
 #include "../../graph/chimera.h"
-#include "../method.h"
+#include "../system.h"
 #include "../../updater/quantum_updater.h"
 
 namespace openjij {
-	namespace method {
+	namespace system {
 
-		class ChimeraGPUQuantum : public Method, public updater::QuantumUpdater{
+		class ChimeraGPUQuantum : public System, public updater::QuantumUpdater{
 			//general transverse-field ising model with discrete trotter slices
 			
 			private:
@@ -28,5 +28,5 @@ namespace openjij {
 				TrotterSpins get_spins() const;
 
 		};
-	} // namespace method
+	} // namespace system
 } // namespace openjij

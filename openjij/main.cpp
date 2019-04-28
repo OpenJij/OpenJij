@@ -17,8 +17,8 @@
 #include "../src/graph/sparse.h"
 #include "../src/graph/square.h"
 #include "../src/graph/chimera.h"
-#include "../src/method/classical_ising.h"
-#include "../src/method/quantum_ising.h"
+#include "../src/system/classical_ising.h"
+#include "../src/system/quantum_ising.h"
 #include "../src/updater/classical_updater.h"
 #include "../src/updater/quantum_updater.h"
 #include "../src/algorithm/sa.h"
@@ -27,7 +27,7 @@
 #include <pybind11/stl.h>
 
 #ifdef USE_CUDA
-#include "../src/method/chimera_gpu/chimera_gpu_quantum.h"
+#include "../src/system/chimera_gpu/chimera_gpu_quantum.h"
 #endif
 
 
@@ -121,33 +121,33 @@ PYBIND11_MODULE(cxxjij, m){
 
 
 	//algorithm
-	py::module m_method = m.def_submodule("method", "A submodule of cxxjij");
+	py::module m_system = m.def_submodule("system", "A submodule of cxxjij");
 	
 	//ClassicalIsing
-	py::class_<method::ClassicalIsing>(m_method, "ClassicalIsing")
+	py::class_<system::ClassicalIsing>(m_system, "ClassicalIsing")
 		.def(py::init<const graph::Dense<double>&>(), "other"_a)
 		.def(py::init<const graph::Sparse<double>&>(), "other"_a)
 		.def(py::init<const graph::Sparse<double>&, graph::Spins&>(), "other"_a, "init_state"_a)
-		.def("simulated_annealing", &method::ClassicalIsing::simulated_annealing, "beta_min"_a, "beta_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
-		.def("get_spins", &method::ClassicalIsing::get_spins)
-		.def("initialize_spins", &method::ClassicalIsing::initialize_spins)
-		.def("set_spins", &method::ClassicalIsing::set_spins, "initial_state"_a);
+		.def("simulated_annealing", &system::ClassicalIsing::simulated_annealing, "beta_min"_a, "beta_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
+		.def("get_spins", &system::ClassicalIsing::get_spins)
+		.def("initialize_spins", &system::ClassicalIsing::initialize_spins)
+		.def("set_spins", &system::ClassicalIsing::set_spins, "initial_state"_a);
 
 	//QuantumIsing
-	py::class_<method::QuantumIsing>(m_method, "QuantumIsing")
+	py::class_<system::QuantumIsing>(m_system, "QuantumIsing")
 		.def(py::init<const graph::Dense<double>&, size_t>(), "other"_a, "num_trotter_slices"_a)
 		.def(py::init<const graph::Sparse<double>&, size_t>(), "other"_a, "num_trotter_slices"_a)
 		.def(py::init<const graph::Sparse<double>&, size_t, graph::Spins&>(), "other"_a, "num_trotter_slices"_a, "init_state"_a)
-		.def("simulated_quantum_annealing", &method::QuantumIsing::simulated_quantum_annealing, "beta"_a, "gamma_min"_a, "gamma_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
-		.def("get_spins", &method::QuantumIsing::get_spins)
-		.def("initialize_spins", &method::QuantumIsing::initialize_spins)
-		.def("set_spins", &method::QuantumIsing::set_spins, "initial_state"_a);
+		.def("simulated_quantum_annealing", &system::QuantumIsing::simulated_quantum_annealing, "beta"_a, "gamma_min"_a, "gamma_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
+		.def("get_spins", &system::QuantumIsing::get_spins)
+		.def("initialize_spins", &system::QuantumIsing::initialize_spins)
+		.def("set_spins", &system::QuantumIsing::set_spins, "initial_state"_a);
 
 #ifdef USE_CUDA
-	py::class_<method::ChimeraGPUQuantum>(m_method, "ChimeraGPUQuantum")
+	py::class_<system::ChimeraGPUQuantum>(m_system, "ChimeraGPUQuantum")
 		.def(py::init<const graph::Chimera<double>&, size_t, int>(), "other"_a, "num_trotter_slices"_a, "gpudevice"_a=0)
-		.def("simulated_quantum_annealing", &method::ChimeraGPUQuantum::simulated_quantum_annealing, "beta"_a, "gamma_min"_a, "gamma_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
-		.def("get_spins", &method::ChimeraGPUQuantum::get_spins);
+		.def("simulated_quantum_annealing", &system::ChimeraGPUQuantum::simulated_quantum_annealing, "beta"_a, "gamma_min"_a, "gamma_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
+		.def("get_spins", &system::ChimeraGPUQuantum::get_spins);
 #endif
 }
 

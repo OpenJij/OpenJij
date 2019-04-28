@@ -11,7 +11,7 @@
 #include <cfloat>
 
 namespace openjij{
-	namespace method{
+	namespace system{
 		namespace chimera_gpu{
 
 			//HANDLE ERROR

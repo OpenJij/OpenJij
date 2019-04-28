@@ -4,7 +4,7 @@
 #include <cmath>
 
 namespace openjij {
-	namespace method {
+	namespace system {
 
 		inline size_t QuantumIsing::mod_t(int64_t a) const{
 			//a -> [-1:num_trotter_slices]
@@ -99,5 +99,5 @@ namespace openjij {
 			return this->spins;
 		}
 
-	} // namespace method
+	} // namespace system
 } // namespace openjij

@@ -1,7 +1,7 @@
 #pragma once
 
 namespace openjij{
-	namespace method{
+	namespace system{
 		namespace chimera_gpu{
 
 			//functions

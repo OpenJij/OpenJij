@@ -8,8 +8,8 @@
 #include "../src/graph/sparse.h"
 #include "../src/graph/square.h"
 #include "../src/graph/chimera.h"
-#include "../src/method/classical_ising.h"
-#include "../src/method/quantum_ising.h"
+#include "../src/system/classical_ising.h"
+#include "../src/system/quantum_ising.h"
 #include "../src/updater/classical_updater.h"
 #include "../src/updater/quantum_updater.h"
 #include "../src/algorithm/sa.h"
@@ -46,7 +46,7 @@ TEST(OpenJijTest, spin_matrix){
 TEST(OpenJijTest, classicalIsing_initialize){
     size_t N=10;
     openjij::graph::Dense<double> dense(N);
-    openjij::method::ClassicalIsing cising(dense);
+    openjij::system::ClassicalIsing cising(dense);
     openjij::graph::Spins spins = cising.get_spins();
 
     cising.initialize_spins();
@@ -57,7 +57,7 @@ TEST(OpenJijTest, classicalIsing_initialize){
 
     // input initial state
     openjij::graph::Spins init_spins(N, 1);
-    openjij::method::ClassicalIsing input_cising(dense, init_spins);
+    openjij::system::ClassicalIsing input_cising(dense, init_spins);
     spins = input_cising.get_spins();
     EXPECT_EQ(init_spins, spins); 
 }
@@ -66,12 +66,12 @@ TEST(OpenJijTest, quantumIsing_initialize){
     size_t N=10;
     size_t trotter = 5;
     openjij::graph::Dense<double> dense(N);
-    openjij::method::QuantumIsing qising(dense, trotter);
-    openjij::method::TrotterSpins spins = qising.get_spins();
+    openjij::system::QuantumIsing qising(dense, trotter);
+    openjij::system::TrotterSpins spins = qising.get_spins();
 
     qising.initialize_spins();
 
-    openjij::method::TrotterSpins new_spins = qising.get_spins();
+    openjij::system::TrotterSpins new_spins = qising.get_spins();
 
     for(int i=0; i < spins.size(); i++){
         EXPECT_NE(spins[i], new_spins[i]);
@@ -79,7 +79,7 @@ TEST(OpenJijTest, quantumIsing_initialize){
 
     // input initial state
     openjij::graph::Spins init_classical_spins(N, 1);
-    openjij::method::QuantumIsing input_qising(dense, trotter, init_classical_spins);
+    openjij::system::QuantumIsing input_qising(dense, trotter, init_classical_spins);
     spins = input_qising.get_spins();
     for(openjij::graph::Spins c_spin : spins){
         EXPECT_EQ(init_classical_spins, c_spin);

@@ -1,14 +1,14 @@
 #pragma once
 #include "../graph/dense.h"
-#include "method.h"
+#include "system.h"
 #include "../updater/quantum_updater.h"
 #include <random>
 
 namespace openjij {
-	namespace method {
+	namespace system {
 
 		//TODO: double -> FloatType (template)
-		class QuantumIsing : public Method, public updater::QuantumUpdater{
+		class QuantumIsing : public System, public updater::QuantumUpdater{
 			//general transverse-field ising model with discrete trotter slices
 
 			private:
@@ -39,6 +39,6 @@ namespace openjij {
 				TrotterSpins get_spins() const;
 
 		};
-	} // namespace method
+	} // namespace system
 } // namespace openjij
 

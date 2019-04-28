@@ -4,7 +4,7 @@
 #include <cmath>
 
 namespace openjij {
-	namespace method {
+	namespace system {
 
 		ClassicalIsing::ClassicalIsing(const graph::Dense<double>& interaction)
 			: spins(interaction.gen_spin()), interaction(interaction), urd{0.0, 1.0}{
@@ -63,5 +63,5 @@ namespace openjij {
 		const graph::Spins ClassicalIsing::get_spins() const{
 			return spins;
 		}
-	} // namespace method
+	} // namespace system
 } // namespace openjij

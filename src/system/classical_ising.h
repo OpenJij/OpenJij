@@ -1,14 +1,14 @@
 #pragma once
 #include "../graph/dense.h"
-#include "method.h"
+#include "system.h"
 #include "../updater/classical_updater.h"
 #include <random>
 
 namespace openjij {
-	namespace method {
+	namespace system {
 
 		//TODO: double -> FloatType (template)
-		class ClassicalIsing : public Method, public updater::ClassicalUpdater{
+		class ClassicalIsing : public System, public updater::ClassicalUpdater{
 			//general classical ising model
 			private:
 				graph::Spins spins;
@@ -33,6 +33,6 @@ namespace openjij {
 
 				const graph::Spins get_spins() const;
 		};
-	} // namespace method
+	} // namespace system
 } // namespace openjij
 

@@ -7,7 +7,7 @@
 #include <iostream>
 
 namespace openjij {
-	namespace method {
+	namespace system {
 
 		ChimeraGPUQuantum::ChimeraGPUQuantum(const graph::Chimera<double>& interaction, size_t num_trotter_slices, int gpudevice)
 		: interaction(interaction), num_trotter_slices(num_trotter_slices), row(interaction.get_num_row()), col(interaction.get_num_column()){
@@ -121,5 +121,5 @@ namespace openjij {
 			return ret_spins;
 		}
 
-	} // namespace method
+	} // namespace system
 } // namespace openjij
