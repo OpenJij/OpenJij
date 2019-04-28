@@ -96,6 +96,12 @@ namespace openjij {
             sqa.run(*this, algo);
         }
 
+        void QuantumIsing::simulated_quantum_annealing(const double beta, const Schedule& schedule, const std::string& algo) {
+            algorithm::SQA sqa(beta, schedule);
+            //do simulated quantum annealing
+            sqa.run(*this, algo);
+        }
+
         TrotterSpins QuantumIsing::get_spins() const{
             return this->spins;
         }
