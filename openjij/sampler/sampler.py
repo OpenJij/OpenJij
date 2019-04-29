@@ -93,6 +93,7 @@ class SASampler(BaseSampler):
         response = Response(spin_type=spin_type, indices=self.indices)
         sa_method = cj.method.ClassicalIsing(ising_dense_graph)
         for _ in range(self.iteration):
+            sa_method.initialize_spins()
             sa_method.simulated_annealing(self.beta_min, self.beta_max, self.step_length, self.step_num)
             state = sa_method.get_spins()
             response.add_state_energy(state, ising_dense_graph.calc_energy(state) + self.energy_bias)
@@ -123,6 +124,7 @@ class SQASampler(BaseSampler):
         response = Response(spin_type=spin_type, indices=self.indices)
         method = cj.method.QuantumIsing(ising_dense_graph, num_trotter_slices=self.trotter)
         for _ in range(self.iteration):
+            method.initialize_spins()
             method.simulated_quantum_annealing(
                 self.beta, 
                 self.gamma_min, self.gamma_max,
