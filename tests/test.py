@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 
 import openjij as oj
+import cxxjij as cj
 
 # class UtilsTest(unittest.TestCase):
 
@@ -24,6 +25,39 @@ import openjij as oj
 #         self.assertTrue(set(bm_res) >= {'time', 'error', 'e_res', 'tts', 'tts_threshold_prob'})
 
 #         self.assertEqual(len(bm_res) ,len(step_num_list))
+
+class CXXTest(unittest.TestCase):
+    def setUp(self):
+        self.N = 10
+        self.dense = cj.graph.Dense(self.N)
+        for i in range(self.N):
+            for j in range(i+1, self.N):
+                self.dense[i, j] = -1
+    def test_cxx_sa(self):
+        sa = cj.method.ClassicalIsing(self.dense)
+        sa.simulated_annealing(beta_min=0.1, beta_max=10.0, step_length=10, step_num=10)
+        ground_spins = sa.get_spins()
+
+        sa.simulated_annealing(schedule=[[0.1, 20]])
+        spins = sa.get_spins()
+
+        self.assertNotEqual(ground_spins, spins)
+
+    def test_cxx_sqa(self):
+        # 1-d model
+        one_d = cj.graph.Dense(self.N)
+        for i in range(self.N):
+            one_d[i, (i+1)%self.N] = -1
+            one_d[i, i] = -1
+        sqa = cj.method.QuantumIsing(one_d, num_trotter_slices=5)
+        sqa.simulated_quantum_annealing(beta=1.0, gamma_max=10.0, gamma_min=0.1, step_length=10, step_num=10)
+        ground_spins = sqa.get_spins()
+
+        sqa.simulated_quantum_annealing(beta=1.0, schedule=[[10.0, 200]])
+        spins = sqa.get_spins()
+
+        self.assertNotEqual(ground_spins, spins)
+
 
 
 class ModelTest(unittest.TestCase):
@@ -95,6 +129,7 @@ class SamplerOptimizeTest(unittest.TestCase):
         response = oj.SQASampler().sample_qubo(self.Q)
         self.assertEqual(len(response.states), 1)
         self.assertListEqual(response.states[0], [0,0,0])
+
 
     def test_gpu_sqa(self):
         gpu_sampler = oj.GPUSQASampler()
