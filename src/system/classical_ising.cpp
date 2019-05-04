@@ -55,6 +55,18 @@ namespace openjij {
 			return totaldE;
 		}
 
+		void ClassicalIsing::simulated_annealing(const double beta_min, const double beta_max, const size_t step_length, const size_t step_num, const std::string& algo){
+			algorithm::SA sa(beta_min, beta_max, step_length, step_num);
+			//do simulated annealing
+			sa.run(*this, algo);
+		}
+
+		void ClassicalIsing::simulated_annealing(const Schedule& schedule, const std::string& algo) {
+			algorithm::SA sa(schedule);
+			//do simulated annealing
+			sa.run(*this, algo);
+		}
+
 		const graph::Spins ClassicalIsing::get_spins() const{
 			return spins;
 		}

@@ -90,11 +90,17 @@ namespace openjij {
 			chimera_gpu::cuda_free();
 		}
 
-		double ChimeraGPUQuantum::update(const double beta, const double gamma, const double s, const std::string& algo){
+		double ChimeraGPUQuantum::update(double beta, double gamma, const std::string& algo){
 			if(algo == "gpu_metropolis" or algo == ""){
-				chimera_gpu::cuda_run(beta, gamma, s);
+				chimera_gpu::cuda_run(beta, gamma);
 			}
 			return 0;
+		}
+
+		void ChimeraGPUQuantum::simulated_quantum_annealing(double beta, double gamma_min, double gamma_max, double step_length, size_t step_num, const std::string& algo){
+			algorithm::SQA sqa(beta, gamma_min, gamma_max, step_length, step_num);
+			//do simulated quantum annealing
+			sqa.run(*this, algo);
 		}
 
 		TrotterSpins ChimeraGPUQuantum::get_spins() const{

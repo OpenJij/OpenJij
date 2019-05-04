@@ -25,7 +25,7 @@ namespace openjij{
 
 			void cuda_init_spin();
 
-			void cuda_run(float beta, float gamma, float s);
+			void cuda_run(float beta, float gamma);
 
 			void copy_spins();
 

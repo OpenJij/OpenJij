@@ -19,7 +19,9 @@ namespace openjij {
 				ChimeraGPUQuantum(const graph::Chimera<double>& interaction, size_t num_trotter_slices, int gpudevice=0);
 				~ChimeraGPUQuantum();
 
-				virtual double update(const double beta, const double gamma, const double s, const std::string& algo = "") override;
+				virtual double update(double beta, double gamma, const std::string& algo = "") override;
+
+				void simulated_quantum_annealing(double beta, double gamma_min, double gamma_max, double step_length, size_t step_num, const std::string& algo = "");
 
 				//graph::Spin get_spins(uint32_t t, uint32_t r, uint32_t c, uint32_t ind) const;
 
