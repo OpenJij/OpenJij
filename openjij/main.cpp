@@ -148,7 +148,8 @@ PYBIND11_MODULE(cxxjij, m){
 #ifdef USE_CUDA
 	py::class_<system::ChimeraGPUQuantum>(m_system, "ChimeraGPUQuantum")
 		.def(py::init<const graph::Chimera<double>&, size_t, int>(), "other"_a, "num_trotter_slices"_a, "gpudevice"_a=0)
-		.def("simulated_quantum_annealing", &system::ChimeraGPUQuantum::simulated_quantum_annealing, "beta"_a, "gamma_min"_a, "gamma_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
+		.def("simulated_quantum_annealing", (void (system::ChimeraGPUQuantum::*)(const double, const double, const size_t, const size_t, const std::string&)) &system::ChimeraGPUQuantum::simulated_quantum_annealing, "beta"_a, "gamma"_a, "step_length"_a, "step_num"_a, "algo"_a="")
+		.def("simulated_quantum_annealing", (void (system::ChimeraGPUQuantum::*)(const double, const double, const std::vector<std::pair<double, size_t>>&, const std::string&)) &system::ChimeraGPUQuantum::simulated_quantum_annealing, "beta"_a, "gamma"_a, "schedule"_a, "algo"_a="")
 		.def("get_spins", &system::ChimeraGPUQuantum::get_spins);
 #endif
 }
