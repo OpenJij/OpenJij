@@ -100,11 +100,10 @@ class SASampler(BaseSampler):
         return response
 
 class SQASampler(BaseSampler):
-    def __init__(self, beta=5.0, gamma_min=0.1, gamma_max=10.0,
-                 trotter=4, step_length=10, step_num=100, iteration=1):
+    def __init__(self, beta=5.0, gamma=1.0,
+                 trotter=5, step_length=10, step_num=100, iteration=1):
         self.beta = beta
-        self.gamma_min = gamma_min
-        self.gamma_max = gamma_max
+        self.gamma = gamma
         self.trotter = trotter
         self.step_length = step_length
         self.step_num = step_num
@@ -127,7 +126,7 @@ class SQASampler(BaseSampler):
             method.initialize_spins()
             method.simulated_quantum_annealing(
                 self.beta, 
-                self.gamma_min, self.gamma_max,
+                self.gamma,
                 self.step_length, self.step_num)
             q_state = method.get_spins()
             energies = [ising_dense_graph.calc_energy(state) + self.energy_bias for state in q_state]

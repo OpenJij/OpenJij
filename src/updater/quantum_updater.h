@@ -9,7 +9,8 @@ namespace openjij {
             public:
                 // beta -> inverse temperature
                 // gamma -> transverse field
-                virtual double update(const double beta, const double gamma, const std::string& algo = "") = 0;
+                // s -> annealing parameter
+                virtual double update(const double beta, const double gamma, const double s, const std::string& algo = "") = 0;
         };
     } // namespace updater
 } // namespace openjij

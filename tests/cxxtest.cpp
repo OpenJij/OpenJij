@@ -125,7 +125,7 @@ TEST(OpenJijTest, sa_temperature_schedule){
 TEST(OpenJijTest, qsa_transverse_schedule){
     class MockQuantumSystem : public openjij::updater::QuantumUpdater {
         public:
-            MOCK_METHOD3(update, double(double beta, double gamma, const std::string& algo));
+            MOCK_METHOD4(update, double(double beta, double gamma, double s, const std::string& algo));
     } mock_quantum_system;
 
     // Make schedule
@@ -139,10 +139,11 @@ TEST(OpenJijTest, qsa_transverse_schedule){
     auto add_second = [](const int n, const std::pair<double, size_t>& p){ return n + p.second; };
     const int total_call_times = std::accumulate(schedule.begin(), schedule.end(), 0, add_second);
 
-    EXPECT_CALL(mock_quantum_system, update(_, _, "")).Times(total_call_times);
+    EXPECT_CALL(mock_quantum_system, update(_, _, _, "")).Times(total_call_times);
 
     const double beta = 0.1;
-    openjij::algorithm::SQA sqa(beta, schedule);
+    const double gamma = 1.0;
+    openjij::algorithm::SQA sqa(beta,gamma,schedule);
     sqa.run(mock_quantum_system);
 }
 
@@ -176,29 +177,28 @@ TEST(OpenJijTest, times_sa_call_classical_updater){
 
 TEST(OpenJijTest, times_sqa_call_quantum_updater){
     const double beta = 1.0;
-    const double gamma_min = 1.0;
-    const double gamma_max = 2.0;
+    const double gamma = 2.0;
 
     class MockQuantumSystem : public openjij::updater::QuantumUpdater {
         public:
-            MOCK_METHOD3(update, double(double beta, double gamma, const std::string& algo));
+            MOCK_METHOD4(update, double(double beta, double gamma, const double s, const std::string& algo));
     } mock_quantum_system;
 
     // Case: step_length != step_num
     {
         const int step_length = 3, step_num = 5;
-        EXPECT_CALL(mock_quantum_system, update(_, _, "")).Times(step_length*step_num);
+        EXPECT_CALL(mock_quantum_system, update(_, _, _, "")).Times(step_length*step_num);
 
-        openjij::algorithm::SQA sqa(beta, gamma_min, gamma_max, step_length, step_num);
+        openjij::algorithm::SQA sqa(beta, gamma, step_length, step_num);
         sqa.run(mock_quantum_system);
     }
 
     // Case: step_length == step_num
     {
         const int step_length = 10, step_num = 10;
-        EXPECT_CALL(mock_quantum_system, update(_, _, "")).Times(step_length*step_num);
+        EXPECT_CALL(mock_quantum_system, update(_, _, _, "")).Times(step_length*step_num);
 
-        openjij::algorithm::SQA sqa(beta, gamma_min, gamma_max, step_length, step_num);
+        openjij::algorithm::SQA sqa(beta, gamma, step_length, step_num);
         sqa.run(mock_quantum_system);
     }
 }
