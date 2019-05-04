@@ -34,7 +34,7 @@ class CXXTest(unittest.TestCase):
             for j in range(i+1, self.N):
                 self.dense[i, j] = -1
     def test_cxx_sa(self):
-        sa = cj.method.ClassicalIsing(self.dense)
+        sa = cj.system.ClassicalIsing(self.dense)
         sa.simulated_annealing(beta_min=0.1, beta_max=10.0, step_length=10, step_num=10)
         ground_spins = sa.get_spins()
 
@@ -49,7 +49,7 @@ class CXXTest(unittest.TestCase):
         for i in range(self.N):
             one_d[i, (i+1)%self.N] = -1
             one_d[i, i] = -1
-        sqa = cj.method.QuantumIsing(one_d, num_trotter_slices=5)
+        sqa = cj.system.QuantumIsing(one_d, num_trotter_slices=5)
         sqa.simulated_quantum_annealing(beta=1.0, gamma=2.0, step_length=10, step_num=10)
         ground_spins = sqa.get_spins()
 
