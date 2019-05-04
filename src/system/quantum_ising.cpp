@@ -89,18 +89,6 @@ namespace openjij {
 			return totaldE;
 		}
 
-		void QuantumIsing::simulated_quantum_annealing(const double beta, const double gamma, const size_t step_length, const size_t step_num, const std::string& algo) {
-			algorithm::SQA sqa(beta, gamma, step_length, step_num);
-			//do simulated quantum annealing
-			sqa.run(*this, algo);
-		}
-
-		void QuantumIsing::simulated_quantum_annealing(const double beta, const double gamma, const Schedule& schedule, const std::string& algo) {
-			algorithm::SQA sqa(beta, gamma, schedule);
-			//do simulated quantum annealing
-			sqa.run(*this, algo);
-		}
-
 		TrotterSpins QuantumIsing::get_spins() const{
 			return this->spins;
 		}

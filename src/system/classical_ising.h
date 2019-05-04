@@ -25,10 +25,6 @@ namespace openjij {
 
 				virtual double update(const double beta, const std::string& algo = "") override;
 
-				//do simulated annelaing
-				void simulated_annealing(const double beta_min, const double beta_max, const size_t step_length, const size_t step_num, const std::string& algo = "");
-				void simulated_annealing(const Schedule& schedule, const std::string& algo = "");
-
 				const graph::Spins get_spins() const;
 
 			private:
