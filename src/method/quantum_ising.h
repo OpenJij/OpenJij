@@ -23,10 +23,10 @@ namespace openjij {
                 void initialize_spins();
                 void set_spins(graph::Spins& initial_spin);
 
-                virtual double update(const double beta, const double gamma, const std::string& algo = "") override;
+                virtual double update(const double beta, const double gamma, const double s, const std::string& algo = "") override;
 
-                void simulated_quantum_annealing(const double beta, const double gamma_min, const double gamma_max, const size_t step_length, const size_t step_num, const std::string& algo = "");
-                void simulated_quantum_annealing(const double beta, const Schedule& schedule, const std::string& algo = "");
+                void simulated_quantum_annealing(const double beta, const double gamma, const size_t step_length, const size_t step_num, const std::string& algo = "");
+                void simulated_quantum_annealing(const double beta, const double gamma, const Schedule& schedule, const std::string& algo = "");
 
                 TrotterSpins get_spins() const;
 

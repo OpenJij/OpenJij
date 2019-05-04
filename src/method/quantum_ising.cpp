@@ -57,7 +57,7 @@ namespace openjij {
                 assert(spins.size() != 0 and spins[0].size() != 0);
             }
 
-        double QuantumIsing::update(const double beta, const double gamma, const std::string& algo){
+        double QuantumIsing::update(const double beta, const double gamma, const double s, const std::string& algo){
             double totaldE = 0;
             size_t num_classical_spins = spins[0].size();
             size_t num_trotter_slices = spins.size();
@@ -71,12 +71,11 @@ namespace openjij {
                     double dE = 0;
                     //adjacent nodes
                     for(auto&& adj_index : interaction.adj_nodes(index)){
-                        dE += -2 * (beta/num_trotter_slices) * spins[index_trot][index] * (index != adj_index ? (interaction.J(index, adj_index) * spins[index_trot][adj_index]) : interaction.h(index));
+                        dE += -2 * s * (beta/num_trotter_slices) * spins[index_trot][index] * (index != adj_index ? (interaction.J(index, adj_index) * spins[index_trot][adj_index]) : interaction.h(index));
                     }
 
                     //trotter direction
-                    dE += -2 * (1/2.) * log(tanh(beta*gamma/num_trotter_slices)) * spins[index_trot][index]*(spins[mod_t((int64_t)index_trot+1)][index] + spins[mod_t((int64_t)index_trot-1)][index]);
-
+                    dE += -2 * (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * spins[index_trot][index]*(spins[mod_t((int64_t)index_trot+1)][index] + spins[mod_t((int64_t)index_trot-1)][index]);
 
                     //metropolis 
                     if(exp(-dE) > urd(mt)){
@@ -90,14 +89,14 @@ namespace openjij {
             return totaldE;
         }
 
-        void QuantumIsing::simulated_quantum_annealing(const double beta, const double gamma_min, const double gamma_max, const size_t step_length, const size_t step_num, const std::string& algo) {
-            algorithm::SQA sqa(beta, gamma_min, gamma_max, step_length, step_num);
+        void QuantumIsing::simulated_quantum_annealing(const double beta, const double gamma, const size_t step_length, const size_t step_num, const std::string& algo) {
+            algorithm::SQA sqa(beta, gamma, step_length, step_num);
             //do simulated quantum annealing
             sqa.run(*this, algo);
         }
 
-        void QuantumIsing::simulated_quantum_annealing(const double beta, const Schedule& schedule, const std::string& algo) {
-            algorithm::SQA sqa(beta, schedule);
+        void QuantumIsing::simulated_quantum_annealing(const double beta, const double gamma, const Schedule& schedule, const std::string& algo) {
+            algorithm::SQA sqa(beta, gamma, schedule);
             //do simulated quantum annealing
             sqa.run(*this, algo);
         }

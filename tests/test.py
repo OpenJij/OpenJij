@@ -50,10 +50,10 @@ class CXXTest(unittest.TestCase):
             one_d[i, (i+1)%self.N] = -1
             one_d[i, i] = -1
         sqa = cj.method.QuantumIsing(one_d, num_trotter_slices=5)
-        sqa.simulated_quantum_annealing(beta=1.0, gamma_max=10.0, gamma_min=0.1, step_length=10, step_num=10)
+        sqa.simulated_quantum_annealing(beta=1.0, gamma=2.0, step_length=10, step_num=10)
         ground_spins = sqa.get_spins()
 
-        sqa.simulated_quantum_annealing(beta=1.0, schedule=[[10.0, 200]])
+        sqa.simulated_quantum_annealing(beta=1.0, gamma=2.0, schedule=[[0.5, 200]])
         spins = sqa.get_spins()
 
         self.assertNotEqual(ground_spins, spins)
