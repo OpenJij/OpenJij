@@ -1,8 +1,12 @@
 #pragma once
+
+#include <random>
+#include <utility>
+#include <vector>
+
 #include "../graph/dense.h"
 #include "system.h"
 #include "../updater/classical_updater.h"
-#include <random>
 
 namespace openjij {
 	namespace system {
@@ -10,6 +14,23 @@ namespace openjij {
 		//TODO: double -> FloatType (template)
 		class ClassicalIsing : public System, public updater::ClassicalUpdater{
 			//general classical ising model
+			public:
+				using Schedule = std::vector<std::pair<double, size_t>>;
+
+				ClassicalIsing(const graph::Dense<double>& interaction);
+				ClassicalIsing(const graph::Dense<double>& interaction, graph::Spins& spins);
+
+				void initialize_spins();
+				void set_spins(graph::Spins& initial_spins);
+
+				virtual double update(const double beta, const std::string& algo = "") override;
+
+				//do simulated annelaing
+				void simulated_annealing(const double beta_min, const double beta_max, const size_t step_length, const size_t step_num, const std::string& algo = "");
+				void simulated_annealing(const Schedule& schedule, const std::string& algo = "");
+
+				const graph::Spins get_spins() const;
+
 			private:
 				graph::Spins spins;
 				graph::Dense<double> interaction;
@@ -19,19 +40,6 @@ namespace openjij {
 				std::uniform_int_distribution<> uid;
 				std::uniform_real_distribution<> urd;
 
-			public:
-				ClassicalIsing(const graph::Dense<double>& interaction);
-				ClassicalIsing(const graph::Dense<double>& interaction, graph::Spins& spins);
-
-				void initialize_spins();
-				void set_spins(graph::Spins& initial_spins);
-
-				virtual double update(double beta, const std::string& algo = "") override;
-
-				//do simulated annelaing
-				void simulated_annealing(double beta_min, double beta_max, double step_length, size_t step_num, const std::string& algo = "");
-
-				const graph::Spins get_spins() const;
 		};
 	} // namespace system
 } // namespace openjij

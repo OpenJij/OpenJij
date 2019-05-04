@@ -100,7 +100,7 @@ namespace openjij {
 		void ChimeraGPUQuantum::simulated_quantum_annealing(double beta, double gamma_min, double gamma_max, double step_length, size_t step_num, const std::string& algo){
 			algorithm::SQA sqa(beta, gamma_min, gamma_max, step_length, step_num);
 			//do simulated quantum annealing
-			sqa.exec(*this, algo);
+			sqa.run(*this, algo);
 		}
 
 		TrotterSpins ChimeraGPUQuantum::get_spins() const{

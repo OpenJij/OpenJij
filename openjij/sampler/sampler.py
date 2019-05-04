@@ -93,17 +93,17 @@ class SASampler(BaseSampler):
         response = Response(spin_type=spin_type, indices=self.indices)
         sa_system = cj.system.ClassicalIsing(ising_dense_graph)
         for _ in range(self.iteration):
+            sa_system.initialize_spins()
             sa_system.simulated_annealing(self.beta_min, self.beta_max, self.step_length, self.step_num)
             state = sa_system.get_spins()
             response.add_state_energy(state, ising_dense_graph.calc_energy(state) + self.energy_bias)
         return response
 
 class SQASampler(BaseSampler):
-    def __init__(self, beta=5.0, gamma_min=0.1, gamma_max=10.0,
-                 trotter=4, step_length=10, step_num=100, iteration=1):
+    def __init__(self, beta=5.0, gamma=1.0,
+                 trotter=5, step_length=10, step_num=100, iteration=1):
         self.beta = beta
-        self.gamma_min = gamma_min
-        self.gamma_max = gamma_max
+        self.gamma = gamma
         self.trotter = trotter
         self.step_length = step_length
         self.step_num = step_num
@@ -123,9 +123,10 @@ class SQASampler(BaseSampler):
         response = Response(spin_type=spin_type, indices=self.indices)
         system = cj.system.QuantumIsing(ising_dense_graph, num_trotter_slices=self.trotter)
         for _ in range(self.iteration):
+            system.initialize_spins()
             system.simulated_quantum_annealing(
                 self.beta, 
-                self.gamma_min, self.gamma_max,
+                self.gamma,
                 self.step_length, self.step_num)
             q_state = system.get_spins()
             energies = [ising_dense_graph.calc_energy(state) + self.energy_bias for state in q_state]

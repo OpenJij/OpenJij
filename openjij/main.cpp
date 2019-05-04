@@ -128,7 +128,8 @@ PYBIND11_MODULE(cxxjij, m){
 		.def(py::init<const graph::Dense<double>&>(), "other"_a)
 		.def(py::init<const graph::Sparse<double>&>(), "other"_a)
 		.def(py::init<const graph::Sparse<double>&, graph::Spins&>(), "other"_a, "init_state"_a)
-		.def("simulated_annealing", &system::ClassicalIsing::simulated_annealing, "beta_min"_a, "beta_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
+		.def("simulated_annealing", (void (system::ClassicalIsing::*)(const double, const double, const size_t, const size_t, const std::string&)) &system::ClassicalIsing::simulated_annealing, "beta_min"_a, "beta_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
+		.def("simulated_annealing", (void (system::ClassicalIsing::*)(const std::vector<std::pair<double, size_t>>&, const std::string&)) &system::ClassicalIsing::simulated_annealing, "schedule"_a, "algo"_a="")
 		.def("get_spins", &system::ClassicalIsing::get_spins)
 		.def("initialize_spins", &system::ClassicalIsing::initialize_spins)
 		.def("set_spins", &system::ClassicalIsing::set_spins, "initial_state"_a);
@@ -138,7 +139,8 @@ PYBIND11_MODULE(cxxjij, m){
 		.def(py::init<const graph::Dense<double>&, size_t>(), "other"_a, "num_trotter_slices"_a)
 		.def(py::init<const graph::Sparse<double>&, size_t>(), "other"_a, "num_trotter_slices"_a)
 		.def(py::init<const graph::Sparse<double>&, size_t, graph::Spins&>(), "other"_a, "num_trotter_slices"_a, "init_state"_a)
-		.def("simulated_quantum_annealing", &system::QuantumIsing::simulated_quantum_annealing, "beta"_a, "gamma_min"_a, "gamma_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
+		.def("simulated_quantum_annealing", (void (system::QuantumIsing::*)(const double, const double, const size_t, const size_t, const std::string&)) &system::QuantumIsing::simulated_quantum_annealing, "beta"_a, "gamma"_a, "step_length"_a, "step_num"_a, "algo"_a="")
+		.def("simulated_quantum_annealing", (void (system::QuantumIsing::*)(const double, const double, const std::vector<std::pair<double, size_t>>&, const std::string&)) &system::QuantumIsing::simulated_quantum_annealing, "beta"_a, "gamma"_a, "schedule"_a, "algo"_a="")
 		.def("get_spins", &system::QuantumIsing::get_spins)
 		.def("initialize_spins", &system::QuantumIsing::initialize_spins)
 		.def("set_spins", &system::QuantumIsing::set_spins, "initial_state"_a);
