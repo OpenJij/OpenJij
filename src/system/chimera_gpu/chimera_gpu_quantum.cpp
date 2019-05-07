@@ -7,7 +7,7 @@
 #include <iostream>
 
 namespace openjij {
-	namespace method {
+	namespace system {
 
 		ChimeraGPUQuantum::ChimeraGPUQuantum(const graph::Chimera<double>& interaction, size_t num_trotter_slices, int gpudevice)
 		: interaction(interaction), num_trotter_slices(num_trotter_slices), row(interaction.get_num_row()), col(interaction.get_num_column()){
@@ -90,17 +90,23 @@ namespace openjij {
 			chimera_gpu::cuda_free();
 		}
 
-		double ChimeraGPUQuantum::update(double beta, double gamma, const std::string& algo){
+		double ChimeraGPUQuantum::update(const double beta, const double gamma, const double s, const std::string& algo){
 			if(algo == "gpu_metropolis" or algo == ""){
-				chimera_gpu::cuda_run(beta, gamma);
+				chimera_gpu::cuda_run(beta, gamma, s);
 			}
 			return 0;
 		}
 
-		void ChimeraGPUQuantum::simulated_quantum_annealing(double beta, double gamma_min, double gamma_max, double step_length, size_t step_num, const std::string& algo){
-			algorithm::SQA sqa(beta, gamma_min, gamma_max, step_length, step_num);
+		void ChimeraGPUQuantum::simulated_quantum_annealing(const double beta, const double gamma, const size_t step_length, const size_t step_num, const std::string& algo) {
+			algorithm::SQA sqa(beta, gamma, step_length, step_num);
 			//do simulated quantum annealing
-			sqa.exec(*this, algo);
+			sqa.run(*this, algo);
+		}
+
+		void ChimeraGPUQuantum::simulated_quantum_annealing(const double beta, const double gamma, const Schedule& schedule, const std::string& algo) {
+			algorithm::SQA sqa(beta, gamma, schedule);
+			//do simulated quantum annealing
+			sqa.run(*this, algo);
 		}
 
 		TrotterSpins ChimeraGPUQuantum::get_spins() const{
@@ -121,5 +127,5 @@ namespace openjij {
 			return ret_spins;
 		}
 
-	} // namespace method
+	} // namespace system
 } // namespace openjij

@@ -1,7 +1,7 @@
 #pragma once
 
 namespace openjij{
-	namespace method{
+	namespace system{
 		namespace chimera_gpu{
 
 			//functions
@@ -25,7 +25,7 @@ namespace openjij{
 
 			void cuda_init_spin();
 
-			void cuda_run(float beta, float gamma);
+			void cuda_run(float beta, float gamma, float s);
 
 			void copy_spins();
 

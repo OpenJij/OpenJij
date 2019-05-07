@@ -1,10 +1,11 @@
 #include "classical_ising.h"
 #include "../algorithm/sa.h"
+
 #include <cassert>
 #include <cmath>
 
 namespace openjij {
-	namespace method {
+	namespace system {
 
 		ClassicalIsing::ClassicalIsing(const graph::Dense<double>& interaction)
 			: spins(interaction.gen_spin()), interaction(interaction), urd{0.0, 1.0}{
@@ -14,7 +15,22 @@ namespace openjij {
 				uid = std::uniform_int_distribution<>{0,(int)spins.size()-1};
 			}
 
-		double ClassicalIsing::update(double beta, const std::string& algo){
+		ClassicalIsing::ClassicalIsing(const graph::Dense<double>& interaction, graph::Spins& spins)
+			: spins(spins), interaction(interaction), urd{0.0, 1.0}{
+				//random number generator
+				std::random_device rd;
+				mt = std::mt19937(rd());
+				uid = std::uniform_int_distribution<>{0,(int)spins.size()-1};
+			}
+
+		void ClassicalIsing::initialize_spins(){
+			spins = interaction.gen_spin();
+		}
+		void ClassicalIsing::set_spins(graph::Spins& initial_spins){
+			spins = initial_spins;
+		}
+
+		double ClassicalIsing::update(const double beta, const std::string& algo){
 			double totaldE = 0;
 			size_t num_spins = spins.size();
 
@@ -39,14 +55,20 @@ namespace openjij {
 			return totaldE;
 		}
 
-		void ClassicalIsing::simulated_annealing(double beta_min, double beta_max, double step_length, size_t step_num, const std::string& algo){
+		void ClassicalIsing::simulated_annealing(const double beta_min, const double beta_max, const size_t step_length, const size_t step_num, const std::string& algo){
 			algorithm::SA sa(beta_min, beta_max, step_length, step_num);
 			//do simulated annealing
-			sa.exec(*this, algo);
+			sa.run(*this, algo);
+		}
+
+		void ClassicalIsing::simulated_annealing(const Schedule& schedule, const std::string& algo) {
+			algorithm::SA sa(schedule);
+			//do simulated annealing
+			sa.run(*this, algo);
 		}
 
 		const graph::Spins ClassicalIsing::get_spins() const{
 			return spins;
 		}
-	} // namespace method
+	} // namespace system
 } // namespace openjij

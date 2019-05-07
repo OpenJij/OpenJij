@@ -81,7 +81,7 @@ add_subdirectory(src)
 add_custom_target(shared
 	DEPENDS graph 
 	DEPENDS algorithm 
-	DEPENDS method
+	DEPENDS system
 )
 
 add_subdirectory(openjij)

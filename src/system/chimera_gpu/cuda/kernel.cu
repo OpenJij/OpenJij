@@ -11,7 +11,7 @@
 #include <cfloat>
 
 namespace openjij{
-	namespace method{
+	namespace system{
 		namespace chimera_gpu{
 
 			//HANDLE ERROR
@@ -686,7 +686,7 @@ namespace openjij{
 					const float* J_in_3,
 					const float* H,
 					uint32_t ntrot, uint32_t row, uint32_t col,
-					float beta, float gamma 
+					float beta, float gamma, float s
 					){
 
 				//switch
@@ -725,7 +725,7 @@ namespace openjij{
 
 				//import interactions from global memory to shared memory (or registers)
 
-				J_trot = +0.5*log(tanh(beta*gamma/(float)ntrot)); //-(1/2)log(coth(beta*gamma/M))
+				J_trot = +0.5*log(tanh(beta*gamma*(1-s)/(float)ntrot)); //-(1/2)log(coth(beta*gamma/M))
 
 				J_out_p_cache[blockind] = J_out_p[locind];
 				J_out_n_cache[blockind] = J_out_n[locind];
@@ -781,7 +781,7 @@ namespace openjij{
 					//calculate energy difference
 					//dE = (beta/M)*dE_c + Jtrot*dE_t;
 					float dE_c =      
-						-2*spincache[glIdx_TRCI_ext(block_trot,block_row,block_col, (t%(block_trot)), (i%(block_row)), (j%(block_col)), ind)]*(
+						-2*s*spincache[glIdx_TRCI_ext(block_trot,block_row,block_col, (t%(block_trot)), (i%(block_row)), (j%(block_col)), ind)]*(
 
 								//outside chimera unit
 								J_out_p_cache[blockind]
@@ -1260,7 +1260,7 @@ namespace openjij{
 			}
 
 			// single MCS
-			void cuda_run(float beta, float gamma){
+			void cuda_run(float beta, float gamma, float s){
 
 				const uint32_t localsize = num_row*num_col*unitspins;
 				const uint32_t totalsize = num_trot*localsize;
@@ -1280,7 +1280,7 @@ namespace openjij{
 						dev_J_in_3,
 						dev_H,
 						num_trot, num_row, num_col,
-						beta, gamma);
+						beta, gamma, s);
 
 				//generate random number
 				HANDLE_ERROR_CURAND(curandGenerateUniform(rng, dev_random, totalsize));
@@ -1296,7 +1296,7 @@ namespace openjij{
 						dev_J_in_3,
 						dev_H,
 						num_trot, num_row, num_col,
-						beta, gamma);
+						beta, gamma, s);
 				return;
 			}
 

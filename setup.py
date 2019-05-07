@@ -89,14 +89,14 @@ class GoogleTestCommand(TestCommand):
 
 setup(
     name='openjij',
-    version='0.0.3',
+    version='0.0.4',
     author='Jij Inc.',
     author_email='openjij@j-ij.com',
     url = 'https://openjij.github.io/OpenJij/',
     description='Framework for ising model and QUBO',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    install_requires=['numpy'],
+    install_requires=['numpy', 'requests'],
     ext_modules=[CMakeExtension('cxxjij')],
     cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand),
     packages=find_packages(exclude=('tests', 'docs')),
