@@ -55,7 +55,7 @@ class Response:
         self.states = [states[min_e_i] for states, min_e_i in zip(self.q_states, min_e_indices)]
         self.energies = list(np.array(self.q_energies)[min_e_indices])
 
-    def indices_states(self):
+    def indexed_states(self):
         return [dict(zip(self.indices, state)) for state in self.states]
 
 
