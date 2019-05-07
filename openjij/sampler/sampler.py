@@ -27,10 +27,14 @@ class Response:
         self.q_energies = []
         self.indices = indices
 
-    def __str__(self):
-        ground_energy = min(self.energies) if len(self.energies) != 0 else None
-        return "number of state : {}, minimum energy : {}, spin_type : {}".format(
+    def __repr__(self):
+        min_energy_index = np.argmin(self.energies) if len(self.energies) != 0 else None
+        ground_energy = self.energies[min_energy_index]
+        ground_state = self.states[min_energy_index]
+        ret_str = "number of state : {}, minimum energy : {}, spin_type : {}\n".format(
             len(self.states), ground_energy, self.spin_type)
+        ret_str += "indices: {} \nminmum energy state sample : {}".format(self.indices, ground_state)
+        return ret_str
 
     def add_state_energy(self, state, energy):
         if self.spin_type == 'ising':
@@ -50,6 +54,9 @@ class Response:
         min_e_indices = np.argmin(self.q_energies, axis=1)
         self.states = [states[min_e_i] for states, min_e_i in zip(self.q_states, min_e_indices)]
         self.energies = list(np.array(self.q_energies)[min_e_indices])
+
+    def indices_states(self):
+        return [dict(zip(self.indices, state)) for state in self.states]
 
 
 class BaseSampler:
