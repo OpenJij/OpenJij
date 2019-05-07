@@ -113,7 +113,7 @@ class SamplerOptimizeTest(unittest.TestCase):
         self.Q.update(self.J)
 
     def test_sa(self):
-        response = oj.SASampler().sample_ising(self.h, self.J)
+        response = oj.SASampler(beta_max=100).sample_ising(self.h, self.J)
         self.assertEqual(len(response.states), 1)
         self.assertListEqual(response.states[0], [-1,-1,-1])
 
