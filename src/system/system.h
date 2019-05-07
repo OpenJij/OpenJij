@@ -4,9 +4,9 @@
 #include <cstddef>
 
 namespace openjij {
-	namespace method {
+	namespace system {
 		using TrotterSpins = std::vector<graph::Spins>;
-		class Method{
+		class System{
 		};
-	} // namespace method
+	} // namespace system
 } // namespace openjij

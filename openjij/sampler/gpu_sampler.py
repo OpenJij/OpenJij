@@ -48,7 +48,7 @@ class GPUSQASampler(BaseSampler):
             else:
                 chimera = self.graph
 
-        gpu_sqa = cj.method.ChimeraGPUQuantum(chimera, num_trotter_slices=self.trotter)
+        gpu_sqa = cj.system.ChimeraGPUQuantum(chimera, num_trotter_slices=self.trotter)
         for _ in range(self.iteration):
             gpu_sqa.simulated_quantum_annealing(
                 self.beta, 
