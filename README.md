@@ -11,7 +11,6 @@ Documents : https://openjij.github.io/OpenJij/
 ### pip
 ```
 $ pip install openjij
-```
 
 ### cmake setup
 
