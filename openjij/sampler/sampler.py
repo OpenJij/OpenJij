@@ -26,6 +26,7 @@ class Response:
         self.q_states = []
         self.q_energies = []
         self.indices = indices
+        self.info = {}
 
     def __repr__(self):
         min_energy_index = np.argmin(self.energies) if len(self.energies) != 0 else None
