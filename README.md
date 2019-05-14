@@ -8,9 +8,6 @@ Documents : https://openjij.github.io/OpenJij/
 
 ## install
 
-> Notice：  
-> Because current version v.0.0.1 support only the interface of 'cxxjij modules', you have to read header files in `src/*`
-
 ### pip
 ```
 $ pip install openjij
@@ -49,15 +46,16 @@ $ python setup.py install
 ### Python example
 
 ```python
-from openjij import graph as G   # or import cxxjij.graph as G
-from openjij import method as M  # or import cxxjij.method as M
-ising = G.Dense(10)
-for i in range(10):
-    for j in range(i+1, 10):
-            ising[i, j] = -1
+import openjij as oj
+sampler = oj.SASampler()
+response = sampler.sample_ising(h={0: -1}, J={(0,1): -1})
+response.states
+# [[1,1]]
 
-sa = M.ClassicalIsing(ising)
-sa.simulated_annealing(0.01, 10, 100, 10)  # beta_min, beta_max, step_length, step_num
-sa.get_spins()
->> [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+# with indices
+response = sampler.sample_ising(h={'a': -1}, J={('a','b'): 1})
+[{index: s for index, s in zip(response.indices, state)} for state in response.states]
+# [{'b': -1, 'a': 1}]
 ```
+
+

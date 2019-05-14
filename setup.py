@@ -89,7 +89,7 @@ class GoogleTestCommand(TestCommand):
 
 setup(
     name='openjij',
-    version='0.0.3',
+    version='0.0.4',
     author='Jij Inc.',
     author_email='openjij@j-ij.com',
     url = 'https://openjij.github.io/OpenJij/',

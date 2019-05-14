@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <cstddef>
+#include <random>
 
 namespace openjij {
 	namespace graph {
@@ -23,7 +24,9 @@ namespace openjij {
 				explicit Graph(size_t num_spins)
 					:num_spins(num_spins){}
 				//generate spin array
-				const Spins gen_spin(bool random_initialize=true) const;
+				const Spins gen_spin(uint_fast32_t seed) const;
+				//without seed (use random_device)
+				const Spins gen_spin() const;
 
 				size_t get_num_spins() const;
 		};
