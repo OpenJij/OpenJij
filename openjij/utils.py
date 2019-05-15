@@ -1,7 +1,7 @@
 import numpy as np
 import time 
 
-def benchmark(true_ground_states, ground_energy, solver, time_param_list, iteration=1000):
+def benchmark(true_ground_states, ground_energy, solver, time_param_list, p_d=0.9, iteration=1000):
     
     if not (isinstance(true_ground_states, list) and isinstance(true_ground_states[0], list)):
         raise ValueError("true_ground_states should be list of list which stored each spin state.")
@@ -26,7 +26,6 @@ def benchmark(true_ground_states, ground_energy, solver, time_param_list, iterat
 
         # Time to solution (TTS)
         t = tlist[-1]
-        pd = 0.90
         if error_prob == 0.0:
             tts = 0.0
         elif error_prob == 1.0:
@@ -43,3 +42,25 @@ def benchmark(true_ground_states, ground_energy, solver, time_param_list, iterat
 
     
 
+import openjij as oj
+
+def convert_oj_response(response):
+    """
+    Converter to openjij response class from response class of dwave tools (dimod) 
+    """
+    try:
+        from dimod.response import Response
+    except ImportError:
+        raise ImportError('Import dwave dimod : "pip install dimod"')
+    if isinstance(response, Response):
+        from dimod.vartypes import BINARY, SPIN
+        spin_type = 'qubo' if response.vartype == BINARY else 'spin'
+        o_res = oj.Response(spin_type=spin_type, indices=list(response.variable_labels))
+        for rec in response.record:
+            for _ in range(rec[2]):
+                o_res.add_state_energy(rec[0], rec[1])
+        return o_res
+    elif isinstance(response, oj.Response):
+        return response
+    else:
+        raise TypeError('type of response is dimod.response.Response or openjij.Response')
