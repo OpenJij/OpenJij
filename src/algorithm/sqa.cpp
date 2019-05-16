@@ -14,7 +14,7 @@ namespace openjij {
             const double s_d = 1.0 / step_num;
             double s = 0.0;
 
-            for (size_t i = 0; i < step_num; i++) {
+            for (size_t i = 0; i < step_num-1; i++) {
                 schedule.emplace_back(std::make_pair(s, step_length));
                 s += s_d;
             }
