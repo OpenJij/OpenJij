@@ -14,12 +14,20 @@ namespace openjij{
 	namespace system{
 		namespace chimera_gpu{
 
+			//HANDLE ERROR
+			cudaError_t err;
+			curandStatus_t st;
+
 			/***************************
 			  macro for detecting errors 
 			 ***************************/
-
+#ifndef HANDLE_ERROR
 #define HANDLE_ERROR(expr) err=(expr); if(err != cudaSuccess) std::cout << "error_code: " << err << " err_name: " << cudaGetErrorString(err) << " at " << __FILE__ << " line " << __LINE__ << std::endl;
+#endif
+
+#ifndef HANDLE_ERROR_CURAND
 #define HANDLE_ERROR_CURAND(expr) st=(expr); if(st != CURAND_STATUS_SUCCESS) std::cout << "curand_error: " << st << " at " << __FILE__ << " line " << __LINE__ << std::endl;
+#endif
 
 			/**********************
 			  const variables 
@@ -292,95 +300,9 @@ namespace openjij{
 			  cuda host functions
 			 **********************/
 
-			//set device
 
-			void cuda_set_device(int device){
-				HANDLE_ERROR(cudaSetDevice(device));
-			}
 
-			//intialize GPU 
-			void cuda_init(
-					uint32_t arg_num_trot,
-					uint32_t arg_num_row,
-					uint32_t arg_num_col
-					){
-
-				//copy variables to host variables (static)
-				num_trot = arg_num_trot;
-				num_row = arg_num_row;
-				num_col = arg_num_col;
-
-				//localsize: the number of spins in each chimera graph
-				uint32_t localsize = num_row*num_col*unitspins;
-				//totalsize: the number of spins in all chimera graph (trotter slices included)
-				uint32_t totalsize = num_trot*localsize;
-
-				//create random generator
-				HANDLE_ERROR(cudaMalloc((void**)&dev_random, totalsize*sizeof(float)));
-				//mersenne twister
-				HANDLE_ERROR_CURAND(curandCreateGenerator(&rng, CURAND_RNG_PSEUDO_MT19937));
-				//HANDLE_ERROR_CURAND(curandCreateGenerator(&rng, CURAND_RNG_PSEUDO_XORWOW));
-				//set seed
-				HANDLE_ERROR_CURAND(curandSetPseudoRandomGeneratorSeed(rng, time(NULL)));
-
-				//cudaMalloc
-				HANDLE_ERROR(cudaMalloc((void**)&dev_J_out_p,	localsize*sizeof(float)));
-				HANDLE_ERROR(cudaMalloc((void**)&dev_J_out_n,	localsize*sizeof(float)));
-				HANDLE_ERROR(cudaMalloc((void**)&dev_J_in_0,		localsize*sizeof(float)));
-				HANDLE_ERROR(cudaMalloc((void**)&dev_J_in_1,		localsize*sizeof(float)));
-				HANDLE_ERROR(cudaMalloc((void**)&dev_J_in_2,		localsize*sizeof(float)));
-				HANDLE_ERROR(cudaMalloc((void**)&dev_J_in_3,  	localsize*sizeof(float)));
-				HANDLE_ERROR(cudaMalloc((void**)&dev_H,  			localsize*sizeof(float)));
-
-				//spin
-				HANDLE_ERROR(cudaMalloc((void**)&dev_spin,  		totalsize*sizeof(int32_t)));
-
-				//set grids and blocks
-				grid = dim3(num_col/block_col, num_row/block_row, num_trot/block_trot);
-				block = dim3(unitspins*block_col, block_row, block_trot);
-
-				//generate random_number
-				HANDLE_ERROR_CURAND(curandGenerateUniform(rng, dev_random, totalsize));
-				//init spins
-				cuda_init_spins<<<grid, block>>>(dev_spin, dev_random, num_trot, num_row, num_col);
-
-				//initialize spinarray
-				HANDLE_ERROR(cudaMallocHost((void**)&spinarray, sizeof(int32_t)*totalsize));
-
-				//get printf buffer
-#ifdef DEBUG
-				cudaDeviceSetLimit(cudaLimitPrintfFifoSize, (uint32_t)(1 << 30));
-#endif
-			}
-
-			void cuda_init_interactions(
-					const float* J_out_p,
-					const float* J_out_n,
-					const float* J_in_0,
-					const float* J_in_1,
-					const float* J_in_2,
-					const float* J_in_3,
-					const float* H
-					){
-
-				//localsize: the number of spins in each chimera graph
-				uint32_t localsize = num_row*num_col*unitspins;
-				//cudaMemcpy
-				HANDLE_ERROR(cudaMemcpy(dev_J_out_p, J_out_p, 	localsize*sizeof(float), cudaMemcpyHostToDevice));
-				HANDLE_ERROR(cudaMemcpy(dev_J_out_n, J_out_n, 	localsize*sizeof(float), cudaMemcpyHostToDevice));
-				HANDLE_ERROR(cudaMemcpy(dev_J_in_0, J_in_0,		localsize*sizeof(float), cudaMemcpyHostToDevice));
-				HANDLE_ERROR(cudaMemcpy(dev_J_in_1, J_in_1,		localsize*sizeof(float), cudaMemcpyHostToDevice));
-				HANDLE_ERROR(cudaMemcpy(dev_J_in_2, J_in_2,		localsize*sizeof(float), cudaMemcpyHostToDevice));
-				HANDLE_ERROR(cudaMemcpy(dev_J_in_3, J_in_3,		localsize*sizeof(float), cudaMemcpyHostToDevice));
-				HANDLE_ERROR(cudaMemcpy(dev_H, H,					localsize*sizeof(float), cudaMemcpyHostToDevice));
-
-#ifdef DEBUG
-				cudaDeviceSynchronize(); 	
-				std::cout << "----------- init energies -----------" << std::endl;
-#endif
-			}
-
-			void cuda_init_spin(){
+			void cuda_init_spin(int32_t*& dev_spin, float*& dev_random, uint32_t num_trot, uint32_t num_row, uint32_t num_col, curandGenerator_t& rng, dim3& grid, dim3& block){
 				//localsize: the number of spins in each chimera graph
 				uint32_t localsize = num_row*num_col*unitspins;
 				//totalsize: the number of spins in all chimera graph (trotter slices and PT replicas included)
@@ -412,7 +334,19 @@ namespace openjij{
 			}
 
 			// single MCS
-			void cuda_run(float beta, float gamma, float s){
+			void cuda_run(float beta, float gamma, float s,
+					int32_t*& dev_spin,
+					float*& dev_random,
+					float*& dev_J_out_p,
+					float*& dev_J_out_n,
+					float*& dev_J_in_0,
+					float*& dev_J_in_1,
+					float*& dev_J_in_2,
+					float*& dev_J_in_3,
+					float*& dev_H,
+					uint32_t num_trot, uint32_t num_row, uint32_t num_col,
+					curandGenerator_t& rng, dim3& grid, dim3& block
+					){
 
 				const uint32_t localsize = num_row*num_col*unitspins;
 				const uint32_t totalsize = num_trot*localsize;
@@ -450,33 +384,6 @@ namespace openjij{
 						num_trot, num_row, num_col,
 						beta, gamma, s);
 				return;
-			}
-
-			void copy_spins(){
-				HANDLE_ERROR(cudaMemcpy(spinarray, dev_spin, num_trot*num_row*num_col*unitspins*sizeof(int32_t), cudaMemcpyDeviceToHost));
-			}
-
-			int32_t get_spin(uint32_t t, uint32_t i, uint32_t j, uint32_t ind){
-				return spinarray[glIdx_TRCI(num_trot, num_row, num_col, t,i,j,ind)];
-			}
-
-			void cuda_free(){
-				HANDLE_ERROR(cudaFree(dev_random));
-				//cudaMalloc
-				HANDLE_ERROR(cudaFree(dev_J_out_p));
-				HANDLE_ERROR(cudaFree(dev_J_out_n));
-				HANDLE_ERROR(cudaFree(dev_J_in_0));
-				HANDLE_ERROR(cudaFree(dev_J_in_1));
-				HANDLE_ERROR(cudaFree(dev_J_in_2));
-				HANDLE_ERROR(cudaFree(dev_J_in_3));
-				HANDLE_ERROR(cudaFree(dev_H));
-
-				HANDLE_ERROR(cudaFree(dev_spin));
-
-				//curand
-				HANDLE_ERROR_CURAND(curandDestroyGenerator(rng));
-				//page-locked memory
-				HANDLE_ERROR(cudaFreeHost(spinarray));
 			}
 		}
 	}

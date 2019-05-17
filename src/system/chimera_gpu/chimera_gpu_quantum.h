@@ -20,9 +20,6 @@ namespace openjij {
 				size_t row;
 				size_t col;
 
-				//HANDLE ERROR
-				cudaError_t err;
-				curandStatus_t st;
 
 				/*************************
 				  list of device variables
@@ -30,27 +27,27 @@ namespace openjij {
 
 				// inteactions
 				//(row*col*8) = localsize
-				std::unique_ptr<float> dev_J_out_p;
+				float* dev_J_out_p;
 				//(row*col*8)
-				std::unique_ptr<float> dev_J_out_n;
+				float* dev_J_out_n;
 				//(row*col*8)
-				std::unique_ptr<float> dev_J_in_0;
+				float* dev_J_in_0;
 				//(row*col*8)
-				std::unique_ptr<float> dev_J_in_1;
+				float* dev_J_in_1;
 				//(row*col*8)
-				std::unique_ptr<float> dev_J_in_2;
+				float* dev_J_in_2;
 				//(row*col*8)
-				std::unique_ptr<float> dev_J_in_3;
+				float* dev_J_in_3;
 
 				// local magnetization
 				//(row*col*8)
-				std::unique_ptr<float> dev_H;
+				float* dev_H;
 
 				// spins and randoms
 				//(gammasize*betasize*trot*row*col*8) =totalsize
-				std::unique_ptr<int32_t> dev_spin;
+				int32_t* dev_spin;
 				//(gammasize*betasize*trot*row*col*8) =totalsize
-				std::unique_ptr<float> dev_random;
+				float* dev_random;
 
 				//curand generator
 				curandGenerator_t rng;
@@ -71,19 +68,57 @@ namespace openjij {
 				dim3 block;
 
 				//spinarray (page-locked memory)
-				std::unique_ptr<int32_t> spinarray;
+				int32_t* spinarray;
 
+				/**********************
+				  const variables 
+				 **********************/
+
+				constexpr static uint32_t unitspins = 8;
+
+				constexpr static uint32_t block_row = 2;
+				constexpr static uint32_t block_col = 2;
+				constexpr static uint32_t block_trot = 2;
+
+				/**********************
+				  cuda host functions
+				 **********************/
+
+				void cuda_set_device(int device);
+
+				void cuda_init(
+						uint32_t arg_num_trot,
+						uint32_t arg_num_row,
+						uint32_t arg_num_col
+						);
+
+				void cuda_init_interactions(
+						const float* J_out_p,
+						const float* J_out_n,
+						const float* J_in_0,
+						const float* J_in_1,
+						const float* J_in_2,
+						const float* J_in_3,
+						const float* H
+						);
+
+				void copy_spins() const;
+				
+				void cuda_free();
 
 			public:
 				ChimeraGPUQuantum(const graph::Chimera<double>& interaction, size_t num_trotter_slices, int gpudevice=0);
 				~ChimeraGPUQuantum();
 
+				//disable copy constructor
+				ChimeraGPUQuantum(const ChimeraGPUQuantum&) = delete;
+
+
+
 				virtual double update(const double beta, const double gamma, const double s, const std::string& algo = "") override;
 
 				void simulated_quantum_annealing(const double beta, const double gamma, const size_t step_length, const size_t step_num, const std::string& algo = "");
 				void simulated_quantum_annealing(const double beta, const double gamma, const Schedule& schedule, const std::string& algo = "");
-
-				//graph::Spin get_spins(uint32_t t, uint32_t r, uint32_t c, uint32_t ind) const;
 
 				TrotterSpins get_spins() const;
 
