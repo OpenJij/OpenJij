@@ -30,7 +30,7 @@ class KingGraph(BinaryQuadraticModel):
         Quadratic term [x1, y1, x2, y2, value]
         Linear term    [x1, y1, x1, y1, value]
     """
-    def __init__(self, machine_type, h=None, J=None, Q=None, king_graph=None, spin_type='ising'):
+    def __init__(self, machine_type, h=None, J=None, Q=None, king_graph=None, spin_type='SPIN'):
         """
         The constructor reformat interactions to Web API format (ising king graph),
         and validates that the interaction is in King Graph. 
@@ -62,9 +62,9 @@ class KingGraph(BinaryQuadraticModel):
         super().__init__(h=h, J=J, Q=Q, spin_type=spin_type)
 
         # reformat to ising king graph (which is Web API format)
-        if king_graph is not None and spin_type == "ising":
+        if king_graph is not None and spin_type == "SPIN":
             self._ising_king_graph = king_graph
-        elif spin_type == "ising":
+        elif spin_type == "SPIN":
             self._ising_king_graph = []
             for index, h in self.h.items():
                 x, y = self._convert_to_xy(index)
@@ -89,7 +89,7 @@ class KingGraph(BinaryQuadraticModel):
         
     def _convert_to_BQM_format(self, king_graph, spin_type):
         h, J, Q = None, None, None
-        if spin_type == "ising":
+        if spin_type == "SPIN":
             h, J = {}, {}
             for x1, y1, x2, y2, value in king_graph:
                 if (x1, y1) == (x2, y2):

@@ -15,7 +15,7 @@ def benchmark(true_ground_states, ground_energy, solver, time_param_list, p_d=0.
     for time_param in time_param_list:
         print('time parameter: ', time_param)
         start = time.time()
-        response = solver(time_param, iteration=iteration)
+        response = convert_oj_response(solver(time_param, iteration=iteration))
         tlist.append( time.time() - start )
 
         # error probability
@@ -45,22 +45,22 @@ def benchmark(true_ground_states, ground_energy, solver, time_param_list, p_d=0.
 import openjij as oj
 
 def convert_oj_response(response):
-    """
-    Converter to openjij response class from response class of dwave tools (dimod) 
-    """
     try:
         from dimod.response import Response
     except ImportError:
         raise ImportError('Import dwave dimod : "pip install dimod"')
     if isinstance(response, Response):
         from dimod.vartypes import BINARY, SPIN
-        spin_type = 'qubo' if response.vartype == BINARY else 'spin'
+        spin_type = 'BINARY' if response.vartype == BINARY else 'SPIN'
         o_res = oj.Response(spin_type=spin_type, indices=list(response.variable_labels))
         for rec in response.record:
             for _ in range(rec[2]):
                 o_res.add_state_energy(rec[0], rec[1])
+                
+        o_res.info = response.info
+        o_res.info['dimod'] = response
         return o_res
     elif isinstance(response, oj.Response):
         return response
     else:
-        raise TypeError('type of response is dimod.response.Response or openjij.Response')
+        raise TypeError('response is dimod.response.Response or openjij.Response')

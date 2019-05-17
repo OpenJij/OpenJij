@@ -35,7 +35,7 @@ class CMOSAnnealer(BaseSampler):
         self.cmos_parameters.update(args)
         
     def sample_ising(self, h=None, J=None, king_graph=None):
-        spin_type = 'ising'
+        spin_type = 'SPIN'
         if king_graph is not None:
             _king_graph = KingGraph(machine_type=self.machine_type, king_graph=king_graph, spin_type=spin_type)
             return self._sampling(_king_graph, spin_type=spin_type, token=self.token)
@@ -46,7 +46,7 @@ class CMOSAnnealer(BaseSampler):
             raise ValueError('intput "h and J" or king_graph model')
 
     def sample_qubo(self, Q=None, king_graph=None):
-        spin_type = 'qubo'
+        spin_type = 'BINARY'
         if king_graph is not None:
             _king_graph = KingGraph(machine_type=self.machine_type, king_graph=king_graph, spin_type=spin_type)
             return self._sampling(_king_graph, spin_type=spin_type, token=self.token)
@@ -69,7 +69,7 @@ class CMOSAnnealer(BaseSampler):
         if res_dict['status'] != 0:
             raise ValueError('Error status: {}, message: {}'.format(res_dict['status'], res_dict['message']))
             
-        if spin_type == "ising":
+        if spin_type == "SPIN":
             response.states = [[s for x, y, s in spins] for spins in res_dict['result']['spins']]
         else: #qubo
             response.states = [[int((s+1)/2) for x, y, s in spins] for spins in res_dict['result']['spins']]

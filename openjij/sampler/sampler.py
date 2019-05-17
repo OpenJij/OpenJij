@@ -38,14 +38,14 @@ class Response:
         return ret_str
 
     def add_state_energy(self, state, energy):
-        if self.spin_type == 'ising':
+        if self.spin_type == 'SPIN':
             self.states.append(state)
         else:  # qubo
             self.states.append(list(np.array((np.array(state) + 1)/2).astype(np.int)))
         self.energies.append(energy)
 
     def add_quantum_state_energy(self, trotter_states, energies):
-        if self.spin_type == 'ising':
+        if self.spin_type == 'SPIN':
             self.q_states.append(trotter_states)
         else:
             self.q_states.append([list(np.array((np.array(state) + 1)/2).astype(np.int)) for state in trotter_states])
@@ -61,15 +61,15 @@ class Response:
 
 
 class BaseSampler:
-    def _make_dense_graph(self, h=None, J=None, Q=None, spin_type='ising'):
-        if spin_type=='qubo':
+    def _make_dense_graph(self, h=None, J=None, Q=None, spin_type='SPIN'):
+        if spin_type=='BINARY':
             if Q is None:
                 raise ValueError('Input QUBO matrix: Q')
-            model = BinaryQuadraticModel(Q=Q, spin_type='qubo')
-        elif spin_type=='ising':
+            model = BinaryQuadraticModel(Q=Q, spin_type='BINARY')
+        elif spin_type=='SPIN':
             if h is None or J is None:
                 raise ValueError('Input h and J')
-            model = BinaryQuadraticModel(h=h, J=J, spin_type='ising')
+            model = BinaryQuadraticModel(h=h, J=J, spin_type='SPIN')
         self.indices = model.indices
         self.N = len(model.indices)
         self.energy_bias = model.energy_bias
@@ -88,12 +88,12 @@ class SASampler(BaseSampler):
         self.iteration = iteration
 
     def sample_ising(self, h, J):
-        spin_type = 'ising'
+        spin_type = 'SPIN'
         ising_dense_graph = self._make_dense_graph(h=h, J=J, spin_type=spin_type)
         return self._sampling(ising_dense_graph, spin_type=spin_type)
 
     def sample_qubo(self, Q):
-        spin_type = 'qubo'
+        spin_type = 'BINARY'
         ising_dense_graph = self._make_dense_graph(Q=Q, spin_type=spin_type)
         return self._sampling(ising_dense_graph, spin_type=spin_type)
 
@@ -118,12 +118,12 @@ class SQASampler(BaseSampler):
         self.iteration = iteration
 
     def sample_ising(self, h, J):
-        spin_type = 'ising'
+        spin_type = 'SPIN'
         ising_dense_graph = self._make_dense_graph(h=h, J=J, spin_type=spin_type)
         return self._sampling(ising_dense_graph, spin_type=spin_type)
 
     def sample_qubo(self, Q):
-        spin_type = 'qubo'
+        spin_type = 'BINARY'
         ising_dense_graph = self._make_dense_graph(Q=Q, spin_type=spin_type)
         return self._sampling(ising_dense_graph, spin_type=spin_type)
 

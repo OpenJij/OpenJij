@@ -82,7 +82,7 @@ class ModelTest(unittest.TestCase):
 
     def test_ising_dict(self):
         Q = {(0,4): -1.0, (6,2): -3.0}
-        bqm = oj.BinaryQuadraticModel(Q=Q, spin_type='qubo')
+        bqm = oj.BinaryQuadraticModel(Q=Q, spin_type='BINARY')
 
     def test_king_graph(self):
         h = {}
@@ -98,7 +98,7 @@ class ModelTest(unittest.TestCase):
         np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
 
 
-        king_graph = oj.KingGraph(machine_type="ASIC", Q={(0,1): -1}, spin_type="qubo")
+        king_graph = oj.KingGraph(machine_type="ASIC", Q={(0,1): -1}, spin_type="BINARY")
         king_interaction = [[0, 0, 0, 0, -0.25], [0,0,1,0,-0.25], [1,0,1,0,-0.25]]
         np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
 
@@ -135,7 +135,7 @@ class SamplerOptimizeTest(unittest.TestCase):
         gpu_sampler = oj.GPUSQASampler()
         h = {0: -1}
         J = {(0, 4): -1, (0, 5): -1, (2, 5): -1}
-        model = oj.BinaryQuadraticModel(h, J, spin_type='ising')
+        model = oj.BinaryQuadraticModel(h, J, spin_type='SPIN')
         chimera = gpu_sampler._chimera_graph(model, chimera_L=10)
 
     def test_cmos(self):
