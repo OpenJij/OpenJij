@@ -11,7 +11,7 @@ namespace openjij {
         SQA::SQA(const double beta, const double gamma, const size_t step_length, const size_t step_num)
             :beta(beta), gamma(gamma){
             // linear annealing schedule
-            const double s_d = 1.0 / step_num;
+            const double s_d = 1.0 / (step_num+1);
             double s = 0.0;
 
             for (size_t i = 0; i < step_num-1; i++) {
