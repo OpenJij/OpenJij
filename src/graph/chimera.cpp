@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <cassert>
 #include "chimera.h"
 
 namespace openjij {
@@ -19,15 +18,29 @@ namespace openjij {
 		template<typename FloatType>
 			Index Chimera<FloatType>::to_ind(int64_t r, int64_t c, int64_t i) const{
 				//row-major matrix
-				//TODO: add exception
-				assert(-1 <= r && r <= (int64_t)num_row);
-				assert(-1 <= c && c <= (int64_t)num_column);
-				assert(0 <= i && i < (int64_t)num_in_chimera);
+
+				//assert(-1 <= r && r <= (int64_t)num_row);
+				//assert(-1 <= c && c <= (int64_t)num_column);
+				//assert(0 <= i && i < (int64_t)num_in_chimera);
+				
+				if(this->is_err_check()){
+					if(!(-1 <= r && r <= (int64_t)num_row))
+						throw std::invalid_argument("Square::to_ind: invalid argument of r");
+					if(!(-1 <= c && c <= (int64_t)num_column))
+						throw std::invalid_argument("Square::to_ind: invalid argument of c");
+					if(!(0 <= i && i < (int64_t)num_in_chimera))
+						throw std::invalid_argument("Square::to_ind: invalid argument of i");
+				}
+
 				return num_column*num_in_chimera * mod_r(r) + num_in_chimera * mod_c(c) + i;
 			}
 
 		template<typename FloatType>
 			ChimeraIndex Chimera<FloatType>::to_rci(Index ind) const{
+				if(this->is_err_check()){
+					this->Graph::range_check(ind);
+				}
+
 				int64_t r = ind/(num_column*num_in_chimera);
 				ind -= (num_column*num_in_chimera)*r;
 				int64_t c = ind/num_in_chimera;
@@ -37,12 +50,17 @@ namespace openjij {
 			}
 
 		template<typename FloatType>
-			Chimera<FloatType>::Chimera(size_t num_row, size_t num_column, FloatType init_val)
-			: Sparse<FloatType>(num_row*num_column*num_in_chimera, 6+1), init_val(init_val), num_row(num_row), num_column(num_column){
+			Chimera<FloatType>::Chimera(size_t num_row, size_t num_column, FloatType init_val, bool err_check)
+			: Sparse<FloatType>(num_row*num_column*num_in_chimera, 6+1, err_check), init_val(init_val), num_row(num_row), num_column(num_column){
 				//generate sparse graph
-				//TODO: add exception
-				assert(num_row >= 1);
-				assert(num_column >= 1);
+				//assert(num_row >= 1);
+				//assert(num_column >= 1);
+				if(this->is_err_check()){
+					if(!(num_row >= 1))
+						throw std::invalid_argument("Square::to_ind: invalid argument of num_row");
+					if(!(num_column >= 1))
+						throw std::invalid_argument("Square::to_ind: invalid argument of num_column");
+				}
 
 				for(size_t r=0; r<num_row; r++){
 					for(size_t c=0; c<num_column; c++){
@@ -81,27 +99,46 @@ namespace openjij {
 
 		template<typename FloatType>
 			FloatType& Chimera<FloatType>::J(size_t r, size_t c, size_t i, ChimeraDir dir){
-				//TODO: add exception
-				assert(r<num_row);
-				assert(c<num_column);
-				assert(i<num_in_chimera);
+				//assert(r<num_row);
+				//assert(c<num_column);
+				//assert(i<num_in_chimera);
+				if(this->is_err_check()){
+					if(!(r<num_row))
+						throw std::invalid_argument("Square::to_ind: invalid argument of r");
+					if(!(c<num_column))
+						throw std::invalid_argument("Square::to_ind: invalid argument of c");
+					if(!(i<num_in_chimera))
+						throw std::invalid_argument("Square::to_ind: invalid argument of i");
+				}
 
 				switch (dir) {
 					case ChimeraDir::MINUS_R:
-						//TODO: add exception
-						assert(i < 4);
+						//assert(i < 4);
+						if(this->is_err_check()){
+							if(!(i < 4))
+								throw std::invalid_argument("Square::to_ind: invalid argument of i");
+						}
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind((int64_t)r-1,c,i));
 					case ChimeraDir::MINUS_C:
-						//TODO: add exception
-						assert(4 <= i);
+						//assert(4 <= i);
+						if(this->is_err_check()){
+							if(!(4 <= i))
+								throw std::invalid_argument("Square::to_ind: invalid argument of i");
+						}
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,(int64_t)c-1,i));
 					case ChimeraDir::PLUS_R:
-						//TODO: add exception
-						assert(i < 4);
+						//assert(i < 4);
+						if(this->is_err_check()){
+							if(!(i < 4))
+								throw std::invalid_argument("Square::to_ind: invalid argument of i");
+						}
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind((int64_t)r+1,c,i));
 					case ChimeraDir::PLUS_C:
-						//TODO: add exception
-						assert(4 <= i);
+						//assert(4 <= i);
+						if(this->is_err_check()){
+							if(!(4 <= i))
+								throw std::invalid_argument("Square::to_ind: invalid argument of i");
+						}
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,(int64_t)c+1,i));
 
 					case ChimeraDir::IN_0or4:
@@ -114,34 +151,54 @@ namespace openjij {
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,c,(i < 4)?7:3));
 
 					default:
-						assert(false);
+						//assert(false);
 						return init_val;
 				}
 			}
 
 		template<typename FloatType>
 			const FloatType& Chimera<FloatType>::J(size_t r, size_t c, size_t i, ChimeraDir dir) const{
-				//TODO: add exception
-				assert(r<num_row);
-				assert(c<num_column);
-				assert(i<num_in_chimera);
+				//assert(r<num_row);
+				//assert(c<num_column);
+				//assert(i<num_in_chimera);
+
+				if(this->is_err_check()){
+					if(!(r<num_row))
+						throw std::invalid_argument("Square::to_ind: invalid argument of r");
+					if(!(c<num_column))
+						throw std::invalid_argument("Square::to_ind: invalid argument of c");
+					if(!(i<num_in_chimera))
+						throw std::invalid_argument("Square::to_ind: invalid argument of i");
+				}
 
 				switch (dir) {
 					case ChimeraDir::MINUS_R:
-						//TODO: add exception
-						assert(i < 4);
+						//assert(i < 4);
+						if(this->is_err_check()){
+							if(!(i < 4))
+								throw std::invalid_argument("Square::to_ind: invalid argument of i");
+						}
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind((int64_t)r-1,c,i));
 					case ChimeraDir::MINUS_C:
-						//TODO: add exception
-						assert(4 <= i);
+						//assert(4 <= i);
+						if(this->is_err_check()){
+							if(!(4 <= i))
+								throw std::invalid_argument("Square::to_ind: invalid argument of i");
+						}
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,(int64_t)c-1,i));
 					case ChimeraDir::PLUS_R:
-						//TODO: add exception
-						assert(i < 4);
+						//assert(i < 4);
+						if(this->is_err_check()){
+							if(!(i < 4))
+								throw std::invalid_argument("Square::to_ind: invalid argument of i");
+						}
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind((int64_t)r+1,c,i));
 					case ChimeraDir::PLUS_C:
-						//TODO: add exception
-						assert(4 <= i);
+						//assert(4 <= i);
+						if(this->is_err_check()){
+							if(!(4 <= i))
+								throw std::invalid_argument("Square::to_ind: invalid argument of i");
+						}
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,(int64_t)c+1,i));
 
 					case ChimeraDir::IN_0or4:
@@ -154,27 +211,43 @@ namespace openjij {
 						return this->Sparse<FloatType>::J(to_ind(r,c,i), to_ind(r,c,(i < 4)?7:3));
 
 					default:
-						assert(false);
+						//assert(false);
 						return init_val;
 				}
 			}
 
 		template<typename FloatType>
 			FloatType& Chimera<FloatType>::h(size_t r, size_t c, size_t i){
-				//TODO: add exception
-				assert(r<num_row);
-				assert(c<num_column);
-				assert(i<num_in_chimera);
+				//assert(r<num_row);
+				//assert(c<num_column);
+				//assert(i<num_in_chimera);
+				
+				if(this->is_err_check()){
+					if(!(r<num_row))
+						throw std::invalid_argument("Square::to_ind: invalid argument of r");
+					if(!(c<num_column))
+						throw std::invalid_argument("Square::to_ind: invalid argument of c");
+					if(!(i<num_in_chimera))
+						throw std::invalid_argument("Square::to_ind: invalid argument of i");
+				}
 
 				return this->Sparse<FloatType>::h(to_ind(r,c,i));
 			}
 
 		template<typename FloatType>
 			const FloatType& Chimera<FloatType>::h(size_t r, size_t c, size_t i) const{
-				//TODO: add exception
-				assert(r<num_row);
-				assert(c<num_column);
-				assert(i<num_in_chimera);
+				//assert(r<num_row);
+				//assert(c<num_column);
+				//assert(i<num_in_chimera);
+
+				if(this->is_err_check()){
+					if(!(r<num_row))
+						throw std::invalid_argument("Square::to_ind: invalid argument of r");
+					if(!(c<num_column))
+						throw std::invalid_argument("Square::to_ind: invalid argument of c");
+					if(!(i<num_in_chimera))
+						throw std::invalid_argument("Square::to_ind: invalid argument of i");
+				}
 
 				return this->Sparse<FloatType>::h(to_ind(r,c,i));
 

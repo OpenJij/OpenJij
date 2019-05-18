@@ -26,9 +26,11 @@ namespace openjij {
 					//add adjacent node
 					void set_adj_node(Index from, Index to);
 
+					void num_edge_check(size_t num);
+
 				public:
-					Sparse(size_t num_spins, size_t num_edges);
-					explicit Sparse(size_t num_spins) : Sparse(num_spins, num_spins){}
+					Sparse(size_t num_spins, size_t num_edges, bool err_check=true);
+					explicit Sparse(size_t num_spins, bool err_check=true) : Sparse(num_spins, num_spins, err_check){}
 
 					Sparse(const Sparse<FloatType>&) = default;
 					Sparse(Sparse<FloatType>&&) = default;

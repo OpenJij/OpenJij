@@ -31,7 +31,7 @@ namespace openjij {
 					Index to_ind(int64_t r, int64_t c) const;
 					RowColumn to_rc(Index ind) const;
 
-					Square(size_t num_row, size_t num_column, FloatType init_val=0);
+					Square(size_t num_row, size_t num_column, FloatType init_val=0, bool err_check=true);
 
 					Square(const Square<FloatType>&) = default;
 					Square(Square<FloatType>&&) = default;

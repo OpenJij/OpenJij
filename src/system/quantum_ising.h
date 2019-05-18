@@ -16,11 +16,11 @@ namespace openjij {
 			public:
 				using Schedule = std::vector<std::pair<double, size_t>>;
 
+				QuantumIsing(const graph::Dense<double>& interaction, size_t num_trotter_slices, const graph::Spins& classical_spins);
 				QuantumIsing(const graph::Dense<double>& interaction, size_t num_trotter_slices);
-				QuantumIsing(const graph::Dense<double>& interaction, size_t num_trotter_slices, graph::Spins& classical_spins);
 
 				void initialize_spins();
-				void set_spins(graph::Spins& initial_spin);
+				void set_spins(const graph::Spins& initial_spin);
 
 				virtual double update(const double beta, const double gamma, const double s, const std::string& algo = "") override;
 
