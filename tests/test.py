@@ -1,30 +1,63 @@
+import logging
+LOG_LEVEL_FILE = 'DEBUG'
+LOG_LEVEL_CONSOLE = 'INFO'
+# フォーマットを指定 (https://docs.python.jp/3/library/logging.html#logrecord-attributes)
+_detail_formatting = '%(asctime)s %(levelname)-8s [%(module)s#%(funcName)s %(lineno)d] %(message)s'
+ 
+
+from logging import getLogger, StreamHandler, INFO
+ 
+
 import unittest
 import numpy as np
 
 import openjij as oj
 import cxxjij as cj
 
-# class UtilsTest(unittest.TestCase):
+class UtilsTest(unittest.TestCase):
 
+    def test_benchmark(self):
+        h = {0: 1}
+        J = {(0, 1):-1.0, (1,2): -1.0}
 
-#     def test_benchmark(self):
-#         h = {0: 1}
-#         J = {(0, 1):-1.0, (1,2): -1.0}
+        def solver(time_param, iteration):
+            sa_samp = oj.SASampler()
+            sa_samp.step_num = time_param 
+            sa_samp.iteration = iteration
+            return sa_samp.sample_ising(h, J)
 
-#         sa_samp = oj.SASampler()
+        # logger setting
+        logger = getLogger('openjij')
+        stream_handler = StreamHandler()
+        stream_handler.setLevel(INFO)
+        logger.addHandler(stream_handler)
 
-#         def solver(time_param, iteration):
-#             sa_samp.step_num = time_param 
-#             sa_samp.iteration = iteration
-#             return sa_samp.sample_ising(h, J)
+        # console = logging.StreamHandler()
+        # console.setLevel(getattr(logging, LOG_LEVEL_CONSOLE)) # LOG_LEVEL_CONSOLE = 'INFO' なら logging.INFOを指定していることになる
+        # console_formatter = logging.Formatter(_detail_formatting)
+        # console.setFormatter(console_formatter)
+        # logging.getLogger("openjij").addHandler(console)
 
-#         ground_state = [-1, -1, -1]
-#         ground_energy = oj.BinaryQuadraticModel(h, J).calc_energy(ground_state)
-#         step_num_list = np.linspace(10, 50, 5, dtype=np.int)
-#         bm_res = oj.benchmark([ground_state], ground_energy, solver, time_param_list=step_num_list)
-#         self.assertTrue(set(bm_res) >= {'time', 'error', 'e_res', 'tts', 'tts_threshold_prob'})
+        ground_state = [-1, -1, -1]
+        ground_energy = oj.BinaryQuadraticModel(h, J).calc_energy(ground_state)
+        step_num_list = np.linspace(1, 5, 5, dtype=np.int)
+        bm_res = oj.benchmark([ground_state], ground_energy, solver, time_param_list=step_num_list)
+        self.assertTrue(set(bm_res) >= {'time', 'error', 'e_res', 'tts', 'tts_threshold_prob'})
 
-#         self.assertEqual(len(bm_res) ,len(step_num_list))
+        self.assertEqual(len(bm_res) ,len(step_num_list))
+
+    def test_response_converter(self):
+        try:
+            from dimod.sampleset import SampleSet
+            import neal
+        except ImportError:
+            print(' skip')
+            return
+        
+        neal_sampler = neal.SimulatedAnnealingSampler()
+        Q = {(1,2):-1, (2,3):-1}
+        response = neal_sampler.sample_qubo(Q)
+        oj_res = oj.convert_response(response)
 
 class CXXTest(unittest.TestCase):
     def setUp(self):
@@ -82,7 +115,7 @@ class ModelTest(unittest.TestCase):
 
     def test_ising_dict(self):
         Q = {(0,4): -1.0, (6,2): -3.0}
-        bqm = oj.BinaryQuadraticModel(Q=Q, spin_type='BINARY')
+        bqm = oj.BinaryQuadraticModel(Q=Q, var_type='BINARY')
 
     def test_king_graph(self):
         h = {}
@@ -98,7 +131,7 @@ class ModelTest(unittest.TestCase):
         np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
 
 
-        king_graph = oj.KingGraph(machine_type="ASIC", Q={(0,1): -1}, spin_type="BINARY")
+        king_graph = oj.KingGraph(machine_type="ASIC", Q={(0,1): -1}, var_type="BINARY")
         king_interaction = [[0, 0, 0, 0, -0.25], [0,0,1,0,-0.25], [1,0,1,0,-0.25]]
         np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
 
@@ -117,7 +150,7 @@ class SamplerOptimizeTest(unittest.TestCase):
         self.assertEqual(len(response.states), 1)
         self.assertListEqual(response.states[0], [-1,-1,-1])
 
-        response = oj.SASampler().sample_qubo(self.Q)
+        response = oj.SASampler(beta_max=100).sample_qubo(self.Q)
         self.assertEqual(len(response.states), 1)
         self.assertListEqual(response.states[0], [0,0,0])
 
@@ -135,7 +168,7 @@ class SamplerOptimizeTest(unittest.TestCase):
         gpu_sampler = oj.GPUSQASampler()
         h = {0: -1}
         J = {(0, 4): -1, (0, 5): -1, (2, 5): -1}
-        model = oj.BinaryQuadraticModel(h, J, spin_type='SPIN')
+        model = oj.BinaryQuadraticModel(h, J, var_type='SPIN')
         chimera = gpu_sampler._chimera_graph(model, chimera_L=10)
 
     def test_cmos(self):

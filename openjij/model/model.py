@@ -17,12 +17,12 @@ import cxxjij.graph as cjg
 import warnings
 
 class BinaryQuadraticModel:
-    def __init__(self, h=None, J=None, Q=None, spin_type='SPIN'): 
+    def __init__(self, h=None, J=None, Q=None, var_type='SPIN'): 
 
-        if spin_type == 'SPIN':
+        if var_type == 'SPIN':
             if (h is None) and (J is None):
                 raise ValueError('Input h and J.')
-        elif spin_type=='BINARY':
+        elif var_type=='BINARY':
             if not isinstance(Q, dict) or Q is None:
                 raise ValueError('Q should be dictionary.')
             h = {}
@@ -33,7 +33,7 @@ class BinaryQuadraticModel:
                 else:
                     J[(i, j)] = qij
         else:
-            raise ValueError('spin_type should be "SPIN" or "BINARY"')
+            raise ValueError('var_type should be "SPIN" or "BINARY"')
 
         index_set = set(h.keys())
         warning_called = False
@@ -51,8 +51,8 @@ class BinaryQuadraticModel:
         self.indices = list(index_set)
         self.h = h
         self.J = J
-        self.spin_type = spin_type
-        if spin_type == 'SPIN':
+        self.var_type = var_type
+        if var_type == 'SPIN':
             self.energy_bias = 0.0
         else:
             self.energy_bias = (sum(list(h.values()))*2 + sum(list(J.values())))/4
@@ -60,7 +60,7 @@ class BinaryQuadraticModel:
 
     def ising_interactions(self):
         interactions = self.interactions()
-        if self.spin_type == 'BINARY':
+        if self.var_type == 'BINARY':
             self.energy_bias = (np.sum(np.triu(interactions)) + np.trace(interactions))/4.0
             for i in range(len(interactions)):
                 interactions[i, i] = np.sum(interactions[i, :]) + interactions[i, i]
@@ -87,17 +87,17 @@ class BinaryQuadraticModel:
         return interactions
 
     def calc_energy(self, state):
-        if self.spin_type == 'SPIN':
+        if self.var_type == 'SPIN':
             int_mat = self.ising_interactions()
-        else: # spin_type == qubo
+        else: # var_type == qubo
             int_mat = self.interactions()
         return np.dot(state, np.dot(int_mat, state)) + np.dot(np.diag(int_mat), -1+np.array(state))
 
 
     def ising_dictionary(self):
-        if self.spin_type == 'SPIN':
+        if self.var_type == 'SPIN':
             return self.h, self.J
-        elif self.spin_type == 'BINARY':
+        elif self.var_type == 'BINARY':
             ising_int = self.ising_interactions()
             h = {}
             J = {(i,j): qij/4.0 for (i, j), qij in self.J.items()}

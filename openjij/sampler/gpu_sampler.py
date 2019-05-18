@@ -38,10 +38,10 @@ class GPUSQASampler(BaseSampler):
         self.step_num = step_num
         self.iteration = iteration
         self.energy_bias = 0.0
-        self.spin_type = 'SPIN'
+        self.var_type = 'SPIN'
 
     def sampling(self, chimera=None):
-        response = Response(spin_type=self.spin_type, indices=self.indices)
+        response = Response(var_type=self.var_type, indices=self.indices)
         if chimera is None:
             if self.graph is None:
                 raise ValueError('Input "chimera" graph: .sampling(chimera)')
@@ -60,14 +60,14 @@ class GPUSQASampler(BaseSampler):
         return response
 
     def sample_ising(self, h, J, chimera_L):
-        model = BinaryQuadraticModel(h=h, J=J, spin_type='SPIN')
-        self.spin_type = 'SPIN'
+        model = BinaryQuadraticModel(h=h, J=J, var_type='SPIN')
+        self.var_type = 'SPIN'
         chimera = self._chimera_graph(model, chimera_L)
         return self.sampling(chimera)
 
     def sample_qubo(self, Q, chimera_L):
-        model = BinaryQuadraticModel(Q=Q, spin_type='BINARY')
-        self.spin_type = 'BINARY'
+        model = BinaryQuadraticModel(Q=Q, var_type='BINARY')
+        self.var_type = 'BINARY'
         chimera = self._chimera_graph(model, chimera_L)
         return self.sampling(chimera)
         

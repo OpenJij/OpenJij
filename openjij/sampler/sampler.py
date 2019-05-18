@@ -18,63 +18,74 @@ from openjij.model import BinaryQuadraticModel
 
 
 class Response:
-    def __init__(self, spin_type, indices):
+    def __init__(self, var_type, indices):
         self.states = []
         self.energies = []
-        self.spin_type = spin_type
+        self.var_type = var_type
 
         self.q_states = []
         self.q_energies = []
         self.indices = indices
+        self.min_samples = {}
         self.info = {}
 
     def __repr__(self):
         min_energy_index = np.argmin(self.energies) if len(self.energies) != 0 else None
         ground_energy = self.energies[min_energy_index]
         ground_state = self.states[min_energy_index]
-        ret_str = "number of state : {}, minimum energy : {}, spin_type : {}\n".format(
-            len(self.states), ground_energy, self.spin_type)
+        ret_str = "number of state : {}, minimum energy : {}, var_type : {}\n".format(
+            len(self.states), ground_energy, self.var_type)
         ret_str += "indices: {} \nminmum energy state sample : {}".format(self.indices, ground_state)
         return ret_str
 
-    def add_state_energy(self, state, energy):
-        if self.spin_type == 'SPIN':
-            self.states.append(state)
-        else:  # qubo
-            self.states.append(list(np.array((np.array(state) + 1)/2).astype(np.int)))
-        self.energies.append(energy)
-
-    def add_quantum_state_energy(self, trotter_states, energies):
-        if self.spin_type == 'SPIN':
-            self.q_states.append(trotter_states)
+    def update_ising_states_energies(self, states, energies):
+        if self.var_type == 'SPIN':
+            self.states = states
         else:
-            self.q_states.append([list(np.array((np.array(state) + 1)/2).astype(np.int)) for state in trotter_states])
-        self.q_energies.append(energies)
+            self.states = [list(np.array((np.array(state) + 1)/2).astype(np.int)) for state in states]
+        self.energies = energies
+        self.min_samples = self._minmum_sample()
 
-        # save minimum energy state
-        min_e_indices = np.argmin(self.q_energies, axis=1)
-        self.states = [states[min_e_i] for states, min_e_i in zip(self.q_states, min_e_indices)]
-        self.energies = list(np.array(self.q_energies)[min_e_indices])
+    def update_quantum_ising_states_energies(self, trotter_states, q_energies):
+        if self.var_type == 'SPIN':
+            self.q_states = trotter_states
+        else:
+            self.q_states = [[list(np.array((np.array(state) + 1)/2).astype(np.int)) for state in t_state] for t_state in trotter_states]
+        self.q_energies = q_energies
+        # save minimum energy of each trotter_state
+        min_e_indices = np.argmin(q_energies, axis=1)
+        self.energies = [q_e[min_ind] for min_ind, q_e in zip(min_e_indices, q_energies)]
+        self.states = [list(t_state[min_ind]) for min_ind, t_state in zip(min_e_indices, self.q_states)]
+        self.min_samples = self._minmum_sample()
 
-    def indexed_states(self):
+    def _minmum_sample(self):
+        min_energy_ind = np.argmin(self.energies) if len(self.energies) != 0 else None
+        min_energy = self.energies[min_energy_ind]
+        min_e_indices = np.where(np.array(self.energies) == min_energy)[0]
+        min_states = np.array(self.states)[min_e_indices]
+        min_states, counts = np.unique(min_states, axis=0, return_counts=True)
+        return {'min_states': min_states, 'num_occurrences': counts, 'min_energy': min_energy}
+
+    @property
+    def samples(self):
         return [dict(zip(self.indices, state)) for state in self.states]
 
 
 class BaseSampler:
-    def _make_dense_graph(self, h=None, J=None, Q=None, spin_type='SPIN'):
-        if spin_type=='BINARY':
+    def _make_dense_graph(self, h=None, J=None, Q=None, var_type='SPIN'):
+        if var_type=='BINARY':
             if Q is None:
                 raise ValueError('Input QUBO matrix: Q')
-            model = BinaryQuadraticModel(Q=Q, spin_type='BINARY')
-        elif spin_type=='SPIN':
+            model = BinaryQuadraticModel(Q=Q, var_type='BINARY')
+        elif var_type=='SPIN':
             if h is None or J is None:
                 raise ValueError('Input h and J')
-            model = BinaryQuadraticModel(h=h, J=J, spin_type='SPIN')
+            model = BinaryQuadraticModel(h=h, J=J, var_type='SPIN')
         self.indices = model.indices
         self.N = len(model.indices)
         self.energy_bias = model.energy_bias
 
-        self.spin_type = model.spin_type
+        self.var_type = model.var_type
 
         dense_graph = model.convert_to_dense_graph()
         return dense_graph
@@ -88,23 +99,27 @@ class SASampler(BaseSampler):
         self.iteration = iteration
 
     def sample_ising(self, h, J):
-        spin_type = 'SPIN'
-        ising_dense_graph = self._make_dense_graph(h=h, J=J, spin_type=spin_type)
-        return self._sampling(ising_dense_graph, spin_type=spin_type)
+        var_type = 'SPIN'
+        ising_dense_graph = self._make_dense_graph(h=h, J=J, var_type=var_type)
+        return self._sampling(ising_dense_graph, var_type=var_type)
 
     def sample_qubo(self, Q):
-        spin_type = 'BINARY'
-        ising_dense_graph = self._make_dense_graph(Q=Q, spin_type=spin_type)
-        return self._sampling(ising_dense_graph, spin_type=spin_type)
+        var_type = 'BINARY'
+        ising_dense_graph = self._make_dense_graph(Q=Q, var_type=var_type)
+        return self._sampling(ising_dense_graph, var_type=var_type)
 
-    def _sampling(self, ising_dense_graph, spin_type):
-        response = Response(spin_type=spin_type, indices=self.indices)
+    def _sampling(self, ising_dense_graph, var_type):
         sa_system = cj.system.ClassicalIsing(ising_dense_graph)
+        states = []
+        energies = []
         for _ in range(self.iteration):
             sa_system.initialize_spins()
             sa_system.simulated_annealing(self.beta_min, self.beta_max, self.step_length, self.step_num)
             state = sa_system.get_spins()
-            response.add_state_energy(state, ising_dense_graph.calc_energy(state) + self.energy_bias)
+            states.append(state)
+            energies.append(ising_dense_graph.calc_energy(state) + self.energy_bias)
+        response = Response(var_type=var_type, indices=self.indices)
+        response.update_ising_states_energies(states, energies)
         return response
 
 class SQASampler(BaseSampler):
@@ -118,18 +133,19 @@ class SQASampler(BaseSampler):
         self.iteration = iteration
 
     def sample_ising(self, h, J):
-        spin_type = 'SPIN'
-        ising_dense_graph = self._make_dense_graph(h=h, J=J, spin_type=spin_type)
-        return self._sampling(ising_dense_graph, spin_type=spin_type)
+        var_type = 'SPIN'
+        ising_dense_graph = self._make_dense_graph(h=h, J=J, var_type=var_type)
+        return self._sampling(ising_dense_graph, var_type=var_type)
 
     def sample_qubo(self, Q):
-        spin_type = 'BINARY'
-        ising_dense_graph = self._make_dense_graph(Q=Q, spin_type=spin_type)
-        return self._sampling(ising_dense_graph, spin_type=spin_type)
+        var_type = 'BINARY'
+        ising_dense_graph = self._make_dense_graph(Q=Q, var_type=var_type)
+        return self._sampling(ising_dense_graph, var_type=var_type)
 
-    def _sampling(self, ising_dense_graph, spin_type):
-        response = Response(spin_type=spin_type, indices=self.indices)
+    def _sampling(self, ising_dense_graph, var_type):
         system = cj.system.QuantumIsing(ising_dense_graph, num_trotter_slices=self.trotter)
+        q_states = []
+        q_energies = []
         for _ in range(self.iteration):
             system.initialize_spins()
             system.simulated_quantum_annealing(
@@ -137,8 +153,11 @@ class SQASampler(BaseSampler):
                 self.gamma,
                 self.step_length, self.step_num)
             q_state = system.get_spins()
-            energies = [ising_dense_graph.calc_energy(state) + self.energy_bias for state in q_state]
-            response.add_quantum_state_energy(q_state, energies)
+            q_states.append(q_state)
+            q_energies.append([ising_dense_graph.calc_energy(state) + self.energy_bias for state in q_state])
+        
+        response = Response(var_type=var_type, indices=self.indices)
+        response.update_quantum_ising_states_energies(q_states, q_energies)
         return response
 
 
