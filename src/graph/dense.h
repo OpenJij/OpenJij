@@ -28,7 +28,7 @@ namespace openjij {
 					//add adjacent node
 					void set_adj_node(Index from, Index to);
 				public:
-					explicit Dense(size_t num_spins);
+					explicit Dense(size_t num_spins, bool err_check=true);
 
 					Dense(const Dense<FloatType>&) = default;
 					Dense(Dense<FloatType>&&) = default;

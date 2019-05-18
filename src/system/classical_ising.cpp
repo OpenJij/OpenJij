@@ -7,26 +7,20 @@
 namespace openjij {
 	namespace system {
 
-		ClassicalIsing::ClassicalIsing(const graph::Dense<double>& interaction)
-			: spins(interaction.gen_spin()), interaction(interaction), urd{0.0, 1.0}{
-				//random number generator
-				std::random_device rd;
-				mt = std::mt19937(rd());
-				uid = std::uniform_int_distribution<>{0,(int)spins.size()-1};
-			}
-
-		ClassicalIsing::ClassicalIsing(const graph::Dense<double>& interaction, graph::Spins& spins)
+		ClassicalIsing::ClassicalIsing(const graph::Dense<double>& interaction, const graph::Spins& spins)
 			: spins(spins), interaction(interaction), urd{0.0, 1.0}{
 				//random number generator
 				std::random_device rd;
 				mt = std::mt19937(rd());
 				uid = std::uniform_int_distribution<>{0,(int)spins.size()-1};
+				//disable error check to improve performance
+				this->interaction.set_err_check(false);
 			}
 
 		void ClassicalIsing::initialize_spins(){
 			spins = interaction.gen_spin();
 		}
-		void ClassicalIsing::set_spins(graph::Spins& initial_spins){
+		void ClassicalIsing::set_spins(const graph::Spins& initial_spins){
 			spins = initial_spins;
 		}
 
