@@ -18,44 +18,42 @@ import warnings
 
 class BinaryQuadraticModel:
     def __init__(self, h=None, J=None, Q=None, var_type='SPIN'): 
-
         if var_type == 'SPIN':
-            if (h is None) and (J is None):
+            if (h is None) or (J is None):
                 raise ValueError('Input h and J.')
+            self.linear = h
+            self.quad = J
         elif var_type=='BINARY':
             if not isinstance(Q, dict) or Q is None:
                 raise ValueError('Q should be dictionary.')
-            h = {}
-            J = {}
+            self.linear = {}
+            self.quad = {}
             for (i,j),qij in Q.items():
                 if i==j:
-                    h[i] = qij
+                    self.linear[i] = qij
                 else:
-                    J[(i, j)] = qij
+                    self.quad[(i, j)] = qij
         else:
             raise ValueError('var_type should be "SPIN" or "BINARY"')
 
-        index_set = set(h.keys())
-        warning_called = False
-        for v1, v2 in J.keys():
+        index_set = set(self.linear.keys())
+        for v1, v2 in self.quad.keys():
             indices_len = len(index_set)
             index_set.add(v1)
             index_set.add(v2)
 
             # When the same index add to index set, check the existence of inverse indices in the J
-            if warning_called or (len(index_set) - indices_len < 2 and (v2, v1) in J):
+            if (len(index_set) - indices_len < 2 and (v2, v1) in self.quad):
                 warn_message = 'Two connections J[(a, b)] and J[(b, a)] are defined. ' \
                                'Adopt the (lower index, higher index) connection. ' \
                                'Please pay attention to the symmetry of interaction J.'
                 warnings.warn(warn_message, SyntaxWarning)
         self.indices = list(index_set)
-        self.h = h
-        self.J = J
         self.var_type = var_type
         if var_type == 'SPIN':
             self.energy_bias = 0.0
         else:
-            self.energy_bias = (sum(list(h.values()))*2 + sum(list(J.values())))/4
+            self.energy_bias = (sum(list(self.linear.values()))*2 + sum(list(self.quad.values())))/4
 
 
     def ising_interactions(self):
@@ -72,13 +70,13 @@ class BinaryQuadraticModel:
         interactions = np.zeros((system_size, system_size))
 
         for i, i_index in enumerate(self.indices):
-            interactions[i, i] = self.h[i_index] if i_index in self.h else 0.0
+            interactions[i, i] = self.linear[i_index] if i_index in self.linear else 0.0
             for j, j_index in enumerate(self.indices[i+1:]):
                 j += i+1
-                if (i_index, j_index) in self.J:
-                    jval = self.J[(i_index, j_index)]
-                elif (j_index, i_index) in self.J:
-                    jval = self.J[(j_index, i_index)]
+                if (i_index, j_index) in self.quad:
+                    jval = self.quad[(i_index, j_index)]
+                elif (j_index, i_index) in self.quad:
+                    jval = self.quad[(j_index, i_index)]
                 else:
                     jval = 0.0
                 interactions[i, j] = jval
@@ -96,11 +94,11 @@ class BinaryQuadraticModel:
 
     def ising_dictionary(self):
         if self.var_type == 'SPIN':
-            return self.h, self.J
+            return self.linear, self.quad
         elif self.var_type == 'BINARY':
             ising_int = self.ising_interactions()
             h = {}
-            J = {(i,j): qij/4.0 for (i, j), qij in self.J.items()}
+            J = {(i,j): qij/4.0 for (i, j), qij in self.quad.items()}
             for i in range(len(ising_int)):
                 if ising_int[i][i] != 0:
                     h[self.indices[i]] = ising_int[i][i]
@@ -124,46 +122,5 @@ class BinaryQuadraticModel:
         
         return cxx_dense_ising
 
-    def validate_chimera(self, unit_num_L):
-        """
-        Chimera coordinate: x, y, z
-        One dimension coordinate: i
-        Relation: i = 8Ly + 8x + z
-        """
-        # check chimera interaction
-        for (i,j) in self.J.keys():
-            z_i = i % 8
-            x_i = (i - z_i) % unit_num_L / 8
-            y_i = (i-(8*x_i + z_i))/(8 * unit_num_L)
-            # list up indices which can connect i
-            adj_list = []
-            if z_i < 4:
-                if y_i > 0:
-                    adj_list.append(self._chimera_index(x_i, y_i-1, z_i, unit_num_L))
-                if y_i < unit_num_L-1:
-                    adj_list.append(self._chimera_index(x_i, y_i+1, z_i, unit_num_L))
-                adj_list += [self._chimera_index(x_i, y_i, z, unit_num_L) for z in range(4, 8)]
-            else:
-                if x_i > 0:
-                    adj_list.append(self._chimera_index(x_i, y_i, z_i-1, unit_num_L))
-                if x_i < unit_num_L-1:
-                    adj_list.append(self._chimera_index(x_i, y_i, z_i+1, unit_num_L)) 
-                adj_list += [self._chimera_index(x_i, y_i, z, unit_num_L) for z in range(0, 4)]
-            
-            if not j in adj_list:
-                return False
-        return True
 
-    def _chimera_index(self, x, y, z, L):
-        """
-        Chimera coordinate: x, y, z
-        One dimension coordinate: i
-        Relation: i = 8Ly + 8x + z
-        """
-        return 8*L*y + 8*x + z
 
-    def _index_chimera(self, i, unit_num_L):
-        z_i = i % 8
-        x_i = (i - z_i) % unit_num_L / 8
-        y_i = (i-(8*x_i + z_i))/(8 * unit_num_L)
-        return int(x_i), int(y_i), int(z_i)

@@ -1,12 +1,4 @@
-import logging
-LOG_LEVEL_FILE = 'DEBUG'
-LOG_LEVEL_CONSOLE = 'INFO'
-# フォーマットを指定 (https://docs.python.jp/3/library/logging.html#logrecord-attributes)
-_detail_formatting = '%(asctime)s %(levelname)-8s [%(module)s#%(funcName)s %(lineno)d] %(message)s'
- 
-
 from logging import getLogger, StreamHandler, INFO
- 
 
 import unittest
 import numpy as np
@@ -31,12 +23,6 @@ class UtilsTest(unittest.TestCase):
         stream_handler = StreamHandler()
         stream_handler.setLevel(INFO)
         logger.addHandler(stream_handler)
-
-        # console = logging.StreamHandler()
-        # console.setLevel(getattr(logging, LOG_LEVEL_CONSOLE)) # LOG_LEVEL_CONSOLE = 'INFO' なら logging.INFOを指定していることになる
-        # console_formatter = logging.Formatter(_detail_formatting)
-        # console.setFormatter(console_formatter)
-        # logging.getLogger("openjij").addHandler(console)
 
         ground_state = [-1, -1, -1]
         ground_energy = oj.BinaryQuadraticModel(h, J).calc_energy(ground_state)
@@ -106,16 +92,16 @@ class ModelTest(unittest.TestCase):
     def test_chimera(self):
         h = {}
         J = {(0,4): -1.0, (6,2): -3.0}
-        bqm = oj.BinaryQuadraticModel(h=h, J=J)
+        bqm = oj.ChimeraModel(h=h, J=J)
         self.assertTrue(bqm.validate_chimera(unit_num_L=3))
 
         J = {(0, 1): -1}
-        bqm = oj.BinaryQuadraticModel(h=h, J=J)
+        bqm = oj.ChimeraModel(h=h, J=J)
         self.assertFalse(bqm.validate_chimera(unit_num_L=3))
 
     def test_ising_dict(self):
         Q = {(0,4): -1.0, (6,2): -3.0}
-        bqm = oj.BinaryQuadraticModel(Q=Q, var_type='BINARY')
+        bqm = oj.ChimeraModel(Q=Q, var_type='BINARY')
 
     def test_king_graph(self):
         h = {}
@@ -168,11 +154,17 @@ class SamplerOptimizeTest(unittest.TestCase):
         gpu_sampler = oj.GPUSQASampler()
         h = {0: -1}
         J = {(0, 4): -1, (0, 5): -1, (2, 5): -1}
-        model = oj.BinaryQuadraticModel(h, J, var_type='SPIN')
+        model = oj.ChimeraModel(h, J, var_type='SPIN')
         chimera = gpu_sampler._chimera_graph(model, chimera_L=10)
 
     def test_cmos(self):
         cmos = oj.CMOSAnnealer(token="")
+
+    # def test_gpu(self):
+    #     h = {0: -1}
+    #     J = {(0,4):-1,(0,5):-1,(2,5):-1}
+    #     sampler=oj.GPUSQASampler(iteration=10,step_num=100)
+    #     response=sampler.sample_ising(h,J,chimera_L=10)
         
 if __name__ == '__main__':
     # test is currently disabled. TODO: write test!

@@ -91,12 +91,38 @@ class BaseSampler:
         return dense_graph
 
 class SASampler(BaseSampler):
-    def __init__(self, beta_min=0.1, beta_max=5.0, step_length=10, step_num=100, iteration=1):
-        self.beta_min = beta_min
-        self.beta_max = beta_max
-        self.step_length = step_length
-        self.step_num = step_num
+    def __init__(self, beta_min=0.1, beta_max=5.0, step_length=10, step_num=100, schedule=None, iteration=1):
+
+        if schedule:
+            self._validation_schedule(schedule)
+            self.beta_min = None
+            self.beta_max = None
+            self.step_length = None
+            self.step_num = None
+            self.schedule_info = {'schedule': schedule}
+        else:
+            self.beta_min = beta_min
+            self.beta_max = beta_max
+            self.step_length = step_length
+            self.step_num = step_num
+            self.schedule_info = {
+                'beta_min': beta_min, 'beta_max': beta_max,
+                'step_length': step_length, 'step_num': step_num
+                }
         self.iteration = iteration
+
+    def _validation_schedule(self, schedule):
+        if not isinstance(schedule, (list, np.array)):
+            raise ValueError("schedule should be list or numpy.array")
+
+        if not isinstance(schedule[0], tuple):
+            raise ValueError("schedule is list of tuple (beta : float, step_length : int)")
+
+         # schedule validation  0 <= beta
+        beta = np.array(schedule).T[0]
+        if not np.all(0 <= beta):
+            raise ValueError("schedule beta range is '0 <= beta'.")
+
 
     def sample_ising(self, h, J):
         var_type = 'SPIN'
@@ -114,7 +140,7 @@ class SASampler(BaseSampler):
         energies = []
         for _ in range(self.iteration):
             sa_system.initialize_spins()
-            sa_system.simulated_annealing(self.beta_min, self.beta_max, self.step_length, self.step_num)
+            sa_system.simulated_annealing(**self.schedule_info)
             state = sa_system.get_spins()
             states.append(state)
             energies.append(ising_dense_graph.calc_energy(state) + self.energy_bias)
@@ -124,13 +150,35 @@ class SASampler(BaseSampler):
 
 class SQASampler(BaseSampler):
     def __init__(self, beta=5.0, gamma=1.0,
-                 trotter=5, step_length=10, step_num=100, iteration=1):
+                 trotter=4, step_length=10, step_num=100, schedule=None, iteration=1):
+
+        # make schedule
+        if schedule is not None:
+            self._validate_schedule(schedule)
+            self.step_length = None
+            self.step_num = None
+            self.schedule_info = {'schedule': schedule}
+        else:
+            self.step_length = step_length
+            self.step_num = step_num
+            self.schedule_info = {'step_num': step_num, 'step_length': step_length}
+
         self.beta = beta
         self.gamma = gamma
         self.trotter = trotter
-        self.step_length = step_length
-        self.step_num = step_num
+
         self.iteration = iteration
+        self.energy_bias = 0.0
+        self.var_type = 'SPIN'
+
+    def _validate_schedule(self, schedule):
+        if not isinstance(schedule, (list, np.array)):
+            raise ValueError("schedule should be list or numpy.array")
+
+        # schedule validation  0 <= s < 1
+        sch = np.array(schedule).T[0]
+        if not np.all((0 <= sch) & (sch < 1)):
+            raise ValueError("schedule range is '0 <= s < 1'.")
 
     def sample_ising(self, h, J):
         var_type = 'SPIN'
@@ -149,9 +197,9 @@ class SQASampler(BaseSampler):
         for _ in range(self.iteration):
             system.initialize_spins()
             system.simulated_quantum_annealing(
-                self.beta, 
-                self.gamma,
-                self.step_length, self.step_num)
+                beta = self.beta, gamma=self.gamma,
+                **self.schedule_info
+            )
             q_state = system.get_spins()
             q_states.append(q_state)
             q_energies.append([ising_dense_graph.calc_energy(state) + self.energy_bias for state in q_state])

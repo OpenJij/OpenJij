@@ -66,10 +66,10 @@ class KingGraph(BinaryQuadraticModel):
             self._ising_king_graph = king_graph
         elif var_type == "SPIN":
             self._ising_king_graph = []
-            for index, h in self.h.items():
+            for index, h in self.linear.items():
                 x, y = self._convert_to_xy(index)
                 self._ising_king_graph.append([x,y ,x,y, h])
-            for (i, j), J in self.J.items():
+            for (i, j), J in self.quad.items():
                 x1, y1 = self._convert_to_xy(i)
                 x2, y2 = self._convert_to_xy(j)
                 self._ising_king_graph.append([x1, y1, x2, y2, J])
