@@ -17,7 +17,7 @@ import time
 import inspect
 from logging import getLogger
 
-def benchmark(true_ground_states, ground_energy, solver, time_param_list, p_d=0.9, iteration=1000):
+def benchmark(true_ground_states, ground_energy, solver, time_param_list, p_d=0.9, iteration=100, time_name='execution_time'):
 
     logger = getLogger('openjij')
 
@@ -34,10 +34,12 @@ def benchmark(true_ground_states, ground_energy, solver, time_param_list, p_d=0.
 
     for time_param in time_param_list:
         logger.info('Time parameter: {}'.format(time_param))
-        start = time.time()
         logger.info('\tsampling...')
         response = convert_response(solver(time_param, iteration=iteration))
-        tlist.append( time.time() - start )
+        if not time_name in response.info:
+            raise ValueError('the solver should return openjij.Response object which has info[{}] for measurement computation time.'.format(time_name))
+
+        tlist.append(response.info[time_name])
 
         logger.info('sampling time : '.format(tlist[-1]))
 
@@ -93,6 +95,10 @@ def convert_response(response):
         o_res.update_ising_states_energies(states=states, energies=energies)
                 
         o_res.info = response.info
+        if 'qpu_sampling_time' in response.info:
+            o_res.info['sampling_time'] = response.info['qpu_sampling_time']
+        if 'anneal_time_per_run' in response.info:
+            o_res.info['execution_time'] = response.info['anneal_time_per_run']
         o_res.info['dimod'] = response
         return o_res
     else:

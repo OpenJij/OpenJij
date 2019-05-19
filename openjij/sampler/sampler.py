@@ -15,61 +15,17 @@
 import numpy as np
 import cxxjij as cj
 from openjij.model import BinaryQuadraticModel
+from .response import Response
 
+import time
 
-class Response:
-    def __init__(self, var_type, indices):
-        self.states = []
-        self.energies = []
-        self.var_type = var_type
-
-        self.q_states = []
-        self.q_energies = []
-        self.indices = indices
-        self.min_samples = {}
-        self.info = {}
-
-    def __repr__(self):
-        min_energy_index = np.argmin(self.energies) if len(self.energies) != 0 else None
-        ground_energy = self.energies[min_energy_index]
-        ground_state = self.states[min_energy_index]
-        ret_str = "iteration : {}, minimum energy : {}, var_type : {}\n".format(
-            len(self.states), ground_energy, self.var_type)
-        ret_str += "indices: {} \nminmum energy state sample : {}".format(self.indices, ground_state)
-        return ret_str
-
-    def update_ising_states_energies(self, states, energies):
-        if self.var_type == 'SPIN':
-            self.states = states
-        else:
-            self.states = [list(np.array((np.array(state) + 1)/2).astype(np.int)) for state in states]
-        self.energies = energies
-        self.min_samples = self._minmum_sample()
-
-    def update_quantum_ising_states_energies(self, trotter_states, q_energies):
-        if self.var_type == 'SPIN':
-            self.q_states = trotter_states
-        else:
-            self.q_states = [[list(np.array((np.array(state) + 1)/2).astype(np.int)) for state in t_state] for t_state in trotter_states]
-        self.q_energies = q_energies
-        # save minimum energy of each trotter_state
-        min_e_indices = np.argmin(q_energies, axis=1)
-        self.energies = [q_e[min_ind] for min_ind, q_e in zip(min_e_indices, q_energies)]
-        self.states = [list(t_state[min_ind]) for min_ind, t_state in zip(min_e_indices, self.q_states)]
-        self.min_samples = self._minmum_sample()
-
-    def _minmum_sample(self):
-        min_energy_ind = np.argmin(self.energies) if len(self.energies) != 0 else None
-        min_energy = self.energies[min_energy_ind]
-        min_e_indices = np.where(np.array(self.energies) == min_energy)[0]
-        min_states = np.array(self.states)[min_e_indices]
-        min_states, counts = np.unique(min_states, axis=0, return_counts=True)
-        return {'min_states': min_states, 'num_occurrences': counts, 'min_energy': min_energy}
-
-    @property
-    def samples(self):
-        return [dict(zip(self.indices, state)) for state in self.states]
-
+def measure_time(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        func(*args, **kwargs)
+        calc_time = time.time() - start
+        return calc_time
+    return wrapper
 
 class BaseSampler:
     def _make_dense_graph(self, h=None, J=None, Q=None, var_type='SPIN'):
@@ -148,15 +104,28 @@ class SASampler(BaseSampler):
         sa_system = cj.system.ClassicalIsing(ising_dense_graph)
         states = []
         energies = []
-        for _ in range(self.iteration):
-            sa_system.initialize_spins()
 
-            sa_system.simulated_annealing(**self.schedule_info)
-            state = sa_system.get_spins()
-            states.append(state)
-            energies.append(ising_dense_graph.calc_energy(state) + self.energy_bias)
+        execution_time = []
+
+        @measure_time
+        def exec_sampling():
+            for _ in range(self.iteration):
+                sa_system.initialize_spins()
+                _exec_time = measure_time(sa_system.simulated_annealing)(**self.schedule_info)
+                execution_time.append(_exec_time)
+                state = sa_system.get_spins()
+                states.append(state)
+                energies.append(ising_dense_graph.calc_energy(state) + self.energy_bias)
+        
+        sampling_time = exec_sampling()
+    
         response = Response(var_type=var_type, indices=self.indices)
         response.update_ising_states_energies(states, energies)
+
+        response.info['sampling_time'] = sampling_time * 10**6              # micro sec
+        response.info['execution_time'] = np.mean(execution_time) * 10**6   # micro sec
+        response.info['list_exec_times'] = np.array(execution_time) * 10**6 # micro sec
+
         return response
 
 class SQASampler(BaseSampler):
@@ -217,18 +186,29 @@ class SQASampler(BaseSampler):
 
         q_states = []
         q_energies = []
-        for _ in range(self.iteration):
-            # system.initialize_spins()  # not support yet on GPU
-            system = self.system_class(ising_graph, num_trotter_slices=self.trotter)
-            system.simulated_quantum_annealing(
-                **self.sqa_kwargs
-            )
-            q_state = self._post_process4state(system.get_spins())
-            q_states.append(q_state)
-            q_energies.append([state @ quad @ state + linear @ state + self.energy_bias for state in q_state])
+
+        execution_time = []
+
+        @measure_time
+        def exec_sampling():
+            for _ in range(self.iteration):
+                # system.initialize_spins()  # not support yet on GPU
+                system = self.system_class(ising_graph, num_trotter_slices=self.trotter)
+                _exec_time = measure_time(system.simulated_quantum_annealing)(**self.sqa_kwargs)
+                execution_time.append(_exec_time)
+                q_state = self._post_process4state(system.get_spins())
+                q_states.append(q_state)
+                q_energies.append([state @ quad @ state + linear @ state + self.energy_bias for state in q_state])
         
+        sampling_time = exec_sampling()
+
         response = Response(var_type=var_type, indices=self.indices)
         response.update_quantum_ising_states_energies(q_states, q_energies)
+
+        response.info['sampling_time'] = sampling_time * 10**6              # micro sec
+        response.info['execution_time'] = np.mean(execution_time) * 10**6   # micro sec
+        response.info['list_exec_times'] = np.array(execution_time) * 10**6 # micro sec
+
         return response
 
     def _post_process4state(self, q_state):

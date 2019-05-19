@@ -76,10 +76,12 @@ class CMOSAnnealer(BaseSampler):
         response.indices = [king_graph.convert_to_index(x, y) for x, y, s in res_dict['result']['spins'][0]]
         response.energies = np.array(res_dict['result']['energies']) + king_graph.energy_bias
 
+
+        # more infomation see : https://annealing-cloud.com/web-api/reference/v2.html
         response.info = {
             "averaged_spins": res_dict['result']["averaged_spins"],
             "averaged_energy": res_dict['result']["averaged_energy"],
-            'execution_time' : res_dict['result']['execution_time'],
+            'execution_time' : res_dict['result']['execution_time'] * 10**(-3),
             'job_id': res_dict['job_id'],
         }
         
