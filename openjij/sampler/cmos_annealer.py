@@ -21,7 +21,7 @@ from openjij.model import KingGraph
 import numpy as np
 
 class CMOSAnnealer(BaseSampler):
-    def __init__(self, token, machine_type="ASIC", beta_min=0.1, beta_max=5.0, step_length=10, step_num=100, iteration=1, **args):
+    def __init__(self, token, machine_type="ASIC", beta_min=0.1, beta_max=5.0, step_length=10, step_num=100, iteration=1, **kwargs):
         
         self.token = token
         self.machine_type = machine_type
@@ -32,7 +32,7 @@ class CMOSAnnealer(BaseSampler):
                                 "temperature_target": 1/beta_max,
                                 "num_executions": iteration}
         
-        self.cmos_parameters.update(args)
+        self.cmos_parameters.update(kwargs)
         
     def sample_ising(self, h=None, J=None, king_graph=None):
         var_type = 'SPIN'

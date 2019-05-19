@@ -56,6 +56,9 @@ class BinaryQuadraticModel:
             self.energy_bias = (sum(list(self.linear.values()))*2 + sum(list(self.quad.values())))/4
 
 
+        self._interaction_matrix = None  # calculated at interactions()
+
+
     def ising_interactions(self):
         interactions = self.interactions()
         if self.var_type == 'BINARY':
@@ -65,7 +68,11 @@ class BinaryQuadraticModel:
             interactions /= 4.0
         return interactions
 
-    def interactions(self):
+    def interactions(self, re_calculate=False):
+
+        if (self._interaction_matrix is not None) and (not re_calculate):
+            return self._interaction_matrix
+
         system_size = len(self.indices)
         interactions = np.zeros((system_size, system_size))
 
@@ -82,7 +89,9 @@ class BinaryQuadraticModel:
                 interactions[i, j] = jval
                 interactions[j, i] = jval
 
-        return interactions
+        self._interaction_matrix = interactions
+
+        return self._interaction_matrix
 
     def calc_energy(self, state):
         if self.var_type == 'SPIN':
