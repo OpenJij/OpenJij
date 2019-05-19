@@ -57,7 +57,7 @@ class CXXTest(unittest.TestCase):
         sa.simulated_annealing(beta_min=0.1, beta_max=10.0, step_length=10, step_num=10)
         ground_spins = sa.get_spins()
 
-        sa.simulated_annealing(schedule=[[0.1, 20]])
+        sa.simulated_annealing(schedule=[[0.01, 20]])
         spins = sa.get_spins()
 
         self.assertNotEqual(ground_spins, spins)
@@ -158,6 +158,15 @@ class SamplerOptimizeTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             sampler = oj.SASampler(schedule=valid_sche)
 
+    def test_time_sa(self):
+        fast_res = oj.SASampler(beta_max=100, step_num=10, iteration=10).sample_ising(self.h, self.J)
+        slow_res = oj.SASampler(beta_max=100, step_num=50, iteration=10).sample_ising(self.h, self.J)
+
+        self.assertEqual(len(fast_res.info['list_exec_times']), 10)
+        self.assertTrue(fast_res.info['execution_time'] < slow_res.info['execution_time'])
+
+
+
     def test_sqa(self):
         response = oj.SQASampler().sample_ising(self.h, self.J)
         self.assertEqual(len(response.states), 1)
@@ -175,6 +184,14 @@ class SamplerOptimizeTest(unittest.TestCase):
         vaild_sche = [(s, 10) for s in np.linspace(0, 1, 5)]
         with self.assertRaises(ValueError):
             sampler = oj.SQASampler(schedule=vaild_sche)
+
+    def test_time_sqa(self):
+        fast_res = oj.SQASampler(step_num=10, iteration=10).sample_ising(self.h, self.J)
+        slow_res = oj.SQASampler(step_num=50, iteration=10).sample_ising(self.h, self.J)
+
+        self.assertEqual(len(fast_res.info['list_exec_times']), 10)
+        self.assertTrue(fast_res.info['execution_time'] < slow_res.info['execution_time'])
+
 
 
     def test_gpu_sqa(self):

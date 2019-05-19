@@ -15,7 +15,7 @@
 import cxxjij as cj
 from openjij.sampler import SQASampler
 from openjij.model import BinaryQuadraticModel, ChimeraModel
-from .sampler import Response
+from .response import Response
 import numpy as np
 
 class GPUSQASampler(SQASampler):
