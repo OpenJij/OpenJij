@@ -28,6 +28,11 @@ class GPUSQASampler(SQASampler):
 
         super().__init__(beta, gamma, trotter, step_length, step_num, schedule, iteration)
 
+        try:
+            self.system_class = cj.system.ChimeraGPUQuantum
+        except AttributeError:
+            raise AttributeError('Does the computer you are running have a GPU? Compilation for the GPU has not been done. Please reinstall or compile.')
+
 
 
     def sampling(self, model, chimera_L):
@@ -37,19 +42,8 @@ class GPUSQASampler(SQASampler):
 
         chimera = self._chimera_graph(model, chimera_L)
 
-        response = Response(var_type=self.var_type, indices=self.indices)
+        return self._sampling(ising_graph=chimera, var_type=self.var_type)
 
-        gpu_sqa = cj.system.ChimeraGPUQuantum(chimera, num_trotter_slices=self.trotter)
-        for _ in range(self.iteration):
-            gpu_sqa.simulated_quantum_annealing(
-                beta = self.beta,
-                gamma = self.gamma,
-                **self.schedule_info
-            )
-            q_state = gpu_sqa.get_spins()
-            energies = [chimera.calc_energy(state) + self.energy_bias for state in q_state]
-            response.add_quantum_state_energy(q_state, energies)
-        return response
 
     def sample_ising(self, h, J, chimera_L):
         model = ChimeraModel(h=h, J=J, var_type='SPIN')

@@ -171,6 +171,9 @@ class SQASampler(BaseSampler):
         self.energy_bias = 0.0
         self.var_type = 'SPIN'
 
+        self.system_class = cj.system.QuantumIsing  # CPU Trotterize quantum system
+        self.sqa_args = dict(beta=self.beta, gamma=self.gamma, **self.schedule_info)
+
     def _validate_schedule(self, schedule):
         if not isinstance(schedule, (list, np.array)):
             raise ValueError("schedule should be list or numpy.array")
@@ -190,19 +193,18 @@ class SQASampler(BaseSampler):
         ising_dense_graph = self._make_dense_graph(Q=Q, var_type=var_type)
         return self._sampling(ising_dense_graph, var_type=var_type)
 
-    def _sampling(self, ising_dense_graph, var_type):
-        system = cj.system.QuantumIsing(ising_dense_graph, num_trotter_slices=self.trotter)
+    def _sampling(self, ising_graph, var_type):
+        system = self.system_class(ising_graph, num_trotter_slices=self.trotter)
         q_states = []
         q_energies = []
         for _ in range(self.iteration):
             system.initialize_spins()
             system.simulated_quantum_annealing(
-                beta = self.beta, gamma=self.gamma,
-                **self.schedule_info
+                **self.sqa_args
             )
             q_state = system.get_spins()
             q_states.append(q_state)
-            q_energies.append([ising_dense_graph.calc_energy(state) + self.energy_bias for state in q_state])
+            q_energies.append([ising_graph.calc_energy(state) + self.energy_bias for state in q_state])
         
         response = Response(var_type=var_type, indices=self.indices)
         response.update_quantum_ising_states_energies(q_states, q_energies)

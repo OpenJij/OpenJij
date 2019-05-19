@@ -126,10 +126,10 @@ class ModelTest(unittest.TestCase):
 class SamplerOptimizeTest(unittest.TestCase):
 
     def setUp(self):
-        self.h = {0: 1, 1: 1, 2: 1}
-        self.J = {(0,1): -1.0, (1,2): -1.0}
+        self.h = {0: 5, 1: 5, 2: 5}
+        self.J = {(0,1): -1.0, (1,2): -1.0, (2, 0): -1.0}
         self.Q = {(i,i): hi for i, hi in self.h.items()}
-        self.Q.update(self.J)
+        self.Q.update({(0,1): 1.0, (1,2): 1.0, (2, 0): 1.0})
 
     def test_sa(self):
         response = oj.SASampler(beta_max=100).sample_ising(self.h, self.J)
@@ -140,6 +140,10 @@ class SamplerOptimizeTest(unittest.TestCase):
         self.assertEqual(len(response.states), 1)
         self.assertListEqual(response.states[0], [0,0,0])
 
+        valid_sche = [(beta, 1) for beta in np.linspace(-1, 1, 5)]
+        with self.assertRaises(ValueError):
+            sampler = oj.SASampler(schedule=valid_sche)
+
     def test_sqa(self):
         response = oj.SQASampler().sample_ising(self.h, self.J)
         self.assertEqual(len(response.states), 1)
@@ -149,13 +153,23 @@ class SamplerOptimizeTest(unittest.TestCase):
         self.assertEqual(len(response.states), 1)
         self.assertListEqual(response.states[0], [0,0,0])
 
+        schedule = [(s, 10) for s in np.arange(0, 1, 5)] + [(0.99, 100)]
+        response = oj.SQASampler(schedule=schedule).sample_qubo(self.Q)
+        self.assertListEqual(response.states[0], [0,0,0])
+
+        vaild_sche = [(s, 10) for s in np.linspace(0, 1, 5)]
+        with self.assertRaises(ValueError):
+            sampler = oj.SQASampler(schedule=vaild_sche)
+
+    
+
 
     def test_gpu_sqa(self):
-        gpu_sampler = oj.GPUSQASampler()
+        # gpu_sampler = oj.GPUSQASampler()
         h = {0: -1}
         J = {(0, 4): -1, (0, 5): -1, (2, 5): -1}
         model = oj.ChimeraModel(h, J, var_type='SPIN')
-        chimera = gpu_sampler._chimera_graph(model, chimera_L=10)
+        # chimera = gpu_sampler._chimera_graph(model, chimera_L=10)
 
     def test_cmos(self):
         cmos = oj.CMOSAnnealer(token="")
