@@ -1,12 +1,4 @@
-import logging
-LOG_LEVEL_FILE = 'DEBUG'
-LOG_LEVEL_CONSOLE = 'INFO'
-# フォーマットを指定 (https://docs.python.jp/3/library/logging.html#logrecord-attributes)
-_detail_formatting = '%(asctime)s %(levelname)-8s [%(module)s#%(funcName)s %(lineno)d] %(message)s'
- 
-
 from logging import getLogger, StreamHandler, INFO
- 
 
 import unittest
 import numpy as np
@@ -31,12 +23,6 @@ class UtilsTest(unittest.TestCase):
         stream_handler = StreamHandler()
         stream_handler.setLevel(INFO)
         logger.addHandler(stream_handler)
-
-        # console = logging.StreamHandler()
-        # console.setLevel(getattr(logging, LOG_LEVEL_CONSOLE)) # LOG_LEVEL_CONSOLE = 'INFO' なら logging.INFOを指定していることになる
-        # console_formatter = logging.Formatter(_detail_formatting)
-        # console.setFormatter(console_formatter)
-        # logging.getLogger("openjij").addHandler(console)
 
         ground_state = [-1, -1, -1]
         ground_energy = oj.BinaryQuadraticModel(h, J).calc_energy(ground_state)
@@ -102,20 +88,34 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(type(bqm.ising_interactions()), np.ndarray)
         correct_mat = np.array([[0, -1, 0,],[-1, 0, -3],[0, -3, 0]])
         np.testing.assert_array_equal(bqm.ising_interactions(), correct_mat.astype(np.float))
-    
+
+    def test_chimera_converter(self):
+        h = {}
+        J = {(0,4): -1.0, (6,2): -3.0, (16, 0): 4}
+        chimera = oj.ChimeraModel(h=h, J=J, unit_num_L=2)
+        self.assertEqual(chimera.chimera_coordinate(4, unit_num_L=2), (0,0,4))
+        self.assertEqual(chimera.chimera_coordinate(12, unit_num_L=2), (1,0,4))
+        self.assertEqual(chimera.chimera_coordinate(16, unit_num_L=2), (0,1,0))
+        
+
     def test_chimera(self):
         h = {}
         J = {(0,4): -1.0, (6,2): -3.0}
-        bqm = oj.BinaryQuadraticModel(h=h, J=J)
-        self.assertTrue(bqm.validate_chimera(unit_num_L=3))
+        bqm = oj.ChimeraModel(h=h, J=J, unit_num_L=3)
+        self.assertTrue(bqm.validate_chimera())
 
         J = {(0, 1): -1}
-        bqm = oj.BinaryQuadraticModel(h=h, J=J)
-        self.assertFalse(bqm.validate_chimera(unit_num_L=3))
+        bqm = oj.ChimeraModel(h=h, J=J, unit_num_L=3)
+        with self.assertRaises(ValueError):
+            bqm.validate_chimera()
+        
+        J = {(4, 12): -1}
+        bqm = oj.ChimeraModel(h=h, J=J, unit_num_L=2)
+        self.assertTrue(bqm.validate_chimera())
 
     def test_ising_dict(self):
         Q = {(0,4): -1.0, (6,2): -3.0}
-        bqm = oj.BinaryQuadraticModel(Q=Q, var_type='BINARY')
+        bqm = oj.ChimeraModel(Q=Q, var_type='BINARY', unit_num_L=3)
 
     def test_king_graph(self):
         h = {}
@@ -140,10 +140,10 @@ class ModelTest(unittest.TestCase):
 class SamplerOptimizeTest(unittest.TestCase):
 
     def setUp(self):
-        self.h = {0: 1, 1: 1, 2: 1}
-        self.J = {(0,1): -1.0, (1,2): -1.0}
+        self.h = {0: 5, 1: 5, 2: 5}
+        self.J = {(0,1): -1.0, (1,2): -1.0, (2, 0): -1.0}
         self.Q = {(i,i): hi for i, hi in self.h.items()}
-        self.Q.update(self.J)
+        self.Q.update({(0,1): 1.0, (1,2): 1.0, (2, 0): 1.0})
 
     def test_sa(self):
         response = oj.SASampler(beta_max=100).sample_ising(self.h, self.J)
@@ -154,25 +154,58 @@ class SamplerOptimizeTest(unittest.TestCase):
         self.assertEqual(len(response.states), 1)
         self.assertListEqual(response.states[0], [0,0,0])
 
+        valid_sche = [(beta, 1) for beta in np.linspace(-1, 1, 5)]
+        with self.assertRaises(ValueError):
+            sampler = oj.SASampler(schedule=valid_sche)
+
     def test_sqa(self):
         response = oj.SQASampler().sample_ising(self.h, self.J)
         self.assertEqual(len(response.states), 1)
         self.assertListEqual(response.states[0], [-1,-1,-1])
+        self.assertEqual(response.energies[0], -18)
 
         response = oj.SQASampler().sample_qubo(self.Q)
         self.assertEqual(len(response.states), 1)
         self.assertListEqual(response.states[0], [0,0,0])
 
+        schedule = [(s, 10) for s in np.arange(0, 1, 5)] + [(0.99, 100)]
+        response = oj.SQASampler(schedule=schedule).sample_qubo(self.Q)
+        self.assertListEqual(response.states[0], [0,0,0])
+
+        vaild_sche = [(s, 10) for s in np.linspace(0, 1, 5)]
+        with self.assertRaises(ValueError):
+            sampler = oj.SQASampler(schedule=vaild_sche)
+
 
     def test_gpu_sqa(self):
         gpu_sampler = oj.GPUSQASampler()
         h = {0: -1}
-        J = {(0, 4): -1, (0, 5): -1, (2, 5): -1}
-        model = oj.BinaryQuadraticModel(h, J, var_type='SPIN')
-        chimera = gpu_sampler._chimera_graph(model, chimera_L=10)
+        J = {(0, 4): -1, (0, 5): -1, (2, 5): -2, (4, 12): 0.5, (16, 0): 2}
+        model = oj.ChimeraModel(h, J, var_type='SPIN', unit_num_L=3)
+
+        with self.assertRaises(ValueError):
+            # unit_num_L should be a even number in GPU
+            chimera = gpu_sampler._chimera_graph(model)
+
+        model = oj.ChimeraModel(h, J, var_type='SPIN', unit_num_L=2)
+        chimera = gpu_sampler._chimera_graph(model)
+
+        self.assertEqual(chimera[0,0,0], h[0])
+        self.assertEqual(chimera[0,0,0,cj.graph.ChimeraDir.IN_0or4], J[0, 4])
+        self.assertEqual(chimera[0,0,0,cj.graph.ChimeraDir.IN_1or5], J[0, 5])
+        self.assertEqual(chimera[0,0,2,cj.graph.ChimeraDir.IN_1or5], J[2, 5])
+        self.assertEqual(chimera[0,0,4,cj.graph.ChimeraDir.PLUS_C], J[4, 12])
+        self.assertEqual(chimera[0,1,0,cj.graph.ChimeraDir.MINUS_R], J[16, 0])
+
 
     def test_cmos(self):
         cmos = oj.CMOSAnnealer(token="")
+
+    # def test_gpu(self):
+    #     h = {0: -1}
+    #     J = {(0,4):-1,(0,5):-1,(2,5):-1}
+    #     sampler=oj.GPUSQASampler(iteration=10,step_num=100)
+    #     response=sampler.sample_ising(h,J,chimera_L=10)
         
 if __name__ == '__main__':
     # test is currently disabled. TODO: write test!
