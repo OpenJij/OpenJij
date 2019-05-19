@@ -57,7 +57,7 @@ class CXXTest(unittest.TestCase):
         sa.simulated_annealing(beta_min=0.1, beta_max=10.0, step_length=10, step_num=10)
         ground_spins = sa.get_spins()
 
-        sa.simulated_annealing(schedule=[[0.1, 20]])
+        sa.simulated_annealing(schedule=[[0.01, 20]])
         spins = sa.get_spins()
 
         self.assertNotEqual(ground_spins, spins)
