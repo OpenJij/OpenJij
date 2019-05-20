@@ -11,6 +11,7 @@ Documents : https://openjij.github.io/OpenJij/
 ### pip
 ```
 $ pip install openjij
+```
 
 ### cmake setup
 
@@ -56,5 +57,7 @@ response = sampler.sample_ising(h={'a': -1}, J={('a','b'): 1})
 [{index: s for index, s in zip(response.indices, state)} for state in response.states]
 # [{'b': -1, 'a': 1}]
 ```
+## Community
 
+Discord : https://discord.gg/TP6Q9cH
 

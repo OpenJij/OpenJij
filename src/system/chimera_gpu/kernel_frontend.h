@@ -1,37 +1,26 @@
 #pragma once
+#include <cuda_runtime.h>
+#include <curand.h>
 
 namespace openjij{
 	namespace system{
 		namespace chimera_gpu{
 
-			//functions
-			void cuda_set_device(int device);
+			void cuda_init_spin(int32_t*& dev_spin, float*& dev_random, uint32_t num_trot, uint32_t num_row, uint32_t num_col, curandGenerator_t& rng, dim3& grid, dim3& block);
 
-			void cuda_init(
-					uint32_t arg_num_trot,
-					uint32_t arg_num_row,
-					uint32_t arg_num_col
+			void cuda_run(float beta, float gamma, float s,
+					int32_t*& dev_spin,
+					float*& dev_random,
+					float*& dev_J_out_p,
+					float*& dev_J_out_n,
+					float*& dev_J_in_0,
+					float*& dev_J_in_1,
+					float*& dev_J_in_2,
+					float*& dev_J_in_3,
+					float*& dev_H,
+					uint32_t num_trot, uint32_t num_row, uint32_t num_col,
+					curandGenerator_t& rng, dim3& grid, dim3& block
 					);
-
-			void cuda_init_interactions(
-					const float* J_out_p,
-					const float* J_out_n,
-					const float* J_in_0,
-					const float* J_in_1,
-					const float* J_in_2,
-					const float* J_in_3,
-					const float* H
-					);
-
-			void cuda_init_spin();
-
-			void cuda_run(float beta, float gamma, float s);
-
-			void copy_spins();
-
-			int32_t get_spin(uint32_t t, uint32_t i, uint32_t j, uint32_t ind);
-
-			void cuda_free();
 
 		}
 	}

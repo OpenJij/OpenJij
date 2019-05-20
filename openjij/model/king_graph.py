@@ -30,7 +30,7 @@ class KingGraph(BinaryQuadraticModel):
         Quadratic term [x1, y1, x2, y2, value]
         Linear term    [x1, y1, x1, y1, value]
     """
-    def __init__(self, machine_type, h=None, J=None, Q=None, king_graph=None, spin_type='ising'):
+    def __init__(self, machine_type, h=None, J=None, Q=None, king_graph=None, var_type='SPIN'):
         """
         The constructor reformat interactions to Web API format (ising king graph),
         and validates that the interaction is in King Graph. 
@@ -58,18 +58,18 @@ class KingGraph(BinaryQuadraticModel):
 
         # convert format h, J, Q and initilize BQM
         if king_graph is not None:
-            h, J, Q = self._convert_to_BQM_format(king_graph, spin_type)
-        super().__init__(h=h, J=J, Q=Q, spin_type=spin_type)
+            h, J, Q = self._convert_to_BQM_format(king_graph, var_type)
+        super().__init__(h=h, J=J, Q=Q, var_type=var_type)
 
         # reformat to ising king graph (which is Web API format)
-        if king_graph is not None and spin_type == "ising":
+        if king_graph is not None and var_type == "SPIN":
             self._ising_king_graph = king_graph
-        elif spin_type == "ising":
+        elif var_type == "SPIN":
             self._ising_king_graph = []
-            for index, h in self.h.items():
+            for index, h in self.linear.items():
                 x, y = self._convert_to_xy(index)
                 self._ising_king_graph.append([x,y ,x,y, h])
-            for (i, j), J in self.J.items():
+            for (i, j), J in self.quad.items():
                 x1, y1 = self._convert_to_xy(i)
                 x2, y2 = self._convert_to_xy(j)
                 self._ising_king_graph.append([x1, y1, x2, y2, J])
@@ -87,9 +87,9 @@ class KingGraph(BinaryQuadraticModel):
 
         self._validation_ising_king_graph()
         
-    def _convert_to_BQM_format(self, king_graph, spin_type):
+    def _convert_to_BQM_format(self, king_graph, var_type):
         h, J, Q = None, None, None
-        if spin_type == "ising":
+        if var_type == "SPIN":
             h, J = {}, {}
             for x1, y1, x2, y2, value in king_graph:
                 if (x1, y1) == (x2, y2):
