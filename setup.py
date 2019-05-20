@@ -36,30 +36,30 @@ class CMakeBuild(build_ext):
     def build_extension(self, ext):
         print(ext, ext.name)
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-        cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
+        cmake_kwargs = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       #'-DCMAKE_VERBOSE_MAKEFILE=ON',
                       #'-DCMAKE_CUDA_FLAGS= -arch=sm_30 ',
                       '-DPYTHON_EXECUTABLE=' + sys.executable]
 
         cfg = 'Debug' if self.debug else 'Release'
-        build_args = ['--config', cfg]
+        build_kwargs = ['--config', cfg]
 
         if platform.system() == "Windows":
-            cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
+            cmake_kwargs += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
             if sys.maxsize > 2**32:
-                cmake_args += ['-A', 'x64']
-            build_args += ['--', '/m']
+                cmake_kwargs += ['-A', 'x64']
+            build_kwargs += ['--', '/m']
         else:
-            cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_args += ['--', '-j2']
+            cmake_kwargs += ['-DCMAKE_BUILD_TYPE=' + cfg]
+            build_kwargs += ['--', '-j2']
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
                                                               self.distribution.get_version())
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
-        subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
-        subprocess.check_call(['cmake', '--build', '.', '--target', 'python'] + build_args, cwd=self.build_temp)
+        subprocess.check_call(['cmake', ext.sourcedir] + cmake_kwargs, cwd=self.build_temp, env=env)
+        subprocess.check_call(['cmake', '--build', '.', '--target', 'python'] + build_kwargs, cwd=self.build_temp)
 
 class GoogleTestCommand(TestCommand):
     """
@@ -89,7 +89,7 @@ class GoogleTestCommand(TestCommand):
 
 setup(
     name='openjij',
-    version='0.0.4',
+    version='0.0.5',
     author='Jij Inc.',
     author_email='openjij@j-ij.com',
     url = 'https://openjij.github.io/OpenJij/',

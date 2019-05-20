@@ -43,14 +43,15 @@ PYBIND11_MODULE(cxxjij, m){
 
 	//graph 
 	py::class_<graph::Graph>(m_graph, "Graph")
-		.def(py::init<size_t>(), "num_spins"_a)
+		.def(py::init<size_t, bool>(), "num_spins"_a, "err_check"_a=true)
 		.def("gen_spin", [](const graph::Graph& self, uint_fast32_t seed){return self.gen_spin(seed);})
 		.def("gen_spin", [](const graph::Graph& self){return self.gen_spin();})
-		.def("get_num_spins", &graph::Graph::get_num_spins);
+		.def("get_num_spins", &graph::Graph::get_num_spins)
+		.def("set_err_check", &graph::Graph::set_err_check);
 
 	//dense
 	py::class_<graph::Dense<double>, graph::Graph>(m_graph, "Dense")
-		.def(py::init<size_t>(), "num_spins"_a)
+		.def(py::init<size_t, bool>(), "num_spins"_a, "err_check"_a=true)
 		.def(py::init<const graph::Dense<double>&>(), "other"_a)
 		.def(py::init<const graph::Sparse<double>&>(), "other"_a)
 		.def("adj_nodes", &graph::Dense<double>::adj_nodes)
@@ -62,8 +63,8 @@ PYBIND11_MODULE(cxxjij, m){
 
 	//sparse
 	py::class_<graph::Sparse<double>, graph::Graph>(m_graph, "Sparse")
-		.def(py::init<size_t, size_t>(), "num_spins"_a, "num_edges"_a)
-		.def(py::init<size_t>(),  "num_spins"_a)
+		.def(py::init<size_t, size_t, bool>(), "num_spins"_a, "num_edges"_a, "err_check"_a=true)
+		.def(py::init<size_t, bool>(),  "num_spins"_a, "err_check"_a=true)
 		.def(py::init<const graph::Sparse<double>&>(), "other"_a)
 		.def(py::init<const graph::Dense<double>&>(), "other"_a)
 		.def("adj_nodes", &graph::Sparse<double>::adj_nodes)
@@ -83,7 +84,7 @@ PYBIND11_MODULE(cxxjij, m){
 
 	//square
 	py::class_<graph::Square<double>, graph::Sparse<double>>(m_graph, "Square")
-		.def(py::init<size_t, size_t, double>(), "num_row"_a, "num_column"_a, "init_val"_a=0)
+		.def(py::init<size_t, size_t, double, bool>(), "num_row"_a, "num_column"_a, "init_val"_a=0, "err_check"_a=true)
 		.def(py::init<const graph::Square<double>&>(), "other"_a)
 		.def("to_ind", &graph::Square<double>::to_ind)
 		.def("to_rc", &graph::Square<double>::to_rc)
@@ -107,7 +108,7 @@ PYBIND11_MODULE(cxxjij, m){
 
 	//chimera
 	py::class_<graph::Chimera<double>, graph::Sparse<double>>(m_graph, "Chimera")
-		.def(py::init<size_t, size_t, double>(), "num_row"_a, "num_column"_a, "init_val"_a=0)
+		.def(py::init<size_t, size_t, double, bool>(), "num_row"_a, "num_column"_a, "init_val"_a=0, "err_check"_a=true)
 		.def(py::init<const graph::Chimera<double>&>(), "other"_a)
 		.def("to_ind", &graph::Chimera<double>::to_ind)
 		.def("to_rci", &graph::Chimera<double>::to_rci)
@@ -127,7 +128,8 @@ PYBIND11_MODULE(cxxjij, m){
 	py::class_<system::ClassicalIsing>(m_system, "ClassicalIsing")
 		.def(py::init<const graph::Dense<double>&>(), "other"_a)
 		.def(py::init<const graph::Sparse<double>&>(), "other"_a)
-		.def(py::init<const graph::Sparse<double>&, graph::Spins&>(), "other"_a, "init_state"_a)
+		.def(py::init<const graph::Dense<double>&, const graph::Spins&>(), "other"_a, "init_state"_a)
+		.def(py::init<const graph::Sparse<double>&, const graph::Spins&>(), "other"_a, "init_state"_a)
 		.def("simulated_annealing", (void (system::ClassicalIsing::*)(const double, const double, const size_t, const size_t, const std::string&)) &system::ClassicalIsing::simulated_annealing, "beta_min"_a, "beta_max"_a, "step_length"_a, "step_num"_a, "algo"_a="")
 		.def("simulated_annealing", (void (system::ClassicalIsing::*)(const std::vector<std::pair<double, size_t>>&, const std::string&)) &system::ClassicalIsing::simulated_annealing, "schedule"_a, "algo"_a="")
 		.def("get_spins", &system::ClassicalIsing::get_spins)
@@ -138,7 +140,8 @@ PYBIND11_MODULE(cxxjij, m){
 	py::class_<system::QuantumIsing>(m_system, "QuantumIsing")
 		.def(py::init<const graph::Dense<double>&, size_t>(), "other"_a, "num_trotter_slices"_a)
 		.def(py::init<const graph::Sparse<double>&, size_t>(), "other"_a, "num_trotter_slices"_a)
-		.def(py::init<const graph::Sparse<double>&, size_t, graph::Spins&>(), "other"_a, "num_trotter_slices"_a, "init_state"_a)
+		.def(py::init<const graph::Dense<double>&, size_t, const graph::Spins&>(), "other"_a, "num_trotter_slices"_a, "init_state"_a)
+		.def(py::init<const graph::Sparse<double>&, size_t, const graph::Spins&>(), "other"_a, "num_trotter_slices"_a, "init_state"_a)
 		.def("simulated_quantum_annealing", (void (system::QuantumIsing::*)(const double, const double, const size_t, const size_t, const std::string&)) &system::QuantumIsing::simulated_quantum_annealing, "beta"_a, "gamma"_a, "step_length"_a, "step_num"_a, "algo"_a="")
 		.def("simulated_quantum_annealing", (void (system::QuantumIsing::*)(const double, const double, const std::vector<std::pair<double, size_t>>&, const std::string&)) &system::QuantumIsing::simulated_quantum_annealing, "beta"_a, "gamma"_a, "schedule"_a, "algo"_a="")
 		.def("get_spins", &system::QuantumIsing::get_spins)

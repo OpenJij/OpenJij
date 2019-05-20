@@ -154,3 +154,5 @@ dmypy.json
 
 .idea/
 .vim.custom
+
+.vscode/

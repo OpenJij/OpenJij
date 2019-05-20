@@ -1,13 +1,135 @@
 #include "chimera_gpu_quantum.h"
 #include "../../algorithm/sqa.h"
+#include <cuda_runtime.h>
+#include <curand.h> 
 #include "kernel_frontend.h"
 #include "index.h"
-#include <cassert>
+#include <cassert> 
 #include <cmath>
 #include <iostream>
 
 namespace openjij {
 	namespace system {
+
+		//HANDLE ERROR
+		cudaError_t err;
+		curandStatus_t st;
+
+		/***************************
+		  macro for detecting errors 
+		 ***************************/
+#ifndef HANDLE_ERROR
+#define HANDLE_ERROR(expr) err=(expr); if(err != cudaSuccess) std::cout << "error_code: " << err << " err_name: " << cudaGetErrorString(err) << " at " << __FILE__ << " line " << __LINE__ << std::endl;
+#endif
+
+#ifndef HANDLE_ERROR_CURAND
+#define HANDLE_ERROR_CURAND(expr) st=(expr); if(st != CURAND_STATUS_SUCCESS) std::cout << "curand_error: " << st << " at " << __FILE__ << " line " << __LINE__ << std::endl;
+#endif
+
+		/**********************
+		  cuda host functions
+		 **********************/
+
+		inline void ChimeraGPUQuantum::cuda_set_device(int device){
+			HANDLE_ERROR(cudaSetDevice(device));
+		}
+
+		//intialize GPU 
+		void ChimeraGPUQuantum::cuda_init(
+				uint32_t arg_num_trot,
+				uint32_t arg_num_row,
+				uint32_t arg_num_col
+				){
+
+			//copy variables to host variables (static)
+			num_trot = arg_num_trot;
+			num_row = arg_num_row;
+			num_col = arg_num_col;
+
+			//localsize: the number of spins in each chimera graph
+			uint32_t localsize = num_row*num_col*unitspins;
+			//totalsize: the number of spins in all chimera graph (trotter slices included)
+			uint32_t totalsize = num_trot*localsize;
+
+			//create random generator
+			HANDLE_ERROR(cudaMalloc((void**)&dev_random, totalsize*sizeof(float)));
+			//xorwow
+			//HANDLE_ERROR_CURAND(curandCreateGenerator(&rng, CURAND_RNG_PSEUDO_MT19937));
+			HANDLE_ERROR_CURAND(curandCreateGenerator(&rng, CURAND_RNG_PSEUDO_XORWOW));
+			//set seed
+			HANDLE_ERROR_CURAND(curandSetPseudoRandomGeneratorSeed(rng, time(NULL)));
+
+			//cudaMalloc
+			HANDLE_ERROR(cudaMalloc((void**)&dev_J_out_p,	localsize*sizeof(float)));
+			HANDLE_ERROR(cudaMalloc((void**)&dev_J_out_n,	localsize*sizeof(float)));
+			HANDLE_ERROR(cudaMalloc((void**)&dev_J_in_0,		localsize*sizeof(float)));
+			HANDLE_ERROR(cudaMalloc((void**)&dev_J_in_1,		localsize*sizeof(float)));
+			HANDLE_ERROR(cudaMalloc((void**)&dev_J_in_2,		localsize*sizeof(float)));
+			HANDLE_ERROR(cudaMalloc((void**)&dev_J_in_3,  	localsize*sizeof(float)));
+			HANDLE_ERROR(cudaMalloc((void**)&dev_H,  			localsize*sizeof(float)));
+
+			//spin
+			HANDLE_ERROR(cudaMalloc((void**)&dev_spin,  		totalsize*sizeof(int32_t)));
+
+			//set grids and blocks
+			grid = dim3(num_col/block_col, num_row/block_row, num_trot/block_trot);
+			block = dim3(unitspins*block_col, block_row, block_trot);
+
+			//generate random_number
+			HANDLE_ERROR_CURAND(curandGenerateUniform(rng, dev_random, totalsize));
+			//init spins
+			chimera_gpu::cuda_init_spin(dev_spin, dev_random, num_trot, num_row, num_col, rng, grid, block);
+
+			//initialize spinarray
+			HANDLE_ERROR(cudaMallocHost((void**)&spinarray, sizeof(int32_t)*totalsize));
+
+		}
+
+		void ChimeraGPUQuantum::cuda_init_interactions(
+				const float* J_out_p,
+				const float* J_out_n,
+				const float* J_in_0,
+				const float* J_in_1,
+				const float* J_in_2,
+				const float* J_in_3,
+				const float* H
+				){
+
+			//localsize: the number of spins in each chimera graph
+			uint32_t localsize = num_row*num_col*unitspins;
+			//cudaMemcpy
+			HANDLE_ERROR(cudaMemcpy(dev_J_out_p, J_out_p, 	localsize*sizeof(float), cudaMemcpyHostToDevice));
+			HANDLE_ERROR(cudaMemcpy(dev_J_out_n, J_out_n, 	localsize*sizeof(float), cudaMemcpyHostToDevice));
+			HANDLE_ERROR(cudaMemcpy(dev_J_in_0, J_in_0,		localsize*sizeof(float), cudaMemcpyHostToDevice));
+			HANDLE_ERROR(cudaMemcpy(dev_J_in_1, J_in_1,		localsize*sizeof(float), cudaMemcpyHostToDevice));
+			HANDLE_ERROR(cudaMemcpy(dev_J_in_2, J_in_2,		localsize*sizeof(float), cudaMemcpyHostToDevice));
+			HANDLE_ERROR(cudaMemcpy(dev_J_in_3, J_in_3,		localsize*sizeof(float), cudaMemcpyHostToDevice));
+			HANDLE_ERROR(cudaMemcpy(dev_H, H,					localsize*sizeof(float), cudaMemcpyHostToDevice));
+		}
+
+		void ChimeraGPUQuantum::copy_spins() const{
+			HANDLE_ERROR(cudaMemcpy(spinarray, dev_spin, num_trot*num_row*num_col*unitspins*sizeof(int32_t), cudaMemcpyDeviceToHost));
+		}
+
+		void ChimeraGPUQuantum::cuda_free(){
+			HANDLE_ERROR(cudaFree(dev_random));
+			//cudaMalloc
+			HANDLE_ERROR(cudaFree(dev_J_out_p));
+			HANDLE_ERROR(cudaFree(dev_J_out_n));
+			HANDLE_ERROR(cudaFree(dev_J_in_0));
+			HANDLE_ERROR(cudaFree(dev_J_in_1));
+			HANDLE_ERROR(cudaFree(dev_J_in_2));
+			HANDLE_ERROR(cudaFree(dev_J_in_3));
+			HANDLE_ERROR(cudaFree(dev_H));
+
+			HANDLE_ERROR(cudaFree(dev_spin));
+
+			//curand
+			HANDLE_ERROR_CURAND(curandDestroyGenerator(rng));
+			//page-locked memory
+			HANDLE_ERROR(cudaFreeHost(spinarray));
+		}
+
 
 		ChimeraGPUQuantum::ChimeraGPUQuantum(const graph::Chimera<double>& interaction, size_t num_trotter_slices, int gpudevice)
 		: interaction(interaction), num_trotter_slices(num_trotter_slices), row(interaction.get_num_row()), col(interaction.get_num_column()){
@@ -22,9 +144,9 @@ namespace openjij {
 			//overflow?
 			assert((uint64_t)0xFFFFFFFF >= (uint64_t)num_trotter_slices*row*col*8);
 			//set device
-			chimera_gpu::cuda_set_device(gpudevice);
+			cuda_set_device(gpudevice);
 			//init GPU
-			chimera_gpu::cuda_init(num_trotter_slices, row, col);
+			cuda_init(num_trotter_slices, row, col);
 
 			//init parameters;
 			uint32_t localsize = row*col*8;
@@ -71,7 +193,7 @@ namespace openjij {
 
 
 			//init interactions
-			chimera_gpu::cuda_init_interactions(
+			cuda_init_interactions(
 					J_out_p.data(),
 					J_out_n.data(),
 					J_in_0.data(),
@@ -82,17 +204,29 @@ namespace openjij {
 					);
 
 			//init_spins
-			chimera_gpu::cuda_init_spin();
+			chimera_gpu::cuda_init_spin(dev_spin, dev_random, num_trot, num_row, num_col, rng, grid, block);
 
 		}
 
 		ChimeraGPUQuantum::~ChimeraGPUQuantum(){
-			chimera_gpu::cuda_free();
+			cuda_free();
 		}
 
 		double ChimeraGPUQuantum::update(const double beta, const double gamma, const double s, const std::string& algo){
 			if(algo == "gpu_metropolis" or algo == ""){
-				chimera_gpu::cuda_run(beta, gamma, s);
+				chimera_gpu::cuda_run(beta, gamma, s,
+						dev_spin, dev_random,
+						dev_J_out_p,
+						dev_J_out_n,
+						dev_J_in_0,
+						dev_J_in_1,
+						dev_J_in_2,
+						dev_J_in_3,
+						dev_H,
+						num_trot, num_row, num_col,
+						rng, grid, block
+						);
+
 			}
 			return 0;
 		}
@@ -111,14 +245,14 @@ namespace openjij {
 
 		TrotterSpins ChimeraGPUQuantum::get_spins() const{
 			//cudaMemcpy
-			chimera_gpu::copy_spins();
+			copy_spins();
 			TrotterSpins ret_spins(num_trotter_slices);
 			for(size_t t=0; t<num_trotter_slices; t++){
 				ret_spins[t] = graph::Spins(interaction.get_num_spins());
 				for(size_t r=0; r<row; r++){
 					for(size_t c=0; c<col; c++){
 						for(size_t i=0; i<8; i++){
-							ret_spins[t][interaction.to_ind(r,c,i)] = chimera_gpu::get_spin(t, r, c, i);
+							ret_spins[t][interaction.to_ind(r,c,i)] = spinarray[glIdx_TRCI(num_trot, num_row, num_col, t,r,c,i)];
 						}
 					}
 				}
