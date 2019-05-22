@@ -11,6 +11,14 @@ from setuptools.command.test import test as TestCommand
 from distutils.version import LooseVersion
 
 
+# Package meta-data.
+NAME = 'openjij'
+DESCRIPTION = 'Framework for the Ising model and QUBO'
+EMAIL = 'openjij@j-ij.com'
+AUTHOR = 'Jij Inc.'
+VERSION = '0.0.6'
+
+
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
         Extension.__init__(self, name, sources=[])
@@ -87,13 +95,22 @@ class GoogleTestCommand(TestCommand):
                                          self.distutils_dir_name('temp')),
                         shell=True)
 
+# Load the package's __version__.py module as a dictionary.
+about = {}
+if not VERSION:
+    project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
+    with open(os.path.join(here, project_slug, '__version__.py')) as f:
+        exec(f.read(), about)
+else:
+    about['__version__'] = VERSION
+
 setup(
-    name='openjij',
-    version='0.0.5',
+    name=NAME,
+    version=about['__version__'],
     author='Jij Inc.',
     author_email='openjij@j-ij.com',
     url = 'https://openjij.github.io/OpenJij/',
-    description='Framework for ising model and QUBO',
+    description='Framework for the Ising model and QUBO',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     install_requires=['numpy', 'requests'],
