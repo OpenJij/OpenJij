@@ -27,11 +27,11 @@ class ChimeraModel(BinaryQuadraticModel):
     """
     def __init__(self, h=None, J=None, Q=None, unit_num_L=None, model=None, var_type='SPIN'):
         if model:
-            self.linear = self.linear
-            self.quad = self.quad
-            self.indices = self.indices
-            self.energy_bias = self.energy_bias
-            self.var_type = self.var_type
+            self.linear = model.linear
+            self.quad = model.quad
+            self.indices = model.indices
+            self.energy_bias = model.energy_bias
+            self.var_type = model.var_type
             self._interaction_matrix = None
         else:
             super().__init__(h=h, J=J, Q=Q, var_type=var_type)
