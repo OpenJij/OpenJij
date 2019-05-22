@@ -222,7 +222,7 @@ class SamplerOptimizeTest(unittest.TestCase):
     #     h = {0: -1}
     #     J = {(0,4):-1,(0,5):-1,(2,5):-1}
     #     sampler=oj.GPUSQASampler(iteration=10,step_num=100)
-    #     response=sampler.sample_ising(h,J,chimera_L=10)
+    #     response=sampler.sample_ising(h,J,unit_num_L=10)
         
 if __name__ == '__main__':
     # test is currently disabled. TODO: write test!
