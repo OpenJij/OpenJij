@@ -54,27 +54,6 @@ class BaseSampler:
             self.iteration = kwargs['num_reads']
 
 class SASampler(BaseSampler):
-    """
-    "SASampler" provides sampling by simulated annealing on the CPU.
-    This class can handle the Ising model and QUBO of two-body interaction of any graph.
-
-    Attributes:
-        beta_min (float): Minimum (initial) inverse temperature in simulated annealing.
-        beta_max (float): Maximum (target) inverse temperature in simulated annealing.
-        step_length (int): Number of MCMC steps at a constant temperature at each temperature of SA.
-        step_num (int): Number of steps to reduce the temperature (increase the inverse temperature).
-        schedule (list(tuple(float, int)), optinal): SA temperature schedule list of tuple (inverse temperture, step length at each temperature).
-        iteration (int): How many run SA.
-
-    Examples:
-        >>> import openjij as oj
-        >>> sampler = oj.SASampler()  # make SASampler
-        >>> response = sampler.sample_qubo(Q={(0,1): -1, (1, 2): -1})  # run SA
-        >>> print(response)  # show results
-        iteration : 1, minimum energy : -2.0, var_type : BINARY
-        indices: [0, 1, 2]
-        minmum energy state sample : [1, 1, 1]
-    """
     def __init__(self, beta_min=0.1, beta_max=5.0, step_length=10, step_num=100, schedule=None, iteration=1):
 
         if schedule:
