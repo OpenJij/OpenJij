@@ -94,8 +94,8 @@ class ModelTest(unittest.TestCase):
         J = {(0,4): -1.0, (6,2): -3.0, (16, 0): 4}
         chimera = oj.ChimeraModel(h=h, J=J, unit_num_L=2)
         self.assertEqual(chimera.chimera_coordinate(4, unit_num_L=2), (0,0,4))
-        self.assertEqual(chimera.chimera_coordinate(12, unit_num_L=2), (1,0,4))
-        self.assertEqual(chimera.chimera_coordinate(16, unit_num_L=2), (0,1,0))
+        self.assertEqual(chimera.chimera_coordinate(12, unit_num_L=2), (0,1,4))
+        self.assertEqual(chimera.chimera_coordinate(16, unit_num_L=2), (1,0,0))
         
 
     def test_chimera(self):
@@ -112,6 +112,51 @@ class ModelTest(unittest.TestCase):
         J = {(4, 12): -1}
         bqm = oj.ChimeraModel(h=h, J=J, unit_num_L=2)
         self.assertTrue(bqm.validate_chimera())
+
+        J = {(0,4): -1, (5, 13):1, (24, 8):2, (18,20): 1, (16,0):0.5, (19, 23): -2}
+        h = {13: 2}
+        chimera = oj.ChimeraModel(h, J, unit_num_L=2)
+        self.assertEqual(chimera.to_index(1,1,1, unit_num_L=2), 25)
+
+        self.assertTrue(chimera.validate_chimera())
+
+    def test_chimera_graph(self):
+        L = 2
+        to_ind = lambda r,c,i: 8*L*r + 8*c + i
+
+        left_side = [0,1,2,3]
+        right_side = [4,5,6,7]
+
+        Q = {}
+        # Set to -1 for all bonds in each chimera unit
+        for c in range(L):
+            for r in range(L):
+                for z_l in left_side:
+                    for z_r in right_side:
+                        Q[to_ind(r,c,z_l), to_ind(r,c,z_r)] = -1
+
+                        # linear term
+                        Q[to_ind(r,c,z_l), to_ind(r,c,z_l)] = -1
+                    #linear term
+                    Q[to_ind(r,c,z_r), to_ind(r,c,z_r)] = -1
+
+        # connect all chimera unit
+        # column direction
+        for c in range(L-1):
+            for r in range(L):
+                for z_r in right_side:
+                    Q[to_ind(r,c,z_r), to_ind(r,c+1,z_r)] = +0.49
+        # row direction
+        for r in range(L-1):
+            for c in range(L):
+                for z_l in left_side:
+                    Q[to_ind(r,c,z_l), to_ind(r+1,c,z_l)] = 0.49
+
+        chimera = oj.ChimeraModel(Q=Q, unit_num_L=2, var_type='BINARY')
+        self.assertTrue(chimera.validate_chimera())
+
+
+
 
     def test_ising_dict(self):
         Q = {(0,4): -1.0, (6,2): -3.0}
@@ -200,19 +245,19 @@ class SamplerOptimizeTest(unittest.TestCase):
         J = {(0, 4): -1, (0, 5): -1, (2, 5): -2, (4, 12): 0.5, (16, 0): 2}
         model = oj.ChimeraModel(h, J, var_type='SPIN', unit_num_L=3)
 
-        with self.assertRaises(ValueError):
-            # unit_num_L should be a even number in GPU
-            chimera = gpu_sampler._chimera_graph(model)
 
         model = oj.ChimeraModel(h, J, var_type='SPIN', unit_num_L=2)
-        chimera = gpu_sampler._chimera_graph(model)
+        chimera = model.get_chimera_graph() 
 
         self.assertEqual(chimera[0,0,0], h[0])
         self.assertEqual(chimera[0,0,0,cj.graph.ChimeraDir.IN_0or4], J[0, 4])
         self.assertEqual(chimera[0,0,0,cj.graph.ChimeraDir.IN_1or5], J[0, 5])
         self.assertEqual(chimera[0,0,2,cj.graph.ChimeraDir.IN_1or5], J[2, 5])
         self.assertEqual(chimera[0,0,4,cj.graph.ChimeraDir.PLUS_C], J[4, 12])
-        self.assertEqual(chimera[0,1,0,cj.graph.ChimeraDir.MINUS_R], J[16, 0])
+        self.assertEqual(chimera[1,0,0,cj.graph.ChimeraDir.MINUS_R], J[16, 0])
+
+        # should satisfy symmetry
+        self.assertEqual(chimera[1,0,0,cj.graph.ChimeraDir.MINUS_R], chimera[0,0,0,cj.graph.ChimeraDir.PLUS_R])
 
 
     def test_cmos(self):
