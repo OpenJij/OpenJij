@@ -1,9 +1,11 @@
 #include "chimera_gpu_quantum.h"
+#include <random>
 #include "../../algorithm/sqa.h"
 #include <cuda_runtime.h>
 #include <curand.h> 
 #include "kernel_frontend.h"
 #include "index.h"
+#include "../cuda_error.h"
 #include <cassert> 
 #include <cmath>
 #include <iostream>
@@ -11,20 +13,6 @@
 namespace openjij {
 	namespace system {
 
-		//HANDLE ERROR
-		cudaError_t err;
-		curandStatus_t st;
-
-		/***************************
-		  macro for detecting errors 
-		 ***************************/
-#ifndef HANDLE_ERROR
-#define HANDLE_ERROR(expr) err=(expr); if(err != cudaSuccess) std::cout << "error_code: " << err << " err_name: " << cudaGetErrorString(err) << " at " << __FILE__ << " line " << __LINE__ << std::endl;
-#endif
-
-#ifndef HANDLE_ERROR_CURAND
-#define HANDLE_ERROR_CURAND(expr) st=(expr); if(st != CURAND_STATUS_SUCCESS) std::cout << "curand_error: " << st << " at " << __FILE__ << " line " << __LINE__ << std::endl;
-#endif
 
 		/**********************
 		  cuda host functions
@@ -57,7 +45,7 @@ namespace openjij {
 			//HANDLE_ERROR_CURAND(curandCreateGenerator(&rng, CURAND_RNG_PSEUDO_MT19937));
 			HANDLE_ERROR_CURAND(curandCreateGenerator(&rng, CURAND_RNG_PSEUDO_XORWOW));
 			//set seed
-			HANDLE_ERROR_CURAND(curandSetPseudoRandomGeneratorSeed(rng, time(NULL)));
+			HANDLE_ERROR_CURAND(curandSetPseudoRandomGeneratorSeed(rng, std::random_device()()));
 
 			//cudaMalloc
 			HANDLE_ERROR(cudaMalloc((void**)&dev_J_out_p,	localsize*sizeof(float)));

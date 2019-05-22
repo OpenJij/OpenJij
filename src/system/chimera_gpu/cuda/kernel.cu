@@ -2,6 +2,7 @@
 #include <curand.h> 
 #include <curand_kernel.h>
 #include "../index.h"
+#include "../../cuda_error.h"
 
 //for test
 #include <stdio.h>
@@ -13,21 +14,6 @@
 namespace openjij{
 	namespace system{
 		namespace chimera_gpu{
-
-			//HANDLE ERROR
-			cudaError_t err;
-			curandStatus_t st;
-
-			/***************************
-			  macro for detecting errors 
-			 ***************************/
-#ifndef HANDLE_ERROR
-#define HANDLE_ERROR(expr) err=(expr); if(err != cudaSuccess) std::cout << "error_code: " << err << " err_name: " << cudaGetErrorString(err) << " at " << __FILE__ << " line " << __LINE__ << std::endl;
-#endif
-
-#ifndef HANDLE_ERROR_CURAND
-#define HANDLE_ERROR_CURAND(expr) st=(expr); if(st != CURAND_STATUS_SUCCESS) std::cout << "curand_error: " << st << " at " << __FILE__ << " line " << __LINE__ << std::endl;
-#endif
 
 			/**********************
 			  const variables 
