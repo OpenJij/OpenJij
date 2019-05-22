@@ -11,12 +11,12 @@ namespace openjij {
         SQA::SQA(const double beta, const double gamma, const size_t step_length, const size_t step_num)
             :beta(beta), gamma(gamma){
             // linear annealing schedule
-            const double ds = 1.0 / (step_num+1);
+            const double s_d = 1.0 / step_num;
             double s = 0.0;
 
             for (size_t i = 0; i < step_num; i++) {
                 schedule.emplace_back(std::make_pair(s, step_length));
-                s += ds;
+                s += s_d;
             }
         }
 
