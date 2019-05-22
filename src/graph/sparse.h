@@ -1,7 +1,7 @@
 #pragma once
 
 #include <utility>
-#include <map>
+#include <unordered_map>
 #include "graph.h"
 
 namespace openjij {
@@ -11,11 +11,20 @@ namespace openjij {
 		template<typename FloatType>
 			class Dense;
 
+		//hash class for unordered_map with std::pair
+		struct PairHash{
+			inline size_t operator()(const std::pair<Index,Index> & p) const{
+				const auto h1 = std::hash<Index>()(p.first);
+				const auto h2 = std::hash<Index>()(p.second);
+				return h1 ^ (h2 << 1);
+			}
+		};
+
 		//two-body intereactions with O(1) connectivity
 		template<typename FloatType>
 			class Sparse : public Graph{
 				public:
-					using Interactions = std::map<std::pair<Index, Index>, FloatType>;
+					using Interactions = std::unordered_map<std::pair<Index, Index>, FloatType, PairHash>;
 				private:
 					//interactions (the number of intereactions is num_spins*(num_spins+1)/2)
 					Interactions m_J;
