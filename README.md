@@ -4,7 +4,7 @@
 
 cmake >= 3.11
 
-Documents : https://openjij.github.io/OpenJij/
+- [Tutorials](https://openjij.github.io/OpenJijTutorial/_build/html/index.html)
 
 ## install
 
@@ -59,5 +59,5 @@ response = sampler.sample_ising(h={'a': -1}, J={('a','b'): 1})
 ```
 ## Community
 
-Discord : https://discord.gg/TP6Q9cH
+- [OpenJij Slack](https://join.slack.com/t/openjij/shared_invite/enQtNjQyMjIwMzMwNzA4LWU4ODM5ODNjZmIyMzViOTZjODAyM2NmNmM3NTcwYmE2NGFkZGFkOGE3ZWVjMTNkOWZhOTVjMGE4NDI4YjlkMzc)
 

@@ -54,8 +54,14 @@ class GPUSQASampler(SQASampler):
         else:
             chiemra_model = model
 
+
+        if chimera_model.unit_num_L % 2 != 0:
+            raise ValueError('unit_num_L should be even number.')
+
         self.unit_num_L = chimera_model.unit_num_L
-        chimera = self._chimera_graph(chimera_model)
+        self._set_model(chimera_model)
+
+        chimera = self.model.get_chimera_graph() 
 
         response = self._sampling(ising_graph=chimera, var_type=self.var_type)
 
@@ -77,44 +83,6 @@ class GPUSQASampler(SQASampler):
         self.energy_bias = model.energy_bias
         self.var_type = model.var_type
 
-    def _chimera_graph(self, model):
-        self._set_model(model)
-
-        chimera_L = model.unit_num_L
-
-        if chimera_L % 2 != 0:
-            raise ValueError('unit_num_L should be even number.')
-
-        if not model.validate_chimera():
-            raise ValueError("Problem graph incompatible with chimera graph.")
-        _h, _J = model.ising_dictionary()
-
-        self.energy_bias = model.energy_bias
-
-        chimera = cj.graph.Chimera(chimera_L, chimera_L)
-        for i, hi in _h.items():
-            xi, yi, zi = model.chimera_coordinate(i, unit_num_L=chimera_L)
-            chimera[xi, yi, zi] = hi
-        for (i, j), Jij in _J.items():
-            xi, yi, zi = model.chimera_coordinate(i, unit_num_L=chimera_L)
-            xj, yj, zj = model.chimera_coordinate(j, unit_num_L=chimera_L)
-            if xi == xj and yi == yj:
-                if zj in [0, 4]:
-                    chimera[xi, yi, zi, cj.graph.ChimeraDir.IN_0or4] = Jij
-                elif zj in [1, 5]:
-                    chimera[xi, yi, zi, cj.graph.ChimeraDir.IN_1or5] = Jij
-                elif zj in [2, 6]:
-                    chimera[xi, yi, zi, cj.graph.ChimeraDir.IN_2or6] = Jij
-                else:
-                    chimera[xi, yi, zi, cj.graph.ChimeraDir.IN_1or7] = Jij
-            elif xi == xj + 1:
-                chimera[xi, yi, zi, cj.graph.ChimeraDir.PLUS_C] = Jij
-            elif xi == xj - 1:
-                chimera[xi, yi, zi, cj.graph.ChimeraDir.MINUS_C] = Jij 
-            elif yi == yj + 1:
-                chimera[xi, yi, zi, cj.graph.ChimeraDir.PLUS_R] = Jij
-            elif yi == yj - 1:
-                chimera[xi, yi, zi, cj.graph.ChimeraDir.MINUS_R] = Jij
-        return chimera
+    
         
 

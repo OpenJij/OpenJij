@@ -1,4 +1,0 @@
-var searchData=
-[
-  ['var_5ftype',['var_type',['../classopenjij_1_1model_1_1chimera__graph_1_1_chimera_model.html#aa2788f3febfa6320a61e00b43465cd71',1,'openjij.model.chimera_graph.ChimeraModel.var_type()'],['../classopenjij_1_1model_1_1model_1_1_binary_quadratic_model.html#a94b12a33a0fe10188ffe97c3769021b8',1,'openjij.model.model.BinaryQuadraticModel.var_type()'],['../classopenjij_1_1sampler_1_1gpu__sampler_1_1_g_p_u_s_q_a_sampler.html#a9384f18e676b8ad198cc4cc794a59045',1,'openjij.sampler.gpu_sampler.GPUSQASampler.var_type()'],['../classopenjij_1_1sampler_1_1response_1_1_response.html#aacf615fded3ac2e013fa5969c65aabd2',1,'openjij.sampler.response.Response.var_type()'],['../classopenjij_1_1sampler_1_1sampler_1_1_base_sampler.html#afc3edd86e76f128893e3fdf9a8ed1d28',1,'openjij.sampler.sampler.BaseSampler.var_type()'],['../classopenjij_1_1sampler_1_1sampler_1_1_s_q_a_sampler.html#a16deb99eda0f6eb31abe7bd0ac81c96d',1,'openjij.sampler.sampler.SQASampler.var_type()']]]
-];
