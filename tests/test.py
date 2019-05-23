@@ -205,12 +205,7 @@ class TestChimeraGraph(unittest.TestCase):
         chimera = oj.ChimeraModel(Q=Q, unit_num_L=4, var_type='BINARY')
         self.assertTrue(chimera.validate_chimera())
 
-    def test_chimera_boundary(self):
-        h, J = self.full_chimera_ising(L=4)
-        chimera = oj.ChimeraModel(h=h, J=J, unit_num_L=4, var_type='SPIN')
-        graph = chimera.get_chimera_graph()
 
-        self.assertEqual(graph[0,0,0,cj.graph.ChimeraDir.MINUS_R], 0)
 
 class SamplerOptimizeTest(unittest.TestCase):
 
