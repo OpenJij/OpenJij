@@ -137,10 +137,21 @@ class ChimeraModel(BinaryQuadraticModel):
         chimera = cj.graph.Chimera(chimera_L, chimera_L)
         for i, hi in _h.items():
             r_i, c_i, zi = self.chimera_coordinate(i, unit_num_L=chimera_L)
+            if not self._index_validate(i, chimera_L):
+                raise ValueError("Problem graph incompatible with chimera graph. Node {}.".format(i))
             chimera[r_i, c_i, zi] = hi
         for (i, j), Jij in _J.items():
             r_i, c_i, zi = self.chimera_coordinate(i, unit_num_L=chimera_L)
             r_j, c_j, zj = self.chimera_coordinate(j, unit_num_L=chimera_L)
+
+
+            # validate connection
+            error_msg = "In the {}*{} Chimera grid, ".format(chimera_L, chimera_L)
+            error_msg += "there is no connection between node {} and node {}.".format(i, j)
+            linear_vldt = self._index_validate(i, chimera_L) and self._index_validate(j, chimera_L)
+            if not (linear_vldt and self._validate((r_i, c_i, zi), (r_j, c_j, zj), chimera_L)):
+                raise ValueError("Problem graph incompatible with chimera graph.\n" + error_msg)
+
             if r_i == r_j and c_i == c_j:
                 # connection in Chimera unit cell
                 if zj in [0, 4]:
@@ -152,12 +163,32 @@ class ChimeraModel(BinaryQuadraticModel):
                 else:
                     chimera[r_i, c_i, zi, cj.graph.ChimeraDir.IN_3or7] = Jij
             # connection between Chimera unit cells
-            elif r_i == r_j + 1:
+            elif r_i - r_j == -1:
                 chimera[r_i, c_i, zi, cj.graph.ChimeraDir.PLUS_R] = Jij
-            elif r_i == r_j - 1:
+            elif r_i - r_j == 1:
                 chimera[r_i, c_i, zi, cj.graph.ChimeraDir.MINUS_R] = Jij 
-            elif c_i == c_j + 1:
+            elif c_i - c_j == -1:
                 chimera[r_i, c_i, zi, cj.graph.ChimeraDir.PLUS_C] = Jij
-            elif c_i == c_j - 1:
+            elif c_i - c_j == 1:
                 chimera[r_i, c_i, zi, cj.graph.ChimeraDir.MINUS_C] = Jij
+
         return chimera
+
+    def _validate(self, rcz1, rcz2, L):
+        r1,c1,z1 = rcz1
+        r2,c2,z2 = rcz2
+        left_side = [0,1,2,3]
+        right_side = [4,5,6,7]
+        if r1==r2 and c1==c2:
+            if ((z1 in left_side) and (z2 in right_side)):
+                return True
+            elif ((z2 in left_side) and (z1 in right_side)):
+                return True 
+        elif ((c1 == c2 and abs(r1 - r2) == 1) or (r1 == r2 and abs(c1 - c2) == 1)):
+            return True
+        return False
+    
+    def _index_validate(self, i, L):
+        max_index = 8 * L * L
+        return 0 <= i < max_index
+
