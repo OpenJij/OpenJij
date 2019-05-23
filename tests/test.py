@@ -120,42 +120,6 @@ class ModelTest(unittest.TestCase):
 
         self.assertTrue(chimera.validate_chimera())
 
-    def test_chimera_graph(self):
-        L = 2
-        to_ind = lambda r,c,i: 8*L*r + 8*c + i
-
-        left_side = [0,1,2,3]
-        right_side = [4,5,6,7]
-
-        Q = {}
-        # Set to -1 for all bonds in each chimera unit
-        for c in range(L):
-            for r in range(L):
-                for z_l in left_side:
-                    for z_r in right_side:
-                        Q[to_ind(r,c,z_l), to_ind(r,c,z_r)] = -1
-
-                        # linear term
-                        Q[to_ind(r,c,z_l), to_ind(r,c,z_l)] = -1
-                    #linear term
-                    Q[to_ind(r,c,z_r), to_ind(r,c,z_r)] = -1
-
-        # connect all chimera unit
-        # column direction
-        for c in range(L-1):
-            for r in range(L):
-                for z_r in right_side:
-                    Q[to_ind(r,c,z_r), to_ind(r,c+1,z_r)] = +0.49
-        # row direction
-        for r in range(L-1):
-            for c in range(L):
-                for z_l in left_side:
-                    Q[to_ind(r,c,z_l), to_ind(r+1,c,z_l)] = 0.49
-
-        chimera = oj.ChimeraModel(Q=Q, unit_num_L=2, var_type='BINARY')
-        self.assertTrue(chimera.validate_chimera())
-
-
 
 
     def test_ising_dict(self):
@@ -180,7 +144,73 @@ class ModelTest(unittest.TestCase):
         king_interaction = [[0, 0, 0, 0, -0.25], [0,0,1,0,-0.25], [1,0,1,0,-0.25]]
         np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
 
+class TestChimeraGraph(unittest.TestCase):
+    def full_chimera_qubo(self, L):
 
+        left_side = [0,1,2,3]
+        right_side = [4,5,6,7]
+        to_ind = lambda r,c,i: 8*L*r + 8*c + i
+        Q = {}
+        # Set to -1 for all bonds in each chimera unit
+        for c in range(L):
+            for r in range(L):
+                for z_l in left_side:
+                    for z_r in right_side:
+                        Q[to_ind(r,c,z_l), to_ind(r,c,z_r)] = -1
+
+                        # linear term
+                        Q[to_ind(r,c,z_l), to_ind(r,c,z_l)] = -1
+                    #linear term
+                    Q[to_ind(r,c,z_r), to_ind(r,c,z_r)] = -1
+
+        # connect all chimera unit
+        # column direction
+        for c in range(L-1):
+            for r in range(L):
+                for z_r in right_side:
+                    Q[to_ind(r,c,z_r), to_ind(r,c+1,z_r)] = +0.49
+        # row direction
+        for r in range(L-1):
+            for c in range(L):
+                for z_l in left_side:
+                    Q[to_ind(r,c,z_l), to_ind(r+1,c,z_l)] = 0.49
+        return Q
+
+    def full_chimera_ising(self, L):
+        Q = self.full_chimera_qubo(L)
+        h, J = {}, {}
+        for (i, j), value in Q.items():
+            if i == j:
+                h[i] = value
+            else:
+                J[i, j] = value
+        return h, J
+
+    def test_chimera_validate(self):
+        L = 4
+        Q = self.full_chimera_qubo(L=L)
+        chimera = oj.ChimeraModel(Q=Q, unit_num_L=L, var_type='BINARY')
+
+        self.assertTrue(chimera._validate((0,0,0),(0,0,4),L))
+        self.assertFalse(chimera._validate((0,0,0),(96,0,0),L))
+
+
+
+    def test_chimera_connect(self):
+        Q = self.full_chimera_qubo(L=2)
+        chimera = oj.ChimeraModel(Q=Q, unit_num_L=2, var_type='BINARY')
+        self.assertTrue(chimera.validate_chimera())
+
+        Q = self.full_chimera_qubo(L=4)
+        chimera = oj.ChimeraModel(Q=Q, unit_num_L=4, var_type='BINARY')
+        self.assertTrue(chimera.validate_chimera())
+
+    def test_chimera_boundary(self):
+        h, J = self.full_chimera_ising(L=4)
+        chimera = oj.ChimeraModel(h=h, J=J, unit_num_L=4, var_type='SPIN')
+        graph = chimera.get_chimera_graph()
+
+        self.assertEqual(graph[0,0,0,cj.graph.ChimeraDir.MINUS_R], 0)
 
 class SamplerOptimizeTest(unittest.TestCase):
 
