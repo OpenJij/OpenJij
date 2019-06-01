@@ -5,6 +5,7 @@
 // #include <cxxjij/sampler/sampler.h>
 
 #include "../src/graph/dense.h"
+#if 0
 #include "../src/graph/sparse.h"
 #include "../src/graph/square.h"
 #include "../src/graph/chimera.h"
@@ -14,6 +15,11 @@
 #include "../src/updater/quantum_updater.h"
 #include "../src/algorithm/sa.h"
 #include "../src/algorithm/sqa.h"
+#endif
+
+#include "../src/system/system.hpp"
+#include "../src/system/schedule_list.hpp"
+#include "../src/algorithm/single_spin_flip.hpp"
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -22,10 +28,39 @@
 
 #include <utility>
 #include <numeric>
+#include <tuple>
 
 using ::testing::ElementsAre;
 using ::testing::_;
 
+TEST(CallSimulatedAnnealing, SingleSpinFlip) {
+    // static_assert( std::is_same< openjij::system::ClassicalIsing, openjij::system::QuantumIsing >::value, "Different Types!!!" );
+    auto spins = openjij::graph::Spins(10);
+    auto interactions = openjij::graph::Dense<double>(10);
+
+    auto system = openjij::system::ClassicalIsing(spins, interactions);
+    auto schedule_list = openjij::system::ClassicalScheduleList();
+    schedule_list.push_back(std::make_pair(1, std::make_pair(2, 3.45)));
+
+    auto single_spin_flip = openjij::algorithm::Algorithm<openjij::algorithm::SingleSpinFlip>{};
+
+    single_spin_flip.run(system, schedule_list);
+}
+
+TEST(CallQuantumSimulatedAnnealing, SingleSpinFlip) {
+    auto spins = openjij::graph::TrotterSpins(10);
+    auto interactions = openjij::graph::Dense<double>(10);
+
+    auto system = openjij::system::QuantumIsing(spins, interactions);
+    auto schedule_list = openjij::system::QuantumScheduleList();
+    schedule_list.push_back(std::make_pair(1, std::make_tuple(2, 3.45, 67.89)));
+
+    auto single_spin_flip = openjij::algorithm::Algorithm<openjij::algorithm::SingleSpinFlip>{};
+
+    single_spin_flip.run(system, schedule_list);
+}
+
+#if 0
 template<typename num> void show_matrix(std::vector<std::vector<num>>& mat){
     for(std::vector<num> vec: mat){
         for(num v: vec)
@@ -202,3 +237,4 @@ TEST(OpenJijTest, times_sqa_call_quantum_updater){
         sqa.run(mock_quantum_system);
     }
 }
+#endif

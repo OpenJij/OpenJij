@@ -11,6 +11,7 @@ namespace openjij {
 		//TODO: Spin must take value +1 or -1
 		using Spin = int;
 		using Spins = std::vector<Spin>;
+        using TrotterSpins = std::vector<Spins>;
 		using Index = size_t;
 
 		using Nodes = std::vector<Index>;
