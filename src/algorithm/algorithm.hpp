@@ -16,7 +16,9 @@ namespace openjij {
                     const auto parameter = schedule.second;
 
                     std::cout << "one_mc_step: " << one_mc_step << std::endl;
-                    static_cast<const Updater&>(*this).update(system, parameter);
+                    for (auto i = 0; i < one_mc_step; i++) {
+                        static_cast<const Updater&>(*this).update(system, parameter);
+                    }
                     std::cout << std::endl;
                 }
             }

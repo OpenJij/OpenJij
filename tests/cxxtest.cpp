@@ -60,6 +60,26 @@ TEST(Call_QuantumSimulatedAnnealing, SingleSpinFlip) {
     single_spin_flip.run(system, schedule_list);
 }
 
+TEST(Set_Spins_To_ClassicalIsing, classical_ising_get_spin) {
+    const auto spins = [](){
+        auto spins = openjij::graph::Spins(10);
+        for (auto i = 0ul, end = spins.size(); i < end; ++i) {
+            if (i % 2 == 0) {
+                spins[i] = 1;
+            } else {
+                spins[i] = -1;
+            }
+        }
+        return spins;
+    }();
+
+    const auto interactions = openjij::graph::Dense<double>(10);
+
+    auto system = openjij::system::ClassicalIsing(spins, interactions);
+
+    EXPECT_EQ(system.spins, spins);
+}
+
 TEST(Check_ScheduleListSize, create_sa_schedule_list) {
     const auto list_size = 10;
 
@@ -99,6 +119,7 @@ TEST(Set_LoopStepPerOneMonteCarloStep, create_sa_schedule_list) {
         EXPECT_EQ(schedule.first, one_mc_step);
     }
 }
+
 
 #if 0
 template<typename num> void show_matrix(std::vector<std::vector<num>>& mat){

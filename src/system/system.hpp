@@ -9,13 +9,13 @@ namespace openjij {
         template<typename SystemType, typename SpinsType, typename GraphType>
         struct System {
             using system_type = SystemType;
-            explicit System(const SpinsType& spins, const GraphType& interaction)
-                : _spins{spins}, _interaction{interaction} {
-            };
 
-        private:
-            SpinsType _spins;
-            GraphType _interaction;
+            explicit System(const SpinsType& spins, const GraphType& interactions) noexcept
+                : spins{spins}, interactions{interactions} {
+            }
+
+            SpinsType spins;
+            GraphType interactions;
         };
 
         using ClassicalIsing = System<classical_system, graph::Spins, graph::Dense<double>>;
