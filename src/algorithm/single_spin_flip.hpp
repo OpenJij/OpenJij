@@ -11,23 +11,19 @@ namespace openjij {
             template<typename System>
             void update_impl(System& system, const system::ScheduleParameter<System>& parameter, system::classical_system) {
                 std::cout << "classical_system" << std::endl;
-                const auto one_mc_step = parameter.first;
-                const auto beta = parameter.second;
+                const auto beta = parameter;
 
-                std::cout << "one_mc_step: " << one_mc_step << std::endl;
-                std::cout << "beta:        " << beta        << std::endl;
+                std::cout << "beta:  " << beta  << std::endl;
             };
 
             template<typename System>
             void update_impl(System& system, const system::ScheduleParameter<System>& parameter, system::quantum_system) {
                 std::cout << "quantum_system" << std::endl;
-                const auto one_mc_step = std::get<0>(parameter);
-                const auto beta        = std::get<1>(parameter);
-                const auto gamma       = std::get<2>(parameter);
+                const auto beta        = parameter.first;
+                const auto gamma       = parameter.second;
 
-                std::cout << "one_mc_step: " << one_mc_step << std::endl;
-                std::cout << "beta:        " << beta        << std::endl;
-                std::cout << "gamma:       " << gamma<< std::endl;
+                std::cout << "beta:  " << beta  << std::endl;
+                std::cout << "gamma: " << gamma << std::endl;
             };
         } // namespace detail
 

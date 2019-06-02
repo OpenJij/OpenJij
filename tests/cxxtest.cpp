@@ -20,6 +20,7 @@
 #include "../src/system/system.hpp"
 #include "../src/system/schedule_list.hpp"
 #include "../src/algorithm/single_spin_flip.hpp"
+#include "../src/utility/create_geometric_progression.hpp"
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -33,31 +34,70 @@
 using ::testing::ElementsAre;
 using ::testing::_;
 
-TEST(CallSimulatedAnnealing, SingleSpinFlip) {
-    // static_assert( std::is_same< openjij::system::ClassicalIsing, openjij::system::QuantumIsing >::value, "Different Types!!!" );
+TEST(Call_SimulatedAnnealing, SingleSpinFlip) {
     auto spins = openjij::graph::Spins(10);
     auto interactions = openjij::graph::Dense<double>(10);
 
     auto system = openjij::system::ClassicalIsing(spins, interactions);
     auto schedule_list = openjij::system::ClassicalScheduleList();
-    schedule_list.push_back(std::make_pair(1, std::make_pair(2, 3.45)));
+    schedule_list.push_back(std::make_pair(1, 3.45));
 
     auto single_spin_flip = openjij::algorithm::Algorithm<openjij::algorithm::SingleSpinFlip>{};
 
     single_spin_flip.run(system, schedule_list);
 }
 
-TEST(CallQuantumSimulatedAnnealing, SingleSpinFlip) {
+TEST(Call_QuantumSimulatedAnnealing, SingleSpinFlip) {
     auto spins = openjij::graph::TrotterSpins(10);
     auto interactions = openjij::graph::Dense<double>(10);
 
     auto system = openjij::system::QuantumIsing(spins, interactions);
     auto schedule_list = openjij::system::QuantumScheduleList();
-    schedule_list.push_back(std::make_pair(1, std::make_tuple(2, 3.45, 67.89)));
+    schedule_list.push_back(std::make_pair(2, std::make_pair(3.45, 67.89)));
 
     auto single_spin_flip = openjij::algorithm::Algorithm<openjij::algorithm::SingleSpinFlip>{};
 
     single_spin_flip.run(system, schedule_list);
+}
+
+TEST(Check_ScheduleListSize, create_sa_schedule_list) {
+    const auto list_size = 10;
+
+    const auto schedule_list = openjij::system::create_sa_schedule_list(list_size, 1, 1, 1);
+
+    EXPECT_EQ(schedule_list.size(), list_size);
+}
+
+TEST(Set_InverseTemperatureGeometricProgressionToScheduleList, create_sa_schedule_list) {
+    const auto list_size = 8;
+    const double beta_min = 2.0;
+    const double beta_max = 256.0;
+
+    const auto schedule_list = openjij::system::create_sa_schedule_list(list_size, 1, beta_min, beta_max);
+
+    const auto expected_list = [&list_size, &beta_min](){
+        auto list = std::vector<double>(list_size);
+        const auto initial_value = beta_min;
+        const auto ratio = beta_min;
+
+        openjij::utility::make_geometric_progression(list.begin(), list.end(), initial_value, ratio);
+        return list;
+    }();
+
+    for (auto i = 0; i < list_size; ++i) {
+        EXPECT_EQ(schedule_list[i].second, expected_list[i]);
+    }
+}
+
+TEST(Set_LoopStepPerOneMonteCarloStep, create_sa_schedule_list) {
+    const auto list_size = 8;
+    const auto one_mc_step = 12;
+
+    const auto schedule_list = openjij::system::create_sa_schedule_list(list_size, one_mc_step, 1, 1);
+
+    for (auto&& schedule : schedule_list) {
+        EXPECT_EQ(schedule.first, one_mc_step);
+    }
 }
 
 #if 0

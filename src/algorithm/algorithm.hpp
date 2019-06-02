@@ -12,10 +12,10 @@ namespace openjij {
             template<typename System>
             void run(System& system, const system::ScheduleList<System>& schedule_list) const {
                 for (auto&& schedule : schedule_list) {
-                    const auto total_mc_step = schedule.first;
+                    const auto one_mc_step = schedule.first;
                     const auto parameter = schedule.second;
 
-                    std::cout << "total_mc_step: " << total_mc_step << std::endl;
+                    std::cout << "one_mc_step: " << one_mc_step << std::endl;
                     static_cast<const Updater&>(*this).update(system, parameter);
                     std::cout << std::endl;
                 }
