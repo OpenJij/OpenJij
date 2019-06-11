@@ -1,4 +1,17 @@
-set(GRAPH_LIBRARY graph dense sparse square chimera)
+add_library(graph
+    SHARED
+    graph.cpp
+    dense.cpp
+    sparse.cpp
+    square.cpp
+    chimera.cpp
+)
 
-add_library(graph SHARED ${GRAPH_LIBRARY})
-add_library(graph_static STATIC ${GRAPH_LIBRARY})
+add_library(graph_static
+    STATIC
+    graph.cpp
+    dense.cpp
+    sparse.cpp
+    square.cpp
+    chimera.cpp
+)

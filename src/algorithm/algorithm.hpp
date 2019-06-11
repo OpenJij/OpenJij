@@ -3,21 +3,22 @@
 
 #include <iostream>
 #include <tuple>
-#include "../system/schedule_list.hpp"
+#include <vector>
+// #include "../system/schedule_list.hpp"
 
 namespace openjij {
     namespace algorithm {
-        template<typename Updater>
+        template<template<typename> class Updater>
         struct Algorithm {
             template<typename System>
-            void run(System& system, const system::ScheduleList<System>& schedule_list) const {
+            static void run(System& system, const std::vector<double>& schedule_list) {
                 for (auto&& schedule : schedule_list) {
-                    const auto one_mc_step = schedule.first;
-                    const auto parameter = schedule.second;
+                    const auto parameter = schedule;
+                    const auto one_mc_step = 5;
 
+                    for (auto i = 0; i < one_mc_step; ++i) {
                     std::cout << "one_mc_step: " << one_mc_step << std::endl;
-                    for (auto i = 0; i < one_mc_step; i++) {
-                        static_cast<const Updater&>(*this).update(system, parameter);
+                        Updater<System>::update(system, parameter);
                     }
                     std::cout << std::endl;
                 }

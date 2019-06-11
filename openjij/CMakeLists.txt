@@ -13,7 +13,7 @@ if(USE_CUDA)
 		SUFFIX "${PYTHON_MODULE_EXTENSION}"
 		POSITION_INDEPENDENT_CODE ON
 		CUDA_VISIBILITY_PRESET "hidden"
-		# CUDA_SEPARABLE_COMPILATION ON
+		CUDA_SEPARABLE_COMPILATION ON
 		)
 else()
 	set_target_properties(cxxjij PROPERTIES
@@ -26,7 +26,10 @@ endif()
 
 
 
-target_link_libraries(cxxjij PRIVATE graph_static algorithm_static system_static)
+target_link_libraries(cxxjij
+    PRIVATE
+    graph_static
+)
 target_link_libraries(cxxjij PRIVATE pybind11::module)
 
 add_custom_target(python
