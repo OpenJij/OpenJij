@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 # -- Project information -----------------------------------------------------
 
 project = 'OpenJij'
-copyright = '2019, Jij Inc.'
+copyright = '2019, Jij Inc'
 author = 'Jij Inc.'
 
 
@@ -28,8 +28,10 @@ author = 'Jij Inc.'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+        'sphinx.ext.githubpages',
         "sphinx.ext.autodoc",
-        'sphinx.ext.napoleon'
+        'sphinx.ext.napoleon',
+        'sphinx.ext.doctest'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -64,6 +66,27 @@ html_static_path = ['_static']
 #
 # html_sidebars = {}
 #---sphinx-themes-----
-html_theme = 'sphinx_pdj_theme'
-import sphinx_pdj_theme
-html_theme_path = [sphinx_pdj_theme.get_html_theme_path()]
+html_theme = 'neo_rtd_theme'
+import sphinx_theme
+html_theme_path = [sphinx_theme.get_html_theme_path()]
+
+
+# -- for Markdown ----------------------------------------
+source_suffix = ['.rst', '.md']
+
+from recommonmark.parser import CommonMarkParser
+
+source_parsers = {
+    '.md': CommonMarkParser,
+}
+
+# for AutoStructity component
+from recommonmark.transform import AutoStructify
+
+github_doc_root = 'https://github.com/rtfd/recommonmark/tree/master/doc/'
+def setup(app):
+    app.add_config_value('recommonmark_config', {
+            'url_resolver': lambda url: github_doc_root + url,
+            'auto_toc_tree_section': 'Contents',
+            }, True)
+    app.add_transform(AutoStructify)
