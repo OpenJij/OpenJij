@@ -1,7 +1,12 @@
-#include "classical_ising.hpp"
-#include "quantum_ising.hpp"
-#include "algorithm.hpp"
-#include "single_spin_flip.hpp"
+// #include "classical_ising.hpp"
+// #include "quantum_ising.hpp"
+// #include "algorithm.hpp"
+// #include "single_spin_flip.hpp"
+
+#include <system/classical_ising.hpp>
+#include <system/quantum_ising.hpp>
+#include <algorithm/algorithm.hpp>
+#include <updater/single_spin_flip.hpp>
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
