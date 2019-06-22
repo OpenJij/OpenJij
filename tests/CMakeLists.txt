@@ -9,6 +9,7 @@ add_executable(cxxjij_test
 
 target_link_libraries(cxxjij_test
     cxxjij_header_only
+    graph_static
     gmock_main
     gtest
     pthread
