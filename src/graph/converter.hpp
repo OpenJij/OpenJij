@@ -12,13 +12,14 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_GRAPH_ALL_HPP__
-#define OPENJIJ_GRAPH_ALL_HPP__
+#ifndef OPENJIJ_GRAPH_CONVERTER_HPP__
+#define OPENJIJ_GRAPH_CONVERTER_HPP__
 
-#include "graph.hpp"
 #include "dense.hpp"
 #include "sparse.hpp"
-#include "square.hpp"
-#include "chimera.hpp"
 
-#endif
+namespace openjij {
+    namespace graph {
+        //TODO: convert function
+    } // namespace graph
+} // namespace openjij

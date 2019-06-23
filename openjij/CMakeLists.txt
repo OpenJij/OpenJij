@@ -25,11 +25,6 @@ else()
 endif()
 
 
-
-target_link_libraries(cxxjij
-    PRIVATE
-    graph_static
-)
 target_link_libraries(cxxjij PRIVATE pybind11::module)
 
 add_custom_target(python

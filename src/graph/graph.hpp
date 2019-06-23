@@ -49,7 +49,7 @@ namespace openjij {
                  *
                  * @return generated spins
                  */
-                inline const Spins gen_spin() const{
+                const Spins gen_spin() const{
                     //generate spin array
                     Spins ret_spin(_num_spins);
                     //TODO: arbitrary random generator?
@@ -68,7 +68,7 @@ namespace openjij {
                  *
                  * @return number of spins
                  */
-                inline size_t get_num_spins() const{
+                size_t get_num_spins() const{
                     return _num_spins;
                 }
         };
