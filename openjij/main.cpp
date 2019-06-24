@@ -151,4 +151,5 @@ PYBIND11_MODULE(cxxjij, m){
 // 		.def("simulated_quantum_annealing", (void (system::ChimeraGPUQuantum::*)(const double, const double, const std::vector<std::pair<double, size_t>>&, const std::string&)) &system::ChimeraGPUQuantum::simulated_quantum_annealing, "beta"_a, "gamma"_a, "schedule"_a, "algo"_a="")
 // 		.def("get_spins", &system::ChimeraGPUQuantum::get_spins);
 // #endif
+//
 }
