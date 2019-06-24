@@ -10,6 +10,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/external)
 include(googletest)
 include(pybind11)
+include(eigen)
 
 ##### Set default behavior #####
 set(DEFAULT_USE_OMP No)
