@@ -34,7 +34,7 @@
 namespace py = pybind11;
 
 using namespace py::literals;
- using namespace openjij;
+using namespace openjij;
 
 PYBIND11_MODULE(cxxjij, m){
 	m.doc() = "openjij is framework of ising and qubo";
