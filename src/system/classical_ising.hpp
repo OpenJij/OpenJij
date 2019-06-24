@@ -15,7 +15,7 @@
 #ifndef OPENJIJ_SYSTEM_INCLUDE_CLASSICAL_ISING_HPP__
 #define OPENJIJ_SYSTEM_INCLUDE_CLASSICAL_ISING_HPP__
 
-#include "../graph/dense.h"
+#include "../graph/dense.hpp"
 
 namespace openjij {
     namespace system {

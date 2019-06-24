@@ -15,8 +15,8 @@
 #include <algorithm/algorithm.hpp>
 #include <updater/single_spin_flip.hpp>
 #include <utility/schedule_list.hpp>
-#include <graph/graph.h>
-#include <graph/dense.h>
+#include <graph/graph.hpp>
+#include <graph/dense.hpp>
 
 // #####################################
 // helper functions
