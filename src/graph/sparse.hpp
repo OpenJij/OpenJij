@@ -15,10 +15,12 @@
 #ifndef OPENJIJ_GRAPH_SPARSE_HPP__
 #define OPENJIJ_GRAPH_SPARSE_HPP__
 
+#include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <type_traits>
 #include <utility>
 #include <unordered_map>
-#include <cassert>
-#include <type_traits>
 
 #include "graph.hpp"
 #include "../utility/pairhash.hpp"
@@ -50,7 +52,7 @@ namespace openjij {
                     /**
                      * the uppder limit of the number of edges per site 
                      */
-                    size_t _num_edges;
+                    std::size_t _num_edges;
 
                     /**
                      * the list of the indices of adjacent nodes 
@@ -97,7 +99,7 @@ namespace openjij {
                      * @param num_spins number of spins
                      * @param num_edges number of edges
                      */
-                    Sparse(size_t num_spins, size_t num_edges)
+                    Sparse(std::size_t num_spins, std::size_t num_edges)
                         : Graph(num_spins), _num_edges(std::min(num_spins, num_edges)), _list_adj_nodes(num_spins){
                             //initialize list_adj_nodes
                             for(auto& elem : _list_adj_nodes){
@@ -110,7 +112,7 @@ namespace openjij {
                      *
                      * @param num_spins number of spins
                      */
-                    explicit Sparse(size_t num_spins) : Sparse(num_spins, num_spins){}
+                    explicit Sparse(std::size_t num_spins) : Sparse(num_spins, num_spins){}
 
                     /**
                      * Sparse copy constructor
@@ -140,7 +142,7 @@ namespace openjij {
                      *
                      * @return number of edges
                      */
-                    size_t get_num_edges() const{
+                    std::size_t get_num_edges() const{
                         return _num_edges;
                     }
 
@@ -156,7 +158,7 @@ namespace openjij {
                     FloatType calc_energy(const Spins& spins) const{
                         assert(spins.size() == get_num_spins());
                         FloatType ret = 0;
-                        for(size_t ind=0; ind<this->get_num_spins(); ind++){
+                        for(std::size_t ind=0; ind<this->get_num_spins(); ind++){
                             for(auto& adj_ind : _list_adj_nodes[ind]){
                                 if(ind != adj_ind)
                                     ret += (1./2) * this->J(ind, adj_ind) * spins[ind] * spins[adj_ind];

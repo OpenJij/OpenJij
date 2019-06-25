@@ -24,7 +24,7 @@ namespace openjij {
 
         using Spin = int;
         using Spins = std::vector<Spin>;
-        using Index = size_t;
+        using Index = std::size_t;
 
         using Nodes = std::vector<Index>;
 
@@ -33,7 +33,7 @@ namespace openjij {
          */
         class Graph{
             private:
-                size_t _num_spins; /**< total number of spins */
+                std::size_t _num_spins; /**< total number of spins */
             public:
 
                 /**
@@ -41,7 +41,7 @@ namespace openjij {
                  *
                  * @param num_spins total number of spins
                  */
-                explicit Graph(size_t num_spins)
+                explicit Graph(std::size_t num_spins)
                     :_num_spins(num_spins){}
 
                 /**
@@ -68,7 +68,7 @@ namespace openjij {
                  *
                  * @return number of spins
                  */
-                size_t get_num_spins() const{
+                std::size_t get_num_spins() const noexcept {
                     return _num_spins;
                 }
         };

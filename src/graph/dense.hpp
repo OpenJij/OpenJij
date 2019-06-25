@@ -18,6 +18,7 @@
 #include <map>
 #include <vector>
 #include <cassert>
+#include <cstddef>
 #include <type_traits>
 #include <algorithm>
 
@@ -56,7 +57,7 @@ namespace openjij {
                      *
                      * @return converted index
                      */
-                    inline size_t convert_index(Index i, Index j) const{
+                    inline std::size_t convert_index(Index i, Index j) const{
                         assert(i<=j);
                         return get_num_spins()*i-i*(i-1)/2+j-i;
                     }
@@ -93,7 +94,7 @@ namespace openjij {
                      *
                      * @param num_spins the number of spins
                      */
-                    explicit Dense(size_t num_spins)
+                    explicit Dense(std::size_t num_spins)
                         : Graph(num_spins), _J(num_spins*(num_spins+1)/2), _list_adj_nodes(num_spins){
 
 
@@ -137,7 +138,7 @@ namespace openjij {
                     FloatType calc_energy(const Spins& spins) const{
                         assert(spins.size() == get_num_spins());
                         FloatType ret = 0;
-                        for(size_t ind=0; ind<this->get_num_spins(); ind++){
+                        for(std::size_t ind=0; ind<this->get_num_spins(); ind++){
                             for(auto& adj_ind : _list_adj_nodes[ind]){
                                 if(ind != adj_ind)
                                     ret += (1./2) * this->J(ind, adj_ind) * spins[ind] * spins[adj_ind];
