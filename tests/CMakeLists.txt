@@ -7,7 +7,7 @@ add_executable(cxxjij_test
     cxxtest.cpp
 )
 
-target_link_libraries(cxxjij_test
+target_link_libraries(cxxjij_test PRIVATE
     cxxjij_header_only
     gmock_main
     gtest

@@ -22,8 +22,8 @@
 #include <utility>
 #include <unordered_map>
 
-#include "graph.hpp"
-#include "../utility/pairhash.hpp"
+#include <graph/graph.hpp>
+#include <utility/pairhash.hpp>
 
 namespace openjij {
     namespace graph {

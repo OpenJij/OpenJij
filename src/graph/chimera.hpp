@@ -19,7 +19,8 @@
 #include <cstdint>
 #include <type_traits>
 #include <tuple>
-#include "sparse.hpp"
+
+#include <graph/sparse.hpp>
 
 namespace openjij {
     namespace graph {

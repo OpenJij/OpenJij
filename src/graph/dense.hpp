@@ -22,7 +22,7 @@
 #include <type_traits>
 #include <algorithm>
 
-#include "graph.hpp"
+#include <graph/graph.hpp>
 
 namespace openjij {
     namespace graph {

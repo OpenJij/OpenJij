@@ -1,8 +1,8 @@
-add_library(system INTERFACE)
-target_include_directories(system
-    INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
+# add_library(system INTERFACE)
+# target_include_directories(system
+#     INTERFACE
+#     ${CMAKE_CURRENT_SOURCE_DIR}
+# )
 # set(METHOD_LIBRARY classical_ising.cpp quantum_ising.cpp)
 
 # if(USE_CUDA)
