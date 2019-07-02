@@ -15,10 +15,10 @@
 #ifndef OPENJIJ_GRAPH_ALL_HPP__
 #define OPENJIJ_GRAPH_ALL_HPP__
 
-#include "graph.hpp"
-#include "dense.hpp"
-#include "sparse.hpp"
-#include "square.hpp"
-#include "chimera.hpp"
+#include <graph/graph.hpp>
+#include <graph/dense.hpp>
+#include <graph/sparse.hpp>
+#include <graph/square.hpp>
+#include <graph/chimera.hpp>
 
 #endif

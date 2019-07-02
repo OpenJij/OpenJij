@@ -1,21 +1,73 @@
+//    Copyright 2019 Jij Inc.
+
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+
+//        http://www.apache.org/licenses/LICENSE-2.0
+
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+
 #ifndef OPENJIJ_UTILITY_SCHEDULE_LIST_HPP__
 #define OPENJIJ_UTILITY_SCHEDULE_LIST_HPP__
 
+#include <cstddef>
 #include <cmath>
 #include <vector>
-#include <tuple>
+
+#include <system/system.hpp>
 
 namespace openjij {
     namespace utility {
-        using ScheduleList = std::vector<std::pair<std::size_t, double>>;
+        template<typename SystemType>
+        struct UpdaterParameter;
 
-        ScheduleList make_schedule_list(double beta_min, double beta_max, std::size_t one_mc_step, std::size_t num_call_update) noexcept {
-            const double r_beta = std::pow(beta_max/beta_min, 1.0/static_cast<double>(num_call_update-1));
+        template<>
+        struct UpdaterParameter<system::classical_system> {
+            UpdaterParameter() = default;
+            UpdaterParameter(double beta) : beta{beta} {}
+
+            double beta;
+        };
+
+        template<>
+        struct UpdaterParameter<system::quantum_system> {
+            UpdaterParameter() = default;
+            UpdaterParameter(double beta, double gamma) : beta{beta}, gamma{gamma} {}
+
+            double beta;
+            double gamma;
+        };
+
+        using ClassicalUpdaterParameter = UpdaterParameter<system::classical_system>;
+        using QuantumUpdaterParameter = UpdaterParameter<system::quantum_system>;
+
+        template<typename SystemType>
+        struct Schedule {
+            Schedule() = default;
+
+            std::size_t one_mc_step;
+            UpdaterParameter<SystemType> updater_parameter;
+        };
+
+        template<typename SystemType>
+        using ScheduleList = std::vector<Schedule<SystemType>>;
+
+        using ClassicalScheduleList = ScheduleList<system::classical_system>;
+        using QuantumScheduleList = ScheduleList<system::quantum_system>;
+
+        ClassicalScheduleList make_classical_schedule_list(double beta_min, double beta_max, std::size_t one_mc_step, std::size_t num_call_updater) {
+            const double r_beta = std::pow(beta_max/beta_min, 1.0/static_cast<double>(num_call_updater - 1));
             double beta = beta_min;
 
-            auto schedule_list = ScheduleList(num_call_update);
-            for (auto first = schedule_list.begin(), last = schedule_list.end(); first != last; ++first) {
-                *first = std::make_pair(one_mc_step, beta);
+            auto schedule_list = ClassicalScheduleList(num_call_updater);
+            for (auto& schedule : schedule_list) {
+                schedule.one_mc_step = one_mc_step;
+                schedule.updater_parameter = ClassicalUpdaterParameter(beta);
                 beta *= r_beta;
             }
 

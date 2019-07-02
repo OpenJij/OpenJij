@@ -18,7 +18,8 @@
 #include <cstddef>
 #include <utility>
 #include <unordered_map>
-#include "../graph/graph.hpp"
+
+#include <graph/graph.hpp>
 
 namespace openjij {
     namespace utility {
