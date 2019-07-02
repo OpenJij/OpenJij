@@ -15,8 +15,7 @@
 #include <algorithm/algorithm.hpp>
 #include <updater/single_spin_flip.hpp>
 #include <utility/schedule_list.hpp>
-#include <graph/graph.hpp>
-#include <graph/dense.hpp>
+#include <graph/all.hpp>
 
 // #####################################
 // helper functions
@@ -43,6 +42,153 @@ openjij::graph::Dense<double> generate_sa_interaction(std::size_t system_size) {
 // #####################################
 // tests
 // #####################################
+
+//graph tests
+TEST(Graph, DenseGraphCheck){
+    using namespace openjij::graph;
+    std::size_t N = 500;
+    Dense<double> a(N);
+	double s = 0;
+	for(size_t i=0; i<N; i++){
+		for(size_t j=i; j<N; j++){
+			a.J(i, j)  = s;
+			s+=1./N;
+		}
+	}
+	s = 0;
+	for(size_t i=0; i<N; i++){
+		for(size_t j=i; j<N; j++){
+			EXPECT_EQ(a.J(i, j) , s);
+			s+=1./N;
+		}
+	}
+	s = 0;
+	for(size_t i=0; i<N; i++){
+		for(size_t j=i; j<N; j++){
+			EXPECT_EQ(a.J(j, i) , s);
+			s+=1./N;
+		}
+	}
+}
+
+TEST(Graph, SparseGraphCheck){
+    using namespace openjij::graph;
+	size_t N = 500;
+	Sparse<double> b(N, N-1);
+	double s = 0;
+	for(size_t i=0; i<N; i++){
+		for(size_t j=i+1; j<N; j++){
+			b.J(i, j) = s;
+			s+=1./N;
+		}
+	}
+	s = 0;
+	for(size_t i=0; i<N; i++){
+		for(size_t j=i+1; j<N; j++){
+			EXPECT_EQ(b.J(i, j) , s);
+			s+=1./N;
+		}
+	}
+	s = 0;
+	for(size_t i=0; i<N; i++){
+		for(size_t j=i+1; j<N; j++){
+			EXPECT_EQ(b.J(j, i) , s);
+			s+=1./N;
+		}
+	}
+	for(size_t i=0; i<N; i++){
+		size_t tot = 0;
+		for(auto&& elem : b.adj_nodes(i)){
+			tot += elem;
+		}
+		EXPECT_EQ(tot, N*(N-1)/2 - i);
+	}
+	EXPECT_EQ(b.get_num_edges(), N-1);
+
+	Sparse<double> c(N, N);
+	s = 0;
+	for(size_t i=0; i<N; i++){
+		for(size_t j=i; j<N; j++){
+			c.J(j, i) = s;
+			s+=1./N;
+		}
+	}
+	s = 0;
+	for(size_t i=0; i<N; i++){
+		for(size_t j=i; j<N; j++){
+			EXPECT_EQ(c.J(i, j) , s);
+			s+=1./N;
+		}
+	}
+	s = 0;
+	for(size_t i=0; i<N; i++){
+		for(size_t j=i; j<N; j++){
+			EXPECT_EQ(c.J(j, i) , s);
+			s+=1./N;
+		}
+	}
+	for(size_t i=0; i<N; i++){
+		size_t tot = 0;
+		for(auto&& elem : c.adj_nodes(i)){
+			tot += elem;
+		}
+		EXPECT_EQ(tot, N*(N-1)/2);
+	}
+	EXPECT_EQ(c.get_num_edges(), N);
+}
+
+TEST(Graph, EnergyCheck){
+    using namespace openjij::graph;
+	size_t N = 500;
+
+	Dense<double> b_d(N);
+	Sparse<double> b(N, N-1);
+
+    Spins spins(N, 1);
+    Spins spins_neg(N, -1);
+    Spins spins_r = b_d.gen_spin();
+
+	for(size_t i=0; i<N; i++){
+		for(size_t j=i+1; j<N; j++){
+			b_d.J(i, j) = 1;
+		}
+	}
+
+	for(size_t i=0; i<N; i++){
+		for(size_t j=i+1; j<N; j++){
+			b.J(i, j) = 1;
+		}
+	}
+
+	EXPECT_EQ(b_d.calc_energy(spins), (1./2) * (N*N - N));
+	EXPECT_EQ(b_d.calc_energy(spins_neg), (1./2) * (N*N - N));
+	EXPECT_EQ(b.calc_energy(spins), (1./2) * (N*N - N));
+	EXPECT_EQ(b.calc_energy(spins_neg), (1./2) * (N*N - N));
+	EXPECT_EQ(b_d.calc_energy(spins_r), b.calc_energy(spins_r));
+
+	Dense<double> c_d(N);
+	Sparse<double> c(N, N);
+
+	for(size_t i=0; i<N; i++){
+		for(size_t j=i; j<N; j++){
+			c_d.J(i, j) = 1;
+		}
+	}
+
+	for(size_t i=0; i<N; i++){
+		for(size_t j=i; j<N; j++){
+			c.J(i, j) = 1;
+		}
+	}
+
+	EXPECT_EQ(c_d.calc_energy(spins), (1./2) * (N*N + N));
+	EXPECT_EQ(c_d.calc_energy(spins_neg), (1./2) * (N*N - 3*N));
+	EXPECT_EQ(c.calc_energy(spins), (1./2) * (N*N + N));
+	EXPECT_EQ(c.calc_energy(spins_neg), (1./2) * (N*N - 3*N));
+	EXPECT_EQ(c_d.calc_energy(spins_r), c.calc_energy(spins_r));
+}
+
+
 TEST(ClassicalIsing_SingleSpinFlip, StateAtLowTemperatureIsNotEqualToStateAtHighTemperature) {
     constexpr auto N = 10;
     const auto interaction = generate_sa_interaction(N);
