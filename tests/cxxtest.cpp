@@ -17,6 +17,7 @@
 #include <algorithm/algorithm.hpp>
 #include <updater/single_spin_flip.hpp>
 #include <utility/schedule_list.hpp>
+#include <utility/union_find.hpp>
 #include <graph/graph.hpp>
 #include <graph/dense.hpp>
 
@@ -92,4 +93,18 @@ TEST(ClassicalIsing_SingleSpinFlip, StateAtLowTemperatureIsEqualToStateAtLowTemp
     const auto expect = classical_ising.spin;
 
     EXPECT_EQ(target, expect);
+}
+
+TEST(UnionFind, UniteSevenNodesToMakeThreeSets) {
+    auto union_find = openjij::utility::UnionFind(7);
+
+    union_find.unite_sets(0,1);
+    union_find.unite_sets(1,4);
+    union_find.unite_sets(3,5);
+    union_find.unite_sets(5,6);
+
+    auto expect = std::vector<decltype(union_find)::Node>{1,1,2,5,1,5,5};
+    for (std::size_t node = 0; node < 7; ++node) {
+        EXPECT_EQ(union_find.find_set(node), expect[node]);
+    }
 }

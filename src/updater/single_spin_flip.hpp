@@ -12,8 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UPDATER_INCLUDE_SINGLE_SPIN_FLIP_HPP__
-#define OPENJIJ_UPDATER_INCLUDE_SINGLE_SPIN_FLIP_HPP__
+#ifndef OPENJIJ_UPDATER_SINGLE_SPIN_FLIP_HPP__
+#define OPENJIJ_UPDATER_SINGLE_SPIN_FLIP_HPP__
 
 #include <random>
 
@@ -48,7 +48,7 @@ namespace openjij {
                 auto urd = std::uniform_real_distribution<>(0, 1.0);
 
                 // energy difference
-                double total_dE = 0;
+                auto total_dE = 0;
 
                 for (std::size_t time = 0, num_spin = system.spin.size(); time < num_spin; ++time) {
                     // index of spin selected at random
