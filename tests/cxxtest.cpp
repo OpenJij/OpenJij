@@ -6,7 +6,9 @@
 #include <iostream>
 #include <utility>
 #include <numeric>
+#include <random>
 #include <tuple>
+#include <type_traits>
 #include <vector>
 
 // include OpenJij
@@ -195,12 +197,20 @@ TEST(ClassicalIsing_SingleSpinFlip, StateAtLowTemperatureIsNotEqualToStateAtHigh
     const auto spin = interaction.gen_spin();
     auto classical_ising = openjij::system::ClassicalIsing(spin, interaction);
 
-    const auto schedule_list1 = openjij::utility::make_schedule_list(0.1, 10.0, 10, 10);
-    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, schedule_list1);
+    auto random_numder_engine = std::mt19937(1);
+    const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 10.0, 10, 10);
+
+    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list1);
     const auto target = classical_ising.spin;
 
-    const auto schedule_list2 = openjij::utility::ScheduleList({{20, 0.01}});
-    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, schedule_list2);
+    const auto schedule_list2 = [](){
+        auto schedule_list = openjij::utility::ClassicalScheduleList(1);
+        schedule_list[0].one_mc_step = 20;
+        schedule_list[0].updater_parameter = openjij::utility::ClassicalUpdaterParameter(0.01);
+
+        return schedule_list;
+    }();
+    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list2);
     const auto expect = classical_ising.spin;
 
     EXPECT_NE(target, expect);
@@ -212,12 +222,19 @@ TEST(ClassicalIsing_SingleSpinFlip, StateAtLowTemperatureIsEqualToStateAtLowTemp
     const auto spin = interaction.gen_spin();
     auto classical_ising = openjij::system::ClassicalIsing(spin, interaction);
 
-    const auto schedule_list1 = openjij::utility::make_schedule_list(0.1, 100.0, 10, 10);
-    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, schedule_list1);
+    auto random_numder_engine = std::mt19937(1);
+    const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 100.0, 10, 10);
+    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list1);
     const auto target = classical_ising.spin;
 
-    const auto schedule_list2 = openjij::utility::ScheduleList({{100, 100.0}});
-    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, schedule_list2);
+    const auto schedule_list2 = [](){
+        auto schedule_list = openjij::utility::ClassicalScheduleList(1);
+        schedule_list[0].one_mc_step = 100;
+        schedule_list[0].updater_parameter = openjij::utility::ClassicalUpdaterParameter(100.0);
+
+        return schedule_list;
+    }();
+    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list2);
     const auto expect = classical_ising.spin;
 
     EXPECT_EQ(target, expect);

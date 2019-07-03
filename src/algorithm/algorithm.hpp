@@ -19,23 +19,21 @@
 #include <tuple>
 #include <vector>
 
+#include <system/system.hpp>
 #include <utility/schedule_list.hpp>
 
 namespace openjij {
     namespace algorithm {
         template<template<typename> class Updater>
         struct Algorithm {
-            template<typename System>
-            static void run(System& system, const utility::ScheduleList& schedule_list) {
+            template<typename System, typename RandomNumberEngine>
+            static void run(System& system,
+                            RandomNumberEngine& random_numder_engine,
+                            const utility::ScheduleList<typename system::get_system_type<System>::type>& schedule_list) {
                 for (auto&& schedule : schedule_list) {
-                    const auto one_mc_step = schedule.first;
-                    const auto parameters = schedule.second;
-
-                    for (auto i = 0; i < one_mc_step; ++i) {
-                    // std::cout << "one_mc_step: " << one_mc_step << std::endl;
-                        Updater<System>::update(system, parameters);
+                    for (auto i = 0; i < schedule.one_mc_step; ++i) {
+                        Updater<System>::update(system, random_numder_engine, schedule.updater_parameter);
                     }
-                    // std::cout << std::endl;
                 }
             }
         };
