@@ -26,7 +26,7 @@ namespace openjij {
     namespace graph {
 
         /**
-         * Chimera index (row, column, in-chimera)
+         * @brief Chimera index (row, column, in-chimera)
          * The structure of in-chimera is as follows
          * in-chimera index
          *
@@ -42,53 +42,53 @@ namespace openjij {
         using ChimeraIndex = std::tuple<std::size_t, std::size_t, std::size_t>;
 
         /**
-         * direction in chimera graph
+         * @brief direction in chimera graph
          */
         enum class ChimeraDir{
 
             /**
-             * plus-row direction: (r, c, ind) -> (r+1, c, ind)
+             * @brief plus-row direction: (r, c, ind) -> (r+1, c, ind)
              */
             PLUS_R,  
 
             /**
-             * minus-row direction: (r, c, ind) -> (r-1, c, ind)
+             * @brief minus-row direction: (r, c, ind) -> (r-1, c, ind)
              */
             MINUS_R, 
 
             /**
-             * plus-column direction: (r, c, ind) -> (r, c+1, ind)
+             * @brief plus-column direction: (r, c, ind) -> (r, c+1, ind)
              */
             PLUS_C, 
 
             /**
-             * minus-column direction: (r, c, ind) -> (r, c-1, ind)
+             * @brief minus-column direction: (r, c, ind) -> (r, c-1, ind)
              */
             MINUS_C,
 
             /**
-             * inside-chimera 0or4 direction: (r, c, ind) -> (r, c, 0or4)
+             * @brief inside-chimera 0or4 direction: (r, c, ind) -> (r, c, 0or4)
              */
             IN_0or4, 
 
             /**
-             * inside-chimera 1or5 direction: (r, c, ind) -> (r, c, 1or5)
+             * @brief inside-chimera 1or5 direction: (r, c, ind) -> (r, c, 1or5)
              */
             IN_1or5,
 
             /**
-             * inside-chimera 2or6 direction: (r, c, ind) -> (r, c, 2or6)
+             * @brief inside-chimera 2or6 direction: (r, c, ind) -> (r, c, 2or6)
              */
             IN_2or6, 
 
             /**
-             * inside-chimera 3or7 direction: (r, c, ind) -> (r, c, 3or7)
+             * @brief inside-chimera 3or7 direction: (r, c, ind) -> (r, c, 3or7)
              */
             IN_3or7, 
         };
 
         /**
-         * chimera lattice graph
+         * @brief chimera lattice graph
          *
          * @tparam FloatType floating-point type (default: double)
          */
@@ -99,27 +99,27 @@ namespace openjij {
             private:
 
                 /**
-                 * initial value to be set to inreactions
+                 * @brief initial value to be set to inreactions
                  */
                 FloatType _init_val;
 
                 /**
-                 * number of rows
+                 * @brief number of rows
                  */
                 std::size_t _num_row;
 
                 /**
-                 * number of columns
+                 * @brief number of columns
                  */
                 std::size_t _num_column;
 
                 /**
-                 * number of spins in each chimera units (8)
+                 * @brief number of spins in each chimera units (8)
                  */
                 constexpr static std::size_t _num_in_chimera = 8;
 
                 /**
-                 * mod function (a mod num_row)
+                 * @brief mod function (a mod num_row)
                  *
                  * @param a parameter ([-1:num_row])
                  *
@@ -131,7 +131,7 @@ namespace openjij {
                 }
 
                 /**
-                 * mod function (a mod num_column)
+                 * @brief mod function (a mod num_column)
                  *
                  * @param a parameter ([-1:num_column])
                  *
@@ -145,7 +145,7 @@ namespace openjij {
             public:
 
                 /**
-                 * convert from (row x column x in-chimera) index to global index
+                 * @brief convert from (row x column x in-chimera) index to global index
                  *
                  * @param r row index
                  * @param c column index
@@ -164,7 +164,7 @@ namespace openjij {
                 }
 
                 /**
-                 * convert from global index to (row x column x in-chimera) index
+                 * @brief convert from global index to (row x column x in-chimera) index
                  *
                  * @param ind
                  *
@@ -182,7 +182,7 @@ namespace openjij {
                 }
 
                 /**
-                 * chimera lattice graph constructor
+                 * @brief chimera lattice graph constructor
                  *
                  * @param num_row number of rows
                  * @param num_column number of columns
@@ -230,40 +230,40 @@ namespace openjij {
                     }
 
                 /**
-                 * chimera lattice graph copy constructor
+                 * @brief chimera lattice graph copy constructor
                  *
                  */
                 Chimera(const Chimera<FloatType>&) = default;
 
                 /**
-                 * chimera lattice graph move constructor
+                 * @brief chimera lattice graph move constructor
                  *
                  */
                 Chimera(Chimera<FloatType>&&) = default;
 
                 /**
-                 * get number of rows
+                 * @brief get number of rows
                  *
                  * @return number of rows
                  */
                 std::size_t get_num_row() const{return _num_row;}
 
                 /**
-                 * get number of columns
+                 * @brief get number of columns
                  *
                  * @return number of columns
                  */
                 std::size_t get_num_column() const{return _num_column;}
 
                 /**
-                 * get number of spins in each chimera unit
+                 * @brief get number of spins in each chimera unit
                  *
                  * @return number of spins in each chimera unit
                  */
                 std::size_t get_num_in_chimera() const{return _num_in_chimera;}
 
                 /**
-                 * access J(row, colum, in-chimera, direction)
+                 * @brief access J(row, colum, in-chimera, direction)
                  *
                  * @param r row index
                  * @param c column index
@@ -307,7 +307,7 @@ namespace openjij {
                 }
 
                 /**
-                 * access J(row, colum, in-chimera, direction)
+                 * @brief access J(row, colum, in-chimera, direction)
                  *
                  * @param r row index
                  * @param c column index
@@ -351,7 +351,7 @@ namespace openjij {
                 }
 
                 /**
-                 * access h(row, colum, in-chimera) (local field)
+                 * @brief access h(row, colum, in-chimera) (local field)
                  *
                  * @param r row index
                  * @param c column index
@@ -368,7 +368,7 @@ namespace openjij {
                 }
 
                 /**
-                 * access h(row, colum, in-chimera) (local field)
+                 * @brief access h(row, colum, in-chimera) (local field)
                  *
                  * @param r row index
                  * @param c column index
@@ -385,7 +385,7 @@ namespace openjij {
                 }
 
                 /**
-                 * derive spin value at the index (row x column)
+                 * @brief derive spin value at the index (row x column)
                  *
                  * @param spins spin array
                  * @param r row index
@@ -399,7 +399,7 @@ namespace openjij {
                 }
 
                 /**
-                 * derive spin value at the index (row x column)
+                 * @brief derive spin value at the index (row x column)
                  *
                  * @param spins spin array
                  * @param r row index

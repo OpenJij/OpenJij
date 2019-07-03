@@ -12,8 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_INCLUDE_QUANTUM_ISING_HPP__
-#define OPENJIJ_SYSTEM_INCLUDE_QUANTUM_ISING_HPP__
+#ifndef OPENJIJ_SYSTEM_QUANTUM_ISING_HPP__
+#define OPENJIJ_SYSTEM_QUANTUM_ISING_HPP__
 
 namespace openjij {
     namespace system {

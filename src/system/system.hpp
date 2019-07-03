@@ -12,10 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_INCLUDE_SYSTEM_HPP__
-#define OPENJIJ_SYSTEM_INCLUDE_SYSTEM_HPP__
-
-#include "../graph/dense.hpp"
+#ifndef OPENJIJ_SYSTEM_SYSTEM_HPP__
+#define OPENJIJ_SYSTEM_SYSTEM_HPP__
 
 namespace openjij {
     namespace system {

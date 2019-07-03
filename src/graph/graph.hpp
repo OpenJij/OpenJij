@@ -29,7 +29,7 @@ namespace openjij {
         using Nodes = std::vector<Index>;
 
         /**
-         * Abstract graph class
+         * @brief Abstract graph class
          */
         class Graph{
             private:
@@ -37,7 +37,7 @@ namespace openjij {
             public:
 
                 /**
-                 * Graph constructor
+                 * @brief Graph constructor
                  *
                  * @param num_spins total number of spins
                  */
@@ -45,18 +45,19 @@ namespace openjij {
                     :_num_spins(num_spins){}
 
                 /**
-                 * generate spins randomly.
+                 * @brief generate spins randomly.
                  *
                  * @return generated spins
                  */
-                const Spins gen_spin() const{
+                // const Spins gen_spin() const{
+                template<typename RandomNumberEngine>
+                const Spins gen_spin(RandomNumberEngine& random_numder_engine) const{
                     //generate spin array
                     Spins ret_spin(_num_spins);
-                    //TODO: arbitrary random generator?
-                    auto mt = std::mt19937(std::random_device()());
-                    std::uniform_int_distribution<> unif(0, 1);
+
+                    std::uniform_int_distribution<> uid(0, 1);
                     for(auto& elem : ret_spin){
-                        elem = 2*unif(mt)-1;
+                        elem = 2*uid(random_numder_engine)-1;
                     }
 
                     return ret_spin;
@@ -64,7 +65,7 @@ namespace openjij {
 
 
                 /**
-                 * get number of spins
+                 * @brief get number of spins
                  *
                  * @return number of spins
                  */

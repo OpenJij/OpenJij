@@ -9,6 +9,7 @@ add_executable(cxxjij_test
 
 target_link_libraries(cxxjij_test PRIVATE
     cxxjij_header_only
+    eigen_lib
     gmock_main
     gtest
     pthread

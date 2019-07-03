@@ -39,28 +39,28 @@ namespace openjij {
                 public:
 
                     /**
-                     * interaction type
+                     * @brief interaction type
                      */
                     using Interactions = std::unordered_map<std::pair<Index, Index>, FloatType, utility::PairHash>;
                 private:
 
                     /**
-                     * interactions (the number of intereactions is num_spins*(num_spins+1)/2)
+                     * @brief interactions (the number of intereactions is num_spins*(num_spins+1)/2)
                      */
                     Interactions _J;
 
                     /**
-                     * the uppder limit of the number of edges per site 
+                     * @brief the uppder limit of the number of edges per site 
                      */
                     std::size_t _num_edges;
 
                     /**
-                     * the list of the indices of adjacent nodes 
+                     * @brief the list of the indices of adjacent nodes 
                      */
                     std::vector<Nodes> _list_adj_nodes;
 
                     /**
-                     * add adjacent node from "from" Index to "to" Index 
+                     * @brief add adjacent node from "from" Index to "to" Index 
                      *
                      * @param from "from" Index
                      * @param to "to" Index
@@ -94,7 +94,7 @@ namespace openjij {
                 public:
 
                     /**
-                     * Sparse constructor
+                     * @brief Sparse constructor
                      *
                      * @param num_spins number of spins
                      * @param num_edges number of edges
@@ -108,26 +108,26 @@ namespace openjij {
                         }
 
                     /**
-                     * Sparse delegate constructor
+                     * @brief Sparse delegate constructor
                      *
                      * @param num_spins number of spins
                      */
                     explicit Sparse(std::size_t num_spins) : Sparse(num_spins, num_spins){}
 
                     /**
-                     * Sparse copy constructor
+                     * @brief Sparse copy constructor
                      *
                      */
                     Sparse(const Sparse<FloatType>&) = default;
 
                     /**
-                     * Sparse move constructor
+                     * @brief Sparse move constructor
                      *
                      */
                     Sparse(Sparse<FloatType>&&) = default;
 
                     /**
-                     * list of adjacent nodes 
+                     * @brief list of adjacent nodes 
                      *
                      * @param ind Node index
                      *
@@ -138,7 +138,7 @@ namespace openjij {
                     }
 
                     /**
-                     * get number of edges
+                     * @brief get number of edges
                      *
                      * @return number of edges
                      */
@@ -146,10 +146,8 @@ namespace openjij {
                         return _num_edges;
                     }
 
-                    //TODO: calc_energy should not be the member function.
-
                     /**
-                     * calculate total energy
+                     * @brief calculate total energy
                      *
                      * @param spins
                      *
@@ -171,7 +169,7 @@ namespace openjij {
                     }
 
                     /**
-                     * access J_{ij}
+                     * @brief access J_{ij}
                      *
                      * @param i Index i
                      * @param j Index j
@@ -189,7 +187,7 @@ namespace openjij {
                     }
 
                     /**
-                     * access J_{ij}
+                     * @brief access J_{ij}
                      *
                      * @param i Index i
                      * @param j Index j
@@ -203,7 +201,7 @@ namespace openjij {
                     }
 
                     /**
-                     * access h_{i} (local field)
+                     * @brief access h_{i} (local field)
                      *
                      * @param i Index i
                      *
@@ -216,7 +214,7 @@ namespace openjij {
                     }
 
                     /**
-                     * access h_{i} (local field)
+                     * @brief access h_{i} (local field)
                      *
                      * @param i Index i
                      *
