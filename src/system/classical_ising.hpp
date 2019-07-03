@@ -12,27 +12,44 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_INCLUDE_CLASSICAL_ISING_HPP__
-#define OPENJIJ_SYSTEM_INCLUDE_CLASSICAL_ISING_HPP__
+#ifndef OPENJIJ_SYSTEM_CLASSICAL_ISING_HPP__
+#define OPENJIJ_SYSTEM_CLASSICAL_ISING_HPP__
 
 #include "../graph/dense.hpp"
 
 namespace openjij {
     namespace system {
-        struct ClassicalIsing {
-            /**
-             * @brief Constructor to initialize spin and interaction
-             *
-             * @param spin
-             * @param interaction
-             */
-            ClassicalIsing(const graph::Spins& spin, const graph::Dense<double>& interaction)
-                : spin{spin}, interaction{interaction} {
-            }
 
-            graph::Spins spin;
-            graph::Dense<double> interaction;
-        };
+        /**
+         * Classical Ising structure
+         *
+         * @tparam GraphType type of graph (Dense, Sparse, ...)
+         */
+        template<typename GraphType>
+            struct ClassicalIsing {
+                /**
+                 * Constructor to initialize spin and interaction
+                 *
+                 * @param spin spin array
+                 * @param interaction interactions
+                 */
+                ClassicalIsing(const graph::Spins& spin, const GraphType& interaction)
+                    : spin{spin}, interaction{interaction} {
+                    }
+
+                /**
+                 * Constructor to initialize spin and interaction
+                 * spins are initialized randomly.
+                 *
+                 * @param interaction interactions
+                 */
+                ClassicalIsing(const GraphType& interaction)
+                    : spin{interaction.gen_spin()}, interaction{interaction} {
+                    }
+
+                graph::Spins spin;
+                GraphType interaction;
+            };
     } // namespace system
 } // namespace openjij
 
