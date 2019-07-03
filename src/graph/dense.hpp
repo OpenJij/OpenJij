@@ -126,6 +126,7 @@ namespace openjij {
                         return _list_adj_nodes[ind];
                     }
 
+                    //DEPRECATED
                     //TODO: calc_energy should not be the member function.
 
                     /**

@@ -49,14 +49,15 @@ namespace openjij {
                  *
                  * @return generated spins
                  */
-                const Spins gen_spin() const{
+                // const Spins gen_spin() const{
+                template<typename RandomNumberEngine>
+                const Spins gen_spin(RandomNumberEngine& random_numder_engine) const{
                     //generate spin array
                     Spins ret_spin(_num_spins);
-                    //TODO: arbitrary random generator?
-                    auto mt = std::mt19937(std::random_device()());
-                    std::uniform_int_distribution<> unif(0, 1);
+
+                    std::uniform_int_distribution<> uid(0, 1);
                     for(auto& elem : ret_spin){
-                        elem = 2*unif(mt)-1;
+                        elem = 2*uid(random_numder_engine)-1;
                     }
 
                     return ret_spin;
