@@ -12,8 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_INCLUDE_CLASSICAL_ISING_HPP__
-#define OPENJIJ_SYSTEM_INCLUDE_CLASSICAL_ISING_HPP__
+#ifndef OPENJIJ_SYSTEM_CLASSICAL_ISING_HPP__
+#define OPENJIJ_SYSTEM_CLASSICAL_ISING_HPP__
 
 #include <system/system.hpp>
 #include <graph/dense.hpp>
@@ -21,6 +21,12 @@
 namespace openjij {
     namespace system {
         struct ClassicalIsing {
+            /**
+             * @brief 
+             *
+             * @tparam GraphType
+             */
+            template<typename GraphType>
             using system_type = classical_system;
             /**
              * @brief Constructor to initialize spin and interaction

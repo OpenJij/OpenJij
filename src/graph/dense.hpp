@@ -126,8 +126,6 @@ namespace openjij {
                         return _list_adj_nodes[ind];
                     }
 
-                    //TODO: calc_energy should not be the member function.
-
                     /**
                      * @brief calculate total energy 
                      *

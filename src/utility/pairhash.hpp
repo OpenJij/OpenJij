@@ -25,12 +25,12 @@ namespace openjij {
     namespace utility {
 
         /**
-         * hash class for unordered_map with std::pair 
+         * @brief hash class for unordered_map with std::pair 
          */
         struct PairHash{
 
             /**
-             * generate hash for std::pair
+             * @brief generate hash for std::pair
              *
              * @param p std::pair variable
              *

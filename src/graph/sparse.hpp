@@ -146,8 +146,6 @@ namespace openjij {
                         return _num_edges;
                     }
 
-                    //TODO: calc_energy should not be the member function.
-
                     /**
                      * @brief calculate total energy
                      *
