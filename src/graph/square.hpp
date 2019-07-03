@@ -27,38 +27,38 @@ namespace openjij {
 
 
         /**
-         * Row x Column type
+         * @brief Row x Column type
          */
         using RowColumn = std::pair<std::size_t, std::size_t>;
 
         /**
-         * direction enum class
+         * @brief direction enum class
          */
         enum class Dir{
 
             /**
-             * plus-row direction: (r, c) -> (r+1, c) 
+             * @brief plus-row direction: (r, c) -> (r+1, c) 
              */
             PLUS_R,
 
             /**
-             * minus-row direction: (r, c) -> (r-1, c) 
+             * @brief minus-row direction: (r, c) -> (r-1, c) 
              */
             MINUS_R,
 
             /**
-             * plus-column direction: (r, c) -> (r, c+1) 
+             * @brief plus-column direction: (r, c) -> (r, c+1) 
              */
             PLUS_C, 
 
             /**
-             * minux-column direction: (r, c) -> (r, c-1) 
+             * @brief minux-column direction: (r, c) -> (r, c-1) 
              */
             MINUS_C,
         };
 
         /**
-         * square lattice graph
+         * @brief square lattice graph
          *
          * @tparam FloatType floating-point type (default is double)
          */
@@ -68,22 +68,22 @@ namespace openjij {
             private:
 
                 /**
-                 * initial value to be set to interactions
+                 * @brief initial value to be set to interactions
                  */
                 FloatType _init_val;
 
                 /**
-                 * number of rows
+                 * @brief number of rows
                  */
                 std::size_t _num_row;
 
                 /**
-                 * number of columns
+                 * @brief number of columns
                  */
                 std::size_t _num_column;
 
                 /**
-                 * mod function (a mod num_row)
+                 * @brief mod function (a mod num_row)
                  *
                  * @param a parameter ([-1:num_row])
                  *
@@ -94,7 +94,7 @@ namespace openjij {
                 }
 
                 /**
-                 * mod function (a mod num_column)
+                 * @brief mod function (a mod num_column)
                  *
                  * @param a parameter ([-1:num_column])
                  *
@@ -107,7 +107,7 @@ namespace openjij {
             public:
 
                 /**
-                 * convert from (row x column) index to global index
+                 * @brief convert from (row x column) index to global index
                  *
                  * @param r row index
                  * @param c column index
@@ -122,7 +122,7 @@ namespace openjij {
                 }
 
                 /**
-                 * convert from global index to (row x column) index
+                 * @brief convert from global index to (row x column) index
                  *
                  * @param ind global index
                  *
@@ -136,7 +136,7 @@ namespace openjij {
                 }
 
                 /**
-                 * square lattice graph constructor
+                 * @brief square lattice graph constructor
                  *
                  * @param num_row number of rows
                  * @param num_column number of columns
@@ -173,33 +173,33 @@ namespace openjij {
                     }
 
                 /**
-                 * square lattice graph copy constructor
+                 * @brief square lattice graph copy constructor
                  *
                  */
                 Square(const Square<FloatType>&) = default;
 
                 /**
-                 * square lattice graph move constructor
+                 * @brief square lattice graph move constructor
                  *
                  */
                 Square(Square<FloatType>&&) = default;
 
                 /**
-                 * get number of rows
+                 * @brief get number of rows
                  *
                  * @return number of rows
                  */
                 std::size_t get_num_row(){return _num_row;}
 
                 /**
-                 * get number of columns
+                 * @brief get number of columns
                  *
                  * @return number of columns
                  */
                 std::size_t get_num_column(){return _num_column;}
 
                 /**
-                 * access J(row, colum, direction)
+                 * @brief access J(row, colum, direction)
                  *
                  * @param r row index
                  * @param c column index
@@ -227,7 +227,7 @@ namespace openjij {
                 }
 
                 /**
-                 * access J(row, colum, direction)
+                 * @brief access J(row, colum, direction)
                  *
                  * @param r row index
                  * @param c column index
@@ -255,7 +255,7 @@ namespace openjij {
                 }
 
                 /**
-                 * access h(row, colum) (local field)
+                 * @brief access h(row, colum) (local field)
                  *
                  * @param r row index
                  * @param c column index
@@ -270,7 +270,7 @@ namespace openjij {
                 }
 
                 /**
-                 * access h(row, colum) (local field)
+                 * @brief access h(row, colum) (local field)
                  *
                  * @param r row index
                  * @param c column index
@@ -285,7 +285,7 @@ namespace openjij {
                 }
 
                 /**
-                 * derive spin value at the index (row x column)
+                 * @brief derive spin value at the index (row x column)
                  *
                  * @param spins spin array
                  * @param r row index
@@ -298,7 +298,7 @@ namespace openjij {
                 }
 
                 /**
-                 * derive spin value at the index (row x column)
+                 * @brief derive spin value at the index (row x column)
                  *
                  * @param spins spin array
                  * @param r row index
