@@ -29,7 +29,7 @@ namespace openjij {
         using Nodes = std::vector<Index>;
 
         /**
-         * Abstract graph class
+         * @brief Abstract graph class
          */
         class Graph{
             private:
@@ -37,7 +37,7 @@ namespace openjij {
             public:
 
                 /**
-                 * Graph constructor
+                 * @brief Graph constructor
                  *
                  * @param num_spins total number of spins
                  */
@@ -45,7 +45,7 @@ namespace openjij {
                     :_num_spins(num_spins){}
 
                 /**
-                 * generate spins randomly.
+                 * @brief generate spins randomly.
                  *
                  * @return generated spins
                  */
@@ -65,7 +65,7 @@ namespace openjij {
 
 
                 /**
-                 * get number of spins
+                 * @brief get number of spins
                  *
                  * @return number of spins
                  */

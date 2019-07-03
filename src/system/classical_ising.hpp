@@ -21,6 +21,11 @@
 namespace openjij {
     namespace system {
         struct ClassicalIsing {
+            /**
+             * @brief 
+             *
+             * @tparam GraphType
+             */
             using system_type = classical_system;
             /**
              * @brief Constructor to initialize spin and interaction

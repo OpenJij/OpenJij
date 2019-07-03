@@ -28,7 +28,7 @@ namespace openjij {
     namespace graph {
 
         /**
-         * two-body all-to-all interactions 
+         * @brief two-body all-to-all interactions 
          *
          * @tparam FloatType float type of Sparse class (double or float)
          */
@@ -38,19 +38,19 @@ namespace openjij {
                 public:
 
                     /**
-                     * interaction type
+                     * @brief interaction type
                      */
                     using Interactions = std::vector<FloatType>;
                 private:
 
                     /**
-                     * interactions (the number of intereactions is num_spins*(num_spins+1)/2) 
+                     * @brief interactions (the number of intereactions is num_spins*(num_spins+1)/2) 
                      */
                     Interactions _J;
 
 
                     /**
-                     * convert index from pair (i,j) to unique value
+                     * @brief convert index from pair (i,j) to unique value
                      *
                      * @param i Index i
                      * @param j Index j
@@ -63,12 +63,12 @@ namespace openjij {
                     }
 
                     /**
-                     * the list of the indices of adjacent nodes
+                     * @brief the list of the indices of adjacent nodes
                      */
                     std::vector<Nodes> _list_adj_nodes;
 
                     /**
-                     * add adjacent node from "from" Index to "to" Index
+                     * @brief add adjacent node from "from" Index to "to" Index
                      *
                      * @param from "from" Index
                      * @param to "to" Index
@@ -90,7 +90,7 @@ namespace openjij {
                 public:
 
                     /**
-                     * Dense constructor
+                     * @brief Dense constructor
                      *
                      * @param num_spins the number of spins
                      */
@@ -106,17 +106,17 @@ namespace openjij {
 
 
                     /**
-                     * Dense copy constructor
+                     * @brief Dense copy constructor
                      */
                     Dense(const Dense<FloatType>&) = default;
 
                     /**
-                     * Dense move constructor
+                     * @brief Dense move constructor
                      */
                     Dense(Dense<FloatType>&&) = default;
 
                     /**
-                     * returns list of adjacent nodes 
+                     * @brief returns list of adjacent nodes 
                      *
                      * @param ind Node index
                      *
@@ -130,7 +130,7 @@ namespace openjij {
                     //TODO: calc_energy should not be the member function.
 
                     /**
-                     * calculate total energy 
+                     * @brief calculate total energy 
                      *
                      * @param spins
                      *
@@ -152,7 +152,7 @@ namespace openjij {
                     }
 
                     /**
-                     * access J_{ij}
+                     * @brief access J_{ij}
                      *
                      * @param i Index i
                      * @param j Index j
@@ -168,7 +168,7 @@ namespace openjij {
                     }
 
                     /**
-                     * access J_{ij}
+                     * @brief access J_{ij}
                      *
                      * @param i Index i
                      * @param j Index j
@@ -182,10 +182,8 @@ namespace openjij {
                         return _J[convert_index(std::min(i, j), std::max(i, j))];
                     }
 
-                    //access to h (local field)
-
                     /**
-                     * access h_{i} (local field)
+                     * @brief access h_{i} (local field)
                      *
                      * @param i Index i
                      *
@@ -199,7 +197,7 @@ namespace openjij {
                     }
 
                     /**
-                     * access h_{i} (local field)
+                     * @brief access h_{i} (local field)
                      *
                      * @param i Index i
                      *

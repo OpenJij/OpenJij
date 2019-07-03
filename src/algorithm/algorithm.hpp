@@ -15,10 +15,6 @@
 #ifndef SYSTEM_ALGORITHM_ALGORITHM_HPP__
 #define SYSTEM_ALGORITHM_ALGORITHM_HPP__
 
-#include <iostream>
-#include <tuple>
-#include <vector>
-
 #include <system/system.hpp>
 #include <utility/schedule_list.hpp>
 
