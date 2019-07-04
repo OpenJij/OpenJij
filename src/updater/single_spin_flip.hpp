@@ -23,11 +23,27 @@
 
 namespace openjij {
     namespace updater {
+
+        /**
+         * @brief updater (naive single spin flip)
+         *
+         * @tparam System type of system
+         */
         template<typename System>
         struct SingleSpinFlip;
 
+
+        /**
+         * @brief single spin flip for sparse classical ising model
+         */
         template<>
-        struct SingleSpinFlip<system::ClassicalIsing> {
+        struct SingleSpinFlip<system::ClassicalIsing<graph::Sparse<double>>> {
+            
+            /**
+             * @brief ClassicalIsing with sparse interactions
+             */
+            using ClIsing = system::ClassicalIsing<graph::Sparse<double>>;
+
             /**
              * @brief operate single spin flip in a classical ising system
              *
@@ -38,7 +54,7 @@ namespace openjij {
              * @return energy difference \f\Delta E\f
              */
           template<typename RandomNumberEngine>
-            static double update(system::ClassicalIsing& system,
+            static double update(ClIsing& system,
                                  RandomNumberEngine& random_numder_engine,
                                  const utility::ClassicalUpdaterParameter& parameter) {
                 // set probability distribution object
