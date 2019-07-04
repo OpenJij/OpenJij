@@ -49,6 +49,8 @@ if(USE_CUDA)
     add_definitions(-DUSE_CUDA)
 endif()
 
+
 add_subdirectory(src)
 add_subdirectory(openjij)
 add_subdirectory(tests)
+
