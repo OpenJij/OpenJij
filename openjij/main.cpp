@@ -26,6 +26,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <Eigen/Core>
+
 // #ifdef USE_CUDA
 // #include "../src/system/chimera_gpu/chimera_gpu_quantum.h"
 // #endif

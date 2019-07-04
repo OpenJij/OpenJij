@@ -16,16 +16,18 @@
 #define OPENJIJ_SYSTEM_CLASSICAL_ISING_HPP__
 
 #include <system/system.hpp>
-#include <graph/dense.hpp>
+#include <graph/all.hpp>
 
 namespace openjij {
     namespace system {
+
+        /**
+         * @brief ClassicalIsing structure (system for classical Ising model)
+         *
+         * @tparam GraphType type of graph
+         */
+        template<typename GraphType>
         struct ClassicalIsing {
-            /**
-             * @brief 
-             *
-             * @tparam GraphType
-             */
             using system_type = classical_system;
             /**
              * @brief Constructor to initialize spin and interaction
@@ -33,12 +35,12 @@ namespace openjij {
              * @param spin
              * @param interaction
              */
-            ClassicalIsing(const graph::Spins& spin, const graph::Dense<double>& interaction)
+            ClassicalIsing(const graph::Spins& spin, const GraphType& interaction)
                 : spin{spin}, interaction{interaction} {
             }
 
             graph::Spins spin;
-            graph::Dense<double> interaction;
+            GraphType interaction;
         };
     } // namespace system
 } // namespace openjij
