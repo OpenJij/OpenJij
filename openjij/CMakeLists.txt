@@ -27,6 +27,7 @@ endif()
 
 target_link_libraries(cxxjij PRIVATE
     pybind11::module
+    eigen_lib
     cxxjij_header_only
 )
 
