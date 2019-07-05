@@ -31,8 +31,8 @@
  *
  * @return classical interaction
  */
-openjij::graph::Dense<double> generate_sa_interaction(std::size_t system_size) {
-    auto interaction = openjij::graph::Dense<double>(system_size);
+openjij::graph::Sparse<double> generate_sa_interaction(std::size_t system_size) {
+    auto interaction = openjij::graph::Sparse<double>(system_size);
     for (std::size_t row = 0; row < system_size; ++row) {
         for (std::size_t col = row+1; col < system_size; ++col) {
             interaction.J(row, col) = -1;
@@ -199,7 +199,7 @@ TEST(ClassicalIsing_SingleSpinFlip, StateAtLowTemperatureIsNotEqualToStateAtHigh
     const auto interaction = generate_sa_interaction(N);
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = openjij::system::ClassicalIsing(spin, interaction);
+    auto classical_ising = openjij::system::ClassicalIsing<openjij::graph::Sparse<double>>(spin, interaction);
 
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 10.0, 10, 10);
@@ -225,7 +225,7 @@ TEST(ClassicalIsing_SingleSpinFlip, StateAtLowTemperatureIsEqualToStateAtLowTemp
     const auto interaction = generate_sa_interaction(N);
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = openjij::system::ClassicalIsing(spin, interaction);
+    auto classical_ising = openjij::system::ClassicalIsing<openjij::graph::Sparse<double>>(spin, interaction);
 
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 10);
@@ -250,7 +250,7 @@ TEST(ClassicalIsing_SwendsenWang, StateAtLowTemperatureIsNotEqualToStateAtHighTe
     const auto interaction = generate_sa_interaction(N);
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = openjij::system::ClassicalIsing(spin, interaction);
+    auto classical_ising = openjij::system::ClassicalIsing<openjij::graph::Sparse<double>>(spin, interaction);
 
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 10.0, 10, 10);
@@ -276,7 +276,7 @@ TEST(ClassicalIsing_SwendsenWang, StateAtLowTemperatureIsEqualToStateAtLowTemper
     const auto interaction = generate_sa_interaction(N);
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = openjij::system::ClassicalIsing(spin, interaction);
+    auto classical_ising = openjij::system::ClassicalIsing<openjij::graph::Sparse<double>>(spin, interaction);
 
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 10);
@@ -308,4 +308,17 @@ TEST(UnionFind, UniteSevenNodesToMakeThreeSets) {
     for (std::size_t node = 0; node < 7; ++node) {
         EXPECT_EQ(union_find.find_set(node), expect[node]);
     }
+}
+
+TEST(poyo, poyo){
+    using namespace openjij;
+    graph::Dense<double> d(4);
+    d.J(2,3) = 4;
+    d.J(1,0) = -2;
+    d.J(1,1) = 5;
+    d.J(2,2) = 10;
+    auto engine_for_spin = std::mt19937(3);
+    system::ClassicalIsing<graph::Dense<double>> cl(d.gen_spin(engine_for_spin), d);
+    std::cout << cl.interaction << std::endl;
+    std::cout << cl.spin << std::endl;
 }

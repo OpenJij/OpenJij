@@ -28,10 +28,13 @@ namespace openjij {
         template<typename System>
         struct SwendsenWang;
 
-        template<>
-        struct SwendsenWang<system::ClassicalIsing> {
+        template<typename FloatType>
+        struct SwendsenWang<system::ClassicalIsing<graph::Sparse<FloatType>>> {
+
+            using ClIsing = system::ClassicalIsing<graph::Sparse<FloatType>>;
+
             template<typename RandomNumberEngine>
-            static double update(system::ClassicalIsing& system,
+            static double update(ClIsing& system,
                                  RandomNumberEngine& random_numder_engine,
                                  const utility::ClassicalUpdaterParameter& parameter) {
                 const auto num_spin = system.spin.size();
