@@ -59,9 +59,9 @@ namespace openjij {
                                  const utility::ClassicalUpdaterParameter& parameter) {
                 // set probability distribution object
                 // to select candidate for flip at random
-                auto uid = std::uniform_int_distribution<std::size_t>(0, system.spin.size()-1);
+                static auto uid = std::uniform_int_distribution<std::size_t>(0, system.spin.size()-1);
                 // to do Metroopolis
-                auto urd = std::uniform_real_distribution<>(0, 1.0);
+                static auto urd = std::uniform_real_distribution<>(0, 1.0);
 
                 // energy difference
                 auto total_dE = 0;
@@ -89,7 +89,10 @@ namespace openjij {
         };
 
         template<>
-        struct SingleSpinFlip<system::QuantumIsing> {
+        struct SingleSpinFlip<system::QuantumIsing<graph::Sparse<double>>> {
+
+            using QIsing = system::QuantumIsing<graph::Sparse<double>>;
+            
             /**
              * @brief operate single spin flip in a quantum ising system
              *
@@ -100,15 +103,36 @@ namespace openjij {
              * @return energy difference \f\Delta E\f
              */
             template<typename RandomNumberEngine>
-            static double update(system::QuantumIsing& system,
+            static double update(QIsing& system,
                                  RandomNumberEngine& random_numder_engine,
                                  const utility::QuantumUpdaterParameter& parameter) {
-                // TODO: implement the single spin flip in a quantum system
-                std::cout << "execute QuantumIsing SingleSpinFlip" << std::endl;
-                std::cout << "beta : " << parameter.beta << std::endl;
-                std::cout << "gamma: " << parameter.gamma << std::endl;
+                double totaldE = 0;
+                //size_t num_classical_spins = spins[0].size();
+                //size_t num_trotter_slices = spins.size();
 
-                return 0;
+                ////default updater (single_spin_flip)
+                //for(size_t i=0; i<num_classical_spins*num_trotter_slices; i++){
+                //    size_t index_trot = uid_trotter(mt);
+                //    size_t index = uid(mt);
+                //    //do metropolis
+                //    double dE = 0;
+                //    //adjacent nodes
+                //    for(auto&& adj_index : interaction.adj_nodes(index)){
+                //        dE += -2 * s * (beta/num_trotter_slices) * spins[index_trot][index] * (index != adj_index ? (interaction.J(index, adj_index) * spins[index_trot][adj_index]) : interaction.h(index));
+                //    }
+
+                //    //trotter direction
+                //    dE += -2 * (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * spins[index_trot][index]*(spins[mod_t((int64_t)index_trot+1)][index] + spins[mod_t((int64_t)index_trot-1)][index]);
+
+                //    //metropolis 
+                //    if(exp(-dE) > urd(mt)){
+                //        spins[index_trot][index] *= -1;
+                //        totaldE += dE;
+                //    }
+
+                //}
+
+                return totaldE;
             }
         };
     } // namespace updater
