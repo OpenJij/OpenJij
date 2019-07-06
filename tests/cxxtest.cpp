@@ -1,9 +1,7 @@
 // include Google Test
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-
-// include STL
-#include <iostream>
+// include STL #include <iostream>
 #include <utility>
 #include <numeric>
 #include <random>
@@ -49,6 +47,7 @@ openjij::graph::Dense<double> generate_sa_interaction(std::size_t system_size) {
 // #####################################
 
 //graph tests
+
 TEST(Graph, DenseGraphCheck){
     using namespace openjij::graph;
     std::size_t N = 500;
@@ -194,6 +193,26 @@ TEST(Graph, EnergyCheck){
     EXPECT_EQ(c_d.calc_energy(spins_r), c.calc_energy(spins_r));
 }
 
+//ClassicalIsing tests
+
+TEST(ClassicalIsing, GenerateTheSameEigenObject){
+    using namespace openjij;
+    graph::Dense<double> d(4);
+    graph::Sparse<double> s(4);
+    d.J(2,3) = s.J(2,3) = 4;
+    d.J(1,0) = s.J(1,0) = -2;
+    d.J(1,1) = s.J(1,1) = 5;
+    d.J(2,2) = s.J(2,2) = 10;
+
+    auto engine_for_spin = std::mt19937(1);
+    auto cl_dense = system::make_classical_ising<true>(d.gen_spin(engine_for_spin), d);
+    auto cl_sparse = system::make_classical_ising<true>(s.gen_spin(engine_for_spin), s);
+    Eigen::MatrixXd m1 = cl_dense.interaction;
+    Eigen::MatrixXd m2 = cl_sparse.interaction;
+    EXPECT_EQ(m1, m2);
+}
+
+//ClassicalIsing_SingleSpinFlip tests
 
 TEST(ClassicalIsing_SingleSpinFlip, StateAtLowTemperatureIsNotEqualToStateAtHighTemperature) {
     constexpr auto N = 10;
@@ -311,24 +330,3 @@ TEST(UnionFind, UniteSevenNodesToMakeThreeSets) {
     }
 }
 
-TEST(ClassicalIsing, GenerateTheSameEigenObject){
-    using namespace openjij;
-    graph::Dense<double> d(4);
-    graph::Sparse<double> s(4);
-    d.J(2,3) = 4;
-    d.J(1,0) = -2;
-    d.J(1,1) = 5;
-    d.J(2,2) = 10;
-
-    s.J(2,3) = 4;
-    s.J(1,0) = -2;
-    s.J(1,1) = 5;
-    s.J(2,2) = 10;
-
-    auto engine_for_spin = std::mt19937(1);
-    auto cl_dense = system::make_classical_ising<true>(d.gen_spin(engine_for_spin), d);
-    auto cl_sparse = system::make_classical_ising<true>(s.gen_spin(engine_for_spin), s);
-    Eigen::MatrixXd m1 = cl_dense.interaction;
-    Eigen::MatrixXd m2 = cl_sparse.interaction;
-    EXPECT_EQ(m1, m2);
-}
