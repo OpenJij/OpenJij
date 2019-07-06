@@ -26,6 +26,7 @@ namespace openjij {
          */
         class Xorshift{
             public:
+                using result_type = uint_fast32_t;
 
                 /**
                  * @brief returns minimum value 

@@ -19,6 +19,7 @@
 #include <updater/swendsen_wang.hpp>
 #include <utility/schedule_list.hpp>
 #include <utility/union_find.hpp>
+#include <utility/xorshift.hpp>
 #include <graph/all.hpp>
 
 // #####################################
@@ -31,8 +32,8 @@
  *
  * @return classical interaction
  */
-openjij::graph::Sparse<double> generate_sa_interaction(std::size_t system_size) {
-    auto interaction = openjij::graph::Sparse<double>(system_size);
+openjij::graph::Dense<double> generate_sa_interaction(std::size_t system_size) {
+    auto interaction = openjij::graph::Dense<double>(system_size);
     for (std::size_t row = 0; row < system_size; ++row) {
         for (std::size_t col = row+1; col < system_size; ++col) {
             interaction.J(row, col) = -1;
@@ -199,7 +200,7 @@ TEST(ClassicalIsing_SingleSpinFlip, StateAtLowTemperatureIsNotEqualToStateAtHigh
     const auto interaction = generate_sa_interaction(N);
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = openjij::system::ClassicalIsing<openjij::graph::Sparse<double>>(spin, interaction);
+    auto classical_ising = openjij::system::make_classical_ising(spin, interaction);
 
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 10.0, 10, 10);
@@ -225,7 +226,7 @@ TEST(ClassicalIsing_SingleSpinFlip, StateAtLowTemperatureIsEqualToStateAtLowTemp
     const auto interaction = generate_sa_interaction(N);
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = openjij::system::ClassicalIsing<openjij::graph::Sparse<double>>(spin, interaction);
+    auto classical_ising = openjij::system::make_classical_ising(spin, interaction);
 
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 10);
@@ -250,7 +251,7 @@ TEST(ClassicalIsing_SwendsenWang, StateAtLowTemperatureIsNotEqualToStateAtHighTe
     const auto interaction = generate_sa_interaction(N);
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = openjij::system::ClassicalIsing<openjij::graph::Sparse<double>>(spin, interaction);
+    auto classical_ising = openjij::system::make_classical_ising(spin, interaction);
 
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 10.0, 10, 10);
@@ -276,7 +277,7 @@ TEST(ClassicalIsing_SwendsenWang, StateAtLowTemperatureIsEqualToStateAtLowTemper
     const auto interaction = generate_sa_interaction(N);
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = openjij::system::ClassicalIsing<openjij::graph::Sparse<double>>(spin, interaction);
+    auto classical_ising = openjij::system::make_classical_ising(spin, interaction);
 
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 10);
@@ -310,15 +311,24 @@ TEST(UnionFind, UniteSevenNodesToMakeThreeSets) {
     }
 }
 
-TEST(poyo, poyo){
+TEST(ClassicalIsing, GenerateTheSameEigenObject){
     using namespace openjij;
     graph::Dense<double> d(4);
+    graph::Sparse<double> s(4);
     d.J(2,3) = 4;
     d.J(1,0) = -2;
     d.J(1,1) = 5;
     d.J(2,2) = 10;
-    auto engine_for_spin = std::mt19937(3);
-    system::ClassicalIsing<graph::Dense<double>> cl(d.gen_spin(engine_for_spin), d);
-    std::cout << cl.interaction << std::endl;
-    std::cout << cl.spin << std::endl;
+
+    s.J(2,3) = 4;
+    s.J(1,0) = -2;
+    s.J(1,1) = 5;
+    s.J(2,2) = 10;
+
+    auto engine_for_spin = std::mt19937(1);
+    auto cl_dense = system::make_classical_ising<true>(d.gen_spin(engine_for_spin), d);
+    auto cl_sparse = system::make_classical_ising<true>(s.gen_spin(engine_for_spin), s);
+    Eigen::MatrixXd m1 = cl_dense.interaction;
+    Eigen::MatrixXd m2 = cl_sparse.interaction;
+    EXPECT_EQ(m1, m2);
 }
