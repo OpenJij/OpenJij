@@ -33,7 +33,7 @@ namespace openjij {
         struct SingleSpinFlip;
 
         /**
-         * @brief single spin flip for sparse classical ising model (no Eigen implementation)
+         * @brief single spin flip for classical ising model (no Eigen implementation)
          *
          * @tparam GraphType type of graph (assume Dense, Sparse or derived class of them)
          */
@@ -65,14 +65,14 @@ namespace openjij {
                 static auto urd = std::uniform_real_distribution<>(0, 1.0);
 
                 // energy difference
-                auto total_dE = 0;
+                double total_dE = 0;
 
                 for (std::size_t time = 0, num_spin = system.spin.size(); time < num_spin; ++time) {
                     // index of spin selected at random
                     const auto index = uid(random_numder_engine);
 
                     // local energy difference
-                    auto dE = 0;
+                    double dE = 0;
                     for (auto&& adj_index : system.interaction.adj_nodes(index)) {
                         dE += -2.0 * system.spin[index] * (index != adj_index ? (system.interaction.J(index, adj_index) * system.spin[adj_index])
                                                                               :  system.interaction.h(index));

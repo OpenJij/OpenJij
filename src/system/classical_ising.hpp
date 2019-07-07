@@ -182,26 +182,6 @@ namespace openjij {
                 return ClassicalIsing<GraphType, eigen_impl>(init_spin, init_interaction);
             }
 
-        /**
-         * @brief type alias for dense classical ising (no Eigen implementation)
-         */
-        using DenseClassicalIsing = ClassicalIsing<graph::Dense<double>, false>;
-
-        /**
-         * @brief type alias for sparse classical ising (no Eigen implementation)
-         */
-        using SparseClassicalIsing = ClassicalIsing<graph::Sparse<double>, false>;
-
-        /**
-         * @brief type alias for dense classical ising (with Eigen implementation)
-         */
-        using DenseClassicalIsing_eigen_impl = ClassicalIsing<graph::Dense<double>, true>;
-
-        /**
-         * @brief type alias for sparse classical ising (with Eigen implementation)
-         */
-        using SparseClassicalIsing_eigen_impl = ClassicalIsing<graph::Sparse<double>, true>;
-
     } // namespace system
 } // namespace openjij
 
