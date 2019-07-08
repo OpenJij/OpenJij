@@ -25,13 +25,24 @@
 
 namespace openjij {
     namespace updater {
+
+        /**
+         * @brief swendsen wang updater
+         *
+         * @tparam System
+         */
         template<typename System>
         struct SwendsenWang;
 
-        template<typename FloatType>
-        struct SwendsenWang<system::ClassicalIsing<graph::Sparse<FloatType>>> {
+        /**
+         * @brief swendsen wang updater for classical ising model
+         *
+         * @tparam GraphType type of graph (assume Dense, Sparse or derived class of them)
+         */
+        template<typename GraphType>
+        struct SwendsenWang<system::ClassicalIsing<GraphType>> {
 
-            using ClIsing = system::ClassicalIsing<graph::Sparse<FloatType>>;
+            using ClIsing = system::ClassicalIsing<GraphType>;
 
             template<typename RandomNumberEngine>
             static double update(ClIsing& system,
