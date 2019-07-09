@@ -42,6 +42,12 @@ namespace openjij {
                      * @brief interaction type
                      */
                     using Interactions = std::unordered_map<std::pair<Index, Index>, FloatType, utility::PairHash>;
+
+                    /**
+                     * @brief float type
+                     */
+                    using value_type = FloatType;
+
                 private:
 
                     /**

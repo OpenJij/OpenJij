@@ -45,7 +45,7 @@ namespace openjij {
             using ClIsing = system::ClassicalIsing<GraphType>;
 
             template<typename RandomNumberEngine>
-            static double update(ClIsing& system,
+            static void update(ClIsing& system,
                                  RandomNumberEngine& random_numder_engine,
                                  const utility::ClassicalUpdaterParameter& parameter) {
                 const auto num_spin = system.spin.size();
@@ -78,7 +78,8 @@ namespace openjij {
 
                 // TODO: implement calculation of total energy difference
                 // DEPRECATED: Dense::calc_energy
-                return system.interaction.calc_energy(system.spin);
+                //return system.interaction.calc_energy(system.spin);
+                return;
             }
         };
     } // namespace updater

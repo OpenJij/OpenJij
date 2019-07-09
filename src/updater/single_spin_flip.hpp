@@ -38,12 +38,17 @@ namespace openjij {
          * @tparam GraphType type of graph (assume Dense, Sparse or derived class of them)
          */
         template<typename GraphType>
-        struct SingleSpinFlip<system::ClassicalIsing<GraphType>> {
+        struct SingleSpinFlip<system::ClassicalIsing<GraphType, false>> {
             
             /**
-             * @brief ClassicalIsing with sparse interactions
+             * @brief ClassicalIsing type
              */
-            using ClIsing = system::ClassicalIsing<GraphType>;
+            using ClIsing = system::ClassicalIsing<GraphType, false>;
+
+            /**
+             * @brief float type of graph
+             */
+            using FloatType = typename GraphType::value_type;
 
             /**
              * @brief operate single spin flip in a classical ising system
@@ -55,7 +60,70 @@ namespace openjij {
              * @return energy difference \f\Delta E\f
              */
           template<typename RandomNumberEngine>
-            static double update(ClIsing& system,
+            static FloatType update(ClIsing& system,
+                                 RandomNumberEngine& random_numder_engine,
+                                 const utility::ClassicalUpdaterParameter& parameter) {
+                // set probability distribution object
+                // to select candidate for flip at random
+                static auto uid = std::uniform_int_distribution<std::size_t>(0, system.spin.size()-1);
+                // to do Metropolis
+                static auto urd = std::uniform_real_distribution<>(0, 1.0);
+
+                // energy difference
+                FloatType total_dE = 0;
+
+                for (std::size_t time = 0, num_spin = system.spin.size(); time < num_spin; ++time) {
+                    // index of spin selected at random
+                    const auto index = uid(random_numder_engine);
+
+                    // local energy difference
+                    FloatType dE = 0;
+                    for (auto&& adj_index : system.interaction.adj_nodes(index)) {
+                        dE += -2.0 * system.spin[index] * (index != adj_index ? (system.interaction.J(index, adj_index) * system.spin[adj_index])
+                                                                              :  system.interaction.h(index));
+                    }
+
+                    // Flip the spin?
+                    if (dE < 0 || std::exp( -parameter.beta * dE) > urd(random_numder_engine)) {
+                        system.spin[index] *= -1;
+                        total_dE += dE;
+                    }
+                }
+
+                return total_dE;
+            }
+        };
+
+        
+        /**
+         * @brief single spin flip for classical ising model (with Eigen implementation)
+         *
+         * @tparam GraphType graph type (assume Dense<FloatType> or Sparse<FloatType>)
+         */
+        template<typename GraphType>
+        struct SingleSpinFlip<system::ClassicalIsing<GraphType, true>> {
+            
+            /**
+             * @brief ClassicalIsing with dense interactions
+             */
+            using ClIsing = system::ClassicalIsing<GraphType, true>;
+
+            /**
+             * @brief float type
+             */
+            using FloatType = typename GraphType::value_type;
+
+            /**
+             * @brief operate single spin flip in a classical ising system
+             *
+             * @param system object of a classical ising system
+             * @param random_number_engine random number gengine
+             * @param parameter parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f
+             *
+             * @return energy difference \f\Delta E\f
+             */
+          template<typename RandomNumberEngine>
+            static FloatType update(ClIsing& system,
                                  RandomNumberEngine& random_numder_engine,
                                  const utility::ClassicalUpdaterParameter& parameter) {
                 // set probability distribution object
@@ -65,22 +133,18 @@ namespace openjij {
                 static auto urd = std::uniform_real_distribution<>(0, 1.0);
 
                 // energy difference
-                double total_dE = 0;
+                FloatType total_dE = 0;
 
                 for (std::size_t time = 0, num_spin = system.spin.size(); time < num_spin; ++time) {
                     // index of spin selected at random
                     const auto index = uid(random_numder_engine);
 
-                    // local energy difference
-                    double dE = 0;
-                    for (auto&& adj_index : system.interaction.adj_nodes(index)) {
-                        dE += -2.0 * system.spin[index] * (index != adj_index ? (system.interaction.J(index, adj_index) * system.spin[adj_index])
-                                                                              :  system.interaction.h(index));
-                    }
+                    // local energy difference (matrix multiplication)
+                    FloatType dE = -2*system.spin(index)*(system.interaction.row(index)*system.spin);
 
                     // Flip the spin?
                     if (dE < 0 || std::exp( -parameter.beta * dE) > urd(random_numder_engine)) {
-                        system.spin[index] *= -1;
+                        system.spin(index) *= -1;
                         total_dE += dE;
                     }
                 }

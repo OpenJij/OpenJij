@@ -1,7 +1,8 @@
 // include Google Test
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-// include STL #include <iostream>
+// include STL
+#include <iostream>
 #include <utility>
 #include <numeric>
 #include <random>
@@ -17,7 +18,7 @@
 #include <updater/swendsen_wang.hpp>
 #include <utility/schedule_list.hpp>
 #include <utility/union_find.hpp>
-#include <utility/xorshift.hpp>
+#include <utility/random.hpp>
 #include <graph/all.hpp>
 
 // #####################################
@@ -26,18 +27,51 @@
 /**
  * @brief generate interaction
  *
- * @param system_size
- *
- * @return classical interaction
+ * @return classical interaction which represents specific optimization problem
  */
-openjij::graph::Dense<double> generate_sa_interaction(std::size_t system_size) {
-    auto interaction = openjij::graph::Dense<double>(system_size);
-    for (std::size_t row = 0; row < system_size; ++row) {
-        for (std::size_t col = row+1; col < system_size; ++col) {
-            interaction.J(row, col) = -1;
-        }
-    }
+
+static std::size_t get_test_system_size(){
+    return 7;
+}
+
+//GraphType -> Dense or Sparse
+template<template<class> class GraphType>
+static GraphType<double> generate_dense_interaction() {
+    auto interaction = GraphType<double>(get_test_system_size);
+    interaction.J(0,0) = -0.9999999999999991;
+    interaction.J(0,1) = 1.500000000000003;
+    interaction.J(0,2) = 1.500000000000003;
+    interaction.J(0,3) = -1.3999999999999995;
+    interaction.J(0,4) = -1.4999999999999996;
+    interaction.J(0,5) = 1.300000000000003;
+    interaction.J(0,6) = -1.1999999999999993;
+    interaction.J(1,1) = -0.2999999999999985;
+    interaction.J(1,2) = -0.2999999999999985;
+    interaction.J(1,3) = -1.7999999999999998;
+    interaction.J(1,4) = 1.500000000000003;
+    interaction.J(1,5) = 1.400000000000003;
+    interaction.J(1,6) = -0.9999999999999991;
+    interaction.J(2,2) = -0.2999999999999985;
+    interaction.J(2,3) = -2.0;
+    interaction.J(2,4) = 1.7763568394002505e-15;
+    interaction.J(2,5) = 0.40000000000000213;
+    interaction.J(2,6) = -1.6999999999999997;
+    interaction.J(3,3) = -1.7999999999999998;
+    interaction.J(3,4) = -0.1999999999999984;
+    interaction.J(3,5) = -1.6999999999999997;
+    interaction.J(3,6) = 1.7000000000000033;
+    interaction.J(4,4) = -0.49999999999999867;
+    interaction.J(4,5) = 1.300000000000003;
+    interaction.J(4,6) = 1.400000000000003;
+    interaction.J(5,5) = -0.49999999999999867;
+    interaction.J(5,6) = 1.400000000000003;
+    interaction.J(6,6) = 1.1000000000000028;
+
     return interaction;
+}
+
+openjij::graph::Spins get_groundstate(){
+    return openjij::graph::Spins({1, -1, -1, 1, 1, 1, -1});
 }
 // #####################################
 
