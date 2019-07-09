@@ -64,7 +64,7 @@ namespace openjij {
                 using system_type = classical_system;
 
                 using MatrixXx = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>;
-                using VectorXx = Eigen::Matrix<graph::Spin, Eigen::Dynamic, 1>;
+                using VectorXx = Eigen::Matrix<FloatType, Eigen::Dynamic, 1>;
 
                 /**
                  * @brief Constructor to initialize spin and interaction
@@ -118,7 +118,7 @@ namespace openjij {
                 using system_type = classical_system;
 
                 using SparseMatrixXx = Eigen::SparseMatrix<FloatType>;
-                using VectorXx = Eigen::Matrix<graph::Spin, Eigen::Dynamic, 1>;
+                using VectorXx = Eigen::Matrix<FloatType, Eigen::Dynamic, 1>;
 
                 /**
                  * @brief Constructor to initialize spin and interaction

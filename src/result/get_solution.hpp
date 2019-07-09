@@ -35,7 +35,7 @@ namespace openjij {
         }
 
         /**
-         * @brief get solution of classical ising system (with Eigen implementation)
+         *a @brief get solution of classical ising system (with Eigen implementation)
          *
          * @tparam GraphType graph type
          * @param system classical ising system with Eigen implementation
@@ -46,9 +46,10 @@ namespace openjij {
         const graph::Spins get_solution(const system::ClassicalIsing<GraphType, true>& system){
             //convert from Eigen::Vector to std::vector
             using ClIsing = system::ClassicalIsing<GraphType, true>;
-            graph::Spins ret_spins;
-            ret_spins.resize(system.spin.size());
-            ClIsing::VectorXx::map(&ret_spins[0], ret_spins.size()) = system.spin;
+            graph::Spins ret_spins(system.spin.size()-1);
+            for(std::size_t i=0; i<system.spin.size()-1; i++){
+                ret_spins[i] = system.spin(i);
+            }
             return ret_spins;
         }
 
