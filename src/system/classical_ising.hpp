@@ -30,7 +30,7 @@ namespace openjij {
          * @brief naive ClassicalIsing structure (system for classical Ising model)
          *
          * @tparam GraphType type of graph
-         * @tparam eigen_impl specify is Eigen implementation is enabled.
+         * @tparam eigen_impl specify that Eigen implementation is enabled.
          */
         template<typename GraphType, bool eigen_impl=false>
             struct ClassicalIsing {
@@ -64,7 +64,7 @@ namespace openjij {
                 using system_type = classical_system;
 
                 using MatrixXx = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>;
-                using VectorXx = Eigen::Matrix<FloatType, Eigen::Dynamic, 1>;
+                using VectorXx = Eigen::Matrix<graph::Spin, Eigen::Dynamic, 1>;
 
                 /**
                  * @brief Constructor to initialize spin and interaction
@@ -118,7 +118,7 @@ namespace openjij {
                 using system_type = classical_system;
 
                 using SparseMatrixXx = Eigen::SparseMatrix<FloatType>;
-                using VectorXx = Eigen::Matrix<FloatType, Eigen::Dynamic, 1>;
+                using VectorXx = Eigen::Matrix<graph::Spin, Eigen::Dynamic, 1>;
 
                 /**
                  * @brief Constructor to initialize spin and interaction
@@ -181,6 +181,8 @@ namespace openjij {
             ClassicalIsing<GraphType, eigen_impl> make_classical_ising(const graph::Spins& init_spin, const GraphType& init_interaction){
                 return ClassicalIsing<GraphType, eigen_impl>(init_spin, init_interaction);
             }
+
+
 
     } // namespace system
 } // namespace openjij
