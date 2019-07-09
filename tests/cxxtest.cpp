@@ -301,6 +301,23 @@ TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Dense_WithEigenImpl) {
     EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
 }
 
+TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Sparse_WithEigenImpl) {
+    using namespace openjij;
+
+    //generate classical dense system
+    const auto interaction = generate_interaction<graph::Sparse>();
+    auto engine_for_spin = std::mt19937(1);
+    const auto spin = interaction.gen_spin(engine_for_spin);
+    auto classical_ising = system::make_classical_ising<true>(spin, interaction); //Eigen implementation enabled
+    
+    auto random_numder_engine = std::mt19937(1);
+    const auto schedule_list = generate_schedule_list();
+
+    algorithm::Algorithm<updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
+
+    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
+}
+
 TEST(UnionFind, UniteSevenNodesToMakeThreeSets) {
     auto union_find = openjij::utility::UnionFind(7);
 
