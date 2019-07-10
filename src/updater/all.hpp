@@ -12,14 +12,10 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_QUANTUM_ISING_HPP__
-#define OPENJIJ_SYSTEM_QUANTUM_ISING_HPP__
+#ifndef OPENJIJ_UPDATER_ALL_HPP__
+#define OPENJIJ_UPDATER_ALL_HPP__
 
-namespace openjij {
-    namespace system {
-        struct QuantumIsing {
-        };
-    } // namespace system
-} // namespace openjij
+#include <updater/single_spin_flip.hpp>
+#include <updater/swendsen_wang.hpp>
 
 #endif

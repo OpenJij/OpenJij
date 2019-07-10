@@ -41,6 +41,12 @@ namespace openjij {
                      * @brief interaction type
                      */
                     using Interactions = std::vector<FloatType>;
+
+                    /**
+                     * @brief float type
+                     */
+                    using value_type = FloatType;
+                    
                 private:
 
                     /**
