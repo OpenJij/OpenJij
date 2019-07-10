@@ -1,7 +1,6 @@
 // include Google Test
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
-// include STL
+#include <gmock/gmock.h> // include STL
 #include <iostream>
 #include <utility>
 #include <numeric>
@@ -79,7 +78,7 @@ static openjij::graph::Spins get_true_groundstate(){
 }
 
 static openjij::utility::ClassicalScheduleList generate_schedule_list(){
-    return openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 100);
+    return openjij::utility::make_classical_schedule_list(0.1, 100.0, 10000, 10000);
 }
 // #####################################
 
@@ -256,7 +255,7 @@ TEST(ClassicalIsing, GenerateTheSameEigenObject){
 }
 
 //TODO: macro?
-//ClassicalIsing_Dense_SingleSpinFlip tests
+//SingleSpinFlip tests
 
 TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
     using namespace openjij;
@@ -322,6 +321,25 @@ TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Sparse_WithEigenImpl) {
     const auto schedule_list = generate_schedule_list();
 
     algorithm::Algorithm<updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
+
+    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
+}
+
+//swendsen-wang test
+
+TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
+    using namespace openjij;
+
+    //generate classical dense system
+    const auto interaction = generate_interaction<graph::Dense>();
+    auto engine_for_spin = std::mt19937(1);
+    const auto spin = interaction.gen_spin(engine_for_spin);
+    auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
+
+    auto random_numder_engine = std::mt19937(1);
+    const auto schedule_list = generate_schedule_list();
+
+    algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
 
     EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
 }
