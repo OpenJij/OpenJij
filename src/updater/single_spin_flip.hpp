@@ -128,26 +128,30 @@ namespace openjij {
                                  const utility::ClassicalUpdaterParameter& parameter) {
                 // set probability distribution object
                 // to select candidate for flip at random
-                static auto uid = std::uniform_int_distribution<std::size_t>(0, system.spin.size()-2); //to avoid flipping last spin (must be set to 1.)
+                static auto uid = std::uniform_int_distribution<std::size_t>(0, system.num_spins-1); //to avoid flipping last spin (must be set to 1.)
                 // to do Metroopolis
                 static auto urd = std::uniform_real_distribution<>(0, 1.0);
 
                 // energy difference
                 FloatType total_dE = 0;
 
-                for (std::size_t time = 0, num_spin = system.spin.size(); time < num_spin; ++time) {
+                for (std::size_t time = 0; time < system.num_spins; ++time) {
+
                     // index of spin selected at random
                     const auto index = uid(random_numder_engine);
 
                     // local energy difference (matrix multiplication)
-                    assert(index != num_spin);
-                    FloatType dE = -2*system.spin(index)*(system.interaction.row(index)*system.spin)(0,0);
+                    assert(index != system.num_spins);
+                    FloatType dE = -2*system.spin(index)*(system.interaction.row(index).dot(system.spin));
 
                     // Flip the spin?
                     if (dE < 0 || std::exp( -parameter.beta * dE) > urd(random_numder_engine)) {
                         system.spin(index) *= -1;
                         total_dE += dE;
                     }
+
+                    //assure that the dummy spin is not changed.
+                    system.spin(system.num_spins) = 1;
                 }
 
                 return total_dE;

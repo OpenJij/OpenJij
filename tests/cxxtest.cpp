@@ -29,49 +29,57 @@
  * @return classical interaction which represents specific optimization problem
  */
 
-static constexpr std::size_t num_system_size = 7;
+static constexpr std::size_t num_system_size = 8;
 
 //GraphType -> Dense or Sparse
 template<template<class> class GraphType>
 static GraphType<double> generate_interaction() {
     auto interaction = GraphType<double>(num_system_size);
-    interaction.J(0,0) = -0.9999999999999991;
-    interaction.J(0,1) = 1.500000000000003;
-    interaction.J(0,2) = 1.500000000000003;
-    interaction.J(0,3) = -1.3999999999999995;
-    interaction.J(0,4) = -1.4999999999999996;
-    interaction.J(0,5) = 1.300000000000003;
-    interaction.J(0,6) = -1.1999999999999993;
-    interaction.J(1,1) = -0.2999999999999985;
-    interaction.J(1,2) = -0.2999999999999985;
-    interaction.J(1,3) = -1.7999999999999998;
-    interaction.J(1,4) = 1.500000000000003;
-    interaction.J(1,5) = 1.400000000000003;
-    interaction.J(1,6) = -0.9999999999999991;
-    interaction.J(2,2) = -0.2999999999999985;
-    interaction.J(2,3) = -2.0;
-    interaction.J(2,4) = 1.7763568394002505e-15;
-    interaction.J(2,5) = 0.40000000000000213;
-    interaction.J(2,6) = -1.6999999999999997;
-    interaction.J(3,3) = -1.7999999999999998;
-    interaction.J(3,4) = -0.1999999999999984;
-    interaction.J(3,5) = -1.6999999999999997;
-    interaction.J(3,6) = 1.7000000000000033;
-    interaction.J(4,4) = -0.49999999999999867;
-    interaction.J(4,5) = 1.300000000000003;
-    interaction.J(4,6) = 1.400000000000003;
-    interaction.J(5,5) = -0.49999999999999867;
-    interaction.J(5,6) = 1.400000000000003;
-    interaction.J(6,6) = 1.1000000000000028;
+    interaction.J(0,0)=-0.1;
+    interaction.J(0,1)=-0.9;
+    interaction.J(0,2)=0.2;
+    interaction.J(0,3)=0.1;
+    interaction.J(0,4)=1.3;
+    interaction.J(0,5)=0.8;
+    interaction.J(0,6)=0.9;
+    interaction.J(0,7)=0.4;
+    interaction.J(1,1)=-0.7;
+    interaction.J(1,2)=-1.6;
+    interaction.J(1,3)=1.5;
+    interaction.J(1,4)=1.5;
+    interaction.J(1,5)=1.2;
+    interaction.J(1,6)=-1.5;
+    interaction.J(1,7)=-1.7;
+    interaction.J(2,2)=-0.6;
+    interaction.J(2,3)=1.2;
+    interaction.J(2,4)=-1.3;
+    interaction.J(2,5)=-0.5;
+    interaction.J(2,6)=-1.9;
+    interaction.J(2,7)=1.2;
+    interaction.J(3,3)=0.8;
+    interaction.J(3,4)=-0.5;
+    interaction.J(3,5)=-0.4;
+    interaction.J(3,6)=-1.8;
+    interaction.J(3,7)=-2.0;
+    interaction.J(4,4)=0.6;
+    interaction.J(4,5)=-2.0;
+    interaction.J(4,6)=-1.9;
+    interaction.J(4,7)=0.5;
+    interaction.J(5,5)=-1.8;
+    interaction.J(5,6)=-1.2;
+    interaction.J(5,7)=1.8;
+    interaction.J(6,6)=0.3;
+    interaction.J(6,7)=1.4;
+    interaction.J(7,7)=1.8;
     return interaction;
 }
 
 static openjij::graph::Spins get_true_groundstate(){
-    return openjij::graph::Spins({1, -1, -1, 1, 1, 1, -1});
+    return openjij::graph::Spins({-1, -1, 1, 1, 1, 1, 1, -1});
 }
 
 static openjij::utility::ClassicalScheduleList generate_schedule_list(){
-    return openjij::utility::make_classical_schedule_list(0.1, 100.0, 200, 200);
+    return openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 100);
 }
 // #####################################
 

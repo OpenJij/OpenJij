@@ -46,8 +46,8 @@ namespace openjij {
         const graph::Spins get_solution(const system::ClassicalIsing<GraphType, true>& system){
             //convert from Eigen::Vector to std::vector
             using ClIsing = system::ClassicalIsing<GraphType, true>;
-            graph::Spins ret_spins(system.spin.size()-1);
-            for(std::size_t i=0; i<system.spin.size()-1; i++){
+            graph::Spins ret_spins(system.num_spins);
+            for(std::size_t i=0; i<system.num_spins; i++){
                 ret_spins[i] = system.spin(i);
             }
             return ret_spins;
