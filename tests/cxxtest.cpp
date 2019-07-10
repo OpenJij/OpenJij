@@ -1,8 +1,6 @@
 // include Google Test
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
-// include STL
+#include <gmock/gmock.h> // include STL
 #include <iostream>
 #include <utility>
 #include <numeric>
@@ -12,14 +10,14 @@
 #include <vector>
 
 // include OpenJij
-#include <system/classical_ising.hpp>
-#include <system/quantum_ising.hpp>
+#include <graph/all.hpp>
+#include <system/all.hpp>
+#include <updater/all.hpp>
 #include <algorithm/algorithm.hpp>
-#include <updater/single_spin_flip.hpp>
-#include <updater/swendsen_wang.hpp>
+#include <result/get_solution.hpp>
 #include <utility/schedule_list.hpp>
 #include <utility/union_find.hpp>
-#include <graph/all.hpp>
+#include <utility/random.hpp>
 
 // #####################################
 // helper functions
@@ -27,18 +25,60 @@
 /**
  * @brief generate interaction
  *
- * @param system_size
- *
- * @return classical interaction
+ * @return classical interaction which represents specific optimization problem
  */
-openjij::graph::Dense<double> generate_sa_interaction(std::size_t system_size) {
-    auto interaction = openjij::graph::Dense<double>(system_size);
-    for (std::size_t row = 0; row < system_size; ++row) {
-        for (std::size_t col = row+1; col < system_size; ++col) {
-            interaction.J(row, col) = -1;
-        }
-    }
+
+static constexpr std::size_t num_system_size = 8;
+
+//GraphType -> Dense or Sparse
+template<template<class> class GraphType>
+static GraphType<double> generate_interaction() {
+    auto interaction = GraphType<double>(num_system_size);
+    interaction.J(0,0)=-0.1;
+    interaction.J(0,1)=-0.9;
+    interaction.J(0,2)=0.2;
+    interaction.J(0,3)=0.1;
+    interaction.J(0,4)=1.3;
+    interaction.J(0,5)=0.8;
+    interaction.J(0,6)=0.9;
+    interaction.J(0,7)=0.4;
+    interaction.J(1,1)=-0.7;
+    interaction.J(1,2)=-1.6;
+    interaction.J(1,3)=1.5;
+    interaction.J(1,4)=1.5;
+    interaction.J(1,5)=1.2;
+    interaction.J(1,6)=-1.5;
+    interaction.J(1,7)=-1.7;
+    interaction.J(2,2)=-0.6;
+    interaction.J(2,3)=1.2;
+    interaction.J(2,4)=-1.3;
+    interaction.J(2,5)=-0.5;
+    interaction.J(2,6)=-1.9;
+    interaction.J(2,7)=1.2;
+    interaction.J(3,3)=0.8;
+    interaction.J(3,4)=-0.5;
+    interaction.J(3,5)=-0.4;
+    interaction.J(3,6)=-1.8;
+    interaction.J(3,7)=-2.0;
+    interaction.J(4,4)=0.6;
+    interaction.J(4,5)=-2.0;
+    interaction.J(4,6)=-1.9;
+    interaction.J(4,7)=0.5;
+    interaction.J(5,5)=-1.8;
+    interaction.J(5,6)=-1.2;
+    interaction.J(5,7)=1.8;
+    interaction.J(6,6)=0.3;
+    interaction.J(6,7)=1.4;
+    interaction.J(7,7)=1.8;
     return interaction;
+}
+
+static openjij::graph::Spins get_true_groundstate(){
+    return openjij::graph::Spins({-1, -1, 1, 1, 1, 1, 1, -1});
+}
+
+static openjij::utility::ClassicalScheduleList generate_schedule_list(){
+    return openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 100);
 }
 // #####################################
 
@@ -48,6 +88,7 @@ openjij::graph::Dense<double> generate_sa_interaction(std::size_t system_size) {
 // #####################################
 
 //graph tests
+
 TEST(Graph, DenseGraphCheck){
     using namespace openjij::graph;
     std::size_t N = 500;
@@ -60,6 +101,8 @@ TEST(Graph, DenseGraphCheck){
         }
     }
     s = 0;
+
+    // check if graph holds correct variables
     for(std::size_t i=0; i<N; i++){
         for(std::size_t j=i; j<N; j++){
             EXPECT_EQ(a.J(i, j) , s);
@@ -67,6 +110,8 @@ TEST(Graph, DenseGraphCheck){
         }
     }
     s = 0;
+
+    // check if graph index is reversible (Jij = Jji)
     for(std::size_t i=0; i<N; i++){
         for(std::size_t j=i; j<N; j++){
             EXPECT_EQ(a.J(j, i) , s);
@@ -87,6 +132,8 @@ TEST(Graph, SparseGraphCheck){
         }
     }
     s = 0;
+
+    // check if graph holds correct variables
     for(std::size_t i=0; i<N; i++){
         for(std::size_t j=i+1; j<N; j++){
             EXPECT_EQ(b.J(i, j) , s);
@@ -94,12 +141,16 @@ TEST(Graph, SparseGraphCheck){
         }
     }
     s = 0;
+
+    // check if graph index is reversible (Jij = Jji)
     for(std::size_t i=0; i<N; i++){
         for(std::size_t j=i+1; j<N; j++){
             EXPECT_EQ(b.J(j, i) , s);
             s+=1./N;
         }
     }
+
+    //check adj_nodes
     for(std::size_t i=0; i<N; i++){
         std::size_t tot = 0;
         for(auto&& elem : b.adj_nodes(i)){
@@ -193,107 +244,114 @@ TEST(Graph, EnergyCheck){
     EXPECT_EQ(c_d.calc_energy(spins_r), c.calc_energy(spins_r));
 }
 
+//ClassicalIsing tests
 
-TEST(ClassicalIsing_SingleSpinFlip, StateAtLowTemperatureIsNotEqualToStateAtHighTemperature) {
-    constexpr auto N = 10;
-    const auto interaction = generate_sa_interaction(N);
+TEST(ClassicalIsing, GenerateTheSameEigenObject){
+    using namespace openjij;
+    graph::Dense<double> d(4);
+    graph::Sparse<double> s(4);
+    d.J(2,3) = s.J(2,3) = 4;
+    d.J(1,0) = s.J(1,0) = -2;
+    d.J(1,1) = s.J(1,1) = 5;
+    d.J(2,2) = s.J(2,2) = 10;
+
     auto engine_for_spin = std::mt19937(1);
-    const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = openjij::system::ClassicalIsing(spin, interaction);
-
-    auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 10.0, 10, 10);
-
-    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list1);
-    const auto target = classical_ising.spin;
-
-    const auto schedule_list2 = [](){
-        auto schedule_list = openjij::utility::ClassicalScheduleList(1);
-        schedule_list[0].one_mc_step = 20;
-        schedule_list[0].updater_parameter = openjij::utility::ClassicalUpdaterParameter(0.01);
-
-        return schedule_list;
-    }();
-    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list2);
-    const auto expect = classical_ising.spin;
-
-    EXPECT_NE(target, expect);
+    auto cl_dense = system::make_classical_ising<true>(d.gen_spin(engine_for_spin), d);
+    auto cl_sparse = system::make_classical_ising<true>(s.gen_spin(engine_for_spin), s);
+    Eigen::MatrixXd m1 = cl_dense.interaction;
+    //convert from sparse to dense
+    Eigen::MatrixXd m2 = cl_sparse.interaction;
+    EXPECT_EQ(m1, m2);
 }
 
-TEST(ClassicalIsing_SingleSpinFlip, StateAtLowTemperatureIsEqualToStateAtLowTemperature) {
-    constexpr auto N = 10;
-    const auto interaction = generate_sa_interaction(N);
+//TODO: macro?
+//SingleSpinFlip tests
+
+TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
+    using namespace openjij;
+
+    //generate classical dense system
+    const auto interaction = generate_interaction<graph::Dense>();
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = openjij::system::ClassicalIsing(spin, interaction);
+    auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
 
     auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 10);
-    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list1);
-    const auto target = classical_ising.spin;
+    const auto schedule_list = generate_schedule_list();
 
-    const auto schedule_list2 = [](){
-        auto schedule_list = openjij::utility::ClassicalScheduleList(1);
-        schedule_list[0].one_mc_step = 1000;
-        schedule_list[0].updater_parameter = openjij::utility::ClassicalUpdaterParameter(100.0);
+    algorithm::Algorithm<updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
 
-        return schedule_list;
-    }();
-    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list2);
-    const auto expect = classical_ising.spin;
-
-    EXPECT_EQ(target, expect);
+    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
 }
 
-TEST(ClassicalIsing_SwendsenWang, StateAtLowTemperatureIsNotEqualToStateAtHighTemperature) {
-    constexpr auto N = 10;
-    const auto interaction = generate_sa_interaction(N);
+TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Sparse_NoEigenImpl) {
+    using namespace openjij;
+
+    //generate classical dense system
+    const auto interaction = generate_interaction<graph::Sparse>();
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = openjij::system::ClassicalIsing(spin, interaction);
+    auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
 
     auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 10.0, 10, 10);
+    const auto schedule_list = generate_schedule_list();
 
-    openjij::algorithm::Algorithm<openjij::updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list1);
-    const auto target = classical_ising.spin;
+    algorithm::Algorithm<updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
 
-    const auto schedule_list2 = [](){
-        auto schedule_list = openjij::utility::ClassicalScheduleList(1);
-        schedule_list[0].one_mc_step = 20;
-        schedule_list[0].updater_parameter = openjij::utility::ClassicalUpdaterParameter(0.01);
-
-        return schedule_list;
-    }();
-    openjij::algorithm::Algorithm<openjij::updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list2);
-    const auto expect = classical_ising.spin;
-
-    EXPECT_NE(target, expect);
+    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
 }
 
-TEST(ClassicalIsing_SwendsenWang, StateAtLowTemperatureIsEqualToStateAtLowTemperature) {
-    constexpr auto N = 10;
-    const auto interaction = generate_sa_interaction(N);
+TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Dense_WithEigenImpl) {
+    using namespace openjij;
+
+    //generate classical dense system
+    const auto interaction = generate_interaction<graph::Dense>();
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = openjij::system::ClassicalIsing(spin, interaction);
+    auto classical_ising = system::make_classical_ising<true>(spin, interaction); //Eigen implementation enabled
+    
+    auto random_numder_engine = std::mt19937(1);
+    const auto schedule_list = generate_schedule_list();
+
+    algorithm::Algorithm<updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
+
+    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
+}
+
+TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Sparse_WithEigenImpl) {
+    using namespace openjij;
+
+    //generate classical dense system
+    const auto interaction = generate_interaction<graph::Sparse>();
+    auto engine_for_spin = std::mt19937(1);
+    const auto spin = interaction.gen_spin(engine_for_spin);
+    auto classical_ising = system::make_classical_ising<true>(spin, interaction); //Eigen implementation enabled
+    
+    auto random_numder_engine = std::mt19937(1);
+    const auto schedule_list = generate_schedule_list();
+
+    algorithm::Algorithm<updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
+
+    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
+}
+
+//swendsen-wang test
+
+TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
+    using namespace openjij;
+
+    //generate classical dense system
+    const auto interaction = generate_interaction<graph::Dense>();
+    auto engine_for_spin = std::mt19937(1);
+    const auto spin = interaction.gen_spin(engine_for_spin);
+    auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
 
     auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list1 = openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 10);
-    openjij::algorithm::Algorithm<openjij::updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list1);
-    const auto target = classical_ising.spin;
+    const auto schedule_list = generate_schedule_list();
 
-    const auto schedule_list2 = [](){
-        auto schedule_list = openjij::utility::ClassicalScheduleList(1);
-        schedule_list[0].one_mc_step = 1000;
-        schedule_list[0].updater_parameter = openjij::utility::ClassicalUpdaterParameter(100.0);
+    algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
 
-        return schedule_list;
-    }();
-    openjij::algorithm::Algorithm<openjij::updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list2);
-    const auto expect = classical_ising.spin;
-
-    EXPECT_EQ(target, expect);
+    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
 }
 
 TEST(UnionFind, UniteSevenNodesToMakeThreeSets) {
@@ -309,3 +367,4 @@ TEST(UnionFind, UniteSevenNodesToMakeThreeSets) {
         EXPECT_EQ(union_find.find_set(node), expect[node]);
     }
 }
+

@@ -25,19 +25,34 @@
 
 namespace openjij {
     namespace updater {
+
+        /**
+         * @brief swendsen wang updater
+         *
+         * @tparam System
+         */
         template<typename System>
         struct SwendsenWang;
 
-        template<>
-        struct SwendsenWang<system::ClassicalIsing> {
+        /**
+         * @brief swendsen wang updater for classical ising model (no Eigen implementation)
+         *
+         * @tparam GraphType type of graph (assume Dense, Sparse or derived class of them)
+         */
+        template<typename GraphType>
+        struct SwendsenWang<system::ClassicalIsing<GraphType, false>> {
+
+            using ClIsing = system::ClassicalIsing<GraphType, false>;
+
             template<typename RandomNumberEngine>
-            static double update(system::ClassicalIsing& system,
+            inline static void update(ClIsing& system,
                                  RandomNumberEngine& random_numder_engine,
                                  const utility::ClassicalUpdaterParameter& parameter) {
-                const auto num_spin = system.spin.size();
+                static auto urd = std::uniform_real_distribution<>(0, 1.0);
 
+                const auto num_spin = system.spin.size();
                 auto candidate_spin = graph::Spins(num_spin);
-                auto urd = std::uniform_real_distribution<>(0, 1.0);
+
                 for (auto& s : candidate_spin) {
                     s = urd(random_numder_engine) < 0.5 ? -1 : 1;
                 }
@@ -64,7 +79,8 @@ namespace openjij {
 
                 // TODO: implement calculation of total energy difference
                 // DEPRECATED: Dense::calc_energy
-                return system.interaction.calc_energy(system.spin);
+                //return system.interaction.calc_energy(system.spin);
+                return;
             }
         };
     } // namespace updater

@@ -42,6 +42,12 @@ namespace openjij {
                      * @brief interaction type
                      */
                     using Interactions = std::unordered_map<std::pair<Index, Index>, FloatType, utility::PairHash>;
+
+                    /**
+                     * @brief float type
+                     */
+                    using value_type = FloatType;
+
                 private:
 
                     /**
@@ -101,6 +107,9 @@ namespace openjij {
                      */
                     Sparse(std::size_t num_spins, std::size_t num_edges)
                         : Graph(num_spins), _num_edges(std::min(num_spins, num_edges)), _list_adj_nodes(num_spins){
+                            //reserve hashtable
+                            _J.reserve(num_spins*_num_edges/2);
+                            
                             //initialize list_adj_nodes
                             for(auto& elem : _list_adj_nodes){
                                 elem.reserve(_num_edges); //not resize()

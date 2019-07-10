@@ -12,20 +12,23 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_SYSTEM_HPP__
-#define OPENJIJ_SYSTEM_SYSTEM_HPP__
+#ifndef OPENJIJ_UTILITY_TYPE_TRAITS_HPP__
+#define OPENJIJ_UTILITY_TYPE_TRAITS_HPP__
+
+#include <type_traits>
 
 namespace openjij {
-    namespace system {
+    namespace utility {
 
-        struct classical_system {};
-        struct quantum_system {};
+        /**
+         * @brief check if two template template parameters are the same.
+         *
+         */
+        template <template <typename...> class, template<typename...> class> 
+            struct is_same_template : std::false_type{};
 
-        template<typename System>
-        struct get_system_type {
-            using type = typename System::system_type;
-        };
-    } // namespace system
+        template <template <typename...> class T>
+            struct is_same_template<T,T> : std::true_type{};
+    } // namespace utility
 } // namespace openjij
-
 #endif

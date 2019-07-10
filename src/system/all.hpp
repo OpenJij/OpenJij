@@ -12,20 +12,10 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_SYSTEM_HPP__
-#define OPENJIJ_SYSTEM_SYSTEM_HPP__
+#ifndef OPENJIJ_SYSTEM_ALL_HPP__
+#define OPENJIJ_SYSTEM_ALL_HPP__
 
-namespace openjij {
-    namespace system {
-
-        struct classical_system {};
-        struct quantum_system {};
-
-        template<typename System>
-        struct get_system_type {
-            using type = typename System::system_type;
-        };
-    } // namespace system
-} // namespace openjij
+#include <system/classical_ising.hpp>
+#include <system/quantum_ising.hpp>
 
 #endif

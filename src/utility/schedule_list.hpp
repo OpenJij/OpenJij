@@ -23,24 +23,46 @@
 
 namespace openjij {
     namespace utility {
+
+        /**
+         * @brief updater parameter for monte carlo simulation
+         *
+         * @tparam SystemType system type
+         */
         template<typename SystemType>
         struct UpdaterParameter;
 
+        /**
+         * @brief updater parameter for classical ising system
+         */
         template<>
         struct UpdaterParameter<system::classical_system> {
             UpdaterParameter() = default;
             UpdaterParameter(double beta) : beta{beta} {}
 
+            /**
+             * @brief inverse temperature
+             */
             double beta;
         };
 
+        /**
+         * @brief updater paramter for transverse ising model
+         */
         template<>
         struct UpdaterParameter<system::quantum_system> {
             UpdaterParameter() = default;
-            UpdaterParameter(double beta, double gamma) : beta{beta}, gamma{gamma} {}
+            UpdaterParameter(double beta, double s) : beta{beta}, s{s} {}
 
+            /**
+             * @brief inverse temperature
+             */
             double beta;
-            double gamma;
+
+            /**
+             * @brief annealing schedule (from 0 (only transverse field) to 1 (only classical Hamiltonian))
+             */
+            double s;
         };
 
         using ClassicalUpdaterParameter = UpdaterParameter<system::classical_system>;
@@ -73,6 +95,7 @@ namespace openjij {
 
             return schedule_list;
         }
+
     } // namespace utility
 } // namespace openjij
 
