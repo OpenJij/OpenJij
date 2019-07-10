@@ -16,6 +16,7 @@
 #define OPENJIJ_SYSTEM_CLASSICAL_ISING_HPP__
 
 #include <cassert>
+#include <utility>
 #include <system/system.hpp>
 #include <graph/all.hpp>
 #include <type_traits>
@@ -73,7 +74,7 @@ namespace openjij {
                  * @param interaction
                  */
                 ClassicalIsing(const graph::Spins& init_spin, const graph::Dense<FloatType>& init_interaction)
-                : spin(init_interaction.get_num_spins()+1), interaction(init_interaction.get_num_spins()+1, init_interaction.get_num_spins()+1){
+                : spin(init_interaction.get_num_spins()+1), interaction(init_interaction.get_num_spins()+1, init_interaction.get_num_spins()+1), num_spins(init_interaction.get_num_spins()){
                     assert(init_spin.size() == init_interaction.get_num_spins());
 
                     //initialize spin
@@ -106,6 +107,11 @@ namespace openjij {
 
                 VectorXx spin;
                 MatrixXx interaction;
+
+                /**
+                 * @brief number of real spins (dummy spin excluded)
+                 */
+                std::size_t num_spins; //spin.size()-1
             };
 
         /**
@@ -127,7 +133,7 @@ namespace openjij {
                  * @param interaction
                  */
                 ClassicalIsing(const graph::Spins& init_spin, const graph::Sparse<FloatType>& init_interaction)
-                : spin(init_interaction.get_num_spins()+1), interaction(init_interaction.get_num_spins()+1, init_interaction.get_num_spins()+1){
+                : spin(init_interaction.get_num_spins()+1), interaction(init_interaction.get_num_spins()+1, init_interaction.get_num_spins()+1), num_spins(init_interaction.get_num_spins()){
                     assert(init_spin.size() == init_interaction.get_num_spins());
 
                     //initialize spin
@@ -164,8 +170,12 @@ namespace openjij {
 
                 VectorXx spin;
                 SparseMatrixXx interaction;
-            };
 
+                /**
+                 * @brief number of real spins (dummy spin excluded)
+                 */
+                std::size_t num_spins; //spin.size()-1
+            };
 
         /**
          * @brief helper function for ClassicalIsing constructor
@@ -173,7 +183,7 @@ namespace openjij {
          * @tparam eigen_impl
          * @tparam GraphType
          * @param init_spin initial spin
-         * @param init_interaction initial interaction
+-        * @param init_interaction initial interaction
          *
          * @return generated object
          */
