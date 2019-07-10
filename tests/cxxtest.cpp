@@ -78,7 +78,7 @@ static openjij::graph::Spins get_true_groundstate(){
 }
 
 static openjij::utility::ClassicalScheduleList generate_schedule_list(){
-    return openjij::utility::make_classical_schedule_list(0.1, 100.0, 10000, 10000);
+    return openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 100);
 }
 // #####################################
 
@@ -101,6 +101,8 @@ TEST(Graph, DenseGraphCheck){
         }
     }
     s = 0;
+
+    // check if graph holds correct variables
     for(std::size_t i=0; i<N; i++){
         for(std::size_t j=i; j<N; j++){
             EXPECT_EQ(a.J(i, j) , s);
@@ -108,6 +110,8 @@ TEST(Graph, DenseGraphCheck){
         }
     }
     s = 0;
+
+    // check if graph index is reversible (Jij = Jji)
     for(std::size_t i=0; i<N; i++){
         for(std::size_t j=i; j<N; j++){
             EXPECT_EQ(a.J(j, i) , s);
@@ -128,6 +132,8 @@ TEST(Graph, SparseGraphCheck){
         }
     }
     s = 0;
+
+    // check if graph holds correct variables
     for(std::size_t i=0; i<N; i++){
         for(std::size_t j=i+1; j<N; j++){
             EXPECT_EQ(b.J(i, j) , s);
@@ -135,12 +141,16 @@ TEST(Graph, SparseGraphCheck){
         }
     }
     s = 0;
+
+    // check if graph index is reversible (Jij = Jji)
     for(std::size_t i=0; i<N; i++){
         for(std::size_t j=i+1; j<N; j++){
             EXPECT_EQ(b.J(j, i) , s);
             s+=1./N;
         }
     }
+
+    //check adj_nodes
     for(std::size_t i=0; i<N; i++){
         std::size_t tot = 0;
         for(auto&& elem : b.adj_nodes(i)){

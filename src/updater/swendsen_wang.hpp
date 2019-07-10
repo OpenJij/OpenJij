@@ -45,7 +45,7 @@ namespace openjij {
             using ClIsing = system::ClassicalIsing<GraphType, false>;
 
             template<typename RandomNumberEngine>
-            static void update(ClIsing& system,
+            inline static void update(ClIsing& system,
                                  RandomNumberEngine& random_numder_engine,
                                  const utility::ClassicalUpdaterParameter& parameter) {
                 static auto urd = std::uniform_real_distribution<>(0, 1.0);

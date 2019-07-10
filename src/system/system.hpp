@@ -17,6 +17,7 @@
 
 namespace openjij {
     namespace system {
+
         struct classical_system {};
         struct quantum_system {};
 
