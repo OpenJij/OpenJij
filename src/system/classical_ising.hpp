@@ -16,6 +16,7 @@
 #define OPENJIJ_SYSTEM_CLASSICAL_ISING_HPP__
 
 #include <cassert>
+#include <utility>
 #include <system/system.hpp>
 #include <graph/all.hpp>
 #include <type_traits>
@@ -176,14 +177,13 @@ namespace openjij {
                 std::size_t num_spins; //spin.size()-1
             };
 
-
         /**
          * @brief helper function for ClassicalIsing constructor
          *
          * @tparam eigen_impl
          * @tparam GraphType
          * @param init_spin initial spin
-         * @param init_interaction initial interaction
+-        * @param init_interaction initial interaction
          *
          * @return generated object
          */

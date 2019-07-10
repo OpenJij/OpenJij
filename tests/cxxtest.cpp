@@ -80,6 +80,15 @@ static openjij::graph::Spins get_true_groundstate(){
 static openjij::utility::ClassicalScheduleList generate_schedule_list(){
     return openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 100);
 }
+
+static openjij::utility::TransverseFieldScheduleList generate_tfm_schedule_list(){
+    using namespace openjij::utility;
+    using T = TransverseFieldUpdaterParameter;
+    TransverseFieldScheduleList ret(1);
+    ret[0].updater_parameter = T(1, 0.6);
+    ret[0].one_mc_step = 10000;
+    return ret;
+}
 // #####################################
 
 
@@ -352,6 +361,37 @@ TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
     algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
 
     EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
+}
+
+TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Dense) {
+    using namespace openjij;
+
+    //generate classical dense system
+    const auto interaction = generate_interaction<graph::Dense>();
+    auto engine_for_spin = std::mt19937(1);
+    std::size_t num_trotter_slices = 10;
+
+    //generate random trotter spins
+    system::TrotterSpins trotter_spins(num_trotter_slices);
+    for(auto& spins : trotter_spins){
+        spins = interaction.gen_spin(engine_for_spin);
+    }
+
+    auto transverse_ising = system::make_transverse_ising(trotter_spins, interaction, 1.0);
+    
+    auto random_numder_engine = std::mt19937(1);
+    const auto schedule_list = generate_tfm_schedule_list();
+
+    algorithm::Algorithm<updater::SingleSpinFlip>::run(transverse_ising, random_numder_engine, schedule_list);
+
+    for(const auto& spins : trotter_spins){
+        for(const auto& spin : spins){
+            std::cout << spin << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    //EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
 }
 
 TEST(UnionFind, UniteSevenNodesToMakeThreeSets) {

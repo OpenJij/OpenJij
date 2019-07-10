@@ -18,7 +18,7 @@
 #include <random>
 
 #include <system/classical_ising.hpp>
-#include <system/quantum_ising.hpp>
+#include <system/transverse_ising.hpp>
 #include <utility/schedule_list.hpp>
 
 namespace openjij {
@@ -163,79 +163,85 @@ namespace openjij {
          *
          * @tparam GraphType graph type
          */
-        //template<typename GraphType>
-        //struct SingleSpinFlip<system::QuantumIsing<GraphType>> {
-        //    
-        //    /**
-        //     * @brief transverse field ising system
-        //     */
-        //    using QIsing = system::QuantumIsing<GraphType>;
+        template<typename GraphType>
+        struct SingleSpinFlip<system::TransverseIsing<GraphType>> {
+            
+            /**
+             * @brief transverse field ising system
+             */
+            using QIsing = system::TransverseIsing<GraphType>;
 
-        //    /**
-        //     * @brief float type
-        //     */
-        //    using FloatType = typename GraphType::value_type;
+            /**
+             * @brief float type
+             */
+            using FloatType = typename GraphType::value_type;
 
-        //    /**
-        //     * @brief operate single spin flip in a quantum ising system
-        //     *
-        //     * @param system object of a quantum ising system
-        //     * @param random_number_engine random number gengine
-        //     * @param parameter parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f and transverse magnetic field \f\gamma\f
-        //     *
-        //     * @return energy difference \f\Delta E\f
-        //     */
-        //    template<typename RandomNumberEngine>
-        //        inline static FloatType update(QIsing& system,
-        //                RandomNumberEngine& random_numder_engine,
-        //                const utility::QuantumUpdaterParameter& parameter) {
+            /**
+             * @brief operate single spin flip in a transverse ising system
+             *
+             * @param system object of a transverse ising system
+             * @param random_number_engine random number gengine
+             * @param parameter parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f and transverse magnetic field \f\s\f
+             *
+             * @return energy difference \f\Delta E\f
+             */
+            template<typename RandomNumberEngine>
+                inline static FloatType update(QIsing& system,
+                        RandomNumberEngine& random_numder_engine,
+                        const utility::TransverseFieldUpdaterParameter& parameter) {
 
-        //            //get number of classical spins
-        //            std::size_t num_classical_spins = system.trotter_spins[0].size();
-        //            //get number of trotter slices
-        //            std::size_t num_trotter_slices = system.trotter_spins.size();
+                    //get number of classical spins
+                    std::size_t num_classical_spins = system.trotter_spins[0].size();
+                    //get number of trotter slices
+                    std::size_t num_trotter_slices = system.trotter_spins.size();
 
-        //            auto uid = std::uniform_int_distribution<std::size_t>{0, num_classical_spins-1};
-        //            auto uid_trotter = std::uniform_int_distribution<std::size_t>{0, num_trotter_slices-1};
+                    auto uid = std::uniform_int_distribution<std::size_t>{0, num_classical_spins-1};
+                    auto uid_trotter = std::uniform_int_distribution<std::size_t>{0, num_trotter_slices-1};
 
-        //            //do metropolis
-        //            auto urd = std::uniform_real_distribution<>(0, 1.0);
+                    //do metropolis
+                    auto urd = std::uniform_real_distribution<>(0, 1.0);
 
-        //            FloatType totaldE = 0;
+                    //aliases
+                    auto& spins = system.trotter_spins;
+                    auto& gamma = system.gamma;
+                    auto& beta = parameter.beta;
+                    auto& s = parameter.s;
 
-        //            for(std::size_t i=0; i<num_classical_spins*num_trotter_slices; i++){
-        //                //select random trotter slice
-        //                std::size_t index_trot = uid_trotter(random_numder_engine);
-        //                //select random classical spin index
-        //                std::size_t index = uid(random_numder_engine);
-        //                //do metropolis
-        //                FloatType dE = 0;
-        //                //calculate adjacent nodes
-        //                for(auto&& adj_index : system.interaction.adj_nodes(index)){
-        //                    dE += -2 * s * (parameter.beta/num_trotter_slices) * spins[index_trot][index] * (index != adj_index ? (system.interaction.J(index, adj_index) * spins[index_trot][adj_index]) : system.interaction.h(index));
-        //                }
+                    FloatType totaldE = 0;
 
-        //                //trotter direction
-        //                dE += -2 * (1/2.) * log(tanh(parameter.beta* parameter.gamma * (1.0-s) /num_trotter_slices)) * spins[index_trot][index]*(spins[mod_t((int64_t)index_trot+1)][index] + spins[mod_t((int64_t)index_trot-1)][index]);
+                    for(std::size_t i=0; i<num_classical_spins*num_trotter_slices; i++){
+                        //select random trotter slice
+                        std::size_t index_trot = uid_trotter(random_numder_engine);
+                        //select random classical spin index
+                        std::size_t index = uid(random_numder_engine);
+                        //do metropolis
+                        FloatType dE = 0;
+                        //calculate adjacent nodes
+                        for(auto&& adj_index : system.interaction.adj_nodes(index)){
+                            dE += -2 * s * (beta/num_trotter_slices) * spins[index_trot][index] * (index != adj_index ? (system.interaction.J(index, adj_index) * spins[index_trot][adj_index]) : system.interaction.h(index));
+                        }
 
-        //                //metropolis 
-        //                if(exp(-dE) > urd(mt)){
-        //                    spins[index_trot][index] *= -1;
-        //                    totaldE += dE;
-        //                }
+                        //trotter direction
+                        dE += -2 * (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * spins[index_trot][index]*(spins[mod_t((int64_t)index_trot+1, num_trotter_slices)][index] + spins[mod_t((int64_t)index_trot-1, num_trotter_slices)][index]);
 
-        //            }
+                        //metropolis 
+                        if(dE < 0 || exp(-dE) > urd(random_numder_engine)){
+                            spins[index_trot][index] *= -1;
+                            totaldE += dE;
+                        }
 
-        //            return totaldE;
-        //        }
+                    }
 
-        //    private: 
-        //    inline static std::size_t mod_t(std::int64_t a, std::size_t num_trotter_slices){
-        //        //a -> [-1:num_trotter_slices]
-        //        //return a%num_trotter_slices (a>0), num_trotter_slices-1 (a==-1)
-        //        return (a+num_trotter_slices)%num_trotter_slices;
-        //    }
-        //};
+                    return totaldE;
+                }
+
+            private: 
+            inline static std::size_t mod_t(std::int64_t a, std::size_t num_trotter_slices){
+                //a -> [-1:num_trotter_slices]
+                //return a%num_trotter_slices (a>0), num_trotter_slices-1 (a==-1)
+                return (a+num_trotter_slices)%num_trotter_slices;
+            }
+        };
 
     } // namespace updater
 } // namespace openjij
