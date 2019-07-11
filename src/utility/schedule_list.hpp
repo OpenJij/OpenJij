@@ -136,7 +136,7 @@ namespace openjij {
          *
          * @param beta inverse temperature
          * @param one_mc_step number of mc step for each temperature
-         * @param num_call_updater
+         * @param num_call_updater number of updater calls
          *
          * @return 
          */
