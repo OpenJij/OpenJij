@@ -21,7 +21,7 @@ namespace openjij {
     namespace system {
 
         /**
-         * @brief monte carlo system
+         * @brief monte carlo system tag
          */
         struct mc_system {};
 
@@ -51,14 +51,14 @@ namespace openjij {
         struct nonstoquastic_system : public quantum_system {};
 
         /**
-         * @brief system with single command execution (e.g. D-Wave, digital annealer, ...)
+         * @brief system tag with single command execution (e.g. D-Wave, digital annealer, ...)
          */
         struct single_command_system {};
 
         /**
-         * @brief system for solving real time schrodinger dynamics
+         * @brief system tag for solving real time schrodinger dynamics
          */
-        struct real_time_dynamics_system{};
+        struct realtime_dynamics_system{};
 
         /**
          * @brief meta function for getting system type
@@ -89,7 +89,7 @@ namespace openjij {
          */
         template<typename System>
         struct get_base_system_type {
-            using type = typename utility::get_base_class<typename System::system_type, mc_system, single_command_system, real_time_dynamics_system>::type;
+            using type = typename utility::get_base_class<typename System::system_type, mc_system, single_command_system, realtime_dynamics_system>::type;
         };
 
     } // namespace system

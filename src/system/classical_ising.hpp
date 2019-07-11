@@ -19,6 +19,7 @@
 #include <utility>
 #include <system/system.hpp>
 #include <graph/all.hpp>
+#include <utility/eigen.hpp>
 #include <type_traits>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -38,7 +39,7 @@ namespace openjij {
                 static_assert(!eigen_impl, "Eigen implementation is not supported.");
 
                 using system_type = classical_system;
-                
+
                 /**
                  * @brief Constructor to initialize spin and interaction
                  *
@@ -54,6 +55,7 @@ namespace openjij {
                 const GraphType interaction;
             };
 
+        //TODO: unify Dense and Sparse Eigen-implemented ClassicalIsing struct
 
         /**
          * @brief ClassicalIsing structure for Dense graph (Eigen-based)
@@ -74,36 +76,15 @@ namespace openjij {
                  * @param interaction
                  */
                 ClassicalIsing(const graph::Spins& init_spin, const graph::Dense<FloatType>& init_interaction)
-                : spin(init_interaction.get_num_spins()+1), interaction(init_interaction.get_num_spins()+1, init_interaction.get_num_spins()+1), num_spins(init_interaction.get_num_spins()){
-                    assert(init_spin.size() == init_interaction.get_num_spins());
+                    : num_spins(init_interaction.get_num_spins()){
+                        assert(init_spin.size() == init_interaction.get_num_spins());
 
-                    //initialize spin
-                    for(size_t i=0; i<init_spin.size(); i++){
-                        spin(i) = init_spin[i];
+                        //initialize spin
+                        spin = utility::gen_vector_from_std_vector<FloatType>(init_spin);
+
+                        //initialize interaction
+                        interaction = utility::gen_matrix_from_graph(init_interaction);
                     }
-
-                    //for local field
-                    spin[init_spin.size()] = 1;
-
-                    //initialize interaction
-                    interaction.setZero();
-
-                    for(size_t i=0; i<init_interaction.get_num_spins(); i++){
-                        for(size_t j=i+1; j<init_interaction.get_num_spins(); j++){
-                            interaction(i,j) = init_interaction.J(i,j);
-                            interaction(j,i) = init_interaction.J(i,j);
-                        }
-                    }
-
-                    //for local field
-                    for(size_t i=0; i<init_interaction.get_num_spins(); i++){
-                            interaction(i,init_interaction.get_num_spins()) = init_interaction.h(i);
-                            interaction(init_interaction.get_num_spins(),i) = init_interaction.h(i);
-                    }
-
-                    //for local field
-                    interaction(init_interaction.get_num_spins(),init_interaction.get_num_spins()) = 1;
-                }
 
                 VectorXx spin;
                 MatrixXx interaction;
@@ -133,40 +114,15 @@ namespace openjij {
                  * @param interaction
                  */
                 ClassicalIsing(const graph::Spins& init_spin, const graph::Sparse<FloatType>& init_interaction)
-                : spin(init_interaction.get_num_spins()+1), interaction(init_interaction.get_num_spins()+1, init_interaction.get_num_spins()+1), num_spins(init_interaction.get_num_spins()){
-                    assert(init_spin.size() == init_interaction.get_num_spins());
+                    : num_spins(init_interaction.get_num_spins()){
+                        assert(init_spin.size() == init_interaction.get_num_spins());
 
-                    //initialize spin
-                    for(size_t i=0; i<init_spin.size(); i++){
-                        spin(i) = init_spin[i];
+                        //initialize spin
+                        spin = utility::gen_vector_from_std_vector<FloatType>(init_spin);
+
+                        //initialize interaction
+                        interaction = utility::gen_matrix_from_graph(init_interaction);
                     }
-
-                    //for local field
-                    spin[init_spin.size()] = 1;
-
-                    //initialize interaction
-                    interaction.setZero();
-
-                    //make triplet list
-                    using T = std::vector<Eigen::Triplet<FloatType>>;
-                    T t_list;
-
-                    for(size_t ind=0; ind<init_interaction.get_num_spins(); ind++){
-                        for(size_t adj_ind : init_interaction.adj_nodes(ind)){
-                            if(ind != adj_ind){
-                                t_list.emplace_back(ind, adj_ind, init_interaction.J(ind, adj_ind));
-                            }
-                            else{
-                                t_list.emplace_back(ind, init_interaction.get_num_spins(), init_interaction.h(ind));
-                                t_list.emplace_back(init_interaction.get_num_spins(), ind, init_interaction.h(ind));
-                            }
-                        }
-                    }
-
-                    t_list.emplace_back(init_interaction.get_num_spins(), init_interaction.get_num_spins(), 1);
-
-                    interaction.setFromTriplets(t_list.begin(), t_list.end());
-                }
 
                 VectorXx spin;
                 SparseMatrixXx interaction;
@@ -183,7 +139,7 @@ namespace openjij {
          * @tparam eigen_impl
          * @tparam GraphType
          * @param init_spin initial spin
--        * @param init_interaction initial interaction
+         -        * @param init_interaction initial interaction
          *
          * @return generated object
          */
