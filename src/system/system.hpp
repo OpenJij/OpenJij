@@ -58,7 +58,7 @@ namespace openjij {
         /**
          * @brief system tag for solving real time schrodinger dynamics
          */
-        struct real_time_dynamics_system{};
+        struct realtime_dynamics_system{};
 
         /**
          * @brief meta function for getting system type
@@ -89,7 +89,7 @@ namespace openjij {
          */
         template<typename System>
         struct get_base_system_type {
-            using type = typename utility::get_base_class<typename System::system_type, mc_system, single_command_system, real_time_dynamics_system>::type;
+            using type = typename utility::get_base_class<typename System::system_type, mc_system, single_command_system, realtime_dynamics_system>::type;
         };
 
     } // namespace system

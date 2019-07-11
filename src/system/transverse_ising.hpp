@@ -84,6 +84,160 @@ namespace openjij {
                 FloatType gamma;
             };
 
+        //TODO: unify Dense and Sparse Eigen-implemented TransverselIsing struct
+
+        /**
+         * @brief naive Dense TransverseIsing structure with discrete-time trotter spins (with Eigen implementation)
+         *
+         * @tparam FloatTypeType
+         */
+        template<typename FloatType>
+            struct TransverseIsing<graph::Dense<FloatType>, true> {
+                using system_type = transverse_field_system;
+
+                using MatrixXx = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>;
+                using TrotterMatrix = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>;
+
+                /**
+                 * @brief TransverseIsing Constructor
+                 *
+                 * @param init_trotter_spins
+                 * @param init_interaction
+                 */
+                TransverseIsing(const TrotterSpins& init_trotter_spins, const graph::Dense<FloatType>& init_interaction, FloatType gamma)
+                : num_classical_spins(init_trotter_spins[0].size()), gamma(gamma){
+                    assert(init_trotter_spins.size() >= 2);
+
+                    //init trotter_spins
+                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType>(init_trotter_spins);
+
+                    //init interactions
+                    interaction = utility::gen_matrix_from_graph(init_interaction);
+                }
+
+                /**
+                 * @brief TransverseIsing Constuctor with initial classical spins
+                 *
+                 * @param classical_spins initial classical spins
+                 * @param init_interaction
+                 * @param num_trotter_slices
+                 */
+                TransverseIsing(const graph::Spins& init_classical_spins, const graph::Dense<FloatType>& init_interaction, FloatType gamma, size_t num_trotter_slices)
+                : num_classical_spins(init_classical_spins.size()), gamma(gamma){
+                    //initialize trotter_spins with classical_spins
+
+                    assert(init_classical_spins.size() >= 2);
+
+                    TrotterSpins init_trotter_spins;
+
+                    for(auto& spins : init_trotter_spins){
+                        spins = init_classical_spins;
+                    }
+
+                    //init trotter_spins
+                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType>(init_trotter_spins);
+
+                    //init interactions
+                    interaction = utility::gen_matrix_from_graph(init_interaction);
+                }
+
+                /**
+                 * @brief trotterlized spins
+                 */
+                TrotterMatrix trotter_spins;
+
+                /**
+                 * @brief interaction 
+                 */
+                MatrixXx interaction;
+
+                /**
+                 * @brief number of real classical spins (dummy spin excluded)
+                 */
+                std::size_t num_classical_spins; //trotter_spins[0].size()-1
+
+                /**
+                 * @brief coefficient of transverse field term
+                 */
+                FloatType gamma;
+            };
+
+        /**
+         * @brief naive Sparse TransverseIsing structure with discrete-time trotter spins (with Eigen implementation)
+         *
+         * @tparam FloatTypeType
+         */
+        template<typename FloatType>
+            struct TransverseIsing<graph::Sparse<FloatType>, true> {
+                using system_type = transverse_field_system;
+
+                using SparseMatrixXx = Eigen::SparseMatrix<FloatType>;
+                using TrotterMatrix = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>;
+
+                /**
+                 * @brief TransverseIsing Constructor
+                 *
+                 * @param init_trotter_spins
+                 * @param init_interaction
+                 */
+                TransverseIsing(const TrotterSpins& init_trotter_spins, const graph::Sparse<FloatType>& init_interaction, FloatType gamma)
+                : num_classical_spins(init_trotter_spins[0].size()), gamma(gamma){
+                    assert(init_trotter_spins.size() >= 2);
+
+                    //init trotter_spins
+                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType>(init_trotter_spins);
+
+                    //init interactions
+                    interaction = utility::gen_matrix_from_graph(init_interaction);
+                }
+
+                /**
+                 * @brief TransverseIsing Constuctor with initial classical spins
+                 *
+                 * @param classical_spins initial classical spins
+                 * @param init_interaction
+                 * @param num_trotter_slices
+                 */
+                TransverseIsing(const graph::Spins& init_classical_spins, const graph::Sparse<FloatType>& init_interaction, FloatType gamma, size_t num_trotter_slices)
+                : num_classical_spins(init_classical_spins.size()), gamma(gamma){
+                    //initialize trotter_spins with classical_spins
+
+                    assert(init_classical_spins.size() >= 2);
+
+                    TrotterSpins init_trotter_spins;
+
+                    for(auto& spins : init_trotter_spins){
+                        spins = init_classical_spins;
+                    }
+
+                    //init trotter_spins
+                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType>(init_trotter_spins);
+
+                    //init interactions
+                    interaction = utility::gen_matrix_from_graph(init_interaction);
+                }
+
+                /**
+                 * @brief trotterlized spins
+                 */
+                TrotterMatrix trotter_spins;
+
+                /**
+                 * @brief interaction 
+                 */
+                SparseMatrixXx interaction;
+
+                /**
+                 * @brief number of real classical spins (dummy spin excluded)
+                 */
+                std::size_t num_classical_spins; //trotter_spins[0].size()-1
+
+                /**
+                 * @brief coefficient of transverse field term
+                 */
+                FloatType gamma;
+            };
+
         /**
          * @brief helper function for TransverseIsing constructor
          *

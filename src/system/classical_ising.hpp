@@ -55,6 +55,7 @@ namespace openjij {
                 const GraphType interaction;
             };
 
+        //TODO: unify Dense and Sparse Eigen-implemented ClassicalIsing struct
 
         /**
          * @brief ClassicalIsing structure for Dense graph (Eigen-based)
@@ -75,9 +76,7 @@ namespace openjij {
                  * @param interaction
                  */
                 ClassicalIsing(const graph::Spins& init_spin, const graph::Dense<FloatType>& init_interaction)
-                    : spin(init_interaction.get_num_spins()+1),
-                    interaction(init_interaction.get_num_spins()+1, init_interaction.get_num_spins()+1),
-                    num_spins(init_interaction.get_num_spins()){
+                    : num_spins(init_interaction.get_num_spins()){
                         assert(init_spin.size() == init_interaction.get_num_spins());
 
                         //initialize spin
@@ -115,9 +114,7 @@ namespace openjij {
                  * @param interaction
                  */
                 ClassicalIsing(const graph::Spins& init_spin, const graph::Sparse<FloatType>& init_interaction)
-                    : spin(init_interaction.get_num_spins()+1),
-                    interaction(init_interaction.get_num_spins()+1,init_interaction.get_num_spins()+1),
-                    num_spins(init_interaction.get_num_spins()){
+                    : num_spins(init_interaction.get_num_spins()){
                         assert(init_spin.size() == init_interaction.get_num_spins());
 
                         //initialize spin

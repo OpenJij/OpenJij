@@ -18,7 +18,6 @@
 #include <graph/all.hpp>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include <system/transverse_ising.hpp>
 
 namespace openjij {
     namespace utility {
@@ -57,7 +56,7 @@ namespace openjij {
          */
         template<typename FloatType>
             inline static Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>
-            gen_matrix_from_trotter_spins(const system::TrotterSpins& trotter_spins){
+            gen_matrix_from_trotter_spins(const std::vector<graph::Spins>& trotter_spins){
                 Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic> ret_mat(trotter_spins[0].size()+1, trotter_spins.size());
 
                 //initialize spin

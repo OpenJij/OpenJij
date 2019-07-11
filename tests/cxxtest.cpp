@@ -390,6 +390,54 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse_NoEigenImpl) {
     EXPECT_EQ(get_true_groundstate(), result::get_solution(transverse_ising));
 }
 
+TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Dense_WithEigenImpl) {
+    using namespace openjij;
+
+    //generate classical dense system
+    const auto interaction = generate_interaction<graph::Dense>();
+    auto engine_for_spin = std::mt19937(1);
+    std::size_t num_trotter_slices = 10;
+
+    //generate random trotter spins
+    system::TrotterSpins init_trotter_spins(num_trotter_slices);
+    for(auto& spins : init_trotter_spins){
+        spins = interaction.gen_spin(engine_for_spin);
+    }
+
+    auto transverse_ising = system::make_transverse_ising<true>(init_trotter_spins, interaction, 1.0);
+    
+    auto random_numder_engine = std::mt19937(1);
+    const auto schedule_list = generate_tfm_schedule_list();
+
+    algorithm::Algorithm<updater::SingleSpinFlip>::run(transverse_ising, random_numder_engine, schedule_list);
+
+    EXPECT_EQ(get_true_groundstate(), result::get_solution(transverse_ising));
+}
+
+TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse_WithEigenImpl) {
+    using namespace openjij;
+
+    //generate classical dense system
+    const auto interaction = generate_interaction<graph::Sparse>();
+    auto engine_for_spin = std::mt19937(1);
+    std::size_t num_trotter_slices = 10;
+
+    //generate random trotter spins
+    system::TrotterSpins init_trotter_spins(num_trotter_slices);
+    for(auto& spins : init_trotter_spins){
+        spins = interaction.gen_spin(engine_for_spin);
+    }
+
+    auto transverse_ising = system::make_transverse_ising<true>(init_trotter_spins, interaction, 1.0); //gamma = 1.0
+    
+    auto random_numder_engine = std::mt19937(1);
+    const auto schedule_list = generate_tfm_schedule_list();
+
+    algorithm::Algorithm<updater::SingleSpinFlip>::run(transverse_ising, random_numder_engine, schedule_list);
+
+    EXPECT_EQ(get_true_groundstate(), result::get_solution(transverse_ising));
+}
+
 //swendsen-wang test
 
 TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
@@ -422,7 +470,7 @@ TEST(Eigen, CopyFromVectorToEigenMatrix) {
 
     spins = a.gen_spin(r);
 
-    Eigen::Matrix<double, Eigen::Dynamic, 1> vec(N+1);
+    Eigen::Matrix<double, Eigen::Dynamic, 1> vec;
     vec = utility::gen_vector_from_std_vector<double>(spins);
 
     for(std::size_t i=0; i<N; i++){
@@ -446,7 +494,7 @@ TEST(Eigen, CopyFromTrotterSpinToEigenMatrix) {
         spins = a.gen_spin(r);
     }
 
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> mat(N+1, num_trot);
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> mat;
     mat = utility::gen_matrix_from_trotter_spins<double>(trotter_spins);
 
     //initialize spin
@@ -478,7 +526,7 @@ TEST(Eigen, CopyFromGraphToEigenMatrix) {
     }
     
     //copy to Eigen Matrix
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> mat(N+1, N+1);
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> mat;
     mat = utility::gen_matrix_from_graph(a);
 
     //interaction
