@@ -23,6 +23,34 @@ namespace openjij {
     namespace utility {
 
         /**
+         * @brief get Eigen Matrix type from Graph Type
+         *
+         * @tparam GraphType
+         */
+        template<typename GraphType>
+            struct get_eigen_matrix_type{};
+
+        /**
+         * @brief get Eigen Matrix type from Graph Type
+         *
+         * @tparam GraphType
+         */
+        template<typename FloatType>
+            struct get_eigen_matrix_type<graph::Dense<FloatType>>{
+                using type = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>;
+            };
+
+        /**
+         * @brief get Eigen Matrix type from Graph Type
+         *
+         * @tparam GraphType
+         */
+        template<typename FloatType>
+            struct get_eigen_matrix_type<graph::Sparse<FloatType>>{
+                using type = Eigen::SparseMatrix<FloatType>;
+            };
+
+        /**
          * @brief generate Eigen Vector from std::vector
          *
          * @tparam FloatType
@@ -147,6 +175,7 @@ namespace openjij {
 
                 return ret_mat;
             }
+
 
 
     } // namespace utility
