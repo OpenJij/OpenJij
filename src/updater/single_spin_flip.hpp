@@ -159,17 +159,17 @@ namespace openjij {
         };
 
         /**
-         * @brief single spin flip for transverse field ising model
+         * @brief single spin flip for transverse field ising model (no Eigen implementation)
          *
          * @tparam GraphType graph type
          */
         template<typename GraphType>
-        struct SingleSpinFlip<system::TransverseIsing<GraphType>> {
+        struct SingleSpinFlip<system::TransverseIsing<GraphType, false>> {
             
             /**
              * @brief transverse field ising system
              */
-            using QIsing = system::TransverseIsing<GraphType>;
+            using QIsing = system::TransverseIsing<GraphType, false>;
 
             /**
              * @brief float type
@@ -180,7 +180,7 @@ namespace openjij {
              * @brief operate single spin flip in a transverse ising system
              *
              * @param system object of a transverse ising system
-             * @param random_number_engine random number gengine
+             * @param random_number_engine random number engine
              * @param parameter parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f and transverse magnetic field \f\s\f
              *
              * @return energy difference \f\Delta E\f

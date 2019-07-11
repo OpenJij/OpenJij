@@ -12,28 +12,31 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_QUANTUM_ISING_HPP__
-#define OPENJIJ_SYSTEM_QUANTUM_ISING_HPP__
+#ifndef OPENJIJ_SYSTEM_TRANSVERSE_ISING_HPP__
+#define OPENJIJ_SYSTEM_TRANSVERSE_ISING_HPP__
 
+#include <cassert>
 #include <system/system.hpp>
 #include <graph/all.hpp>
+#include <utility/eigen.hpp>
 #include <vector>
-#include <utility>
 
 namespace openjij {
     namespace system {
 
         /**
          * @brief trotterized spin (std::vector<Spins>)
+         * trotter_spins[i][j] -> jth spin in ith trotter slice.
          */
         using TrotterSpins = std::vector<graph::Spins>;
 
         /**
-         * @brief naive TransverseIsing structure with discrete-time trotter spins
+         * @brief naive TransverseIsing structure with discrete-time trotter spins (no Eigen implementation)
          *
          * @tparam GraphType
+         * @tparam eigen_impl specify that Eigen implementation is enabled.
          */
-        template<typename GraphType>
+        template<typename GraphType, bool eigen_impl=false>
             struct TransverseIsing {
                 using system_type = transverse_field_system;
                 using FloatType = typename GraphType::value_type;
@@ -46,6 +49,7 @@ namespace openjij {
                  */
                 TransverseIsing(const TrotterSpins& init_trotter_spins, const GraphType& init_interaction, FloatType gamma)
                 : trotter_spins(init_trotter_spins), interaction(init_interaction), gamma(gamma){
+                    assert(trotter_spins.size() >= 2);
                 }
 
                 /**
@@ -58,6 +62,7 @@ namespace openjij {
                 TransverseIsing(const graph::Spins& classical_spins, const GraphType& init_interaction, FloatType gamma, size_t num_trotter_slices)
                 : trotter_spins(num_trotter_slices), interaction(init_interaction), gamma(gamma){
                     //initialize trotter_spins with classical_spins
+                    assert(trotter_spins.size() >= 2);
                     for(auto& spins : trotter_spins){
                         spins = classical_spins;
                     }
@@ -79,14 +84,37 @@ namespace openjij {
                 FloatType gamma;
             };
 
-        template<typename GraphType>
-            TransverseIsing<GraphType> make_transverse_ising(const TrotterSpins& init_trotter_spins, const GraphType& init_interaction, double gamma){
-                return TransverseIsing<GraphType>(init_trotter_spins, init_interaction, static_cast<typename GraphType::value_type>(gamma));
+        /**
+         * @brief helper function for TransverseIsing constructor
+         *
+         * @tparam eigen_impl
+         * @tparam GraphType
+         * @param init_trotter_spins
+         * @param init_interaction
+         * @param gamma
+         *
+         * @return generated object
+         */
+        template<bool eigen_impl=false,typename GraphType>
+            TransverseIsing<GraphType, eigen_impl> make_transverse_ising(const TrotterSpins& init_trotter_spins, const GraphType& init_interaction, double gamma){
+                return TransverseIsing<GraphType, eigen_impl>(init_trotter_spins, init_interaction, static_cast<typename GraphType::value_type>(gamma));
             }
 
-        template<typename GraphType>
-            TransverseIsing<GraphType> make_transverse_ising(const graph::Spins& classical_spins, const GraphType& init_interaction, double gamma, std::size_t num_trotter_slices){
-                return TransverseIsing<GraphType>(classical_spins, init_interaction, static_cast<typename GraphType::value_type>(gamma), num_trotter_slices);
+        /**
+         * @brief helper function for TransverseIsing constructor
+         *
+         * @tparam eigen_impl
+         * @tparam GraphType
+         * @param classical_spins
+         * @param init_interaction
+         * @param gamma
+         * @param num_trotter_slices
+         *
+         * @return generated object
+         */
+        template<bool eigen_impl=false,typename GraphType>
+            TransverseIsing<GraphType, eigen_impl> make_transverse_ising(const graph::Spins& classical_spins, const GraphType& init_interaction, double gamma, std::size_t num_trotter_slices){
+                return TransverseIsing<GraphType, eigen_impl>(classical_spins, init_interaction, static_cast<typename GraphType::value_type>(gamma), num_trotter_slices);
             }
     } // namespace system
 } // namespace openjij
