@@ -95,8 +95,10 @@ namespace openjij {
             struct TransverseIsing<graph::Dense<FloatType>, true> {
                 using system_type = transverse_field_system;
 
-                using MatrixXx = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>;
-                using TrotterMatrix = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>;
+                //matrix (row major)
+                using MatrixXx = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+                //trotter matrix (col major)
+                using TrotterMatrix = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
 
                 /**
                  * @brief TransverseIsing Constructor
@@ -109,10 +111,10 @@ namespace openjij {
                     assert(init_trotter_spins.size() >= 2);
 
                     //init trotter_spins
-                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType>(init_trotter_spins);
+                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
 
                     //init interactions
-                    interaction = utility::gen_matrix_from_graph(init_interaction);
+                    interaction = utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction);
                 }
 
                 /**
@@ -135,10 +137,10 @@ namespace openjij {
                     }
 
                     //init trotter_spins
-                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType>(init_trotter_spins);
+                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
 
                     //init interactions
-                    interaction = utility::gen_matrix_from_graph(init_interaction);
+                    interaction = utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction);
                 }
 
                 /**
@@ -171,8 +173,10 @@ namespace openjij {
             struct TransverseIsing<graph::Sparse<FloatType>, true> {
                 using system_type = transverse_field_system;
 
-                using SparseMatrixXx = Eigen::SparseMatrix<FloatType>;
-                using TrotterMatrix = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>;
+                //matrix (row major)
+                using SparseMatrixXx = Eigen::SparseMatrix<FloatType, Eigen::RowMajor>;
+                //trotter matrix (col major)
+                using TrotterMatrix = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
 
                 /**
                  * @brief TransverseIsing Constructor
@@ -185,10 +189,10 @@ namespace openjij {
                     assert(init_trotter_spins.size() >= 2);
 
                     //init trotter_spins
-                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType>(init_trotter_spins);
+                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
 
                     //init interactions
-                    interaction = utility::gen_matrix_from_graph(init_interaction);
+                    interaction = utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction);
                 }
 
                 /**
@@ -211,10 +215,10 @@ namespace openjij {
                     }
 
                     //init trotter_spins
-                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType>(init_trotter_spins);
+                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
 
                     //init interactions
-                    interaction = utility::gen_matrix_from_graph(init_interaction);
+                    interaction = utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction);
                 }
 
                 /**
