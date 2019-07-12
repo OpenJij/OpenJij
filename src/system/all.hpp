@@ -16,6 +16,6 @@
 #define OPENJIJ_SYSTEM_ALL_HPP__
 
 #include <system/classical_ising.hpp>
-#include <system/quantum_ising.hpp>
+#include <system/transverse_ising.hpp>
 
 #endif

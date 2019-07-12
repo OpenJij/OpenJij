@@ -48,7 +48,7 @@ namespace openjij {
             inline static void update(ClIsing& system,
                                  RandomNumberEngine& random_numder_engine,
                                  const utility::ClassicalUpdaterParameter& parameter) {
-                static auto urd = std::uniform_real_distribution<>(0, 1.0);
+                auto urd = std::uniform_real_distribution<>(0, 1.0);
 
                 const auto num_spin = system.spin.size();
                 auto candidate_spin = graph::Spins(num_spin);
