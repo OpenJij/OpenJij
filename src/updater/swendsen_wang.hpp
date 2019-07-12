@@ -15,8 +15,10 @@
 #ifndef OPENJIJ_UPDATER_SWENDSEN_WANG_HPP__
 #define OPENJIJ_UPDATER_SWENDSEN_WANG_HPP__
 
+#include <algorithm>
 #include <cmath>
 #include <random>
+#include <unordered_map>
 
 #include <graph/graph.hpp>
 #include <system/classical_ising.hpp>
@@ -46,35 +48,52 @@ namespace openjij {
 
             template<typename RandomNumberEngine>
             inline static void update(ClIsing& system,
-                                 RandomNumberEngine& random_numder_engine,
+                                 RandomNumberEngine& random_number_engine,
                                  const utility::ClassicalUpdaterParameter& parameter) {
                 auto urd = std::uniform_real_distribution<>(0, 1.0);
-
                 const auto num_spin = system.spin.size();
-                auto candidate_spin = graph::Spins(num_spin);
 
-                for (auto& s : candidate_spin) {
-                    s = urd(random_numder_engine) < 0.5 ? -1 : 1;
-                }
+                // 1. update bonds
+                auto union_find_tree = utility::UnionFind(num_spin);
+                for (std::size_t node = 0; node < num_spin; ++node) {
+                    for (auto&& adj_node : system.interaction.adj_nodes(node)) {
+                        if (node >= adj_node) continue;
+                        if (system.spin[node] != system.spin[adj_node]) continue;
 
-                // make clusters
-                const auto unite_rate = 1.0 - std::exp(-2.0 * parameter.beta);
-                auto clusters = utility::UnionFind(num_spin);
-                for (std::size_t i = 0; i < num_spin; ++i) {
-                    // find adjacent spins
-                    for (auto&& adj_index : system.interaction.adj_nodes(i)) {
-                        // are signs of both spins the same?
-                        // or
-                        // is probability equal to or larger than p if the sign of each spin is different?
-                        if (system.spin[i] * system.spin[adj_index] > 0 || urd(random_numder_engine) >= unite_rate) continue;
-                        // unite two clusters corresponding to each spin
-                        clusters.unite_sets(i, adj_index);
+                        const auto unite_rate = std::max(0.0, 1.0 - std::exp(-2.0 * parameter.beta * system.interaction.J(node, adj_node)));
+                        if (urd(random_number_engine) >= unite_rate) continue;
+                        union_find_tree.unite_sets(node, adj_node);
                     }
                 }
 
-                // update states in each cluster
-                for (std::size_t i = 0; i < num_spin; ++i) {
-                    system.spin[i] = candidate_spin[clusters.find_set(i)];
+                // 2. make clusters
+                const auto cluster_map = [num_spin, &union_find_tree](){
+                    auto cluster_map = std::unordered_multimap<utility::UnionFind::Node, utility::UnionFind::Node>();
+                    for (std::size_t node = 0; node < num_spin; ++node) {
+                        cluster_map.insert({union_find_tree.find_set(node), node});
+                    }
+                    return cluster_map;
+                }();
+
+                // 3. update spin states in each cluster
+                for (auto&& c : union_find_tree.get_roots()) {
+                    const auto range = cluster_map.equal_range(c);
+                    // 3.1. calculate energy \sum_{i \in C} h_i \sigma_i
+                    double energy_magnetic = 0;
+                    for (auto itr = range.first, last = range.second; itr != last; ++itr) {
+                        const auto idx = itr->second;
+                        energy_magnetic += system.interaction.h(idx) * system.spin[idx];
+                    }
+
+                    // 3.2. decide spin state
+                    const auto probability_down = 1.0 / ( 1.0 + std::exp(2.0 * parameter.beta * energy_magnetic) );
+                    const auto spin_state = urd(random_number_engine) < probability_down ? -1 : 1;
+
+                    // 3.3. update spin states
+                    for (auto itr = range.first, last = range.second; itr != last; ++itr) {
+                        const auto idx = itr->second;
+                        system.spin[idx] = spin_state;
+                    }
                 }
 
                 // TODO: implement calculation of total energy difference
