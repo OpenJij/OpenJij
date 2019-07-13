@@ -1,6 +1,7 @@
 // include Google Test
 #include <gtest/gtest.h>
-#include <gmock/gmock.h> // include STL
+#include <gmock/gmock.h>
+// include STL
 #include <iostream>
 #include <utility>
 #include <numeric>
