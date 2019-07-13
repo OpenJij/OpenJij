@@ -78,14 +78,10 @@ namespace openjij {
                  * @param interaction
                  */
                 ClassicalIsing(const graph::Spins& init_spin, const graph::Dense<FloatType>& init_interaction)
-                    : num_spins(init_interaction.get_num_spins()){
+                    : num_spins(init_interaction.get_num_spins()),
+                    spin(utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(init_spin)),
+                    interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)){
                         assert(init_spin.size() == init_interaction.get_num_spins());
-
-                        //initialize spin
-                        spin = utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(init_spin);
-
-                        //initialize interaction
-                        interaction = utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction);
                     }
 
                 VectorXx spin;
@@ -118,14 +114,10 @@ namespace openjij {
                  * @param interaction
                  */
                 ClassicalIsing(const graph::Spins& init_spin, const graph::Sparse<FloatType>& init_interaction)
-                    : num_spins(init_interaction.get_num_spins()){
+                    : num_spins(init_interaction.get_num_spins()),
+                    spin(utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(init_spin)),
+                    interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)){
                         assert(init_spin.size() == init_interaction.get_num_spins());
-
-                        //initialize spin
-                        spin = utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(init_spin);
-
-                        //initialize interaction
-                        interaction = utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction);
                     }
 
                 VectorXx spin;
