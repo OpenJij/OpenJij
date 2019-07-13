@@ -145,7 +145,7 @@ namespace openjij {
                 /**
                  * @brief interaction 
                  */
-                MatrixXx interaction;
+                const MatrixXx interaction;
 
                 /**
                  * @brief number of real classical spins (dummy spin excluded)
@@ -217,7 +217,7 @@ namespace openjij {
                 /**
                  * @brief interaction 
                  */
-                SparseMatrixXx interaction;
+                const SparseMatrixXx interaction;
 
                 /**
                  * @brief number of real classical spins (dummy spin excluded)

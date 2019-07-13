@@ -85,7 +85,7 @@ namespace openjij {
                     }
 
                 VectorXx spin;
-                MatrixXx interaction;
+                const MatrixXx interaction;
 
                 /**
                  * @brief number of real spins (dummy spin excluded)
@@ -121,7 +121,7 @@ namespace openjij {
                     }
 
                 VectorXx spin;
-                SparseMatrixXx interaction;
+                const SparseMatrixXx interaction;
 
                 /**
                  * @brief number of real spins (dummy spin excluded)
