@@ -60,7 +60,7 @@ namespace openjij {
                         if (node >= adj_node) continue;
                         if (system.spin[node] != system.spin[adj_node]) continue;
 
-                        const auto unite_rate = std::max(0.0, 1.0 - std::exp(-2.0 * parameter.beta * system.interaction.J(node, adj_node)));
+                        const auto unite_rate = std::max(0.0, 1.0 - std::exp(2.0 * parameter.beta * system.interaction.J(node, adj_node)));
                         if (urd(random_number_engine) >= unite_rate) continue;
                         union_find_tree.unite_sets(node, adj_node);
                     }
@@ -78,15 +78,16 @@ namespace openjij {
                 // 3. update spin states in each cluster
                 for (auto&& c : union_find_tree.get_roots()) {
                     const auto range = cluster_map.equal_range(c);
+
                     // 3.1. calculate energy \sum_{i \in C} h_i \sigma_i
-                    double energy_magnetic = 0;
+                    double energy_magnetic = 0.0;
                     for (auto itr = range.first, last = range.second; itr != last; ++itr) {
                         const auto idx = itr->second;
-                        energy_magnetic += system.interaction.h(idx) * system.spin[idx];
+                        energy_magnetic += system.interaction.h(idx) * static_cast<double>(system.spin[idx]);
                     }
 
                     // 3.2. decide spin state
-                    const auto probability_down = 1.0 / ( 1.0 + std::exp(2.0 * parameter.beta * energy_magnetic) );
+                    const auto probability_down = 1.0 / ( 1.0 + std::exp(-2.0 * parameter.beta * energy_magnetic) );
                     const auto spin_state = urd(random_number_engine) < probability_down ? -1 : 1;
 
                     // 3.3. update spin states
