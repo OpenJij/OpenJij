@@ -631,7 +631,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse_WithEigenImpl) {
 
 //swendsen-wang test
 
-TEST(SwendsenWang, FindTrueGroundState_CLassicalIsing_Dense_AllStatesAreDown) {
+TEST(SwendsenWang, FindTrueGroundState_CLassicalIsing_Dense_AllStatesAreUp) {
     using namespace openjij;
 
     //generate classical dense system
@@ -639,7 +639,7 @@ TEST(SwendsenWang, FindTrueGroundState_CLassicalIsing_Dense_AllStatesAreDown) {
         auto interaction = graph::Dense<double>(num_system_size);
         for (std::size_t i = 0; i < num_system_size; i++) {
             for (std::size_t j = 0; j < num_system_size; j++) {
-                interaction.J(i,j) = -1.0;
+                interaction.J(i,j) = (i != j)  ? -1.0/static_cast<double>(num_system_size) : -1.0;
             }
         }
         return interaction;
@@ -653,8 +653,7 @@ TEST(SwendsenWang, FindTrueGroundState_CLassicalIsing_Dense_AllStatesAreDown) {
 
     algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
 
-    ;
-    EXPECT_EQ(openjij::graph::Spins({-1, -1, -1, -1, -1, -1, -1, -1}), result::get_solution(classical_ising));
+    EXPECT_EQ(openjij::graph::Spins({1, 1, 1, 1, 1, 1, 1, 1}), result::get_solution(classical_ising));
 }
 
 TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {

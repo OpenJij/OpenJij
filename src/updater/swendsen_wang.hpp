@@ -83,7 +83,7 @@ namespace openjij {
                     double energy_magnetic = 0.0;
                     for (auto itr = range.first, last = range.second; itr != last; ++itr) {
                         const auto idx = itr->second;
-                        energy_magnetic += system.interaction.h(idx) * static_cast<double>(system.spin[idx]);
+                        energy_magnetic += system.interaction.h(idx);
                     }
 
                     // 3.2. decide spin state
