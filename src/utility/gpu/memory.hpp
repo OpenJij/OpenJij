@@ -73,7 +73,7 @@ namespace openjij {
                     static_assert(std::is_array<T>::value, "T must be an array.");
                     using U = typename std::remove_extent<T>::type;
                     U* ptr;
-                    HANDLE_ERROR(cudaMalloc(reinterpret_cast<void**>(&ptr), sizeof(U) * n));
+                    HANDLE_ERROR_CUDA(cudaMalloc(reinterpret_cast<void**>(&ptr), sizeof(U) * n));
                     return cuda::unique_dev_ptr<T>{ptr};
                 }
 
@@ -90,7 +90,7 @@ namespace openjij {
                     static_assert(std::is_array<T>::value, "T must be an array.");
                     using U = typename std::remove_extent<T>::type;
                     U* ptr;
-                    HANDLE_ERROR(cudaMallocHost(reinterpret_cast<void**>(&ptr), sizeof(U) * n));
+                    HANDLE_ERROR_CUDA(cudaMallocHost(reinterpret_cast<void**>(&ptr), sizeof(U) * n));
                     return cuda::unique_host_ptr<T>{ptr};
                 }
 

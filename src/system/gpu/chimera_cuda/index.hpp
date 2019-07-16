@@ -12,14 +12,21 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_ALL_HPP__
-#define OPENJIJ_SYSTEM_ALL_HPP__
-
-#include <system/classical_ising.hpp>
-#include <system/transverse_ising.hpp>
+#ifndef OPENJIJ_SYSTEM_GPU_CHIMERA_CUDA_INDEX_HPP__
+#define OPENJIJ_SYSTEM_GPU_CHIMERA_CUDA_INDEX_HPP__
 
 #ifdef USE_CUDA
-#include <system/gpu/chimera_gpu_transverse.hpp>
-#endif
 
+#include <cuda_runtime.h>
+#include <cstdlib>
+#include <cassert>
+
+namespace openjij {
+    namespace system {
+        namespace chimera_gpu {
+        } // namespace chimera_gpu
+    } // namespace system
+} // namespace openjij
+
+#endif
 #endif
