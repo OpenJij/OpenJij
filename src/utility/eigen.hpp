@@ -26,42 +26,46 @@ namespace openjij {
          * @brief get Eigen Matrix type from Graph Type
          *
          * @tparam GraphType
+         * @tparam Options Eigen Options (RowMajor or ColMajor)
          */
-        template<typename GraphType>
+        template<typename GraphType, int Options=Eigen::ColMajor>
             struct get_eigen_matrix_type{};
 
         /**
          * @brief get Eigen Matrix type from Graph Type
          *
          * @tparam GraphType
+         * @tparam Options Eigen Options (RowMajor or ColMajor)
          */
-        template<typename FloatType>
-            struct get_eigen_matrix_type<graph::Dense<FloatType>>{
-                using type = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>;
+        template<typename FloatType, int Options>
+            struct get_eigen_matrix_type<graph::Dense<FloatType>, Options>{
+                using type = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Options>;
             };
 
         /**
          * @brief get Eigen Matrix type from Graph Type
          *
          * @tparam GraphType
+         * @tparam Options Eigen Options (RowMajor or ColMajor)
          */
-        template<typename FloatType>
-            struct get_eigen_matrix_type<graph::Sparse<FloatType>>{
-                using type = Eigen::SparseMatrix<FloatType>;
+        template<typename FloatType, int Options>
+            struct get_eigen_matrix_type<graph::Sparse<FloatType>, Options>{
+                using type = Eigen::SparseMatrix<FloatType, Options>;
             };
 
         /**
          * @brief generate Eigen Vector from std::vector
          *
          * @tparam FloatType
+         * @tparam Options Eigen Options (RowMajor or ColMajor)
          * @param init_spin
          *
          * @return generated Eigen Vector (init_spin.size()+1 x 1)
          */
-        template<typename FloatType>
-            inline static Eigen::Matrix<FloatType, Eigen::Dynamic, 1>
+        template<typename FloatType, int Options=Eigen::ColMajor>
+            inline static Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Options>
             gen_vector_from_std_vector(const graph::Spins& init_spin){
-                Eigen::Matrix<FloatType, Eigen::Dynamic, 1> ret_vec(init_spin.size()+1);
+                Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Options> ret_vec(init_spin.size()+1);
 
                 //initialize spin
                 for(size_t i=0; i<init_spin.size(); i++){
@@ -78,14 +82,15 @@ namespace openjij {
          * @brief generate Eigen Matrix from TrotterSpins
          *
          * @tparam FloatType
+         * @tparam Options Eigen Options (RowMajor or ColMajor)
          * @param trotter_spins
          *
          * @return generated Eigen Matrix (trotter_spins[0].size()+1 x trotter_spins.size())
          */
-        template<typename FloatType>
-            inline static Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>
+        template<typename FloatType, int Options=Eigen::ColMajor>
+            inline static Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Options>
             gen_matrix_from_trotter_spins(const std::vector<graph::Spins>& trotter_spins){
-                Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic> ret_mat(trotter_spins[0].size()+1, trotter_spins.size());
+                Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Options> ret_mat(trotter_spins[0].size()+1, trotter_spins.size());
 
                 //initialize spin
                 for(size_t j=0; j<trotter_spins.size(); j++){
@@ -105,16 +110,17 @@ namespace openjij {
         /**
          * @brief generate Eigen Dense Matrix from Dense graph
          *
+         * @tparam Options Eigen Options (RowMajor or ColMajor)
          * @tparam FloatType
          * @param graph
          *
          * @return generated Eigen Dense Matrix (graph.get_num_spins()+1 x graph.get_num_spins()+1)
          */
-        template<typename FloatType>
-            inline static Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>
+        template<int Options=Eigen::ColMajor, typename FloatType>
+            inline static Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Options>
             gen_matrix_from_graph(const graph::Dense<FloatType>& graph){
                 //initialize interaction
-                Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic> ret_mat(graph.get_num_spins()+1, graph.get_num_spins()+1);
+                Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Options> ret_mat(graph.get_num_spins()+1, graph.get_num_spins()+1);
 
                 ret_mat.setZero();
 
@@ -140,16 +146,17 @@ namespace openjij {
         /**
          * @brief generate Eigen Sparse Matrix from Sparse graph
          *
+         * @tparam Options Eigen Options (RowMajor or ColMajor)
          * @tparam FloatType
          * @param graph
          *
          * @return generated Eigen Sparse Matrix (graph.get_num_spins()+1 x graph.get_num_spins()+1)
          */
-        template<typename FloatType>
-            inline static Eigen::SparseMatrix<FloatType>
+        template<int Options=Eigen::ColMajor, typename FloatType>
+            inline static Eigen::SparseMatrix<FloatType, Options>
             gen_matrix_from_graph(const graph::Sparse<FloatType>& graph){
                 //initialize interaction
-                Eigen::SparseMatrix<FloatType> ret_mat(graph.get_num_spins()+1, graph.get_num_spins()+1);
+                Eigen::SparseMatrix<FloatType, Options> ret_mat(graph.get_num_spins()+1, graph.get_num_spins()+1);
 
                 ret_mat.setZero();
 

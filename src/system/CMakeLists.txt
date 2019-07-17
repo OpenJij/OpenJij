@@ -35,3 +35,19 @@
 # 	target_link_libraries(system PRIVATE ${CUDA_curand_LIBRARY})
 # 	target_link_libraries(system_static PRIVATE ${CUDA_curand_LIBRARY})
 # endif()
+
+if(USE_CUDA)
+    # include cuda toolkit directory and link with cuda library.
+    target_include_directories(cxxjij_header_only INTERFACE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+    add_library(cxxjij_gpu_kernel SHARED gpu/chimera_cuda/kernel.cu)
+
+ 	set_target_properties(cxxjij_gpu_kernel PROPERTIES
+        #POSITION_INDEPENDENT_CODE ON
+ 		CUDA_VISIBILITY_PRESET "hidden"
+ 		# CUDA_SEPARABLE_COMPILATION ON
+ 		)
+
+ 	target_link_libraries(cxxjij_gpu_kernel PRIVATE ${CUDA_curand_LIBRARY})
+ 	target_link_libraries(cxxjij_gpu_kernel PRIVATE ${CUDA_CUBLAS_LIBRARIES})
+
+endif()
