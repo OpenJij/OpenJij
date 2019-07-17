@@ -15,8 +15,9 @@
 #ifndef OPENJIJ_UTILITY_UNION_FIND_HPP__
 #define OPENJIJ_UTILITY_UNION_FIND_HPP__
 
-#include <numeric>
+#include <algorithm>
 #include <cstddef>
+#include <numeric>
 #include <vector>
 
 namespace openjij {
@@ -65,6 +66,13 @@ namespace openjij {
                     node = _parent[base_node];
                 }
                 return root_node;
+            }
+
+            Parent get_roots() const {
+                auto roots_list = _parent;
+                std::sort(roots_list.begin(), roots_list.end());
+                roots_list.erase(std::unique(roots_list.begin(), roots_list.end()), roots_list.end());
+                return roots_list;
             }
 
         private:
