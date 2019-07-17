@@ -12,14 +12,30 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_ALL_HPP__
-#define OPENJIJ_SYSTEM_ALL_HPP__
+#ifndef OPENJIJ_UTILITY_MEMORY_HPP__
+#define OPENJIJ_UTILITY_MEMORY_HPP__
 
-#include <system/classical_ising.hpp>
-#include <system/transverse_ising.hpp>
+#include <memory>
+#include <utility>
 
-#ifdef USE_CUDA
-#include <system/gpu/chimera_gpu_transverse.hpp>
-#endif
+namespace openjij {
+    namespace utility {
+
+        /**
+         * @brief make_unique function
+         *
+         * @tparam T
+         * @tparam ...Args
+         * @param ...args
+         *
+         * @return unique_ptr
+         */
+        template<typename T, typename ...Args>
+            std::unique_ptr<T> make_unique( Args&& ...args )
+            {
+                return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
+            }
+    } // namespace utility
+} // namespace openjij
 
 #endif
