@@ -79,7 +79,7 @@ namespace openjij {
                 for (auto&& c : union_find_tree.get_roots()) {
                     const auto range = cluster_map.equal_range(c);
 
-                    // 3.1. calculate energy \sum_{i \in C} h_i \sigma_i
+                    // 3.1. calculate energy \sum_{i \in C} h_i
                     double energy_magnetic = 0.0;
                     for (auto itr = range.first, last = range.second; itr != last; ++itr) {
                         const auto idx = itr->second;
