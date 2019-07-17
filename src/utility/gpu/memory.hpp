@@ -31,7 +31,7 @@ namespace openjij {
              */
             struct deleter_dev{
                 void operator()(void* ptr) const{
-                    HANDLE_ERROR(cudaFree(ptr));
+                    HANDLE_ERROR_CUDA(cudaFree(ptr));
                 }
             };
 
@@ -40,7 +40,7 @@ namespace openjij {
              */
             struct deleter_host{
                 void operator()(void* ptr) const{
-                    HANDLE_ERROR(cudaFreeHost(ptr));
+                    HANDLE_ERROR_CUDA(cudaFreeHost(ptr));
                 }
             };
 
