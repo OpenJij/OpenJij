@@ -631,48 +631,48 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse_WithEigenImpl) {
 }
 
 //swendsen-wang test
-
-TEST(SwendsenWang, FindTrueGroundState_CLassicalIsing_Dense_AllStatesAreUp) {
-    using namespace openjij;
-
-    //generate classical dense system
-    const auto interaction = [](){
-        auto interaction = graph::Dense<double>(num_system_size);
-        for (std::size_t i = 0; i < num_system_size; i++) {
-            for (std::size_t j = 0; j < num_system_size; j++) {
-                interaction.J(i,j) = (i != j)  ? -1.0/static_cast<double>(num_system_size) : -1.0;
-            }
-        }
-        return interaction;
-    }();
-    auto engine_for_spin = std::mt19937(1);
-    const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
-
-    auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list = generate_schedule_list();
-
-    algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
-
-    EXPECT_EQ(openjij::graph::Spins({1, 1, 1, 1, 1, 1, 1, 1}), result::get_solution(classical_ising));
-}
-
-TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
-    using namespace openjij;
-
-    //generate classical dense system
-    const auto interaction = generate_interaction<graph::Dense>();
-    auto engine_for_spin = std::mt19937(1);
-    const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
-
-    auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list = generate_schedule_list();
-
-    algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
-
-    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
-}
+//
+// TEST(SwendsenWang, FindTrueGroundState_CLassicalIsing_Dense_AllStatesAreUp) {
+//     using namespace openjij;
+//
+//     //generate classical dense system
+//     const auto interaction = [](){
+//         auto interaction = graph::Dense<double>(num_system_size);
+//         for (std::size_t i = 0; i < num_system_size; i++) {
+//             for (std::size_t j = 0; j < num_system_size; j++) {
+//                 interaction.J(i,j) = (i != j)  ? -1.0/static_cast<double>(num_system_size) : -1.0;
+//             }
+//         }
+//         return interaction;
+//     }();
+//     auto engine_for_spin = std::mt19937(1);
+//     const auto spin = interaction.gen_spin(engine_for_spin);
+//     auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
+//
+//     auto random_numder_engine = std::mt19937(1);
+//     const auto schedule_list = generate_schedule_list();
+//
+//     algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
+//
+//     EXPECT_EQ(openjij::graph::Spins({1, 1, 1, 1, 1, 1, 1, 1}), result::get_solution(classical_ising));
+// }
+//
+// TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
+//     using namespace openjij;
+//
+//     //generate classical dense system
+//     const auto interaction = generate_interaction<graph::Dense>();
+//     auto engine_for_spin = std::mt19937(1);
+//     const auto spin = interaction.gen_spin(engine_for_spin);
+//     auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
+//
+//     auto random_numder_engine = std::mt19937(1);
+//     const auto schedule_list = generate_schedule_list();
+//
+//     algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
+//
+//     EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
+// }
 
 //utility test
 
