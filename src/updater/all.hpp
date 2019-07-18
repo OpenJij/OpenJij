@@ -18,4 +18,8 @@
 #include <updater/single_spin_flip.hpp>
 #include <updater/swendsen_wang.hpp>
 
+#ifdef USE_CUDA
+#include <updater/gpu.hpp>
+#endif
+
 #endif

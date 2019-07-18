@@ -61,7 +61,10 @@ namespace openjij {
          *
          * @tparam FloatType
          */
-        template<typename FloatType>
+        template<typename FloatType,
+            std::size_t rows_per_block=2,
+            std::size_t cols_per_block=2,
+            std::size_t trotters_per_block=2>
             struct ChimeraTransverseGPU {
                 using system_type = transverse_field_system;
 
@@ -77,7 +80,14 @@ namespace openjij {
                     :gamma(gamma), 
                     info({init_interaction.get_num_row(), init_interaction.get_num_column(), init_trotter_spins.size()}),
                     interaction(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize),
-                    spin(utility::cuda::make_dev_unique<std::int32_t[]>(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize*init_trotter_spins.size())){
+                    spin(utility::cuda::make_dev_unique<std::int32_t[]>(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize*init_trotter_spins.size())),
+                    grid(dim3(init_interaction.get_num_column()/cols_per_block, init_interaction.get_num_row()/rows_per_block, init_trotter_spins.size()/trotters_per_block)),
+                    block(dim3(info.chimera_unitsize*cols_per_block, rows_per_block, trotters_per_block)){
+
+                        if(!(info.rows%rows_per_block == 0 && info.cols%cols_per_block == 0 && info.trotters%trotters_per_block)){
+                            throw std::invalid_argument("invalid number of rows, cols, or trotters");
+                        }
+
                         //initialize
                         initialize_gpu(init_interaction, init_trotter_spins, device_num);
                     }
@@ -95,8 +105,14 @@ namespace openjij {
                     :gamma(gamma), 
                     info({init_interaction.get_num_row(), init_interaction.get_num_column(), num_trotter_slices}),
                     interaction(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize),
-                    spin(utility::cuda::make_dev_unique<std::int32_t[]>(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize*num_trotter_slices)){
+                    spin(utility::cuda::make_dev_unique<std::int32_t[]>(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize*num_trotter_slices)),
+                    grid(dim3(init_interaction.get_num_column()/cols_per_block, init_interaction.get_num_row()/rows_per_block, num_trotter_slices/trotters_per_block)),
+                    block(dim3(info.chimera_unitsize*cols_per_block, rows_per_block, trotters_per_block)){
                         //initialize trotter_spins with classical_spins
+                        if(!(info.rows%rows_per_block == 0 && info.cols%cols_per_block == 0 && info.trotters%trotters_per_block)){
+                            throw std::invalid_argument("invalid number of rows, cols, or trotters");
+                        }
+
                         TrotterSpins trotter_spins;
                         for(auto& spins : trotter_spins){
                             spins = classical_spins;
@@ -126,6 +142,16 @@ namespace openjij {
                  */
                 utility::cuda::unique_dev_ptr<std::int32_t[]> spin;
 
+                /**
+                 * @brief grid structure
+                 */
+                const dim3 grid;
+
+                /**
+                 * @brief block structure
+                 */
+                const dim3 block;
+
                 private:
 
                     /**
@@ -150,7 +176,7 @@ namespace openjij {
                         auto       h = utility::cuda::make_host_unique<FloatType[]>(localsize);
                         auto temp_spin = utility::cuda::make_host_unique<int32_t[]>(localsize*info.trotters);
 
-                        using namespace chimera_gpu;
+                        using namespace chimera_cuda;
 
                         //copy interaction info to std::vector variables
                         for(size_t r=0; r<info.rows; r++){
