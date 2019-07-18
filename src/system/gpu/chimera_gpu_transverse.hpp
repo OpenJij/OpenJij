@@ -206,8 +206,6 @@ namespace openjij {
                         HANDLE_ERROR_CUDA(cudaMemcpy(interaction.h.get(),             h.get(), localsize*sizeof(FloatType), cudaMemcpyHostToDevice));
 
                         HANDLE_ERROR_CUDA(cudaMemcpy(spin.get(), temp_spin.get(), localsize*info.trotters*sizeof(int32_t), cudaMemcpyHostToDevice));
-
-                        //TODO: add random generator
                     }
 
             };
