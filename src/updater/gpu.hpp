@@ -60,7 +60,9 @@ namespace openjij {
             inline static FloatType update(QIsing& system,
                                  utility::cuda::CurandWrapper<FloatType, rng_type>& random_number_engine,
                                  const utility::TransverseFieldUpdaterParameter& parameter) {
-                return system::chimera_cuda::update(system, random_number_engine, parameter.beta, system.gamma, parameter.s);
+                //return system::chimera_cuda::update(system, random_number_engine, parameter.beta, system.gamma, parameter.s);
+                system::chimera_cuda::test();
+                return 0;
             }
         };
 

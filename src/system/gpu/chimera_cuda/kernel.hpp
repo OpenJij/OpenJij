@@ -40,6 +40,8 @@ namespace openjij {
                     ChimeraTransverseGPU<FloatType, block_row, block_col, block_trot>& system,
                     utility::cuda::CurandWrapper<FloatType, rng_type>& random_engine,
                     double beta, FloatType gamma, double s);
+
+            void test();
         } // namespace chimera_cuda
     } // namespace system
 } // namespace openjij

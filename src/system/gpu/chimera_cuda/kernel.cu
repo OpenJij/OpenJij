@@ -286,6 +286,10 @@ namespace openjij {
 
             }
 
+            void test(){
+                std::cout << "hello cuda link" << std::endl;
+            }
+
             //make instance (TODO: how to remove this?)
             template float update<float, 1, 1, 1, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<float, 1, 1, 1>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
             template float update<float, 2, 2, 2, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<float, 2, 2, 2>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);

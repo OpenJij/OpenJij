@@ -44,7 +44,7 @@ if(USE_CUDA)
  	set_target_properties(cxxjij_chimera_gpu_kernel PROPERTIES
         POSITION_INDEPENDENT_CODE ON
  		CUDA_VISIBILITY_PRESET "hidden"
- 		# CUDA_SEPARABLE_COMPILATION ON
+ 		CUDA_SEPARABLE_COMPILATION ON
  		)
 
  	target_link_libraries(cxxjij_chimera_gpu_kernel PRIVATE ${CUDA_curand_LIBRARY})
