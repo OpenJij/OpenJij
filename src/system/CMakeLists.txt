@@ -42,7 +42,7 @@ if(USE_CUDA)
     add_library(cxxjij_chimera_gpu_kernel SHARED gpu/chimera_cuda/kernel.cu)
 
  	set_target_properties(cxxjij_chimera_gpu_kernel PROPERTIES
-        #POSITION_INDEPENDENT_CODE ON
+        POSITION_INDEPENDENT_CODE ON
  		CUDA_VISIBILITY_PRESET "hidden"
  		# CUDA_SEPARABLE_COMPILATION ON
  		)

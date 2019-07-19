@@ -287,32 +287,32 @@ namespace openjij {
             }
 
             //make instance (TODO: how to remove this?)
-            template float update(ChimeraTransverseGPU<float, 1, 1, 1>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
-            template float update(ChimeraTransverseGPU<float, 2, 2, 2>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
-            template float update(ChimeraTransverseGPU<float, 3, 3, 3>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
-            template float update(ChimeraTransverseGPU<float, 4, 4, 4>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
-            template float update(ChimeraTransverseGPU<float, 1, 1, 1>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
-            template float update(ChimeraTransverseGPU<float, 2, 2, 2>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
-            template float update(ChimeraTransverseGPU<float, 3, 3, 3>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
-            template float update(ChimeraTransverseGPU<float, 4, 4, 4>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
-            template float update(ChimeraTransverseGPU<float, 1, 1, 1>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
-            template float update(ChimeraTransverseGPU<float, 2, 2, 2>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
-            template float update(ChimeraTransverseGPU<float, 3, 3, 3>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
-            template float update(ChimeraTransverseGPU<float, 4, 4, 4>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
+            template float update<float, 1, 1, 1, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<float, 1, 1, 1>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
+            template float update<float, 2, 2, 2, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<float, 2, 2, 2>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
+            template float update<float, 3, 3, 3, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<float, 3, 3, 3>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
+            template float update<float, 4, 4, 4, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<float, 4, 4, 4>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
+            template float update<float, 1, 1, 1, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<float, 1, 1, 1>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
+            template float update<float, 2, 2, 2, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<float, 2, 2, 2>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
+            template float update<float, 3, 3, 3, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<float, 3, 3, 3>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
+            template float update<float, 4, 4, 4, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<float, 4, 4, 4>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
+            template float update<float, 1, 1, 1, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<float, 1, 1, 1>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
+            template float update<float, 2, 2, 2, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<float, 2, 2, 2>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
+            template float update<float, 3, 3, 3, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<float, 3, 3, 3>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
+            template float update<float, 4, 4, 4, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<float, 4, 4, 4>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
 
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 600
-            template double update(ChimeraTransverseGPU<double, 1, 1, 1>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
-            template double update(ChimeraTransverseGPU<double, 2, 2, 2>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
-            template double update(ChimeraTransverseGPU<double, 3, 3, 3>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
-            template double update(ChimeraTransverseGPU<double, 4, 4, 4>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
-            template double update(ChimeraTransverseGPU<double, 1, 1, 1>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
-            template double update(ChimeraTransverseGPU<double, 2, 2, 2>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
-            template double update(ChimeraTransverseGPU<double, 3, 3, 3>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
-            template double update(ChimeraTransverseGPU<double, 4, 4, 4>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
-            template double update(ChimeraTransverseGPU<double, 1, 1, 1>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
-            template double update(ChimeraTransverseGPU<double, 2, 2, 2>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
-            template double update(ChimeraTransverseGPU<double, 3, 3, 3>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
-            template double update(ChimeraTransverseGPU<double, 4, 4, 4>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
+            template double update<double, 1, 1, 1, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<double, 1, 1, 1>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
+            template double update<double, 2, 2, 2, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<double, 2, 2, 2>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
+            template double update<double, 3, 3, 3, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<double, 3, 3, 3>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
+            template double update<double, 4, 4, 4, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<double, 4, 4, 4>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
+            template double update<double, 1, 1, 1, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<double, 1, 1, 1>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
+            template double update<double, 2, 2, 2, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<double, 2, 2, 2>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
+            template double update<double, 3, 3, 3, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<double, 3, 3, 3>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
+            template double update<double, 4, 4, 4, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<double, 4, 4, 4>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
+            template double update<double, 1, 1, 1, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<double, 1, 1, 1>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
+            template double update<double, 2, 2, 2, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<double, 2, 2, 2>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
+            template double update<double, 3, 3, 3, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<double, 3, 3, 3>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
+            template double update<double, 4, 4, 4, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<double, 4, 4, 4>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
 #endif
         } // namespace chimera_cuda
     } // namespace system
