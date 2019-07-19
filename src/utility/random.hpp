@@ -21,6 +21,7 @@
 #ifdef USE_CUDA
 #include <cuda_runtime.h>
 #include <curand.h>
+#include <utility>
 #include <utility/gpu/handle_error.hpp>
 #include <utility/gpu/memory.hpp>
 #include <cassert>
@@ -119,9 +120,17 @@ namespace openjij {
 
                        CurandWrapper(std::size_t n) : CurandWrapper(n, std::random_device{}()){}
 
+                       CurandWrapper(CurandWrapper&& obj) noexcept
+                       : _dev_random(std::move(obj._dev_random)),_alloc_size(std::move(obj._alloc_size)){
+                           //move curand handler
+                           this->_rng = obj._rng;
+                           obj._rng = NULL;
+                       }
+
                        ~CurandWrapper(){
                            //destroy generator
-                           HANDLE_ERROR_CURAND(curandDestroyGenerator(_rng));
+                           if(_rng != NULL)
+                               HANDLE_ERROR_CURAND(curandDestroyGenerator(_rng));
                        }
 
                        inline const FloatType* get() const{

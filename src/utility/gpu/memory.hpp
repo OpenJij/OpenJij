@@ -78,7 +78,7 @@ namespace openjij {
                 }
 
             /**
-             * @brief make_unique for cuda pinned host memory
+             * @brief make_unique for cuda pinned host memory (page-locked memory)
              *
              * @tparam T
              * @param n

@@ -65,94 +65,94 @@ namespace openjij {
             std::size_t rows_per_block=2,
             std::size_t cols_per_block=2,
             std::size_t trotters_per_block=2>
-            struct ChimeraTransverseGPU {
-                using system_type = transverse_field_system;
+                struct ChimeraTransverseGPU {
+                    using system_type = transverse_field_system;
 
-                /**
-                 * @brief Chimera transverse ising constructor
-                 *
-                 * @param init_trotter_spins
-                 * @param init_interaction
-                 * @param gamma
-                 * @param device_num
-                 */
-                ChimeraTransverseGPU(const TrotterSpins& init_trotter_spins, const graph::Chimera<FloatType>& init_interaction, FloatType gamma, int device_num=0)
-                    :gamma(gamma), 
-                    info({init_interaction.get_num_row(), init_interaction.get_num_column(), init_trotter_spins.size()}),
-                    interaction(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize),
-                    spin(utility::cuda::make_dev_unique<std::int32_t[]>(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize*init_trotter_spins.size())),
-                    grid(dim3(init_interaction.get_num_column()/cols_per_block, init_interaction.get_num_row()/rows_per_block, init_trotter_spins.size()/trotters_per_block)),
-                    block(dim3(info.chimera_unitsize*cols_per_block, rows_per_block, trotters_per_block)){
+                    /**
+                     * @brief Chimera transverse ising constructor
+                     *
+                     * @param init_trotter_spins
+                     * @param init_interaction
+                     * @param gamma
+                     * @param device_num
+                     */
+                    ChimeraTransverseGPU(const TrotterSpins& init_trotter_spins, const graph::Chimera<FloatType>& init_interaction, FloatType gamma, int device_num=0)
+                        :gamma(gamma), 
+                        info({init_interaction.get_num_row(), init_interaction.get_num_column(), init_trotter_spins.size()}),
+                        interaction(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize),
+                        spin(utility::cuda::make_dev_unique<std::int32_t[]>(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize*init_trotter_spins.size())),
+                        grid(dim3(init_interaction.get_num_column()/cols_per_block, init_interaction.get_num_row()/rows_per_block, init_trotter_spins.size()/trotters_per_block)),
+                        block(dim3(info.chimera_unitsize*cols_per_block, rows_per_block, trotters_per_block)){
 
-                        if(!(info.rows%rows_per_block == 0 && info.cols%cols_per_block == 0 && info.trotters%trotters_per_block)){
-                            throw std::invalid_argument("invalid number of rows, cols, or trotters");
+                            if(!(info.rows%rows_per_block == 0 && info.cols%cols_per_block == 0 && info.trotters%trotters_per_block)){
+                                throw std::invalid_argument("invalid number of rows, cols, or trotters");
+                            }
+
+                            //initialize
+                            initialize_gpu(init_interaction, init_trotter_spins, device_num);
                         }
 
-                        //initialize
-                        initialize_gpu(init_interaction, init_trotter_spins, device_num);
-                    }
+                    /**
+                     * @brief Chimera transverse ising constructor
+                     *
+                     * @param classical_spins
+                     * @param init_interaction
+                     * @param gamma
+                     * @param num_trotter_slices
+                     * @param device_num
+                     */
+                    ChimeraTransverseGPU(const graph::Spins& classical_spins, const graph::Chimera<FloatType>& init_interaction, FloatType gamma, size_t num_trotter_slices, int device_num=0)
+                        :gamma(gamma), 
+                        info({init_interaction.get_num_row(), init_interaction.get_num_column(), num_trotter_slices}),
+                        interaction(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize),
+                        spin(utility::cuda::make_dev_unique<std::int32_t[]>(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize*num_trotter_slices)),
+                        grid(dim3(init_interaction.get_num_column()/cols_per_block, init_interaction.get_num_row()/rows_per_block, num_trotter_slices/trotters_per_block)),
+                        block(dim3(info.chimera_unitsize*cols_per_block, rows_per_block, trotters_per_block)){
+                            //initialize trotter_spins with classical_spins
+                            if(!(info.rows%rows_per_block == 0 && info.cols%cols_per_block == 0 && info.trotters%trotters_per_block)){
+                                throw std::invalid_argument("invalid number of rows, cols, or trotters");
+                            }
 
-                /**
-                 * @brief Chimera transverse ising constructor
-                 *
-                 * @param classical_spins
-                 * @param init_interaction
-                 * @param gamma
-                 * @param num_trotter_slices
-                 * @param device_num
-                 */
-                ChimeraTransverseGPU(const graph::Spins& classical_spins, const graph::Chimera<FloatType>& init_interaction, FloatType gamma, size_t num_trotter_slices, int device_num=0)
-                    :gamma(gamma), 
-                    info({init_interaction.get_num_row(), init_interaction.get_num_column(), num_trotter_slices}),
-                    interaction(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize),
-                    spin(utility::cuda::make_dev_unique<std::int32_t[]>(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize*num_trotter_slices)),
-                    grid(dim3(init_interaction.get_num_column()/cols_per_block, init_interaction.get_num_row()/rows_per_block, num_trotter_slices/trotters_per_block)),
-                    block(dim3(info.chimera_unitsize*cols_per_block, rows_per_block, trotters_per_block)){
-                        //initialize trotter_spins with classical_spins
-                        if(!(info.rows%rows_per_block == 0 && info.cols%cols_per_block == 0 && info.trotters%trotters_per_block)){
-                            throw std::invalid_argument("invalid number of rows, cols, or trotters");
+                            TrotterSpins trotter_spins;
+                            for(auto& spins : trotter_spins){
+                                spins = classical_spins;
+                            }
+
+                            //initialize
+                            initialize_gpu(init_interaction, trotter_spins, device_num);
                         }
 
-                        TrotterSpins trotter_spins;
-                        for(auto& spins : trotter_spins){
-                            spins = classical_spins;
-                        }
+                    /**
+                     * @brief coefficient of transverse field term
+                     */
+                    FloatType gamma;
 
-                        //initialize
-                        initialize_gpu(init_interaction, trotter_spins, device_num);
-                    }
+                    /**
+                     * @brief chimera graph information
+                     */
+                    const ChimeraInfo info;
 
-                /**
-                 * @brief coefficient of transverse field term
-                 */
-                FloatType gamma;
+                    /**
+                     * @brief interaction pointer to gpu memory. DO NOT ACCESS FROM CPU.
+                     */
+                    const ChimeraInteractions<FloatType> interaction;
 
-                /**
-                 * @brief chimera graph information
-                 */
-                const ChimeraInfo info;
+                    /**
+                     * @brief spin pointer to gpu memory. DO NOT ACCESS FROM CPU.
+                     */
+                    utility::cuda::unique_dev_ptr<std::int32_t[]> spin;
 
-                /**
-                 * @brief interaction pointer to gpu memory. DO NOT ACCESS FROM CPU.
-                 */
-                const ChimeraInteractions<FloatType> interaction;
+                    /**
+                     * @brief grid structure
+                     */
+                    const dim3 grid;
 
-                /**
-                 * @brief spin pointer to gpu memory. DO NOT ACCESS FROM CPU.
-                 */
-                utility::cuda::unique_dev_ptr<std::int32_t[]> spin;
+                    /**
+                     * @brief block structure
+                     */
+                    const dim3 block;
 
-                /**
-                 * @brief grid structure
-                 */
-                const dim3 grid;
-
-                /**
-                 * @brief block structure
-                 */
-                const dim3 block;
-
-                private:
+                    private:
 
                     /**
                      * @brief send interaction information to GPU device
@@ -182,6 +182,15 @@ namespace openjij {
                         for(size_t r=0; r<info.rows; r++){
                             for(size_t c=0; c<info.cols; c++){
                                 for(size_t i=0; i<info.chimera_unitsize; i++){
+
+                                    J_out_p[glIdx(info,r,c,i)] = 0;
+                                    J_out_n[glIdx(info,r,c,i)] = 0;
+                                    J_in_04[glIdx(info,r,c,i)] = 0;
+                                    J_in_15[glIdx(info,r,c,i)] = 0;
+                                    J_in_26[glIdx(info,r,c,i)] = 0;
+                                    J_in_37[glIdx(info,r,c,i)] = 0;
+                                    h[glIdx(info,r,c,i)] = 0;
+
                                     if(r > 0 && i < 4){
                                         //MINUS_R
                                         J_out_p[glIdx(info,r,c,i)] = init_interaction.J(r,c,i,graph::ChimeraDir::MINUS_R);
@@ -234,9 +243,53 @@ namespace openjij {
                         HANDLE_ERROR_CUDA(cudaMemcpy(spin.get(), temp_spin.get(), localsize*info.trotters*sizeof(int32_t), cudaMemcpyHostToDevice));
                     }
 
-            };
+                };
 
-        template struct ChimeraTransverseGPU<double>;
+        /**
+         * @brief helper function for Chimera TransverseIsing constructor
+         *
+         * @tparam rows_per_block
+         * @tparam cols_per_block
+         * @tparam trotters_per_block
+         * @tparam FloatType
+         * @param init_trotter_spins
+         * @param init_interaction
+         * @param gamma
+         * @param device_num
+         *
+         * @return 
+         */
+        template<std::size_t rows_per_block=2,
+            std::size_t cols_per_block=2,
+            std::size_t trotters_per_block=2,
+            typename FloatType>
+            ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block> make_chimera_transverse_gpu(
+                    const TrotterSpins& init_trotter_spins, const graph::Chimera<FloatType>& init_interaction, FloatType gamma, int device_num=0){
+                return ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block>(init_trotter_spins, init_interaction, gamma, device_num);
+            }
+
+        /**
+         * @brief helper function for Chimera TransverseIsing constructor
+         *
+         * @tparam rows_per_block
+         * @tparam cols_per_block
+         * @tparam trotters_per_block
+         * @tparam FloatType
+         * @param init_trotter_spins
+         * @param init_interaction
+         * @param gamma
+         * @param device_num
+         *
+         * @return 
+         */
+        template<std::size_t rows_per_block=2,
+            std::size_t cols_per_block=2,
+            std::size_t trotters_per_block=2,
+            typename FloatType>
+            ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block> make_chimera_transverse_gpu(
+                    const graph::Spins& classical_spins, const graph::Chimera<FloatType>& init_interaction, FloatType gamma, size_t num_trotter_slices, int device_num=0){
+                return ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block>(classical_spins, init_interaction, gamma, num_trotter_slices, device_num);
+            }
 
     } // namespace system
 } // namespace openjij

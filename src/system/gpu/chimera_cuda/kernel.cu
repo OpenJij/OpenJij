@@ -129,7 +129,7 @@ namespace openjij {
                 __syncthreads();
 
                 //do metropolis
-                if(((r+c+t)%2 == sw && i <= 3) || ((r+c+t)%2 != sw && 4 <= i && i <= 7)){
+                if(((r+c+t)%2 == sw && i <= 3) || ((r+c+t)%2 != sw && 4 <= i)){
                     FloatType temp_dE = 
                         -2*s*spincache[spin_index]*beta/(FloatType)(info.trotters)*(
                                 //outside chimera unit
