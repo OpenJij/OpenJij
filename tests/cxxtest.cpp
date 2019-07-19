@@ -418,28 +418,36 @@ TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
 }
 
 //gpu test
-//
-//TEST(GPU, FindTrueGroundState_ChimeraTransverseGPU) {
-//    using namespace openjij;
-//
-//    //generate classical dense system
-//    const auto interaction = generate_chimera_interaction();
-//    auto engine_for_spin = std::mt19937(1325);
-//    std::size_t num_trotter_slices = 10;
-//    system::TrotterSpins init_trotter_spins(num_trotter_slices);
-//    for(auto& spins : init_trotter_spins){
-//        spins = interaction.gen_spin(engine_for_spin);
-//    }
-//
-//    auto chimera_quantum_gpu = system::make_chimera_transverse_gpu(init_trotter_spins, interaction, 1.0); //default: no eigen implementation
-//
-//    auto random_numder_engine = utility::ClassicalSchedul;
-//    const auto schedule_list = generate_schedule_list();
-//
-//    algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
-//
-//    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
-//}
+
+TEST(GPU, FindTrueGroundState_ChimeraTransverseGPU) {
+    using namespace openjij;
+
+    //generate classical dense system
+    const auto interaction = generate_chimera_interaction<float>();
+    auto engine_for_spin = std::mt19937(1325);
+    std::size_t num_trotter_slices = 10;
+    system::TrotterSpins init_trotter_spins(num_trotter_slices);
+    for(auto& spins : init_trotter_spins){
+        spins = interaction.gen_spin(engine_for_spin);
+    }
+
+    auto chimera_quantum_gpu = system::make_chimera_transverse_gpu(init_trotter_spins, interaction, 1.0); 
+    auto& info = chimera_quantum_gpu.info;
+
+    auto random_number_engine = utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>(info.rows*info.cols*info.trotters*info.chimera_unitsize, 1234);
+
+    const auto schedule_list = generate_tfm_schedule_list();
+
+    algorithm::Algorithm<updater::GPU>::run(chimera_quantum_gpu, random_number_engine, schedule_list);
+
+    graph::Spins res = result::get_solution(chimera_quantum_gpu);
+    
+    for(int32_t s : res){
+        std::cout << s << std::endl;
+    }
+
+    //EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
+}
 
 //utility test
 
@@ -624,7 +632,6 @@ TEST(GPUUtil, CurandWrapperTest){
 
     EXPECT_TRUE(0 <= output[0] && output[0] <= 1);
     for(std::size_t i=1; i<SIZE; i++){
-        std::cout << output[i] << std::endl;
         EXPECT_NE(output[i-1], output[i]);
         EXPECT_TRUE(0 <= output[i] && output[i] <= 1);
     }

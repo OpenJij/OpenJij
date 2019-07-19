@@ -256,8 +256,9 @@ openjij::graph::Spins get_true_groundstate(){
 
 //chimera graph
 
-openjij::graph::Chimera<double> generate_chimera_interaction() {
-    auto interaction = openjij::graph::Chimera<double>(2,2);
+template<typename FloatType>
+openjij::graph::Chimera<FloatType> generate_chimera_interaction() {
+    auto interaction = openjij::graph::Chimera<FloatType>(2,2);
     interaction.J(0,0,0,openjij::graph::ChimeraDir::IN_0or4) = +1;
     interaction.J(0,0,0,openjij::graph::ChimeraDir::IN_1or5) = +1;
     interaction.J(0,0,0,openjij::graph::ChimeraDir::IN_2or6) = +1;
@@ -325,6 +326,8 @@ openjij::graph::Chimera<double> generate_chimera_interaction() {
     interaction.J(1,1,3,openjij::graph::ChimeraDir::IN_1or5) = +1;
     interaction.J(1,1,3,openjij::graph::ChimeraDir::IN_2or6) = +1;
     interaction.J(1,1,3,openjij::graph::ChimeraDir::IN_3or7) = +1;
+
+    return interaction;
 }
 
 #endif

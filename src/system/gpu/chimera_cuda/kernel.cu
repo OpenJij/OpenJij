@@ -69,14 +69,14 @@ namespace openjij {
                 FloatType J_trot = 0;
 
                 //know who and where we are
-                uint32_t r = idx_r(info, blockIdx.x*blockDim.x + threadIdx.x, blockIdx.y*blockDim.y + threadIdx.y, blockIdx.z*blockDim.z + threadIdx.z);
-                uint32_t c = idx_c(info, blockIdx.x*blockDim.x + threadIdx.x, blockIdx.y*blockDim.y + threadIdx.y, blockIdx.z*blockDim.z + threadIdx.z);
-                uint32_t i = idx_i(info, blockIdx.x*blockDim.x + threadIdx.x, blockIdx.y*blockDim.y + threadIdx.y, blockIdx.z*blockDim.z + threadIdx.z);
-                uint32_t t = idx_t(info, blockIdx.x*blockDim.x + threadIdx.x, blockIdx.y*blockDim.y + threadIdx.y, blockIdx.z*blockDim.z + threadIdx.z);
-                uint32_t global_index = glIdx(info, r, c, i, t);
-                uint32_t local_index = glIdx(info, r, c, i);
-                uint32_t block_index = bkIdx<block_row,block_col,block_trot>(info,r,c,i,t);
-                uint32_t spin_index = bkIdx_ext<block_row,block_col,block_trot>(info,r,c,i,t);
+                int32_t r = idx_r(info, blockIdx.x*blockDim.x + threadIdx.x, blockIdx.y*blockDim.y + threadIdx.y, blockIdx.z*blockDim.z + threadIdx.z);
+                int32_t c = idx_c(info, blockIdx.x*blockDim.x + threadIdx.x, blockIdx.y*blockDim.y + threadIdx.y, blockIdx.z*blockDim.z + threadIdx.z);
+                int32_t i = idx_i(info, blockIdx.x*blockDim.x + threadIdx.x, blockIdx.y*blockDim.y + threadIdx.y, blockIdx.z*blockDim.z + threadIdx.z);
+                int32_t t = idx_t(info, blockIdx.x*blockDim.x + threadIdx.x, blockIdx.y*blockDim.y + threadIdx.y, blockIdx.z*blockDim.z + threadIdx.z);
+                int32_t global_index = glIdx(info, r, c, i, t);
+                int32_t local_index = glIdx(info, r, c, i);
+                int32_t block_index = bkIdx<block_row,block_col,block_trot>(info,r,c,i,t);
+                int32_t spin_index = bkIdx_ext<block_row,block_col,block_trot>(info,r,c,i,t);
 
                 if(info.trotters > 1){
                     J_trot = 0.5*log(tanh(beta*gamma*(1-s)/(FloatType)info.trotters)); //-(1/2)log(coth(beta*gamma/M))
@@ -135,20 +135,20 @@ namespace openjij {
                                 //outside chimera unit
                                 J_out_p_cache[block_index]
                                 //0 to 3 -> go up 4 to 7 -> go left
-                                *spincache[bkIdx_ext<block_row,block_col,block_trot>((i<=3)?r-1:r, (4<=i)?c-1:c,i,t)]+
+                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,(i<=3)?r-1:r, (4<=i)?c-1:c,i,t)]+
 
                                 J_out_n_cache[block_index]
                                 //0 to 3 -> go down 4 to 7 -> go right
-                                *spincache[bkIdx_ext<block_row,block_col,block_trot>((i<=3)?r+1:r, (4<=i)?c+1:c,i,t)]+
+                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,(i<=3)?r+1:r, (4<=i)?c+1:c,i,t)]+
                                 //inside chimera unit
                                 J_in_04_cache[block_index] 
-                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(r,c,(i<=3)?4:0,t)]+
+                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,c,(i<=3)?4:0,t)]+
                                 J_in_15_cache[block_index]
-                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(r,c,(i<=3)?5:1,t)]+
+                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,c,(i<=3)?5:1,t)]+
                                 J_in_26_cache[block_index]
-                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(r,c,(i<=3)?6:2,t)]+
+                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,c,(i<=3)?6:2,t)]+
                                 J_in_37_cache[block_index]
-                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(r,c,(i<=3)?7:3,t)]+
+                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,c,(i<=3)?7:3,t)]+
 
                                 //local magnetization
                                 h_cache[block_index]);
@@ -158,8 +158,8 @@ namespace openjij {
                         temp_dE +=
                             -2*spincache[spin_index]*J_trot*(
                                     //trotter slices
-                                    spincache[bkIdx_ext<block_row,block_col,block_trot>(r,c,i,t+1)]+
-                                    spincache[bkIdx_ext<block_row,block_col,block_trot>(r,c,i,t-1)]
+                                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,c,i,t+1)]+
+                                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,c,i,t-1)]
                                     );
                     }
 
@@ -170,7 +170,7 @@ namespace openjij {
                 __syncthreads();
 
                 // reduction for calculating dE
-                constexpr uint32_t count = block_row * block_col * block_trot * unitsize; // <= 1024
+                uint32_t count = block_row * block_col * block_trot * unitsize; // <= 1024
                 // thread index
                 uint32_t ti = threadIdx.z*(blockDim.y*blockDim.x)+threadIdx.y*(blockDim.x)+threadIdx.x;
 
@@ -281,7 +281,39 @@ namespace openjij {
                 HANDLE_ERROR_CUDA(cudaMemcpy(&ret_dE, dE.get(), 1*sizeof(FloatType), cudaMemcpyDeviceToHost));
 
                 return ret_dE;
+
+
+
             }
+
+            //make instance (TODO: how to remove this?)
+            template float update(ChimeraTransverseGPU<float, 1, 1, 1>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
+            template float update(ChimeraTransverseGPU<float, 2, 2, 2>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
+            template float update(ChimeraTransverseGPU<float, 3, 3, 3>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
+            template float update(ChimeraTransverseGPU<float, 4, 4, 4>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
+            template float update(ChimeraTransverseGPU<float, 1, 1, 1>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
+            template float update(ChimeraTransverseGPU<float, 2, 2, 2>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
+            template float update(ChimeraTransverseGPU<float, 3, 3, 3>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
+            template float update(ChimeraTransverseGPU<float, 4, 4, 4>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
+            template float update(ChimeraTransverseGPU<float, 1, 1, 1>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
+            template float update(ChimeraTransverseGPU<float, 2, 2, 2>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
+            template float update(ChimeraTransverseGPU<float, 3, 3, 3>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
+            template float update(ChimeraTransverseGPU<float, 4, 4, 4>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
+
+#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 600
+            template double update(ChimeraTransverseGPU<double, 1, 1, 1>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
+            template double update(ChimeraTransverseGPU<double, 2, 2, 2>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
+            template double update(ChimeraTransverseGPU<double, 3, 3, 3>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
+            template double update(ChimeraTransverseGPU<double, 4, 4, 4>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
+            template double update(ChimeraTransverseGPU<double, 1, 1, 1>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
+            template double update(ChimeraTransverseGPU<double, 2, 2, 2>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
+            template double update(ChimeraTransverseGPU<double, 3, 3, 3>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
+            template double update(ChimeraTransverseGPU<double, 4, 4, 4>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
+            template double update(ChimeraTransverseGPU<double, 1, 1, 1>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
+            template double update(ChimeraTransverseGPU<double, 2, 2, 2>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
+            template double update(ChimeraTransverseGPU<double, 3, 3, 3>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
+            template double update(ChimeraTransverseGPU<double, 4, 4, 4>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
+#endif
         } // namespace chimera_cuda
     } // namespace system
 } // namespace openjij

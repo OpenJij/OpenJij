@@ -135,7 +135,7 @@ namespace openjij {
                     /**
                      * @brief interaction pointer to gpu memory. DO NOT ACCESS FROM CPU.
                      */
-                    const ChimeraInteractions<FloatType> interaction;
+                    ChimeraInteractions<FloatType> interaction;
 
                     /**
                      * @brief spin pointer to gpu memory. DO NOT ACCESS FROM CPU.
@@ -263,10 +263,10 @@ namespace openjij {
             std::size_t cols_per_block=2,
             std::size_t trotters_per_block=2,
             typename FloatType>
-            ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block> make_chimera_transverse_gpu(
-                    const TrotterSpins& init_trotter_spins, const graph::Chimera<FloatType>& init_interaction, FloatType gamma, int device_num=0){
-                return ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block>(init_trotter_spins, init_interaction, gamma, device_num);
-            }
+                ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block> make_chimera_transverse_gpu(
+                        const TrotterSpins& init_trotter_spins, const graph::Chimera<FloatType>& init_interaction, double gamma, int device_num=0){
+                    return ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block>(init_trotter_spins, init_interaction, gamma, device_num);
+                }
 
         /**
          * @brief helper function for Chimera TransverseIsing constructor
@@ -286,10 +286,10 @@ namespace openjij {
             std::size_t cols_per_block=2,
             std::size_t trotters_per_block=2,
             typename FloatType>
-            ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block> make_chimera_transverse_gpu(
-                    const graph::Spins& classical_spins, const graph::Chimera<FloatType>& init_interaction, FloatType gamma, size_t num_trotter_slices, int device_num=0){
-                return ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block>(classical_spins, init_interaction, gamma, num_trotter_slices, device_num);
-            }
+                ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block> make_chimera_transverse_gpu(
+                        const graph::Spins& classical_spins, const graph::Chimera<FloatType>& init_interaction, double gamma, size_t num_trotter_slices, int device_num=0){
+                    return ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block>(classical_spins, init_interaction, gamma, num_trotter_slices, device_num);
+                }
 
     } // namespace system
 } // namespace openjij
