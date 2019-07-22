@@ -94,6 +94,7 @@ namespace openjij {
                 J_in_15_cache[block_index] = J_in_15[local_index];
                 J_in_26_cache[block_index] = J_in_26[local_index];
                 J_in_37_cache[block_index] = J_in_37[local_index];
+                      h_cache[block_index] =       h[local_index];
 
                 randcache[block_index] = rand[global_index];
                 spincache[spin_index] =  spin[global_index];

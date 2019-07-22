@@ -419,6 +419,25 @@ TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
 
 //gpu test
 
+TEST(GPU, glIdxConsistencyCheck_Chimera) {
+    using namespace openjij;
+
+    system::ChimeraInfo info{134,175,231};
+
+    size_t a = 0;
+
+    for(size_t t=0; t<info.trotters; t++){
+        for(size_t r=0; r<info.rows; r++){
+            for(size_t c=0; c<info.cols; c++){
+                for(size_t i=0; i<info.chimera_unitsize; i++){
+                    EXPECT_EQ(a, system::chimera_cuda::glIdx(info,r,c,i,t));
+                    a++;
+                }
+            }
+        }
+    }
+}
+
 TEST(GPU, FindTrueGroundState_ChimeraTransverseGPU) {
     using namespace openjij;
 
@@ -442,11 +461,7 @@ TEST(GPU, FindTrueGroundState_ChimeraTransverseGPU) {
 
     graph::Spins res = result::get_solution(chimera_quantum_gpu);
     
-    for(int32_t s : res){
-        std::cout << s << std::endl;
-    }
-
-    //EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
+    EXPECT_EQ(get_true_chimera_groundstate(interaction), result::get_solution(chimera_quantum_gpu));
 }
 
 //utility test
