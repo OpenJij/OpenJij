@@ -234,6 +234,7 @@ namespace openjij {
                 std::size_t block_col,
                 std::size_t block_trot>
             void metropolis_interface(
+                    int32_t sw,
                     int32_t* spin, const FloatType* rand,
                     FloatType* dE,
                     const FloatType* J_out_p,
@@ -247,21 +248,7 @@ namespace openjij {
                     double beta, FloatType gamma, double s){
 
                 metropolis<FloatType, block_row, block_col, block_trot, info.chimera_unitsize><<<grid, block>>>(
-                        0,
-                        spin, rand,
-                        dE,
-                        J_out_p,
-                        J_out_n,
-                        J_in_04,
-                        J_in_15,
-                        J_in_26,
-                        J_in_37,
-                        h,
-                        info,
-                        beta, gamma, s
-                        );
-                metropolis<FloatType, block_row, block_col, block_trot, info.chimera_unitsize><<<grid, block>>>(
-                        1,
+                        sw,
                         spin, rand,
                         dE,
                         J_out_p,
@@ -278,8 +265,8 @@ namespace openjij {
 
             //template instantiation
 
-#define FLOAT_ARGTYPE int32_t*,const float*,float*,const float*,const float*,const float*,const float*,const float*,const float*,const float*,const ChimeraInfo&,const dim3&,const dim3&,double,float,double
-#define DOUBLE_ARGTYPE int32_t*,const double*,double*,const double*,const double*,const double*,const double*,const double*,const double*,const double*,const ChimeraInfo&,const dim3&,const dim3&,double,double,double
+#define FLOAT_ARGTYPE int32_t,int32_t*,const float*,float*,const float*,const float*,const float*,const float*,const float*,const float*,const float*,const ChimeraInfo&,const dim3&,const dim3&,double,float,double
+#define DOUBLE_ARGTYPE int32_t,int32_t*,const double*,double*,const double*,const double*,const double*,const double*,const double*,const double*,const double*,const ChimeraInfo&,const dim3&,const dim3&,double,double,double
 
             template void metropolis_interface<float,1,1,1>(FLOAT_ARGTYPE);
             template void metropolis_interface<float,2,2,2>(FLOAT_ARGTYPE);

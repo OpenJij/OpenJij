@@ -32,6 +32,7 @@ namespace openjij {
                 std::size_t block_col,
                 std::size_t block_trot>
             void metropolis_interface(
+                    int32_t sw,
                     int32_t* spin, const FloatType* rand,
                     FloatType* dE,
                     const FloatType* J_out_p,
