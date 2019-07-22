@@ -434,7 +434,7 @@ TEST(GPU, FindTrueGroundState_ChimeraTransverseGPU) {
     auto chimera_quantum_gpu = system::make_chimera_transverse_gpu(init_trotter_spins, interaction, 1.0); 
     auto& info = chimera_quantum_gpu.info;
 
-    auto random_number_engine = utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>(info.rows*info.cols*info.trotters*info.chimera_unitsize, 1234);
+    auto random_number_engine = utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>(info.rows*info.cols*info.trotters*info.chimera_unitsize, 123456);
 
     const auto schedule_list = generate_tfm_schedule_list();
 

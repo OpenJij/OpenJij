@@ -75,7 +75,7 @@ namespace openjij {
                     mean += system.trotter_spins[j][i];
                 }
                 mean /= (double)system.trotter_spins.size();
-                ret_spins[i] = std::round(mean);
+                ret_spins[i] = mean>0 ? 1 : mean<0 ? -1 : 0;
             }
 
             return ret_spins;
@@ -123,7 +123,7 @@ namespace openjij {
                             mean += temp_spin[system::chimera_cuda::glIdx(system.info, r,c,i,t)];
                         }
                         mean /= (double)system.info.trotters;
-                        ret_spins[system::chimera_cuda::glIdx(system.info, r,c,i)] = std::round(mean);
+                        ret_spins[system::chimera_cuda::glIdx(system.info, r,c,i)] = mean>0 ? 1 : mean<0 ? -1 : 0;
                     }
                 }
             }

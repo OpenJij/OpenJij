@@ -18,10 +18,7 @@
 #ifdef USE_CUDA
 
 #include <cuda_runtime.h>
-
-#include <system/gpu/chimera_gpu_transverse.hpp>
 #include <system/gpu/chimera_cuda/index.hpp>
-#include <utility/random.hpp>
 
 namespace openjij {
     namespace system {
@@ -33,15 +30,19 @@ namespace openjij {
                 typename FloatType,
                 std::size_t block_row,
                 std::size_t block_col,
-                std::size_t block_trot,
-                curandRngType_t rng_type
-                > 
-            FloatType update(
-                    ChimeraTransverseGPU<FloatType, block_row, block_col, block_trot>& system,
-                    utility::cuda::CurandWrapper<FloatType, rng_type>& random_engine,
+                std::size_t block_trot>
+            void metropolis_interface(
+                    int32_t* spin, const FloatType* rand,
+                    FloatType* dE,
+                    const FloatType* J_out_p,
+                    const FloatType* J_out_n,
+                    const FloatType* J_in_04,
+                    const FloatType* J_in_15,
+                    const FloatType* J_in_26,
+                    const FloatType* J_in_37,
+                    const FloatType* h,
+                    const ChimeraInfo& info, const dim3& grid, const dim3& block,
                     double beta, FloatType gamma, double s);
-
-            void test();
         } // namespace chimera_cuda
     } // namespace system
 } // namespace openjij

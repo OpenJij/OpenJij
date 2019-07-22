@@ -84,7 +84,7 @@ namespace openjij {
                         grid(dim3(init_interaction.get_num_column()/cols_per_block, init_interaction.get_num_row()/rows_per_block, init_trotter_spins.size()/trotters_per_block)),
                         block(dim3(info.chimera_unitsize*cols_per_block, rows_per_block, trotters_per_block)){
 
-                            if(!(info.rows%rows_per_block == 0 && info.cols%cols_per_block == 0 && info.trotters%trotters_per_block)){
+                            if(!(info.rows%rows_per_block == 0 && info.cols%cols_per_block == 0 && info.trotters%trotters_per_block == 0)){
                                 throw std::invalid_argument("invalid number of rows, cols, or trotters");
                             }
 
@@ -109,7 +109,7 @@ namespace openjij {
                         grid(dim3(init_interaction.get_num_column()/cols_per_block, init_interaction.get_num_row()/rows_per_block, num_trotter_slices/trotters_per_block)),
                         block(dim3(info.chimera_unitsize*cols_per_block, rows_per_block, trotters_per_block)){
                             //initialize trotter_spins with classical_spins
-                            if(!(info.rows%rows_per_block == 0 && info.cols%cols_per_block == 0 && info.trotters%trotters_per_block)){
+                            if(!(info.rows%rows_per_block == 0 && info.cols%cols_per_block == 0 && info.trotters%trotters_per_block == 0)){
                                 throw std::invalid_argument("invalid number of rows, cols, or trotters");
                             }
 

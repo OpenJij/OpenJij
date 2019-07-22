@@ -60,9 +60,35 @@ namespace openjij {
             inline static FloatType update(QIsing& system,
                                  utility::cuda::CurandWrapper<FloatType, rng_type>& random_number_engine,
                                  const utility::TransverseFieldUpdaterParameter& parameter) {
-                //return system::chimera_cuda::update(system, random_number_engine, parameter.beta, system.gamma, parameter.s);
-                system::chimera_cuda::test();
-                return 0;
+
+                static auto dE = utility::cuda::make_dev_unique<FloatType[]>(1);
+
+                FloatType ret_dE = 0;
+                //initialize dE
+                HANDLE_ERROR_CUDA(cudaMemcpy(dE.get(), &ret_dE, 1*sizeof(FloatType), cudaMemcpyHostToDevice));
+                //generate uniform random sequence
+                random_number_engine.generate_uniform(system.info.rows*system.info.cols*system.info.trotters*system.info.chimera_unitsize);
+
+                //do metropolis
+                system::chimera_cuda::metropolis_interface<FloatType, rows_per_block, cols_per_block, trotters_per_block>(
+                        system.spin.get(), random_number_engine.get(),
+                        dE.get(),
+                        system.interaction.J_out_p.get(),
+                        system.interaction.J_out_n.get(),
+                        system.interaction.J_in_04.get(),
+                        system.interaction.J_in_15.get(),
+                        system.interaction.J_in_26.get(),
+                        system.interaction.J_in_37.get(),
+                        system.interaction.h.get(),
+                        system.info, system.grid, system.block,
+                        parameter.beta, system.gamma, parameter.s
+                        );
+
+
+                //retrieve dE
+                HANDLE_ERROR_CUDA(cudaMemcpy(&ret_dE, dE.get(), 1*sizeof(FloatType), cudaMemcpyDeviceToHost));
+
+                return ret_dE;
             }
         };
 

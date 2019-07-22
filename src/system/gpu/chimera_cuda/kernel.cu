@@ -16,6 +16,7 @@
 
 #include <cuda_runtime.h>
 #include <system/gpu/chimera_cuda/kernel.hpp>
+#include <iostream>
 
 namespace openjij {
     namespace system {
@@ -73,10 +74,15 @@ namespace openjij {
                 int32_t c = idx_c(info, blockIdx.x*blockDim.x + threadIdx.x, blockIdx.y*blockDim.y + threadIdx.y, blockIdx.z*blockDim.z + threadIdx.z);
                 int32_t i = idx_i(info, blockIdx.x*blockDim.x + threadIdx.x, blockIdx.y*blockDim.y + threadIdx.y, blockIdx.z*blockDim.z + threadIdx.z);
                 int32_t t = idx_t(info, blockIdx.x*blockDim.x + threadIdx.x, blockIdx.y*blockDim.y + threadIdx.y, blockIdx.z*blockDim.z + threadIdx.z);
+
+                int32_t b_r = r%block_row;
+                int32_t b_c = c%block_col;
+                int32_t b_t = t%block_trot;
+
                 int32_t global_index = glIdx(info, r, c, i, t);
                 int32_t local_index = glIdx(info, r, c, i);
-                int32_t block_index = bkIdx<block_row,block_col,block_trot>(info,r,c,i,t);
-                int32_t spin_index = bkIdx_ext<block_row,block_col,block_trot>(info,r,c,i,t);
+                int32_t block_index = bkIdx<block_row,block_col,block_trot>(info,b_r,b_c,i,b_t);
+                int32_t spin_index = bkIdx_ext<block_row,block_col,block_trot>(info,b_r,b_c,i,b_t);
 
                 if(info.trotters > 1){
                     J_trot = 0.5*log(tanh(beta*gamma*(1-s)/(FloatType)info.trotters)); //-(1/2)log(coth(beta*gamma/M))
@@ -98,30 +104,30 @@ namespace openjij {
                 //copy boundary spins to shared memory
                 //row
                 if(r%block_row == 0 && r != 0){
-                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,-1,c,i,t)]
+                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,-1,b_c,i,b_t)]
                         = spin[glIdx(info,r-1,c,i,t)];
                 }
                 if(r%block_row == block_row-1 && r != info.rows-1){
-                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,block_row,c,i,t)]
+                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,block_row,b_c,i,b_t)]
                         = spin[glIdx(info,r+1,c,i,t)];
                 }
                 //col
                 if(c%block_col == 0 && c != 0){
-                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,-1,i,t)]
+                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,b_r,-1,i,b_t)]
                         = spin[glIdx(info,r,c-1,i,t)];
                 }
                 if(c%block_col == block_col-1 && c != info.cols-1){
-                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,block_col,i,t)]
+                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,b_r,block_col,i,b_t)]
                         = spin[glIdx(info,r,c+1,i,t)];
                 }
                 //trotter slices
                 if(info.trotters > 1){
                     if(t%block_trot == 0){
-                        spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,c,i,-1)]
+                        spincache[bkIdx_ext<block_row,block_col,block_trot>(info,b_r,b_c,i,-1)]
                             = spin[glIdx(info,r,c,i,(t!=0)?t-1:info.trotters-1)];
                     }
                     if(t%block_trot == block_trot-1){
-                        spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,block_col,i,block_trot)]
+                        spincache[bkIdx_ext<block_row,block_col,block_trot>(info,b_r,b_c,i,block_trot)]
                             = spin[glIdx(info,r,c,i,(t!=info.trotters-1)?t+1:0)];
                     }
                 }
@@ -135,20 +141,20 @@ namespace openjij {
                                 //outside chimera unit
                                 J_out_p_cache[block_index]
                                 //0 to 3 -> go up 4 to 7 -> go left
-                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,(i<=3)?r-1:r, (4<=i)?c-1:c,i,t)]+
+                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,(i<=3)?b_r-1:b_r, (4<=i)?b_c-1:b_c,i,b_t)]+
 
                                 J_out_n_cache[block_index]
                                 //0 to 3 -> go down 4 to 7 -> go right
-                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,(i<=3)?r+1:r, (4<=i)?c+1:c,i,t)]+
+                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,(i<=3)?b_r+1:b_r, (4<=i)?b_c+1:b_c,i,b_t)]+
                                 //inside chimera unit
                                 J_in_04_cache[block_index] 
-                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,c,(i<=3)?4:0,t)]+
+                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,b_r,b_c,(i<=3)?4:0,b_t)]+
                                 J_in_15_cache[block_index]
-                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,c,(i<=3)?5:1,t)]+
+                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,b_r,b_c,(i<=3)?5:1,b_t)]+
                                 J_in_26_cache[block_index]
-                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,c,(i<=3)?6:2,t)]+
+                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,b_r,b_c,(i<=3)?6:2,b_t)]+
                                 J_in_37_cache[block_index]
-                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,c,(i<=3)?7:3,t)]+
+                                *spincache[bkIdx_ext<block_row,block_col,block_trot>(info,b_r,b_c,(i<=3)?7:3,b_t)]+
 
                                 //local magnetization
                                 h_cache[block_index]);
@@ -158,8 +164,8 @@ namespace openjij {
                         temp_dE +=
                             -2*spincache[spin_index]*J_trot*(
                                     //trotter slices
-                                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,c,i,t+1)]+
-                                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,r,c,i,t-1)]
+                                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,b_r,b_c,i,b_t+1)]+
+                                    spincache[bkIdx_ext<block_row,block_col,block_trot>(info,b_r,b_c,i,b_t-1)]
                                     );
                     }
 
@@ -222,101 +228,68 @@ namespace openjij {
 
             }
 
-
             template<
                 typename FloatType,
                 std::size_t block_row,
                 std::size_t block_col,
-                std::size_t block_trot,
-                curandRngType_t rng_type
-                > 
-            FloatType update(
-                    ChimeraTransverseGPU<FloatType, block_row, block_col, block_trot>& system,
-                    utility::cuda::CurandWrapper<FloatType, rng_type>& random_engine,
+                std::size_t block_trot>
+            void metropolis_interface(
+                    int32_t* spin, const FloatType* rand,
+                    FloatType* dE,
+                    const FloatType* J_out_p,
+                    const FloatType* J_out_n,
+                    const FloatType* J_in_04,
+                    const FloatType* J_in_15,
+                    const FloatType* J_in_26,
+                    const FloatType* J_in_37,
+                    const FloatType* h,
+                    const ChimeraInfo& info, const dim3& grid, const dim3& block,
                     double beta, FloatType gamma, double s){
 
-                static auto dE = utility::cuda::make_dev_unique<FloatType[]>(1);
-
-                system.spin.get();
-
-                FloatType ret_dE = 0;
-                //initialize dE
-                HANDLE_ERROR_CUDA(cudaMemcpy(dE.get(), &ret_dE, 1*sizeof(FloatType), cudaMemcpyHostToDevice));
-                //generate uniform random sequence
-                random_engine.generate_uniform(system.info.rows*system.info.cols*system.info.trotters*system.info.chimera_unitsize);
-                //do metropolis
-                metropolis<FloatType, block_row, block_col, block_trot, system.info.chimera_unitsize><<<system.grid, system.block>>>(
+                metropolis<FloatType, block_row, block_col, block_trot, info.chimera_unitsize><<<grid, block>>>(
                         0,
-                        system.spin.get(), random_engine.get(),
-                        dE.get(),
-                        system.interaction.J_out_p.get(),
-                        system.interaction.J_out_n.get(),
-                        system.interaction.J_in_04.get(),
-                        system.interaction.J_in_15.get(),
-                        system.interaction.J_in_26.get(),
-                        system.interaction.J_in_37.get(),
-                        system.interaction.h.get(),
-                        system.info,
+                        spin, rand,
+                        dE,
+                        J_out_p,
+                        J_out_n,
+                        J_in_04,
+                        J_in_15,
+                        J_in_26,
+                        J_in_37,
+                        h,
+                        info,
                         beta, gamma, s
                         );
-                //generate uniform random sequence
-                random_engine.generate_uniform(system.info.rows*system.info.cols*system.info.trotters*system.info.chimera_unitsize);
-                //do metropolis
-                metropolis<FloatType, block_row, block_col, block_trot, system.info.chimera_unitsize><<<system.grid, system.block>>>(
+                metropolis<FloatType, block_row, block_col, block_trot, info.chimera_unitsize><<<grid, block>>>(
                         1,
-                        system.spin.get(), random_engine.get(),
-                        dE.get(),
-                        system.interaction.J_out_p.get(),
-                        system.interaction.J_out_n.get(),
-                        system.interaction.J_in_04.get(),
-                        system.interaction.J_in_15.get(),
-                        system.interaction.J_in_26.get(),
-                        system.interaction.J_in_37.get(),
-                        system.interaction.h.get(),
-                        system.info,
+                        spin, rand,
+                        dE,
+                        J_out_p,
+                        J_out_n,
+                        J_in_04,
+                        J_in_15,
+                        J_in_26,
+                        J_in_37,
+                        h,
+                        info,
                         beta, gamma, s
                         );
-
-                //retrieve dE
-                HANDLE_ERROR_CUDA(cudaMemcpy(&ret_dE, dE.get(), 1*sizeof(FloatType), cudaMemcpyDeviceToHost));
-
-                return ret_dE;
-
-
-
             }
 
-            void test(){
-                std::cout << "hello cuda link" << std::endl;
-            }
+            //template instantiation
 
-            //make instance (TODO: how to remove this?)
-            template float update<float, 1, 1, 1, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<float, 1, 1, 1>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
-            template float update<float, 2, 2, 2, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<float, 2, 2, 2>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
-            template float update<float, 3, 3, 3, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<float, 3, 3, 3>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
-            template float update<float, 4, 4, 4, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<float, 4, 4, 4>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_DEFAULT>&, double, float, double);
-            template float update<float, 1, 1, 1, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<float, 1, 1, 1>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
-            template float update<float, 2, 2, 2, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<float, 2, 2, 2>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
-            template float update<float, 3, 3, 3, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<float, 3, 3, 3>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
-            template float update<float, 4, 4, 4, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<float, 4, 4, 4>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>&, double, float, double);
-            template float update<float, 1, 1, 1, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<float, 1, 1, 1>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
-            template float update<float, 2, 2, 2, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<float, 2, 2, 2>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
-            template float update<float, 3, 3, 3, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<float, 3, 3, 3>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
-            template float update<float, 4, 4, 4, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<float, 4, 4, 4>&, utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_MT19937>&, double, float, double);
+#define FLOAT_ARGTYPE int32_t*,const float*,float*,const float*,const float*,const float*,const float*,const float*,const float*,const float*,const ChimeraInfo&,const dim3&,const dim3&,double,float,double
+#define DOUBLE_ARGTYPE int32_t*,const double*,double*,const double*,const double*,const double*,const double*,const double*,const double*,const double*,const ChimeraInfo&,const dim3&,const dim3&,double,double,double
 
+            template void metropolis_interface<float,1,1,1>(FLOAT_ARGTYPE);
+            template void metropolis_interface<float,2,2,2>(FLOAT_ARGTYPE);
+            template void metropolis_interface<float,3,3,3>(FLOAT_ARGTYPE);
+            template void metropolis_interface<float,4,4,4>(FLOAT_ARGTYPE);
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 600
-            template double update<double, 1, 1, 1, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<double, 1, 1, 1>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
-            template double update<double, 2, 2, 2, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<double, 2, 2, 2>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
-            template double update<double, 3, 3, 3, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<double, 3, 3, 3>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
-            template double update<double, 4, 4, 4, CURAND_RNG_PSEUDO_DEFAULT>(ChimeraTransverseGPU<double, 4, 4, 4>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_DEFAULT>&, double, double, double);
-            template double update<double, 1, 1, 1, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<double, 1, 1, 1>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
-            template double update<double, 2, 2, 2, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<double, 2, 2, 2>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
-            template double update<double, 3, 3, 3, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<double, 3, 3, 3>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
-            template double update<double, 4, 4, 4, CURAND_RNG_PSEUDO_XORWOW>(ChimeraTransverseGPU<double, 4, 4, 4>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_XORWOW>&, double, double, double);
-            template double update<double, 1, 1, 1, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<double, 1, 1, 1>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
-            template double update<double, 2, 2, 2, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<double, 2, 2, 2>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
-            template double update<double, 3, 3, 3, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<double, 3, 3, 3>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
-            template double update<double, 4, 4, 4, CURAND_RNG_PSEUDO_MT19937>(ChimeraTransverseGPU<double, 4, 4, 4>&, utility::cuda::CurandWrapper<double, CURAND_RNG_PSEUDO_MT19937>&, double, double, double);
+            template void metropolis_interface<double,1,1,1>(DOUBLE_ARGTYPE);
+            template void metropolis_interface<double,2,2,2>(DOUBLE_ARGTYPE);
+            template void metropolis_interface<double,3,3,3>(DOUBLE_ARGTYPE);
+            template void metropolis_interface<double,4,4,4>(DOUBLE_ARGTYPE);
 #endif
         } // namespace chimera_cuda
     } // namespace system

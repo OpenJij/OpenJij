@@ -29,6 +29,10 @@ if(NOT DEFINED USE_CUDA)
         enable_language(CUDA)
         find_package(CUDA)
         set(USE_CUDA ${DEFAULT_USE_CUDA})
+
+        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lineinfo")
+        # set CXX compiler to nvcc host compiler in order to avoid linker error
+        # set(CUDA_HOST_COMPILER "${CMAKE_CXX_COMPILER}")
     else()
         message(STATUS "No CUDA support")
         set(USE_CUDA No)

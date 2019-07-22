@@ -27,11 +27,10 @@
 #include <pybind11/stl.h>
 
 #include <system/classical_ising.hpp>
-#include <system/gpu/chimera_cuda/kernel.hpp>
 
-// #ifdef USE_CUDA
-// #include "../src/system/chimera_gpu/chimera_gpu_quantum.h"
-// #endif
+#ifdef USE_CUDA
+#include <system/gpu/chimera_gpu_transverse.hpp>
+#endif
 
 
 namespace py = pybind11;
@@ -48,8 +47,7 @@ PYBIND11_MODULE(cxxjij, m){
  	py::class_<graph::Graph>(m_graph, "Graph")
  		.def(py::init<size_t>(), "num_spins"_a)
  		.def("gen_spin", &graph::Graph::get_num_spins)
- 		.def("get_num_spins", &graph::Graph::get_num_spins)
- 		.def("hello", [](graph::Graph& self){system::chimera_cuda::test();});
+ 		.def("get_num_spins", &graph::Graph::get_num_spins);
 
  	//dense
  	py::class_<graph::Dense<double>, graph::Graph>(m_graph, "Dense")

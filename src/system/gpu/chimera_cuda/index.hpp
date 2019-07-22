@@ -128,10 +128,10 @@ namespace openjij {
              * @return 
              */
             template<std::size_t block_row, std::size_t block_col, std::size_t block_trot>
-            __host__ __device__ __forceinline__ std::uint64_t bkIdx(ChimeraInfo info, std::uint64_t r, std::uint64_t c, std::uint64_t i, std::uint64_t t){
-                return (info.chimera_unitsize*block_col*block_row) * ((t+block_trot)%block_trot)
-                    +(info.chimera_unitsize*block_col) * ((r+block_row)%block_row)
-                    +(info.chimera_unitsize) * ((c+block_col)%block_col) + i;
+            __host__ __device__ __forceinline__ std::uint64_t bkIdx(ChimeraInfo info, std::uint64_t b_r, std::uint64_t b_c, std::uint64_t i, std::uint64_t b_t){
+                return (info.chimera_unitsize*block_col*block_row) * b_t
+                    +(info.chimera_unitsize*block_col) * b_r 
+                    +(info.chimera_unitsize) * b_c + i;
             }
 
             /**
@@ -146,8 +146,8 @@ namespace openjij {
              * @return 
              */
             template<std::size_t block_row, std::size_t block_col, std::size_t block_trot>
-            __host__ __device__ __forceinline__ std::uint64_t bkIdx_ext(ChimeraInfo info, std::int64_t r, std::int64_t c, std::int64_t i, std::int64_t t){
-                return bkIdx<block_row+2, block_col+2, block_trot+2>(info, r+1, c+1, i, t+1);
+            __host__ __device__ __forceinline__ std::uint64_t bkIdx_ext(ChimeraInfo info, std::int64_t b_r, std::int64_t b_c, std::int64_t i, std::int64_t b_t){
+                return bkIdx<block_row+2, block_col+2, block_trot+2>(info, b_r+1, b_c+1, i, b_t+1);
             }
 
             /**

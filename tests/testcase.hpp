@@ -16,6 +16,7 @@
 #define OPENJIJ_TEST_TESTCASE_HPP__
 
 #include <graph/all.hpp>
+#include <iostream>
 
 #if TEST_CASE_INDEX == 1
 //GraphType -> Dense or Sparse
@@ -259,73 +260,73 @@ openjij::graph::Spins get_true_groundstate(){
 template<typename FloatType>
 openjij::graph::Chimera<FloatType> generate_chimera_interaction() {
     auto interaction = openjij::graph::Chimera<FloatType>(2,2);
-    interaction.J(0,0,0,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(0,0,0,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(0,0,0,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(0,0,0,openjij::graph::ChimeraDir::IN_3or7) = +1;
-    interaction.J(0,0,1,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(0,0,1,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(0,0,1,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(0,0,1,openjij::graph::ChimeraDir::IN_3or7) = +1;
-    interaction.J(0,0,2,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(0,0,2,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(0,0,2,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(0,0,2,openjij::graph::ChimeraDir::IN_3or7) = +1;
-    interaction.J(0,0,3,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(0,0,3,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(0,0,3,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(0,0,3,openjij::graph::ChimeraDir::IN_3or7) = +1;
+    interaction.J(0,0,0,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(0,0,0,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(0,0,0,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(0,0,0,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
+    interaction.J(0,0,1,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(0,0,1,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(0,0,1,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(0,0,1,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
+    interaction.J(0,0,2,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(0,0,2,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(0,0,2,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(0,0,2,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
+    interaction.J(0,0,3,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(0,0,3,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(0,0,3,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(0,0,3,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
 
-    interaction.J(0,1,0,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(0,1,0,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(0,1,0,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(0,1,0,openjij::graph::ChimeraDir::IN_3or7) = +1;
-    interaction.J(0,1,1,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(0,1,1,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(0,1,1,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(0,1,1,openjij::graph::ChimeraDir::IN_3or7) = +1;
-    interaction.J(0,1,2,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(0,1,2,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(0,1,2,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(0,1,2,openjij::graph::ChimeraDir::IN_3or7) = +1;
-    interaction.J(0,1,3,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(0,1,3,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(0,1,3,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(0,1,3,openjij::graph::ChimeraDir::IN_3or7) = +1;
+    interaction.J(0,1,0,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(0,1,0,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(0,1,0,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(0,1,0,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
+    interaction.J(0,1,1,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(0,1,1,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(0,1,1,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(0,1,1,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
+    interaction.J(0,1,2,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(0,1,2,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(0,1,2,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(0,1,2,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
+    interaction.J(0,1,3,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(0,1,3,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(0,1,3,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(0,1,3,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
 
-    interaction.J(1,0,0,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(1,0,0,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(1,0,0,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(1,0,0,openjij::graph::ChimeraDir::IN_3or7) = +1;
-    interaction.J(1,0,1,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(1,0,1,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(1,0,1,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(1,0,1,openjij::graph::ChimeraDir::IN_3or7) = +1;
-    interaction.J(1,0,2,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(1,0,2,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(1,0,2,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(1,0,2,openjij::graph::ChimeraDir::IN_3or7) = +1;
-    interaction.J(1,0,3,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(1,0,3,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(1,0,3,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(1,0,3,openjij::graph::ChimeraDir::IN_3or7) = +1;
+    interaction.J(1,0,0,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(1,0,0,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(1,0,0,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(1,0,0,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
+    interaction.J(1,0,1,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(1,0,1,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(1,0,1,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(1,0,1,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
+    interaction.J(1,0,2,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(1,0,2,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(1,0,2,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(1,0,2,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
+    interaction.J(1,0,3,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(1,0,3,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(1,0,3,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(1,0,3,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
 
-    interaction.J(1,1,0,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(1,1,0,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(1,1,0,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(1,1,0,openjij::graph::ChimeraDir::IN_3or7) = +1;
-    interaction.J(1,1,1,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(1,1,1,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(1,1,1,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(1,1,1,openjij::graph::ChimeraDir::IN_3or7) = +1;
-    interaction.J(1,1,2,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(1,1,2,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(1,1,2,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(1,1,2,openjij::graph::ChimeraDir::IN_3or7) = +1;
-    interaction.J(1,1,3,openjij::graph::ChimeraDir::IN_0or4) = +1;
-    interaction.J(1,1,3,openjij::graph::ChimeraDir::IN_1or5) = +1;
-    interaction.J(1,1,3,openjij::graph::ChimeraDir::IN_2or6) = +1;
-    interaction.J(1,1,3,openjij::graph::ChimeraDir::IN_3or7) = +1;
+    interaction.J(1,1,0,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(1,1,0,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(1,1,0,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(1,1,0,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
+    interaction.J(1,1,1,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(1,1,1,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(1,1,1,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(1,1,1,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
+    interaction.J(1,1,2,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(1,1,2,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(1,1,2,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(1,1,2,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
+    interaction.J(1,1,3,openjij::graph::ChimeraDir::IN_0or4) = +0.25;
+    interaction.J(1,1,3,openjij::graph::ChimeraDir::IN_1or5) = +0.25;
+    interaction.J(1,1,3,openjij::graph::ChimeraDir::IN_2or6) = +0.25;
+    interaction.J(1,1,3,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
 
     return interaction;
 }
