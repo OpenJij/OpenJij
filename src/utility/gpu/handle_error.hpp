@@ -31,7 +31,7 @@ namespace openjij {
 #ifndef NDEBUG
 
 #ifndef HANDLE_ERROR_CUDA
-#define HANDLE_ERROR_CUDA(expr) {cudaError_t err=(expr); if(err != cudaSuccess) std::cerr << "error_code: " << err << " err_name: " << cudaGetErrorString(err) << " at " << __FILE__ << " line " << __LINE__ << std::endl;}
+#define HANDLE_ERROR_CUDA(expr) {cudaError_t err=(expr); if(err != cudaSuccess) std::cerr << "cuda error_code: " << err << " err_name: " << cudaGetErrorString(err) << " at " << __FILE__ << " line " << __LINE__ << std::endl;}
 #endif
 
 #ifndef HANDLE_ERROR_CURAND

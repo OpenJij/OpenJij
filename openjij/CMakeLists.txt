@@ -27,7 +27,7 @@ target_link_libraries(cxxjij PRIVATE
 )
 
 if(USE_CUDA)
-    target_link_libraries(cxxjij PRIVATE cxxjij_gpu_kernel)
+    target_link_libraries(cxxjij PRIVATE cxxjij_chimera_gpu_kernel)
     target_link_libraries(cxxjij PRIVATE ${CUDA_LIBRARIES})
     target_link_libraries(cxxjij PRIVATE ${CUDA_curand_LIBRARY})
     target_link_libraries(cxxjij PRIVATE ${CUDA_CUBLAS_LIBRARIES})

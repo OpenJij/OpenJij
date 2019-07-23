@@ -3,8 +3,8 @@ from logging import getLogger, StreamHandler, INFO
 import unittest
 import numpy as np
 
-import openjij as oj
-import cxxjij as cj
+#import openjij as oj
+#import cxxjij as cj
 
 #class UtilsTest(unittest.TestCase):
 #
