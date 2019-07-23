@@ -468,17 +468,17 @@ TEST(GPU, FindTrueGroundState_ChimeraTransverseGPU) {
 
     //generate classical dense system
     const auto interaction = generate_chimera_interaction<float>();
-    auto engine_for_spin = std::mt19937(125);
+    auto engine_for_spin = std::mt19937(1253);
     std::size_t num_trotter_slices = 10;
     system::TrotterSpins init_trotter_spins(num_trotter_slices);
     for(auto& spins : init_trotter_spins){
         spins = interaction.gen_spin(engine_for_spin);
     }
 
-    auto chimera_quantum_gpu = system::make_chimera_transverse_gpu(init_trotter_spins, interaction, 1.0); 
+    auto chimera_quantum_gpu = system::make_chimera_transverse_gpu<1,1,1>(init_trotter_spins, interaction, 1.0); 
     auto& info = chimera_quantum_gpu.info;
 
-    auto random_number_engine = utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>(info.rows*info.cols*info.trotters*info.chimera_unitsize, 123456);
+    auto random_number_engine = utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>(info.rows*info.cols*info.trotters*info.chimera_unitsize, 12356);
 
     const auto schedule_list = generate_tfm_schedule_list();
 

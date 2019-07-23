@@ -329,26 +329,11 @@ openjij::graph::Chimera<FloatType> generate_chimera_interaction() {
     interaction.J(1,1,3,openjij::graph::ChimeraDir::IN_3or7) = +0.25;
 
     interaction.h(0,0,0) = +1;
-    //interaction.h(0,0,1) = +1;
-    //interaction.h(0,0,2) = +1;
-    //interaction.h(0,0,3) = +1;
 
-    //interaction.h(0,1,0) = -1;
-    //interaction.h(0,1,1) = -1;
-    interaction.h(0,1,2) = -1;
-    //interaction.h(0,1,3) = -1;
+    interaction.J(0,0,6,openjij::graph::ChimeraDir::PLUS_C) = +1;
+    interaction.J(0,0,3,openjij::graph::ChimeraDir::PLUS_R) = -1;
+    interaction.J(1,0,5,openjij::graph::ChimeraDir::PLUS_C) = +1;
 
-    //interaction.h(1,0,0) = -1;
-    //interaction.h(1,0,1) = -1;
-    //interaction.h(1,0,2) = -1;
-    //interaction.h(1,0,3) = -1;
-    interaction.h(1,0,5) = +1;
-
-    //interaction.h(1,1,0) = +1;
-    //interaction.h(1,1,1) = +1;
-    //interaction.h(1,1,2) = +1;
-    //interaction.h(1,1,3) = +1;
-    interaction.h(1,1,7) = -1;
 
     return interaction;
 }
@@ -374,23 +359,23 @@ openjij::graph::Spins get_true_chimera_groundstate(const openjij::graph::Chimera
     ret_spin[interaction.to_ind(0,1,6)] = -1;
     ret_spin[interaction.to_ind(0,1,7)] = -1;
 
-    ret_spin[interaction.to_ind(1,0,0)] = +1;
-    ret_spin[interaction.to_ind(1,0,1)] = +1;
-    ret_spin[interaction.to_ind(1,0,2)] = +1;
-    ret_spin[interaction.to_ind(1,0,3)] = +1;
-    ret_spin[interaction.to_ind(1,0,4)] = -1;
-    ret_spin[interaction.to_ind(1,0,5)] = -1;
-    ret_spin[interaction.to_ind(1,0,6)] = -1;
-    ret_spin[interaction.to_ind(1,0,7)] = -1;
+    ret_spin[interaction.to_ind(1,0,0)] = -1;
+    ret_spin[interaction.to_ind(1,0,1)] = -1;
+    ret_spin[interaction.to_ind(1,0,2)] = -1;
+    ret_spin[interaction.to_ind(1,0,3)] = -1;
+    ret_spin[interaction.to_ind(1,0,4)] = +1;
+    ret_spin[interaction.to_ind(1,0,5)] = +1;
+    ret_spin[interaction.to_ind(1,0,6)] = +1;
+    ret_spin[interaction.to_ind(1,0,7)] = +1;
 
-    ret_spin[interaction.to_ind(1,1,0)] = -1;
-    ret_spin[interaction.to_ind(1,1,1)] = -1;
-    ret_spin[interaction.to_ind(1,1,2)] = -1;
-    ret_spin[interaction.to_ind(1,1,3)] = -1;
-    ret_spin[interaction.to_ind(1,1,4)] = +1;
-    ret_spin[interaction.to_ind(1,1,5)] = +1;
-    ret_spin[interaction.to_ind(1,1,6)] = +1;
-    ret_spin[interaction.to_ind(1,1,7)] = +1;
+    ret_spin[interaction.to_ind(1,1,0)] = +1;
+    ret_spin[interaction.to_ind(1,1,1)] = +1;
+    ret_spin[interaction.to_ind(1,1,2)] = +1;
+    ret_spin[interaction.to_ind(1,1,3)] = +1;
+    ret_spin[interaction.to_ind(1,1,4)] = -1;
+    ret_spin[interaction.to_ind(1,1,5)] = -1;
+    ret_spin[interaction.to_ind(1,1,6)] = -1;
+    ret_spin[interaction.to_ind(1,1,7)] = -1;
 
     return ret_spin;
 }
