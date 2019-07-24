@@ -66,10 +66,20 @@ namespace openjij {
 
                 /**
                  * @brief get number of spins
+                 * @deprecated please use size()
                  *
                  * @return number of spins
                  */
                 std::size_t get_num_spins() const noexcept {
+                    return _num_spins;
+                }
+
+                /**
+                 * @brief get number of spins
+                 *
+                 * @return number of spins
+                 */
+                std::size_t size() const noexcept {
                     return _num_spins;
                 }
         };
