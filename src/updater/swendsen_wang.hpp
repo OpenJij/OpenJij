@@ -45,6 +45,7 @@ namespace openjij {
         struct SwendsenWang<system::ClassicalIsing<GraphType, false>> {
 
             using ClIsing = system::ClassicalIsing<GraphType, false>;
+            using FloatType = typename GraphType::value_type;
 
             template<typename RandomNumberEngine>
             inline static void update(ClIsing& system,
@@ -58,11 +59,11 @@ namespace openjij {
                 for (std::size_t node = 0; node < num_spin; ++node) {
                     for (auto&& adj_node : system.interaction.adj_nodes(node)) {
                         if (node >= adj_node) continue;
-                        if (system.spin[node] != system.spin[adj_node]) continue;
-
-                        const auto unite_rate = std::max(0.0, 1.0 - std::exp(2.0 * parameter.beta * system.interaction.J(node, adj_node)));
-                        if (urd(random_number_engine) >= unite_rate) continue;
-                        union_find_tree.unite_sets(node, adj_node);
+                        //check if bond can be connected
+                        if (system.interaction.J(node, adj_node) * system.spin[node] * system.spin[adj_node] > 0) continue;
+                        const auto unite_rate = std::max(0.0, 1.0 - std::exp( - 2.0 * parameter.beta * std::abs(system.interaction.J(node, adj_node))));
+                        if (urd(random_number_engine) < unite_rate)
+                            union_find_tree.unite_sets(node, adj_node);
                     }
                 }
 
@@ -83,17 +84,17 @@ namespace openjij {
                     double energy_magnetic = 0.0;
                     for (auto itr = range.first, last = range.second; itr != last; ++itr) {
                         const auto idx = itr->second;
-                        energy_magnetic += system.interaction.h(idx);
+                        energy_magnetic += system.interaction.h(idx)*system.spin[idx];
                     }
 
                     // 3.2. decide spin state
-                    const auto probability_down = 1.0 / ( 1.0 + std::exp(-2.0 * parameter.beta * energy_magnetic) );
-                    const auto spin_state = urd(random_number_engine) < probability_down ? -1 : 1;
-
-                    // 3.3. update spin states
-                    for (auto itr = range.first, last = range.second; itr != last; ++itr) {
-                        const auto idx = itr->second;
-                        system.spin[idx] = spin_state;
+                    const FloatType probability = 1.0 / ( std::exp(-2 * parameter.beta * energy_magnetic) + 1.0 );
+                    if(urd(random_number_engine) < probability){
+                        // 3.3. update spin states
+                        for (auto itr = range.first, last = range.second; itr != last; ++itr) {
+                            const auto idx = itr->second;
+                            system.spin[idx] *= -1;
+                        }
                     }
                 }
 

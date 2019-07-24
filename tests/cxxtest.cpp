@@ -32,7 +32,7 @@
 
 static constexpr std::size_t num_system_size = 8;
 
-#define TEST_CASE_INDEX 5
+#define TEST_CASE_INDEX 1
 
 #include "./testcase.hpp"
 
@@ -400,17 +400,20 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse_WithEigenImpl) {
 
 //swendsen-wang test
 
-TEST(SwendsenWang, FindTrueGroundState_CLassicalIsing_Dense_AllStatesAreUp) {
+TEST(SwendsenWang, FindTrueGroundState_CLassicalIsing_Dense_OneDimensionalIsing) {
     using namespace openjij;
 
     //generate classical dense system
     const auto interaction = [](){
         auto interaction = graph::Dense<double>(num_system_size);
-        for (std::size_t i = 0; i < num_system_size; i++) {
-            for (std::size_t j = 0; j < num_system_size; j++) {
-                interaction.J(i,j) = (i != j)  ? -1.0/static_cast<double>(num_system_size) : -1.0;
-            }
-        }
+        interaction.J(0,1) = -1;
+        interaction.J(1,2) = -1;
+        interaction.J(2,3) = -1;
+        interaction.J(3,4) = -1;
+        interaction.J(4,5) = +1;
+        interaction.J(5,6) = +1;
+        interaction.J(6,7) = +1;
+        interaction.h(0) = +1;
         return interaction;
     }();
     auto engine_for_spin = std::mt19937(1);
@@ -422,7 +425,7 @@ TEST(SwendsenWang, FindTrueGroundState_CLassicalIsing_Dense_AllStatesAreUp) {
 
     algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
 
-    EXPECT_EQ(openjij::graph::Spins({1, 1, 1, 1, 1, 1, 1, 1}), result::get_solution(classical_ising));
+    EXPECT_EQ(openjij::graph::Spins({-1, -1, -1, -1, -1, +1, -1, +1}), result::get_solution(classical_ising));
 }
 
 TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
@@ -435,7 +438,9 @@ TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
     auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
 
     auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list = generate_schedule_list();
+
+    //in general swendsen wang is not efficient in simulating frustrated systems. We need more annealing time.
+    const auto schedule_list = openjij::utility::make_classical_schedule_list(0.1, 100.0, 2000, 2000);
 
     algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
 
