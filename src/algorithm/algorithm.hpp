@@ -24,11 +24,11 @@ namespace openjij {
         struct Algorithm {
             template<typename System, typename RandomNumberEngine>
             static void run(System& system,
-                            RandomNumberEngine& random_numder_engine,
+                            RandomNumberEngine& random_number_engine,
                             const utility::ScheduleList<typename system::get_system_type<System>::type>& schedule_list) {
                 for (auto&& schedule : schedule_list) {
-                    for (auto i = 0; i < schedule.one_mc_step; ++i) {
-                        Updater<System>::update(system, random_numder_engine, schedule.updater_parameter);
+                    for (std::size_t i = 0; i < schedule.one_mc_step; ++i) {
+                        Updater<System>::update(system, random_number_engine, schedule.updater_parameter);
                     }
                 }
             }

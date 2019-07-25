@@ -113,7 +113,7 @@ namespace openjij {
                                 throw std::invalid_argument("invalid number of rows, cols, or trotters");
                             }
 
-                            TrotterSpins trotter_spins;
+                            TrotterSpins trotter_spins(num_trotter_slices);
                             for(auto& spins : trotter_spins){
                                 spins = classical_spins;
                             }
