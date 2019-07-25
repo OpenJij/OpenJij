@@ -28,9 +28,9 @@
 
 #include <system/classical_ising.hpp>
 
-// #ifdef USE_CUDA
-// #include "../src/system/chimera_gpu/chimera_gpu_quantum.h"
-// #endif
+#ifdef USE_CUDA
+#include <system/gpu/chimera_gpu_transverse.hpp>
+#endif
 
 
 namespace py = pybind11;

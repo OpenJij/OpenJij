@@ -20,6 +20,7 @@
 #include <graph/all.hpp>
 #include <utility/eigen.hpp>
 #include <vector>
+#include <exception>
 
 namespace openjij {
     namespace system {
@@ -49,7 +50,10 @@ namespace openjij {
                  */
                 TransverseIsing(const TrotterSpins& init_trotter_spins, const GraphType& init_interaction, FloatType gamma)
                 : trotter_spins(init_trotter_spins), interaction(init_interaction), gamma(gamma){
-                    assert(trotter_spins.size() >= 2);
+                    //assert(trotter_spins.size() >= 2);
+                    if(!(trotter_spins.size() >= 2)){
+                        throw std::invalid_argument("trotter slices must be equal or larger than 2.");
+                    }
                 }
 
                 /**
@@ -62,7 +66,10 @@ namespace openjij {
                 TransverseIsing(const graph::Spins& classical_spins, const GraphType& init_interaction, FloatType gamma, size_t num_trotter_slices)
                 : trotter_spins(num_trotter_slices), interaction(init_interaction), gamma(gamma){
                     //initialize trotter_spins with classical_spins
-                    assert(trotter_spins.size() >= 2);
+                    if(!(trotter_spins.size() >= 2)){
+                        throw std::invalid_argument("trotter slices must be equal or larger than 2.");
+                    }
+
                     for(auto& spins : trotter_spins){
                         spins = classical_spins;
                     }
@@ -95,8 +102,10 @@ namespace openjij {
             struct TransverseIsing<graph::Dense<FloatType>, true> {
                 using system_type = transverse_field_system;
 
-                using MatrixXx = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>;
-                using TrotterMatrix = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>;
+                //matrix (row major)
+                using MatrixXx = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+                //trotter matrix (col major)
+                using TrotterMatrix = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
 
                 /**
                  * @brief TransverseIsing Constructor
@@ -105,14 +114,12 @@ namespace openjij {
                  * @param init_interaction
                  */
                 TransverseIsing(const TrotterSpins& init_trotter_spins, const graph::Dense<FloatType>& init_interaction, FloatType gamma)
-                : num_classical_spins(init_trotter_spins[0].size()), gamma(gamma){
-                    assert(init_trotter_spins.size() >= 2);
-
-                    //init trotter_spins
-                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType>(init_trotter_spins);
-
-                    //init interactions
-                    interaction = utility::gen_matrix_from_graph(init_interaction);
+                : num_classical_spins(init_trotter_spins[0].size()), gamma(gamma),
+                trotter_spins(utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins)),
+                interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)){
+                    if(!(init_trotter_spins.size() >= 2)){
+                        throw std::invalid_argument("trotter slices must be equal or larger than 2.");
+                    }
                 }
 
                 /**
@@ -123,10 +130,13 @@ namespace openjij {
                  * @param num_trotter_slices
                  */
                 TransverseIsing(const graph::Spins& init_classical_spins, const graph::Dense<FloatType>& init_interaction, FloatType gamma, size_t num_trotter_slices)
-                : num_classical_spins(init_classical_spins.size()), gamma(gamma){
+                : num_classical_spins(init_classical_spins.size()), gamma(gamma),
+                interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)){
                     //initialize trotter_spins with classical_spins
 
-                    assert(init_classical_spins.size() >= 2);
+                    if(!(num_trotter_slices >= 2)){
+                        throw std::invalid_argument("trotter slices must be equal or larger than 2.");
+                    }
 
                     TrotterSpins init_trotter_spins;
 
@@ -135,10 +145,7 @@ namespace openjij {
                     }
 
                     //init trotter_spins
-                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType>(init_trotter_spins);
-
-                    //init interactions
-                    interaction = utility::gen_matrix_from_graph(init_interaction);
+                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
                 }
 
                 /**
@@ -149,7 +156,7 @@ namespace openjij {
                 /**
                  * @brief interaction 
                  */
-                MatrixXx interaction;
+                const MatrixXx interaction;
 
                 /**
                  * @brief number of real classical spins (dummy spin excluded)
@@ -171,8 +178,10 @@ namespace openjij {
             struct TransverseIsing<graph::Sparse<FloatType>, true> {
                 using system_type = transverse_field_system;
 
-                using SparseMatrixXx = Eigen::SparseMatrix<FloatType>;
-                using TrotterMatrix = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic>;
+                //matrix (row major)
+                using SparseMatrixXx = Eigen::SparseMatrix<FloatType, Eigen::RowMajor>;
+                //trotter matrix (col major)
+                using TrotterMatrix = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
 
                 /**
                  * @brief TransverseIsing Constructor
@@ -181,14 +190,12 @@ namespace openjij {
                  * @param init_interaction
                  */
                 TransverseIsing(const TrotterSpins& init_trotter_spins, const graph::Sparse<FloatType>& init_interaction, FloatType gamma)
-                : num_classical_spins(init_trotter_spins[0].size()), gamma(gamma){
-                    assert(init_trotter_spins.size() >= 2);
-
-                    //init trotter_spins
-                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType>(init_trotter_spins);
-
-                    //init interactions
-                    interaction = utility::gen_matrix_from_graph(init_interaction);
+                : num_classical_spins(init_trotter_spins[0].size()), gamma(gamma),
+                trotter_spins(utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins)),
+                interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)){
+                    if(!(init_trotter_spins.size() >= 2)){
+                        throw std::invalid_argument("trotter slices must be equal or larger than 2.");
+                    }
                 }
 
                 /**
@@ -199,10 +206,14 @@ namespace openjij {
                  * @param num_trotter_slices
                  */
                 TransverseIsing(const graph::Spins& init_classical_spins, const graph::Sparse<FloatType>& init_interaction, FloatType gamma, size_t num_trotter_slices)
-                : num_classical_spins(init_classical_spins.size()), gamma(gamma){
+                : num_classical_spins(init_classical_spins.size()), gamma(gamma),
+                interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)){
                     //initialize trotter_spins with classical_spins
 
-                    assert(init_classical_spins.size() >= 2);
+                    //assert(init_classical_spins.size() >= 2);
+                    if(!(num_trotter_slices >= 2)){
+                        throw std::invalid_argument("trotter slices must be equal or larger than 2.");
+                    }
 
                     TrotterSpins init_trotter_spins;
 
@@ -211,10 +222,7 @@ namespace openjij {
                     }
 
                     //init trotter_spins
-                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType>(init_trotter_spins);
-
-                    //init interactions
-                    interaction = utility::gen_matrix_from_graph(init_interaction);
+                    trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
                 }
 
                 /**
@@ -225,7 +233,7 @@ namespace openjij {
                 /**
                  * @brief interaction 
                  */
-                SparseMatrixXx interaction;
+                const SparseMatrixXx interaction;
 
                 /**
                  * @brief number of real classical spins (dummy spin excluded)

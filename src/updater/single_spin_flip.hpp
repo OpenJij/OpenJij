@@ -307,7 +307,7 @@ namespace openjij {
                         FloatType dE = 0;
                         assert(index < num_classical_spins);
                         assert(index_trot < num_trotter_slices);
-                        //calculate matrix dot
+                        //calculate matrix dot product
                         dE += -2 * s * (beta/num_trotter_slices) * spins(index, index_trot)*(system.interaction.row(index).dot(spins.col(index_trot)));
 
                         //trotter direction

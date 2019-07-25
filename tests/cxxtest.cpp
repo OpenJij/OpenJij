@@ -19,6 +19,7 @@
 #include <utility/schedule_list.hpp>
 #include <utility/union_find.hpp>
 #include <utility/random.hpp>
+#include <utility/gpu/memory.hpp>
 
 // #####################################
 // helper functions
@@ -33,241 +34,8 @@ static constexpr std::size_t num_system_size = 8;
 
 #define TEST_CASE_INDEX 5
 
-#if TEST_CASE_INDEX == 1
-//GraphType -> Dense or Sparse
-template<template<class> class GraphType>
-static GraphType<double> generate_interaction() {
-    auto interaction = GraphType<double>(num_system_size);
-    interaction.J(0,0)=-0.1;
-    interaction.J(0,1)=-0.9;
-    interaction.J(0,2)=0.2;
-    interaction.J(0,3)=0.1;
-    interaction.J(0,4)=1.3;
-    interaction.J(0,5)=0.8;
-    interaction.J(0,6)=0.9;
-    interaction.J(0,7)=0.4;
-    interaction.J(1,1)=-0.7;
-    interaction.J(1,2)=-1.6;
-    interaction.J(1,3)=1.5;
-    interaction.J(1,4)=1.5;
-    interaction.J(1,5)=1.2;
-    interaction.J(1,6)=-1.5;
-    interaction.J(1,7)=-1.7;
-    interaction.J(2,2)=-0.6;
-    interaction.J(2,3)=1.2;
-    interaction.J(2,4)=-1.3;
-    interaction.J(2,5)=-0.5;
-    interaction.J(2,6)=-1.9;
-    interaction.J(2,7)=1.2;
-    interaction.J(3,3)=0.8;
-    interaction.J(3,4)=-0.5;
-    interaction.J(3,5)=-0.4;
-    interaction.J(3,6)=-1.8;
-    interaction.J(3,7)=-2.0;
-    interaction.J(4,4)=0.6;
-    interaction.J(4,5)=-2.0;
-    interaction.J(4,6)=-1.9;
-    interaction.J(4,7)=0.5;
-    interaction.J(5,5)=-1.8;
-    interaction.J(5,6)=-1.2;
-    interaction.J(5,7)=1.8;
-    interaction.J(6,6)=0.3;
-    interaction.J(6,7)=1.4;
-    interaction.J(7,7)=1.8;
-    return interaction;
-}
+#include "./testcase.hpp"
 
-static openjij::graph::Spins get_true_groundstate(){
-    return openjij::graph::Spins({-1, -1, 1, 1, 1, 1, 1, -1});
-}
-
-#elif TEST_CASE_INDEX == 2
-template<template<class> class GraphType>
-static GraphType<double> generate_interaction() {
-    auto interaction = GraphType<double>(num_system_size);
-    interaction.J(0,0)=2.8;
-    interaction.J(0,1)=2.5;
-    interaction.J(0,2)=-0.2;
-    interaction.J(0,3)=-1.6;
-    interaction.J(0,4)=-0.8;
-    interaction.J(0,5)=0.1;
-    interaction.J(0,6)=-1.0;
-    interaction.J(0,7)=-1.0;
-    interaction.J(1,1)=2.4;
-    interaction.J(1,2)=2.6;
-    interaction.J(1,3)=2.9;
-    interaction.J(1,4)=2.1;
-    interaction.J(1,5)=0.2;
-    interaction.J(1,6)=1.0;
-    interaction.J(1,7)=1.4;
-    interaction.J(2,2)=0.6;
-    interaction.J(2,3)=-3.0;
-    interaction.J(2,4)=2.2;
-    interaction.J(2,5)=1.2;
-    interaction.J(2,6)=0.6;
-    interaction.J(2,7)=1.5;
-    interaction.J(3,3)=-0.5;
-    interaction.J(3,4)=-1.8;
-    interaction.J(3,5)=-0.7;
-    interaction.J(3,6)=0.6;
-    interaction.J(3,7)=1.4;
-    interaction.J(4,4)=-0.8;
-    interaction.J(4,5)=-2.2;
-    interaction.J(4,6)=-1.8;
-    interaction.J(4,7)=0.1;
-    interaction.J(5,5)=-1.8;
-    interaction.J(5,6)=0.1;
-    interaction.J(5,7)=-1.1;
-    interaction.J(6,6)=-1.8;
-    interaction.J(6,7)=2.0;
-    interaction.J(7,7)=0.9;
-    return interaction;
-}
-
-static openjij::graph::Spins get_true_groundstate(){
-    return openjij::graph::Spins({1, -1, 1, 1, 1, 1, 1, -1});
-}
-#elif TEST_CASE_INDEX == 3
-//WARNING: Hard Instance
-template<template<class> class GraphType>
-static GraphType<double> generate_interaction() {
-    auto interaction = GraphType<double>(num_system_size);
-    interaction.J(0,0)=2.7;
-    interaction.J(0,1)=-0.6;
-    interaction.J(0,2)=-2.6;
-    interaction.J(0,3)=2.0;
-    interaction.J(0,4)=-3.0;
-    interaction.J(0,5)=-2.6;
-    interaction.J(0,6)=1.5;
-    interaction.J(0,7)=1.5;
-    interaction.J(1,1)=1.5;
-    interaction.J(1,2)=-1.6;
-    interaction.J(1,3)=2.9;
-    interaction.J(1,4)=1.7;
-    interaction.J(1,5)=-2.4;
-    interaction.J(1,6)=2.6;
-    interaction.J(1,7)=-1.4;
-    interaction.J(2,2)=-1.3;
-    interaction.J(2,3)=-1.1;
-    interaction.J(2,4)=-0.1;
-    interaction.J(2,5)=-1.8;
-    interaction.J(2,6)=0.3;
-    interaction.J(2,7)=-2.4;
-    interaction.J(3,3)=-0.3;
-    interaction.J(3,4)=0.4;
-    interaction.J(3,5)=-0.8;
-    interaction.J(3,6)=-2.4;
-    interaction.J(3,7)=-1.5;
-    interaction.J(4,4)=-0.3;
-    interaction.J(4,5)=-0.6;
-    interaction.J(4,6)=-0.6;
-    interaction.J(4,7)=0.7;
-    interaction.J(5,5)=0.2;
-    interaction.J(5,6)=1.8;
-    interaction.J(5,7)=-1.2;
-    interaction.J(6,6)=1.6;
-    interaction.J(6,7)=-1.1;
-    interaction.J(7,7)=-0.3;
-    return interaction;
-}
-
-static openjij::graph::Spins get_true_groundstate(){
-    return openjij::graph::Spins({-1, -1, -1, 1, -1, -1, 1, 1});
-}
-#elif TEST_CASE_INDEX == 4
-template<template<class> class GraphType>
-static GraphType<double> generate_interaction() {
-    auto interaction = GraphType<double>(num_system_size);
-    interaction.J(0,0)=-1.6;
-    interaction.J(0,1)=-1.8;
-    interaction.J(0,2)=1.3;
-    interaction.J(0,3)=0.7;
-    interaction.J(0,4)=-0.6;
-    interaction.J(0,5)=1.6;
-    interaction.J(0,6)=-2.7;
-    interaction.J(0,7)=-0.7;
-    interaction.J(1,1)=1.0;
-    interaction.J(1,2)=-1.0;
-    interaction.J(1,3)=-2.3;
-    interaction.J(1,4)=-2.4;
-    interaction.J(1,5)=0.6;
-    interaction.J(1,6)=-0.1;
-    interaction.J(1,7)=-2.1;
-    interaction.J(2,2)=-0.9;
-    interaction.J(2,3)=-1.0;
-    interaction.J(2,4)=1.0;
-    interaction.J(2,5)=0.5;
-    interaction.J(2,6)=1.4;
-    interaction.J(2,7)=2.7;
-    interaction.J(3,3)=2.7;
-    interaction.J(3,4)=0.6;
-    interaction.J(3,5)=2.9;
-    interaction.J(3,6)=-2.6;
-    interaction.J(3,7)=1.8;
-    interaction.J(4,4)=0.6;
-    interaction.J(4,5)=0.6;
-    interaction.J(4,6)=1.9;
-    interaction.J(4,7)=-2.6;
-    interaction.J(5,5)=0.1;
-    interaction.J(5,6)=-2.0;
-    interaction.J(5,7)=-2.0;
-    interaction.J(6,6)=-1.1;
-    interaction.J(6,7)=0.4;
-    interaction.J(7,7)=1.6;
-    return interaction;
-}
-
-static openjij::graph::Spins get_true_groundstate(){
-    return openjij::graph::Spins({-1, -1, 1, -1, -1, 1, -1, -1});
-}
-#elif TEST_CASE_INDEX == 5
-template<template<class> class GraphType>
-static GraphType<double> generate_interaction() {
-    auto interaction = GraphType<double>(num_system_size);
-    interaction.J(0,0)=-0.30;
-    interaction.J(0,1)=-1.16;
-    interaction.J(0,2)=0.05;
-    interaction.J(0,3)=2.08;
-    interaction.J(0,4)=0.38;
-    interaction.J(0,5)=2.05;
-    interaction.J(0,6)=-2.31;
-    interaction.J(0,7)=-1.19;
-    interaction.J(1,1)=-0.01;
-    interaction.J(1,2)=-1.25;
-    interaction.J(1,3)=-2.57;
-    interaction.J(1,4)=-0.90;
-    interaction.J(1,5)=-0.90;
-    interaction.J(1,6)=-2.27;
-    interaction.J(1,7)=-1.04;
-    interaction.J(2,2)=-0.98;
-    interaction.J(2,3)=2.65;
-    interaction.J(2,4)=2.45;
-    interaction.J(2,5)=2.65;
-    interaction.J(2,6)=2.87;
-    interaction.J(2,7)=2.30;
-    interaction.J(3,3)=-2.70;
-    interaction.J(3,4)=1.82;
-    interaction.J(3,5)=-0.91;
-    interaction.J(3,6)=1.99;
-    interaction.J(3,7)=-0.16;
-    interaction.J(4,4)=1.51;
-    interaction.J(4,5)=2.79;
-    interaction.J(4,6)=-2.87;
-    interaction.J(4,7)=2.55;
-    interaction.J(5,5)=-0.67;
-    interaction.J(5,6)=-2.75;
-    interaction.J(5,7)=-2.07;
-    interaction.J(6,6)=1.41;
-    interaction.J(6,7)=-2.27;
-    interaction.J(7,7)=1.08;
-    return interaction;
-}
-
-static openjij::graph::Spins get_true_groundstate(){
-    return openjij::graph::Spins({-1, -1, 1, 1, -1, -1, -1, -1});
-}
-
-#endif
 
 static openjij::utility::ClassicalScheduleList generate_schedule_list(){
     return openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 100);
@@ -631,22 +399,94 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse_WithEigenImpl) {
 }
 
 //swendsen-wang test
+//
+// TEST(SwendsenWang, FindTrueGroundState_CLassicalIsing_Dense_AllStatesAreUp) {
+//     using namespace openjij;
+//
+//     //generate classical dense system
+//     const auto interaction = [](){
+//         auto interaction = graph::Dense<double>(num_system_size);
+//         for (std::size_t i = 0; i < num_system_size; i++) {
+//             for (std::size_t j = 0; j < num_system_size; j++) {
+//                 interaction.J(i,j) = (i != j)  ? -1.0/static_cast<double>(num_system_size) : -1.0;
+//             }
+//         }
+//         return interaction;
+//     }();
+//     auto engine_for_spin = std::mt19937(1);
+//     const auto spin = interaction.gen_spin(engine_for_spin);
+//     auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
+//
+//     auto random_numder_engine = std::mt19937(1);
+//     const auto schedule_list = generate_schedule_list();
+//
+//     algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
+//
+//     EXPECT_EQ(openjij::graph::Spins({1, 1, 1, 1, 1, 1, 1, 1}), result::get_solution(classical_ising));
+// }
+//
+// TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
+//     using namespace openjij;
+//
+//     //generate classical dense system
+//     const auto interaction = generate_interaction<graph::Dense>();
+//     auto engine_for_spin = std::mt19937(1);
+//     const auto spin = interaction.gen_spin(engine_for_spin);
+//     auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
+//
+//     auto random_numder_engine = std::mt19937(1);
+//     const auto schedule_list = generate_schedule_list();
+//
+//     algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
+//
+//     EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
+// }
 
-TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
+//gpu test
+
+TEST(GPU, glIdxConsistencyCheck_Chimera) {
+    using namespace openjij;
+
+    system::ChimeraInfo info{134,175,231};
+
+    size_t a = 0;
+
+    for(size_t t=0; t<info.trotters; t++){
+        for(size_t r=0; r<info.rows; r++){
+            for(size_t c=0; c<info.cols; c++){
+                for(size_t i=0; i<info.chimera_unitsize; i++){
+                    EXPECT_EQ(a, system::chimera_cuda::glIdx(info,r,c,i,t));
+                    a++;
+                }
+            }
+        }
+    }
+}
+
+TEST(GPU, FindTrueGroundState_ChimeraTransverseGPU) {
     using namespace openjij;
 
     //generate classical dense system
-    const auto interaction = generate_interaction<graph::Dense>();
-    auto engine_for_spin = std::mt19937(1);
-    const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
+    const auto interaction = generate_chimera_interaction<float>();
+    auto engine_for_spin = std::mt19937(1253);
+    std::size_t num_trotter_slices = 10;
+    system::TrotterSpins init_trotter_spins(num_trotter_slices);
+    for(auto& spins : init_trotter_spins){
+        spins = interaction.gen_spin(engine_for_spin);
+    }
 
-    auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list = generate_schedule_list();
+    auto chimera_quantum_gpu = system::make_chimera_transverse_gpu<1,1,1>(init_trotter_spins, interaction, 1.0); 
+    auto& info = chimera_quantum_gpu.info;
 
-    algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
+    auto random_number_engine = utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>(info.rows*info.cols*info.trotters*info.chimera_unitsize, 12356);
 
-    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
+    const auto schedule_list = generate_tfm_schedule_list();
+
+    algorithm::Algorithm<updater::GPU>::run(chimera_quantum_gpu, random_number_engine, schedule_list);
+
+    graph::Spins res = result::get_solution(chimera_quantum_gpu);
+    
+    EXPECT_EQ(get_true_chimera_groundstate(interaction), result::get_solution(chimera_quantum_gpu));
 }
 
 //utility test
@@ -782,3 +622,81 @@ TEST(UnionFind, UniteSevenNodesToMakeThreeSets) {
     }
 }
 
+TEST(UnionFind, EachNodeIsInEachClusterByDefault) {
+    auto union_find = openjij::utility::UnionFind(7);
+
+    auto expect = std::vector<decltype(union_find)::Node>{0,1,2,3,4,5,6};
+    for (std::size_t node = 0; node < 7; ++node) {
+        EXPECT_EQ(union_find.find_set(node), expect[node]);
+    }
+}
+
+TEST(UnionFind, ConnectingEachNodeAndAllAdjacentNodesResultsInOneSet) {
+    auto union_find = openjij::utility::UnionFind(7);
+
+    for (std::size_t node = 0; node < 6; ++node) {
+        union_find.unite_sets(node, node+1);
+    }
+
+    auto expect = std::vector<decltype(union_find)::Node>{1,1,1,1,1,1,1};
+    for (std::size_t node = 0; node < 7; ++node) {
+        EXPECT_EQ(union_find.find_set(node), expect[node]);
+    }
+}
+
+#ifdef USE_CUDA
+
+TEST(GPUUtil, UniqueDevPtrTest){
+    constexpr std::size_t SIZE = 10000;
+    using namespace openjij;
+    auto urd = std::uniform_real_distribution<float>{-10, 10};
+    auto r = utility::Xorshift(1234);
+    std::vector<float> input(SIZE);
+    std::vector<float> output(SIZE);
+    for(std::size_t i=0; i<SIZE; i++){
+        input[i] = urd(r);
+    }
+    auto gpu_mem = utility::cuda::make_dev_unique<float[]>(SIZE);
+    HANDLE_ERROR_CUDA(cudaMemcpy(gpu_mem.get(), input.data(), SIZE*sizeof(float), cudaMemcpyHostToDevice));
+    HANDLE_ERROR_CUDA(cudaMemcpy(output.data(), gpu_mem.get(), SIZE*sizeof(float), cudaMemcpyDeviceToHost));
+
+    EXPECT_EQ(input, output);
+
+}
+
+TEST(GPUUtil, UniqueHostPtrTest){
+    constexpr std::size_t SIZE = 10000;
+    using namespace openjij;
+    auto urd = std::uniform_real_distribution<float>{-10, 10};
+    auto r = utility::Xorshift(1234);
+    auto input = utility::cuda::make_host_unique<float[]>(SIZE);
+    auto output = utility::cuda::make_host_unique<float[]>(SIZE);
+    for(std::size_t i=0; i<SIZE; i++){
+        input[i] = urd(r);
+    }
+    auto gpu_mem = utility::cuda::make_dev_unique<float[]>(SIZE);
+    HANDLE_ERROR_CUDA(cudaMemcpy(gpu_mem.get(), input.get(), SIZE*sizeof(float), cudaMemcpyHostToDevice));
+    HANDLE_ERROR_CUDA(cudaMemcpy(output.get(), gpu_mem.get(), SIZE*sizeof(float), cudaMemcpyDeviceToHost));
+
+    for(std::size_t i=0; i<SIZE; i++){
+        EXPECT_EQ(input[i], output[i]);
+    }
+}
+
+TEST(GPUUtil, CurandWrapperTest){
+    constexpr std::size_t SIZE = 10000;
+    using namespace openjij;
+    auto wrap = utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>(SIZE, 1234);
+    auto output = utility::cuda::make_host_unique<float[]>(SIZE);
+    auto gpu_mem = utility::cuda::make_dev_unique<float[]>(SIZE);
+    wrap.generate_uniform(SIZE);
+    HANDLE_ERROR_CUDA(cudaMemcpy(output.get(), wrap.get(), SIZE*sizeof(float), cudaMemcpyDeviceToHost));
+
+    EXPECT_TRUE(0 <= output[0] && output[0] <= 1);
+    for(std::size_t i=1; i<SIZE; i++){
+        EXPECT_NE(output[i-1], output[i]);
+        EXPECT_TRUE(0 <= output[i] && output[i] <= 1);
+    }
+}
+
+#endif

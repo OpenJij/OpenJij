@@ -20,6 +20,10 @@
 #include <algorithm>
 #include <cmath>
 
+#ifdef USE_CUDA
+#include <utility/gpu/memory.hpp>
+#endif
+
 namespace openjij {
     namespace result {
 
@@ -71,7 +75,7 @@ namespace openjij {
                     mean += system.trotter_spins[j][i];
                 }
                 mean /= (double)system.trotter_spins.size();
-                ret_spins[i] = std::round(mean);
+                ret_spins[i] = mean>0 ? 1 : mean<0 ? -1 : 0;
             }
 
             return ret_spins;
@@ -94,6 +98,40 @@ namespace openjij {
 
             return ret_spins;
         }
+
+#ifdef USE_CUDA
+        template<typename FloatType,
+            std::size_t rows_per_block,
+            std::size_t cols_per_block,
+            std::size_t trotters_per_block>
+        const graph::Spins get_solution(const system::ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block>& system){
+
+            std::size_t localsize = system.info.rows*system.info.cols*system.info.chimera_unitsize;
+            std::size_t globalsize = localsize * system.info.trotters;
+
+            graph::Spins ret_spins(localsize);
+
+            //host pinned memory
+            auto temp_spin = utility::cuda::make_host_unique<int32_t[]>(globalsize);
+            HANDLE_ERROR_CUDA(cudaMemcpy(temp_spin.get(), system.spin.get(), globalsize*sizeof(int32_t), cudaMemcpyDeviceToHost));
+
+            for(std::size_t r=0; r<system.info.rows; r++){
+                for(std::size_t c=0; c<system.info.cols; c++){
+                    for(std::size_t i=0; i<system.info.chimera_unitsize; i++){
+                        double mean = 0;
+                        for(std::size_t t=0; t<system.info.trotters; t++){
+                            mean += temp_spin[system::chimera_cuda::glIdx(system.info, r,c,i,t)];
+                        }
+                        mean /= (double)system.info.trotters;
+                        ret_spins[system::chimera_cuda::glIdx(system.info, r,c,i)] = mean>0 ? 1 : mean<0 ? -1 : 0;
+                    }
+                }
+            }
+
+            return ret_spins;
+        }
+#endif
+
 
     } // namespace result
 } // namespace openjij

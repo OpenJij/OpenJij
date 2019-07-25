@@ -1,11 +1,6 @@
 add_library(cxxjij MODULE main.cpp)
 
 if(USE_CUDA)
-    target_include_directories(cxxjij PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-endif()
-
-
-if(USE_CUDA)
     set_target_properties(cxxjij PROPERTIES
         CXX_VISIBILITY_PRESET "hidden"
         INTERPROCEDURAL_OPTIMIZATION TRUE
@@ -30,6 +25,13 @@ target_link_libraries(cxxjij PRIVATE
     eigen_lib
     cxxjij_header_only
 )
+
+if(USE_CUDA)
+    target_link_libraries(cxxjij PRIVATE cxxjij_chimera_gpu_kernel)
+    target_link_libraries(cxxjij PRIVATE ${CUDA_LIBRARIES})
+    target_link_libraries(cxxjij PRIVATE ${CUDA_curand_LIBRARY})
+    target_link_libraries(cxxjij PRIVATE ${CUDA_CUBLAS_LIBRARIES})
+endif()
 
 add_custom_target(python
     DEPENDS cxxjij

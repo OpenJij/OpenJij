@@ -12,12 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UTILITY_EIGEN_HPP__
-#define OPENJIJ_UTILITY_EIGEN_HPP__
-
-#include <graph/all.hpp>
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
+#ifndef OPENJIJ_UTILITY_EXCEPTION_HPP__
+#define OPENJIJ_UTILITY_EXCEPTION_HPP__
 
 namespace openjij {
     namespace utility {
