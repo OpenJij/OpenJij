@@ -365,6 +365,8 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Dense_WithEigenImpl) {
     }
 
     auto transverse_ising = system::make_transverse_ising<true>(init_trotter_spins, interaction, 1.0);
+
+    auto transverse_ising2 = system::make_transverse_ising<true>(interaction.gen_spin(engine_for_spin), interaction, 1.0, 10);
     
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list = generate_tfm_schedule_list();

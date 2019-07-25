@@ -24,7 +24,7 @@ PYBIND11_MODULE(cxxjij, m){
     //namespace graph
      **********************************************************/
  	py::module m_graph = m.def_submodule("graph", "cxxjij submodule for graph");
-
+    
  	//graph 
  	py::class_<graph::Graph>(m_graph, "Graph")
  		.def(py::init<std::size_t>(), "num_spins"_a)
@@ -114,38 +114,41 @@ PYBIND11_MODULE(cxxjij, m){
  	py::module m_system = m.def_submodule("system", "cxxjij module for system");
 
  	//ClassicalIsing (Dense, NoEigenImpl)
-    using ClassicalIsing_Dense = system::ClassicalIsing<graph::Dense<FloatType>, false>;
- 	py::class_<ClassicalIsing_Dense>(m_system, "ClassicalIsing_Dense")
- 		.def(py::init<const graph::Spins&, const graph::Dense<FloatType>&>(), "init_spin"_a, "init_interaction"_a)
- 		.def_readwrite("spin", &ClassicalIsing_Dense::spin)
- 		.def_readonly("interaction", &ClassicalIsing_Dense::interaction);
-    
- 	//ClassicalIsing (Dense, EigenImpl)
-    using ClassicalIsing_Dense_Eigen = system::ClassicalIsing<graph::Dense<FloatType>, true>;
- 	py::class_<ClassicalIsing_Dense_Eigen>(m_system, "ClassicalIsing_Dense_Eigen")
-        .def(py::init<const graph::Spins&, const graph::Dense<FloatType>&>(), "init_spin"_a, "init_interaction"_a)
- 		.def_readwrite("spin", &ClassicalIsing_Dense_Eigen::spin)
- 		.def_readonly("interaction", &ClassicalIsing_Dense_Eigen::interaction)
- 		.def_readonly("num_spins", &ClassicalIsing_Dense_Eigen::num_spins);
+    ::declare_ClassicalIsing<graph::Dense<FloatType>, false>(m_system, "_Dense", "");
+    ::declare_ClassicalIsing<graph::Dense<FloatType>, true>(m_system, "_Dense", "_Eigen");
+    ::declare_ClassicalIsing<graph::Sparse<FloatType>, false>(m_system, "_Sparse", "");
+    ::declare_ClassicalIsing<graph::Sparse<FloatType>, true>(m_system, "_Sparse", "_Eigen");
 
- 	//ClassicalIsing (Sparse, NoEigenImpl)
-    using ClassicalIsing_Sparse = system::ClassicalIsing<graph::Sparse<FloatType>, false>;
- 	py::class_<ClassicalIsing_Sparse>(m_system, "ClassicalIsing_Sparse")
- 		.def(py::init<const graph::Spins&, const graph::Sparse<FloatType>&>(), "init_spin"_a, "init_interaction"_a)
- 		.def_readwrite("spin", &ClassicalIsing_Sparse::spin)
- 		.def_readonly("interaction", &ClassicalIsing_Sparse::interaction);
-    
- 	//ClassicalIsing (Sparse, EigenImpl)
-    using ClassicalIsing_Sparse_Eigen = system::ClassicalIsing<graph::Sparse<FloatType>, true>;
- 	py::class_<ClassicalIsing_Sparse_Eigen>(m_system, "ClassicalIsing_Sparse_Eigen")
- 		.def(py::init<const graph::Spins&, const graph::Sparse<FloatType>&>(), "init_spin"_a, "init_interaction"_a)
- 		.def_readwrite("spin", &ClassicalIsing_Sparse_Eigen::spin)
- 		.def_readonly("interaction", &ClassicalIsing_Sparse_Eigen::interaction)
- 		.def_readonly("num_spins", &ClassicalIsing_Sparse_Eigen::num_spins);
+    //TransverselIsing
+    ::declare_TransverseIsing<graph::Dense<FloatType>, false>(m_system, "_Dense", "");
+    ::declare_TransverseIsing<graph::Dense<FloatType>, true>(m_system, "_Dense", "_Eigen");
+    ::declare_TransverseIsing<graph::Sparse<FloatType>, false>(m_system, "_Sparse", "");
+    ::declare_TransverseIsing<graph::Sparse<FloatType>, true>(m_system, "_Sparse", "_Eigen");
 
+    //ChimeraTransverseGPU
+    ::declare_ChimeraTranseverseGPU<FloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>(m_system);
 
-    //make_classical_ising
-    m_system.def("make_classical_ising")
+    /**********************************************************
+ 	//namespace algorithm
+     **********************************************************/
+ 	py::module m_algorithm = m.def_submodule("algorithm", "cxxjij module for algorithm");
+
+    //singlespinflip
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Dense<FloatType>, false>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Dense<FloatType>, true>,    RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Sparse<FloatType>, false>,  RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Sparse<FloatType>, true>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Dense<FloatType>, false>,  RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Dense<FloatType>, true>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Sparse<FloatType>, false>, RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Sparse<FloatType>, true>,  RandomEngine>(m_algorithm, "SingleSpinFlip");
+
+    //swendsen-wang
+    ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Dense<FloatType>, false>,  RandomEngine>(m_algorithm, "SwendsenWang");
+    ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Sparse<FloatType>, false>, RandomEngine>(m_algorithm, "SwendsenWang");
+
+    //GPU
+    ::declare_Algorithm_run<updater::GPU, system::ChimeraTransverseGPU<FloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>, GPUFloatType>(m_algorithm, "GPU");
 
 }
 
