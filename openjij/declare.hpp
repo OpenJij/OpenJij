@@ -106,24 +106,56 @@ template<typename FloatType,
 
 #endif
 
+
 //Algorithm
 template<template<typename> class Updater, typename System, typename RandomNumberEngine>
 inline void declare_Algorithm_run(py::module &m, const std::string& updater_str){
 //with seed
-    m.def(std::string("Algorithm_")+updater_str+std::string("_run"), [](System& system, std::size_t seed, const utility::ScheduleList<typename system::get_system_type<System>::type>& schedule_list){
-            RandomEngine rng(seed);
+    auto str = std::string("Algorithm_")+updater_str+std::string("_run");
+    m.def(str.c_str(), [](System& system, std::size_t seed, const utility::ScheduleList<typename system::get_system_type<System>::type>& schedule_list){
+            RandomNumberEngine rng(seed);
             algorithm::Algorithm<Updater>::run(system, rng, schedule_list);
             }, "system"_a, "seed"_a, "schedule_list"_a);
 
 //without seed
-    m.def(std::string("Algorithm_")+updater_str+std::string("_run"), [](System& system, const utility::ScheduleList<typename system::get_system_type<System>::type>& schedule_list){
-            RandomEngine rng(std::random_device{}());
+    m.def(str.c_str(), [](System& system, const utility::ScheduleList<typename system::get_system_type<System>::type>& schedule_list){
+            RandomNumberEngine rng(std::random_device{}());
             algorithm::Algorithm<Updater>::run(system, rng, schedule_list);
             }, "system"_a, "schedule_list"_a);
 }
 
+//utility
+template<typename SystemType>
+inline std::string repr_impl(const utility::UpdaterParameter<SystemType>&);
+
+template<>
+inline std::string repr_impl(const utility::UpdaterParameter<system::classical_system>& obj){
+    return "(beta: " + std::to_string(obj.beta) + ")";
+}
+
+template<>
+inline std::string repr_impl(const utility::UpdaterParameter<system::transverse_field_system>& obj){
+    return "(beta: " + std::to_string(obj.beta) + ", s: " + std::to_string(obj.s) + ")";
+}
+
+template<typename SystemType>
+inline void declare_Schedule(py::module &m, const std::string& systemtype_str){
+    auto str = systemtype_str + "Schedule";
+    py::class_<utility::Schedule<SystemType>>(m, str.c_str())
+        .def(py::init<>())
+        .def_readwrite("one_mc_step", &utility::Schedule<SystemType>::one_mc_step)
+        .def_readwrite("updater_parameter", &utility::Schedule<SystemType>::updater_parameter)
+        .def("__repr__", [](const utility::Schedule<SystemType>& self){
+                return "(" + repr_impl(self.updater_parameter) + " mcs: " + std::to_string(self.one_mc_step) + ")";
+                });
+}
+
 //result
 //get_solution
+template<typename System>
+inline void declare_get_solution(py::module &m){
+    m.def("get_solution", [](const System& system){return result::get_solution(system);}, "system"_a);
+}
 
 
 

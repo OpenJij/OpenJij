@@ -57,13 +57,16 @@ namespace openjij {
     //using GPUloatType = double;
 
 
+#ifdef USE_CUDA
     /**********************************************************
      default random number engine on GPU (default: xorwow)
      **********************************************************/
-    auto GPURandomEngine = CURAND_RNG_PSEUDO_XORWOW;
-    //auto GPURandomEngine = CURAND_RNG_PSEUDO_MT19937;
-    //auto GPURandomEngine = CURAND_RNG_PSEUDO_DEFAULT;
+    constexpr auto GPURandomEngine = CURAND_RNG_PSEUDO_XORWOW;
+    //constexpr auto GPURandomEngine = CURAND_RNG_PSEUDO_MT19937;
+    //constexpr auto GPURandomEngine = CURAND_RNG_PSEUDO_DEFAULT;
     //...
+    
+#endif
 
 
     /**********************************************************
