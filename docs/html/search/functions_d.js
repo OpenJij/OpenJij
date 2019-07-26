@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['operator_28_29',['operator()',['../structopenjij_1_1graph_1_1_pair_hash.html#a5c8c1decb1531eaf1767738594ccb887',1,'openjij::graph::PairHash']]]
+  ['quantumising',['QuantumIsing',['../classopenjij_1_1system_1_1_quantum_ising.html#a0504ff21547ef9b119591fff2147de6a',1,'openjij::system::QuantumIsing::QuantumIsing(const graph::Dense&lt; double &gt; &amp;interaction, size_t num_trotter_slices)'],['../classopenjij_1_1system_1_1_quantum_ising.html#a3d792c912cfed6bfcde8533684ea1ecc',1,'openjij::system::QuantumIsing::QuantumIsing(const graph::Dense&lt; double &gt; &amp;interaction, size_t num_trotter_slices, graph::Spins &amp;classical_spins)']]]
 ];

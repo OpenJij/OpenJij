@@ -73,9 +73,7 @@ $(function() {
 <div class="title">kernel_frontend.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;cuda_runtime.h&gt;</code><br />
-<code>#include &lt;curand.h&gt;</code><br />
-</div>
+
 <p><a href="kernel__frontend_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -89,10 +87,22 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a493feb9abc93dd5f1e4a40a53116a955"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system_1_1chimera__gpu.html#a493feb9abc93dd5f1e4a40a53116a955">openjij::system::chimera_gpu::cuda_init_spin</a> (int32_t *&amp;dev_spin, float *&amp;dev_random, uint32_t num_trot, uint32_t num_row, uint32_t num_col, curandGenerator_t &amp;rng, dim3 &amp;grid, dim3 &amp;block)</td></tr>
-<tr class="separator:a493feb9abc93dd5f1e4a40a53116a955"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a127d98e575498539b5e3019cc263ad7e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system_1_1chimera__gpu.html#a127d98e575498539b5e3019cc263ad7e">openjij::system::chimera_gpu::cuda_run</a> (float beta, float gamma, float s, int32_t *&amp;dev_spin, float *&amp;dev_random, float *&amp;dev_J_out_p, float *&amp;dev_J_out_n, float *&amp;dev_J_in_0, float *&amp;dev_J_in_1, float *&amp;dev_J_in_2, float *&amp;dev_J_in_3, float *&amp;dev_H, uint32_t num_trot, uint32_t num_row, uint32_t num_col, curandGenerator_t &amp;rng, dim3 &amp;grid, dim3 &amp;block)</td></tr>
-<tr class="separator:a127d98e575498539b5e3019cc263ad7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb990cf93e3e9b8d64e8c25db2e73f90"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system_1_1chimera__gpu.html#afb990cf93e3e9b8d64e8c25db2e73f90">openjij::system::chimera_gpu::cuda_set_device</a> (int device)</td></tr>
+<tr class="separator:afb990cf93e3e9b8d64e8c25db2e73f90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a08a0f51cb465861d737d7a88ce1de6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system_1_1chimera__gpu.html#a5a08a0f51cb465861d737d7a88ce1de6">openjij::system::chimera_gpu::cuda_init</a> (uint32_t arg_num_trot, uint32_t arg_num_row, uint32_t arg_num_col)</td></tr>
+<tr class="separator:a5a08a0f51cb465861d737d7a88ce1de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90d02c53d1a685ecf3519fb7c6345ed1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system_1_1chimera__gpu.html#a90d02c53d1a685ecf3519fb7c6345ed1">openjij::system::chimera_gpu::cuda_init_interactions</a> (const float *J_out_p, const float *J_out_n, const float *J_in_0, const float *J_in_1, const float *J_in_2, const float *J_in_3, const float *H)</td></tr>
+<tr class="separator:a90d02c53d1a685ecf3519fb7c6345ed1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a552da8f54ab82391f3622ebd85a6062d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system_1_1chimera__gpu.html#a552da8f54ab82391f3622ebd85a6062d">openjij::system::chimera_gpu::cuda_init_spin</a> ()</td></tr>
+<tr class="separator:a552da8f54ab82391f3622ebd85a6062d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa9022500190f6664e08830cb25004da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system_1_1chimera__gpu.html#aaa9022500190f6664e08830cb25004da">openjij::system::chimera_gpu::cuda_run</a> (float beta, float gamma, float s)</td></tr>
+<tr class="separator:aaa9022500190f6664e08830cb25004da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9f972f776d242968675333d6d7c5db6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system_1_1chimera__gpu.html#aa9f972f776d242968675333d6d7c5db6">openjij::system::chimera_gpu::copy_spins</a> ()</td></tr>
+<tr class="separator:aa9f972f776d242968675333d6d7c5db6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b7c65224fb52efe9a366a6b64b7cd11"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system_1_1chimera__gpu.html#a7b7c65224fb52efe9a366a6b64b7cd11">openjij::system::chimera_gpu::get_spin</a> (uint32_t t, uint32_t i, uint32_t j, uint32_t ind)</td></tr>
+<tr class="separator:a7b7c65224fb52efe9a366a6b64b7cd11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab632c3604d53ccc3e3da13586ab73f2e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system_1_1chimera__gpu.html#ab632c3604d53ccc3e3da13586ab73f2e">openjij::system::chimera_gpu::cuda_free</a> ()</td></tr>
+<tr class="separator:ab632c3604d53ccc3e3da13586ab73f2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
