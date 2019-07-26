@@ -136,7 +136,9 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_get_solution<system::TransverseIsing<graph::Dense<FloatType>, true>>(m_result);
     ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>, false>>(m_result);
     ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>, true>>(m_result);
+#ifdef USE_CUDA
     ::declare_get_solution<system::ChimeraTransverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>>(m_result);
+#endif
 }
 
 
