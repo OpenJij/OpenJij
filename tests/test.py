@@ -4,7 +4,240 @@ import unittest
 import numpy as np
 
 #import openjij as oj
-#import cxxjij as cj
+import cxxjij.graph as G
+import cxxjij.system as S
+import cxxjij.algorithm as A
+import cxxjij.utility as U
+import cxxjij.result as R
+
+
+class CXXTest(unittest.TestCase):
+
+    def setUp(self):
+        self.size = 8
+        #dense graph
+        self.dense = G.Dense(self.size)
+        self.dense = self.gen_testcase(self.dense)
+        #sparse graph
+        self.sparse = G.Sparse(self.size)
+        self.sparse = self.gen_testcase(self.dense)
+
+        self.seed_for_spin = 1234
+        self.seed_for_mc = 5678
+        
+
+    def gen_testcase(self, J):
+        J[0,0]=-0.1;
+        J[0,1]=-0.9;
+        J[0,2]=0.2;
+        J[0,3]=0.1;
+        J[0,4]=1.3;
+        J[0,5]=0.8;
+        J[0,6]=0.9;
+        J[0,7]=0.4;
+        J[1,1]=-0.7;
+        J[1,2]=-1.6;
+        J[1,3]=1.5;
+        J[1,4]=1.5;
+        J[1,5]=1.2;
+        J[1,6]=-1.5;
+        J[1,7]=-1.7;
+        J[2,2]=-0.6;
+        J[2,3]=1.2;
+        J[2,4]=-1.3;
+        J[2,5]=-0.5;
+        J[2,6]=-1.9;
+        J[2,7]=1.2;
+        J[3,3]=0.8;
+        J[3,4]=-0.5;
+        J[3,5]=-0.4;
+        J[3,6]=-1.8;
+        J[3,7]=-2.0;
+        J[4,4]=0.6;
+        J[4,5]=-2.0;
+        J[4,6]=-1.9;
+        J[4,7]=0.5;
+        J[5,5]=-1.8;
+        J[5,6]=-1.2;
+        J[5,7]=1.8;
+        J[6,6]=0.3;
+        J[6,7]=1.4;
+        J[7,7]=1.8;
+
+
+        self.true_groundstate = [-1, -1, 1, 1, 1, 1, 1, -1]
+        return J
+    
+    def test_SingleSpinFlip_ClassicalIsing_Dense_NoEigenImpl(self):
+
+        #classial ising (dense)
+        system = S.make_classical_ising(self.dense.gen_spin(self.seed_for_spin), self.dense)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 100)
+
+        #anneal
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_SingleSpinFlip_ClassicalIsing_Dense_WithEigenImpl(self):
+
+        #classial ising (dense)
+        system = S.make_classical_ising_Eigen(self.dense.gen_spin(self.seed_for_spin), self.dense)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 100)
+
+        #anneal
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_SingleSpinFlip_ClassicalIsing_Sparse_NoEigenImpl(self):
+
+        #classial ising (sparse)
+        system = S.make_classical_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 100)
+
+        #anneal
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_SingleSpinFlip_ClassicalIsing_Sparse_WithEigenImpl(self):
+
+        #classial ising (sparse)
+        system = S.make_classical_ising_Eigen(self.sparse.gen_spin(self.seed_for_spin), self.sparse)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 100)
+
+        #anneal
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_SingleSpinFlip_TransverseIsing_Dense_NoEigenImpl(self):
+
+        #transverse ising (dense)
+        system = S.make_transverse_ising(self.dense.gen_spin(self.seed_for_spin), self.dense, 1.0, 10)
+
+        #schedulelist
+        schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
+
+        #anneal
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_SingleSpinFlip_TransverseIsing_Dense_WithEigenImpl(self):
+
+        #classial ising (dense)
+        system = S.make_transverse_ising(self.dense.gen_spin(self.seed_for_spin), self.dense, 1.0, 10)
+
+        #schedulelist
+        schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
+
+        #anneal
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_SingleSpinFlip_TransverseIsing_Sparse_NoEigenImpl(self):
+
+        #classial ising (sparse)
+        system = S.make_transverse_ising(self.dense.gen_spin(self.seed_for_spin), self.dense, 1.0, 10)
+
+        #schedulelist
+        schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
+
+        #anneal
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_SingleSpinFlip_TransverseIsing_Sparse_WithEigenImpl(self):
+
+        #classial ising (sparse)
+        system = S.make_transverse_ising(self.dense.gen_spin(self.seed_for_spin), self.dense, 1.0, 10)
+
+        #schedulelist
+        schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
+
+        #anneal
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
+
+    def test_SwendsenWang_ClassicalIsing_Dense_NoEigenImpl(self):
+
+        #classial ising (dense)
+        system = S.make_classical_ising(self.dense.gen_spin(self.seed_for_spin), self.dense)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 2000, 2000)
+
+        #anneal
+        A.Algorithm_SwendsenWang_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_SwendsenWang_ClassicalIsing_Sparse_NoEigenImpl(self):
+
+        #classial ising (sparse)
+        system = S.make_classical_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 2000, 2000)
+
+        #anneal
+        A.Algorithm_SwendsenWang_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
 
 #class UtilsTest(unittest.TestCase):
 #
@@ -295,5 +528,7 @@ import numpy as np
 #    #     response=sampler.sample_ising(h,J,unit_num_L=10)
         
 if __name__ == '__main__':
-    # test is currently disabled. TODO: write test!
     unittest.main()
+
+
+
