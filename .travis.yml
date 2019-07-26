@@ -27,4 +27,4 @@ install:
   - python setup.py install
 
 script:
-  - python setup.py build --debug test
+  - python setup.py test
