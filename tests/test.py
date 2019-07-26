@@ -359,22 +359,24 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
 
-    def test_GPU_ChimeraTransverseGPU(self):
+# GPU Test is currently disabled.
 
-        #classial ising (sparse)
-        system = S.make_chimera_transverse_gpu(self.chimera.gen_spin(self.seed_for_spin), self.chimera, 1.0, 10)
-
-        #schedulelist
-        schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
-
-        #anneal
-        A.Algorithm_GPU_run(system, self.seed_for_mc, schedule_list)
-
-        #result spin
-        result_spin = R.get_solution(system)
-
-        #compare
-        self.assertTrue(self.true_chimera_spin == result_spin)
+#    def test_GPU_ChimeraTransverseGPU(self):
+#
+#        #classial ising (sparse)
+#        system = S.make_chimera_transverse_gpu(self.chimera.gen_spin(self.seed_for_spin), self.chimera, 1.0, 10)
+#
+#        #schedulelist
+#        schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
+#
+#        #anneal
+#        A.Algorithm_GPU_run(system, self.seed_for_mc, schedule_list)
+#
+#        #result spin
+#        result_spin = R.get_solution(system)
+#
+#        #compare
+#        self.assertTrue(self.true_chimera_spin == result_spin)
 
 #class UtilsTest(unittest.TestCase):
 #
