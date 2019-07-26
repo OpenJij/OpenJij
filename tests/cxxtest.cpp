@@ -450,6 +450,8 @@ TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
 
 //gpu test
 
+#ifdef USE_CUDA
+
 TEST(GPU, glIdxConsistencyCheck_Chimera) {
     using namespace openjij;
 
@@ -494,6 +496,8 @@ TEST(GPU, FindTrueGroundState_ChimeraTransverseGPU) {
     
     EXPECT_EQ(get_true_chimera_groundstate(interaction), result::get_solution(chimera_quantum_gpu));
 }
+
+#endif
 
 //utility test
 
