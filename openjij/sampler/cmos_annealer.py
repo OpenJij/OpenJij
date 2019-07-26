@@ -21,6 +21,52 @@ from openjij.model import KingGraph
 import numpy as np
 
 class CMOSAnnealer(BaseSampler):
+    """Sampler with CMOS Annealer.
+
+    Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
+
+    To get More details about CMOS Annealer API,
+    please access the reference (https://annealing-cloud.com/web-api/reference.html).
+
+    Args:
+        token (str):
+            API token of COMS Annealer.
+
+        machine_type (str):
+            Type of CMOS Annealer: 'ASIC' or 'FPGA'.
+
+        beta_min (float):
+            Minimum beta (inverse temperature).
+
+        beta_max (float):
+            Maximum beta (inverse temperature).
+
+        step_length (int):
+            Length of Monte Carlo step.
+
+        step_num (int):
+            Number of Monte Carlo step.
+
+        schedule_info (dict):
+            Information about an annealing schedule.
+
+        iteration (int):
+            Number of iterations.
+
+        **kwargs:
+            Optional keyword arguments for CMOS Annealer.
+
+    Attributes:
+        cmos_parameters (dict):
+            Parameters of CMOS Annealer.
+
+    Raises:
+        ValueError:
+            - only valid input: h, J, Q, or king graph.
+            - CMOS Annealer API raises error.
+
+    """
+
     def __init__(self, token, machine_type="ASIC", beta_min=0.1, beta_max=5.0, step_length=10, step_num=100, iteration=1, **kwargs):
         
         self.token = token
@@ -35,6 +81,37 @@ class CMOSAnnealer(BaseSampler):
         self.cmos_parameters.update(kwargs)
         
     def sample_ising(self, h=None, J=None, king_graph=None):
+        """Sample from the specified Ising model.
+
+        Args:
+            h (dict):
+                Linear biases of the Ising model.
+
+            J (dict):
+                Quadratic biases of the Ising model.
+
+            **kwargs:
+                Optional keyword arguments for the sampling method.
+
+        Returns:
+            :obj:: `openjij.sampler.response.Response` object.
+
+        Examples:
+            This example submits a two-variable Ising problem.
+
+            >>> import openjij as oj
+            >>> sampler = oj.CMOSAnnealer(token="YOUR_TOKEN", iteration=10)
+            >>> response = sampler.sample_ising({0: 1}, {(0, 1): -1, (1, 2): -1, (0, 80): 3})
+            >>> print(response)
+            number of state: 10, minimun energy: -4.0, spin_type: ising
+            info:
+                averaged_spins: [[2, 0, 1.0], [0, 1, -1.0], [0, 0, 1.0], [1, 0, 1.0]]
+                averaged_energy: -4.0
+                execution_time: 58769171
+                job_id: XXXXXXXXXXXXXXXXX
+
+        """
+
         var_type = 'SPIN'
         if king_graph is not None:
             _king_graph = KingGraph(machine_type=self.machine_type, king_graph=king_graph, var_type=var_type)
@@ -46,6 +123,34 @@ class CMOSAnnealer(BaseSampler):
             raise ValueError('intput "h and J" or king_graph model')
 
     def sample_qubo(self, Q=None, king_graph=None):
+        """Sample from the specified QUBO.
+
+        Args:
+            Q (dict):
+                Coefficients of a quadratic unconstrained binary optimization (QUBO) model.
+
+            **kwargs:
+                Optional keyword arguments for the sampling method.
+
+        Returns:
+            :obj:: `openjij.sampler.response.Response` object.
+
+        Examples:
+            This example submits a two-variable QUBO model.
+
+            >>> import openjij as oj
+            >>> sampler = oj.CMOSAnnealer(token="YOUR_TOKEN", iteration=10)
+            >>> response = sampler.sample_qubo({(0, 0): 1, (0, 1): -1, (1, 2): -1, (0, 80): 3})
+            >>> print(response)
+            number of state: 10, minimun energy: -4.0, spin_type: binary
+            info:
+                averaged_spins: [[2, 0, 1.0], [0, 1, -1.0], [0, 0, 1.0], [1, 0, 1.0]]
+                averaged_energy: -4.0
+                execution_time: 58769171
+                job_id: XXXXXXXXXXXXXXXXX
+
+        """
+
         var_type = 'BINARY'
         if king_graph is not None:
             _king_graph = KingGraph(machine_type=self.machine_type, king_graph=king_graph, var_type=var_type)
@@ -88,6 +193,18 @@ class CMOSAnnealer(BaseSampler):
         return response
     
     def make_json_request(self, model, token):
+        """Make request for CMOS Annealer API.
+ 
+        Args:
+            model (list):
+                A list of 5 integer values representing vertices
+                or interactions of Ising model
+
+            token (str):
+                API token of COMS Annealer.
+
+        """
+
         headers = {"Authorization": "Bearer " + token}
         headers.update({ "Accept": "application/json" })
         headers.update({ 'content-type': 'application/json' })
