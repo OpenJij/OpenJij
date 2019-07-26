@@ -24,87 +24,22 @@ PYBIND11_MODULE(cxxjij, m){
      **********************************************************/
     py::module m_graph = m.def_submodule("graph", "cxxjij submodule for graph");
 
-    //graph 
-    py::class_<graph::Graph>(m_graph, "Graph")
-        .def(py::init<std::size_t>(), "num_spins"_a)
-        .def("gen_spin", [](const graph::Graph& self, std::size_t seed){
-                RandomEngine rng(seed);
-                return self.gen_spin(rng);
-                }, "seed"_a)
-        .def("gen_spin", [](const graph::Graph& self){
-            RandomEngine rng(std::random_device{}());
-            return self.gen_spin(rng);
-            })
-        .def("size", &graph::Graph::size);
+    ::declare_Graph(m_graph);
 
-    //dense
-    py::class_<graph::Dense<FloatType>, graph::Graph>(m_graph, "Dense")
-        .def(py::init<std::size_t>(), "num_spins"_a)
-        .def(py::init<const graph::Dense<FloatType>&>(), "other"_a)
-        .def("adj_nodes", &graph::Dense<FloatType>::adj_nodes)
-        .def("calc_energy", &graph::Dense<FloatType>::calc_energy, "spins"_a)
-        .def("__setitem__", [](graph::Dense<FloatType>& self, const std::pair<std::size_t, std::size_t>& key, FloatType val){self.J(key.first, key.second) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Dense<FloatType>& self, const std::pair<std::size_t, std::size_t>& key){return self.J(key.first, key.second);}, "key"_a)
-        .def("__setitem__", [](graph::Dense<FloatType>& self, std::size_t key, FloatType val){self.h(key) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Dense<FloatType>& self, std::size_t key){return self.h(key);}, "key"_a);
+    ::declare_Dir(m_graph);
+    ::declare_ChimeraDir(m_graph);
 
-    //sparse
-    py::class_<graph::Sparse<FloatType>, graph::Graph>(m_graph, "Sparse")
-        .def(py::init<std::size_t, std::size_t>(), "num_spins"_a, "num_edges"_a)
-        .def(py::init<std::size_t>(),  "num_spins"_a)
-        .def(py::init<const graph::Sparse<FloatType>&>(), "other"_a)
-        .def("adj_nodes", &graph::Sparse<FloatType>::adj_nodes)
-        .def("get_num_edges", &graph::Sparse<FloatType>::get_num_edges)
-        .def("calc_energy", &graph::Sparse<FloatType>::calc_energy, "spins"_a)
-        .def("__setitem__", [](graph::Sparse<FloatType>& self, const std::pair<std::size_t, std::size_t>& key, FloatType val){self.J(key.first, key.second) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Sparse<FloatType>& self, const std::pair<std::size_t, std::size_t>& key){return self.J(key.first, key.second);}, "key"_a)
-        .def("__setitem__", [](graph::Sparse<FloatType>& self, std::size_t key, FloatType val){self.h(key) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Sparse<FloatType>& self, std::size_t key){return self.h(key);}, "key"_a);
+    //CPU version (FloatType)
+    ::declare_Dense<FloatType>(m_graph, "");
+    ::declare_Sparse<FloatType>(m_graph, "");
+    ::declare_Square<FloatType>(m_graph, "");
+    ::declare_Chimera<FloatType>(m_graph, "");
 
-    //enum class Dir
-    py::enum_<graph::Dir>(m_graph, "Dir")
-        .value("PLUS_R", graph::Dir::PLUS_R)
-        .value("MINUS_R", graph::Dir::MINUS_R)
-        .value("PLUS_C", graph::Dir::PLUS_C)
-        .value("MINUS_C", graph::Dir::MINUS_C);
-
-    //square
-    py::class_<graph::Square<FloatType>, graph::Sparse<FloatType>>(m_graph, "Square")
-        .def(py::init<std::size_t, std::size_t, FloatType>(), "num_row"_a, "num_column"_a, "init_val"_a=0)
-        .def(py::init<const graph::Square<FloatType>&>(), "other"_a)
-        .def("to_ind", &graph::Square<FloatType>::to_ind)
-        .def("to_rc", &graph::Square<FloatType>::to_rc)
-        .def("get_num_row", &graph::Square<FloatType>::get_num_row)
-        .def("get_num_column", &graph::Square<FloatType>::get_num_column)
-        .def("__setitem__", [](graph::Square<FloatType>& self, const std::tuple<std::size_t, std::size_t, graph::Dir>& key, FloatType val){self.J(std::get<0>(key), std::get<1>(key), std::get<2>(key)) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Square<FloatType>& self, const std::tuple<std::size_t, std::size_t, graph::Dir>& key){return self.J(std::get<0>(key), std::get<1>(key), std::get<2>(key));}, "key"_a)
-        .def("__setitem__", [](graph::Square<FloatType>& self, const std::pair<std::size_t, std::size_t>& key, FloatType val){self.h(key.first, key.second) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Square<FloatType>& self, const std::pair<std::size_t, std::size_t>& key){return self.h(key.first, key.second);}, "key"_a);
-
-    //enum class ChimeraDir
-    py::enum_<graph::ChimeraDir>(m_graph, "ChimeraDir")
-        .value("PLUS_R", graph::ChimeraDir::PLUS_R)
-        .value("MINUS_R", graph::ChimeraDir::MINUS_R)
-        .value("PLUS_C", graph::ChimeraDir::PLUS_C)
-        .value("MINUS_C", graph::ChimeraDir::MINUS_C)
-        .value("IN_0or4", graph::ChimeraDir::IN_0or4)
-        .value("IN_1or5", graph::ChimeraDir::IN_1or5)
-        .value("IN_2or6", graph::ChimeraDir::IN_2or6)
-        .value("IN_3or7", graph::ChimeraDir::IN_3or7);
-
-    //chimera
-    py::class_<graph::Chimera<FloatType>, graph::Sparse<FloatType>>(m_graph, "Chimera")
-        .def(py::init<std::size_t, std::size_t, FloatType>(), "num_row"_a, "num_column"_a, "init_val"_a=0)
-        .def(py::init<const graph::Chimera<FloatType>&>(), "other"_a)
-        .def("to_ind", &graph::Chimera<FloatType>::to_ind)
-        .def("to_rci", &graph::Chimera<FloatType>::to_rci)
-        .def("get_num_row", &graph::Chimera<FloatType>::get_num_row)
-        .def("get_num_column", &graph::Chimera<FloatType>::get_num_column)
-        .def("get_num_in_chimera", &graph::Chimera<FloatType>::get_num_in_chimera)
-        .def("__setitem__", [](graph::Chimera<FloatType>& self, const std::tuple<std::size_t, std::size_t, std::size_t, graph::ChimeraDir>& key, FloatType val){self.J(std::get<0>(key), std::get<1>(key), std::get<2>(key), std::get<3>(key)) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Chimera<FloatType>& self, const std::tuple<std::size_t, std::size_t, std::size_t, graph::ChimeraDir>& key){return self.J(std::get<0>(key), std::get<1>(key), std::get<2>(key), std::get<3>(key));}, "key"_a)
-        .def("__setitem__", [](graph::Chimera<FloatType>& self, const std::tuple<std::size_t, std::size_t, std::size_t>& key, FloatType val){self.h(std::get<0>(key), std::get<1>(key), std::get<2>(key)) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Chimera<FloatType>& self, const std::tuple<std::size_t, std::size_t, std::size_t>& key){return self.h(std::get<0>(key), std::get<1>(key), std::get<2>(key));}, "key"_a);
+    //GPU version (GPUFloatType)
+    ::declare_Dense<GPUFloatType>(m_graph, "GPU");
+    ::declare_Sparse<GPUFloatType>(m_graph, "GPU");
+    ::declare_Square<GPUFloatType>(m_graph, "GPU");
+    ::declare_Chimera<GPUFloatType>(m_graph, "GPU");
 
 
     /**********************************************************
@@ -126,7 +61,7 @@ PYBIND11_MODULE(cxxjij, m){
 
 #ifdef USE_CUDA
     //ChimeraTransverseGPU
-    ::declare_ChimeraTranseverseGPU<FloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>(m_system);
+    ::declare_ChimeraTranseverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>(m_system);
 #endif
 
     /**********************************************************

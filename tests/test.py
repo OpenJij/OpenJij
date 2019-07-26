@@ -21,6 +21,10 @@ class CXXTest(unittest.TestCase):
         #sparse graph
         self.sparse = G.Sparse(self.size)
         self.sparse = self.gen_testcase(self.dense)
+        #chimera graph
+        #Note: make sure to use ChimeraGPU (not Chimera) when using GPU since the type between FloatType and GPUFloatType is in general different.
+        self.chimera = G.ChimeraGPU(2,2)
+        self.chimera = self.gen_chimera_testcase(self.chimera)
 
         self.seed_for_spin = 1234
         self.seed_for_mc = 5678
@@ -68,7 +72,7 @@ class CXXTest(unittest.TestCase):
         self.true_groundstate = [-1, -1, 1, 1, 1, 1, 1, -1]
         return J
 
-    def gen_chimera_testcase(J):
+    def gen_chimera_testcase(self, J):
         J[0,0,0,G.ChimeraDir.IN_0or4] = +0.25;
         J[0,0,0,G.ChimeraDir.IN_1or5] = +0.25;
         J[0,0,0,G.ChimeraDir.IN_2or6] = +0.25;
@@ -137,7 +141,7 @@ class CXXTest(unittest.TestCase):
         J[1,1,3,G.ChimeraDir.IN_2or6] = +0.25;
         J[1,1,3,G.ChimeraDir.IN_3or7] = +0.25;
 
-        h[0,0,0] = +1;
+        J[0,0,0] = +1;
 
         J[0,0,6,G.ChimeraDir.PLUS_C] = +1;
         J[0,0,3,G.ChimeraDir.PLUS_R] = -1;
@@ -354,6 +358,23 @@ class CXXTest(unittest.TestCase):
 
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_GPU_ChimeraTransverseGPU(self):
+
+        #classial ising (sparse)
+        system = S.make_chimera_transverse_gpu(self.chimera.gen_spin(self.seed_for_spin), self.chimera, 1.0, 10)
+
+        #schedulelist
+        schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
+
+        #anneal
+        A.Algorithm_GPU_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_chimera_spin == result_spin)
 
 #class UtilsTest(unittest.TestCase):
 #
