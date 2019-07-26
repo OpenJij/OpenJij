@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['benchmark',['benchmark',['../namespaceopenjij_1_1utils.html#a58cd7f3238a6b3751598c0ef8b92b91b',1,'openjij::utils']]]
+  ['benchmark',['benchmark',['../namespaceopenjij_1_1utils.html#a90b3410c13a9577c8f8036f919077e5e',1,'openjij::utils']]]
 ];

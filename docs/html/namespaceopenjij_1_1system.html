@@ -69,7 +69,8 @@ $(function() {
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">openjij::system Namespace Reference</div>  </div>
 </div><!--header-->
@@ -86,15 +87,50 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_classical_ising.html">ClassicalIsing</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structopenjij_1_1system_1_1_g_b_r_c_i_strct.html">GBRCIStrct</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structopenjij_1_1system_1_1_g_b_strct.html">GBStrct</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structopenjij_1_1system_1_1_g_b_t_r_c_i_strct.html">GBTRCIStrct</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_quantum_ising.html">QuantumIsing</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structopenjij_1_1system_1_1_r_c_i_strct.html">RCIStrct</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_system.html">System</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structopenjij_1_1system_1_1_t_r_c_i_strct.html">TRCIStrct</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:aeaac4045eb5f0409fd68572977cd1943"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system.html#aeaac4045eb5f0409fd68572977cd1943">TrotterSpins</a> = std::vector&lt; <a class="el" href="namespaceopenjij_1_1graph.html#ace188933d1719b22664ab431b0c1c85c">graph::Spins</a> &gt;</td></tr>
 <tr class="separator:aeaac4045eb5f0409fd68572977cd1943"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:afd4551283b46a28a278d4129b9f94ba7"><td class="memItemLeft" align="right" valign="top">__host__ __device__ __forceinline__ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system.html#afd4551283b46a28a278d4129b9f94ba7">glIdx_RCI</a> (uint32_t row, uint32_t col, uint32_t i, uint32_t j, uint32_t index)</td></tr>
+<tr class="separator:afd4551283b46a28a278d4129b9f94ba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64aeae9001a05d661f346c8f8e3f4b19"><td class="memItemLeft" align="right" valign="top">__host__ __device__ __forceinline__ <a class="el" href="structopenjij_1_1system_1_1_r_c_i_strct.html">RCIStrct</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system.html#a64aeae9001a05d661f346c8f8e3f4b19">fromIdx_RCI</a> (uint32_t row, uint32_t col, uint32_t glIdx)</td></tr>
+<tr class="separator:a64aeae9001a05d661f346c8f8e3f4b19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bd58c58b120b293a0d5465c6b320c15"><td class="memItemLeft" align="right" valign="top">__host__ __device__ __forceinline__ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system.html#a7bd58c58b120b293a0d5465c6b320c15">glIdx_TRCI</a> (uint32_t trot, uint32_t row, uint32_t col, uint32_t t, uint32_t i, uint32_t j, uint32_t index)</td></tr>
+<tr class="separator:a7bd58c58b120b293a0d5465c6b320c15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cded34856abc8c442c87c94c667e0bb"><td class="memItemLeft" align="right" valign="top">__host__ __device__ __forceinline__ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system.html#a4cded34856abc8c442c87c94c667e0bb">glIdx_TRCI_ext</a> (uint32_t trot, uint32_t row, uint32_t col, int32_t t, int32_t i, int32_t j, uint32_t index)</td></tr>
+<tr class="separator:a4cded34856abc8c442c87c94c667e0bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e421b31eb7f2cff4119d0a9e4ffc8b8"><td class="memItemLeft" align="right" valign="top">__host__ __device__ __forceinline__ <a class="el" href="structopenjij_1_1system_1_1_t_r_c_i_strct.html">TRCIStrct</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system.html#a7e421b31eb7f2cff4119d0a9e4ffc8b8">fromIdx_TRCI</a> (uint32_t trot, uint32_t row, uint32_t col, uint32_t glIdx)</td></tr>
+<tr class="separator:a7e421b31eb7f2cff4119d0a9e4ffc8b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb018138f58d13fcc9f876e0f606c404"><td class="memItemLeft" align="right" valign="top">__host__ __device__ __forceinline__ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system.html#acb018138f58d13fcc9f876e0f606c404">glIdx_GB</a> (uint32_t num_gamma, uint32_t num_beta, uint32_t g, uint32_t b)</td></tr>
+<tr class="separator:acb018138f58d13fcc9f876e0f606c404"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac903f05e128a32b53f7cd6524e3b5776"><td class="memItemLeft" align="right" valign="top">__host__ __device__ __forceinline__ <a class="el" href="structopenjij_1_1system_1_1_g_b_strct.html">GBStrct</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system.html#ac903f05e128a32b53f7cd6524e3b5776">fromIdx_GB</a> (uint32_t num_gamma, uint32_t num_beta, uint32_t glIdx)</td></tr>
+<tr class="separator:ac903f05e128a32b53f7cd6524e3b5776"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b1c44638462d5728203cdcd3d4b648f"><td class="memItemLeft" align="right" valign="top">__host__ __device__ __forceinline__ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system.html#a5b1c44638462d5728203cdcd3d4b648f">glIdx_GBTRCI</a> (uint32_t num_gamma, uint32_t num_beta, uint32_t num_trot, uint32_t row, uint32_t col, uint32_t g, uint32_t b, uint32_t t, uint32_t i, uint32_t j, uint32_t index)</td></tr>
+<tr class="separator:a5b1c44638462d5728203cdcd3d4b648f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a703d6d2469662ee0c66025fc47f94ac2"><td class="memItemLeft" align="right" valign="top">__host__ __device__ __forceinline__ <a class="el" href="structopenjij_1_1system_1_1_g_b_t_r_c_i_strct.html">GBTRCIStrct</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system.html#a703d6d2469662ee0c66025fc47f94ac2">fromIdx_GBTRCI</a> (uint32_t num_gamma, uint32_t num_beta, uint32_t num_trot, uint32_t row, uint32_t col, uint32_t glIdx)</td></tr>
+<tr class="separator:a703d6d2469662ee0c66025fc47f94ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a956cf2acd8109b298a326770c53cf595"><td class="memItemLeft" align="right" valign="top">__host__ __device__ __forceinline__ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system.html#a956cf2acd8109b298a326770c53cf595">glIdx_GBRCI</a> (uint32_t num_gamma, uint32_t num_beta, uint32_t row, uint32_t col, uint32_t g, uint32_t b, uint32_t i, uint32_t j, uint32_t index)</td></tr>
+<tr class="separator:a956cf2acd8109b298a326770c53cf595"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33d453d3989707e98b214ad8dcffbe65"><td class="memItemLeft" align="right" valign="top">__host__ __device__ __forceinline__ <a class="el" href="structopenjij_1_1system_1_1_g_b_r_c_i_strct.html">GBRCIStrct</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system.html#a33d453d3989707e98b214ad8dcffbe65">fromIdx_GBRCI</a> (uint32_t num_gamma, uint32_t num_beta, uint32_t row, uint32_t col, uint32_t glIdx)</td></tr>
+<tr class="separator:a33d453d3989707e98b214ad8dcffbe65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="aeaac4045eb5f0409fd68572977cd1943"></a>
@@ -105,6 +141,567 @@ Typedefs</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespaceopenjij_1_1system.html#aeaac4045eb5f0409fd68572977cd1943">openjij::system::TrotterSpins</a> = typedef std::vector&lt;<a class="el" href="namespaceopenjij_1_1graph.html#ace188933d1719b22664ab431b0c1c85c">graph::Spins</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ac903f05e128a32b53f7cd6524e3b5776"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac903f05e128a32b53f7cd6524e3b5776">&#9670;&nbsp;</a></span>fromIdx_GB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__host__ __device__ __forceinline__ <a class="el" href="structopenjij_1_1system_1_1_g_b_strct.html">GBStrct</a> openjij::system::fromIdx_GB </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_gamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>glIdx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a33d453d3989707e98b214ad8dcffbe65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33d453d3989707e98b214ad8dcffbe65">&#9670;&nbsp;</a></span>fromIdx_GBRCI()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__host__ __device__ __forceinline__ <a class="el" href="structopenjij_1_1system_1_1_g_b_r_c_i_strct.html">GBRCIStrct</a> openjij::system::fromIdx_GBRCI </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_gamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>col</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>glIdx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a703d6d2469662ee0c66025fc47f94ac2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a703d6d2469662ee0c66025fc47f94ac2">&#9670;&nbsp;</a></span>fromIdx_GBTRCI()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__host__ __device__ __forceinline__ <a class="el" href="structopenjij_1_1system_1_1_g_b_t_r_c_i_strct.html">GBTRCIStrct</a> openjij::system::fromIdx_GBTRCI </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_gamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_trot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>col</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>glIdx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a64aeae9001a05d661f346c8f8e3f4b19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64aeae9001a05d661f346c8f8e3f4b19">&#9670;&nbsp;</a></span>fromIdx_RCI()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__host__ __device__ __forceinline__ <a class="el" href="structopenjij_1_1system_1_1_r_c_i_strct.html">RCIStrct</a> openjij::system::fromIdx_RCI </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>col</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>glIdx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7e421b31eb7f2cff4119d0a9e4ffc8b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e421b31eb7f2cff4119d0a9e4ffc8b8">&#9670;&nbsp;</a></span>fromIdx_TRCI()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__host__ __device__ __forceinline__ <a class="el" href="structopenjij_1_1system_1_1_t_r_c_i_strct.html">TRCIStrct</a> openjij::system::fromIdx_TRCI </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>trot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>col</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>glIdx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acb018138f58d13fcc9f876e0f606c404"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb018138f58d13fcc9f876e0f606c404">&#9670;&nbsp;</a></span>glIdx_GB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__host__ __device__ __forceinline__ uint32_t openjij::system::glIdx_GB </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_gamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a956cf2acd8109b298a326770c53cf595"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a956cf2acd8109b298a326770c53cf595">&#9670;&nbsp;</a></span>glIdx_GBRCI()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__host__ __device__ __forceinline__ uint32_t openjij::system::glIdx_GBRCI </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_gamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>col</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5b1c44638462d5728203cdcd3d4b648f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b1c44638462d5728203cdcd3d4b648f">&#9670;&nbsp;</a></span>glIdx_GBTRCI()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__host__ __device__ __forceinline__ uint32_t openjij::system::glIdx_GBTRCI </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_gamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_trot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>col</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afd4551283b46a28a278d4129b9f94ba7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd4551283b46a28a278d4129b9f94ba7">&#9670;&nbsp;</a></span>glIdx_RCI()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__host__ __device__ __forceinline__ uint32_t openjij::system::glIdx_RCI </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>col</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7bd58c58b120b293a0d5465c6b320c15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bd58c58b120b293a0d5465c6b320c15">&#9670;&nbsp;</a></span>glIdx_TRCI()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__host__ __device__ __forceinline__ uint32_t openjij::system::glIdx_TRCI </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>trot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>col</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4cded34856abc8c442c87c94c667e0bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cded34856abc8c442c87c94c667e0bb">&#9670;&nbsp;</a></span>glIdx_TRCI_ext()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__host__ __device__ __forceinline__ uint32_t openjij::system::glIdx_TRCI_ext </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>trot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>col</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['updater',['Updater',['../classopenjij_1_1updater_1_1_updater.html',1,'openjij::updater']]]
+  ['trcistrct',['TRCIStrct',['../structopenjij_1_1system_1_1_t_r_c_i_strct.html',1,'openjij::system']]]
 ];

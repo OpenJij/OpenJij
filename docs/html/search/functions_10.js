@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['to_5find',['to_ind',['../classopenjij_1_1graph_1_1_chimera.html#ac2593416f0b23cc89a32ec74bb1189ff',1,'openjij::graph::Chimera::to_ind()'],['../classopenjij_1_1graph_1_1_square.html#ab3108b20702d0216734778a7f3feb2f1',1,'openjij::graph::Square::to_ind()']]],
-  ['to_5frc',['to_rc',['../classopenjij_1_1graph_1_1_square.html#aa5fd733d248cb0e71c234926b8854015',1,'openjij::graph::Square']]],
-  ['to_5frci',['to_rci',['../classopenjij_1_1graph_1_1_chimera.html#a4dc8b823443468d036e6b12123a896e7',1,'openjij::graph::Chimera']]]
+  ['range_5fcheck',['range_check',['../classopenjij_1_1graph_1_1_graph.html#abcf1d8800b531d73017cc4bb0e6808b4',1,'openjij::graph::Graph']]],
+  ['run',['run',['../classopenjij_1_1algorithm_1_1_s_a.html#a39299e65a44f8036becfd59703f4991f',1,'openjij::algorithm::SA::run()'],['../classopenjij_1_1algorithm_1_1_s_q_a.html#a21d26de3a9e3dbf1da32c7ca1be73dc2',1,'openjij::algorithm::SQA::run()']]]
 ];
