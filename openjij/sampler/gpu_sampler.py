@@ -19,6 +19,65 @@ from .response import Response
 import numpy as np
 
 class GPUSQASampler(SQASampler):
+    """Sampler with Simulated Quantum Annealing (SQA) on GPU.
+
+    Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
+
+    Args:
+        beta (float):
+            Inverse temperature.
+
+        gamma (float):
+            Amplitude of quantum fluctuation.
+
+        trotter (int):
+            Trotter number.
+
+        step_length (int):
+            Length of Monte Carlo step.
+
+        step_num (int):
+            Number of Monte Carlo step.
+
+        schedule_info (dict):
+            Information about a annealing schedule.
+
+        iteration (int):
+            Number of iterations.
+
+        unit_num_L (int):
+            Length of one side of two-dimensional lattice
+            in which chimera unit cells are arranged.
+
+    Attributes:
+        indices (int):
+            Indices of `openjij.model.model.BinaryQuadraticModel` model.
+
+        energy_bias (float):
+            Energy bias.
+
+        model (:obj:):
+             `openjij.model.model.BinaryQuadraticModel` model.
+
+        var_type (str):
+            Type of variables: 'SPIN' or 'BINARY' which mean {-1, 1} or {0, 1}.
+
+        system_class (:class:):
+            `cxxjij.system.QuantumIsing` class.
+
+        sqa_kwargs (dict):
+            Parameters of SQA: beta, gamma, and schedule_info.
+
+    Raises:
+        ValueError: If variables violate as below.
+        - trotter number is odd.
+        - no input "unit_num_L" to an argument or this constructor.
+        - given problem graph is incompatible with chimera graph.
+
+        AttributeError: If GPU doesn't work.
+
+    """
+
     def __init__(self, beta=5.0, gamma=1.0,
                  trotter=4, step_length=10, step_num=100, schedule=None, iteration=1, unit_num_L=None):
         # GPU Sampler allows only even trotter number
@@ -68,11 +127,65 @@ class GPUSQASampler(SQASampler):
         return response
 
     def sample_ising(self, h, J, **kwargs):
+        """Sample from the specified Ising model.
+
+        Args:
+            h (dict):
+                Linear biases of the Ising model.
+
+            J (dict):
+                Quadratic biases of the Ising model.
+
+            **kwargs:
+                Optional keyword arguments for the sampling method.
+
+        Returns:
+            :obj:: `openjij.sampler.response.Response` object.
+
+        Examples:
+            This example submits an Ising problem.
+
+            >>> import openjij as oj
+            >>> sampler = oj.GPUSASampler(unit_num_L=2)
+            >>> response = sampler.sample_ising({}, {(0, 4): -1, (0, 5): -1, (4, 12): 1})
+            >>> print(sample)
+            iteration : 1, minimum energy : -2.0, var_type : BINARY
+            indices: [0, 12, 4, 5]
+            minmum energy state sample : [1, -1, 1, 1]
+
+        """
+
         model = BinaryQuadraticModel(h=h, J=J, var_type='SPIN')
         self.var_type = 'SPIN'
         return self.sampling(model, **kwargs)
 
     def sample_qubo(self, Q, **kwargs):
+        """Sample from the specified QUBO.
+
+        Args:
+            Q (dict):
+                Coefficients of a quadratic unconstrained binary optimization (QUBO) model.
+
+            **kwargs:
+                Optional keyword arguments for the sampling method.
+
+        Returns:
+            :obj:: `openjij.sampler.response.Response` object.
+
+        Examples:
+            This example submits a QUBO model.
+
+            >>> import openjij as oj
+            >>> sampler = oj.GPUSQASampler(unit_num_L=2)
+            >>> Q = {(0, 4): -1, (0, 5): -1, (4, 12): 1}
+            >>> response = sampler.sample_qubo(Q)
+            >>> print(response)
+            iteration : 1, minimum energy : -2.0, var_type : BINARY
+            indices: [0, 12, 4, 5]
+            minmum energy state sample : [1, 0, 1, 1]
+
+        """
+
         model = BinaryQuadraticModel(Q=Q, var_type='BINARY')
         self.var_type = 'BINARY'
         return self.sampling(model, **kwargs)

@@ -54,8 +54,51 @@ class BaseSampler:
             self.iteration = kwargs['num_reads']
 
 class SASampler(BaseSampler):
-    def __init__(self, beta_min=0.1, beta_max=5.0, step_length=10, step_num=100, schedule=None, iteration=1):
+    """Sampler with Simulated Annealing (SA).
 
+    Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
+
+    Args:
+        beta_min (float):
+            Minimum beta (inverse temperature).
+
+        beta_max (float):
+            Maximum beta (inverse temperature).
+
+        step_length (int):
+            Length of Monte Carlo step.
+
+        step_num (int):
+            Number of Monte Carlo step.
+
+        schedule_info (dict):
+            Information about an annealing schedule.
+
+        iteration (int):
+            Number of iterations.
+
+    Attributes:
+        energy_bias (float):
+            Energy bias.
+
+        var_type (str):    
+            Type of variables: 'SPIN' or 'BINARY' which mean {-1, 1} or {0, 1}.
+
+        indices (int):
+            Indices of `openjij.model.model.BinaryQuadraticModel` object.
+
+        N (int):
+            Number of the indices.
+
+    Raises:
+        ValueError: If schedules or variables violate as below.
+        - not list or numpy.array.
+        - not list of tuple (beta : float, step_length : int).
+        - beta is less than zero.
+
+    """
+
+    def __init__(self, beta_min=0.1, beta_max=5.0, step_length=10, step_num=100, schedule=None, iteration=1):
         if schedule:
             self._validation_schedule(schedule)
             self.beta_min = None
@@ -88,17 +131,70 @@ class SASampler(BaseSampler):
 
 
     def sample_ising(self, h, J, **kwargs):
+        """Sample from the specified Ising model.
+
+        Args:
+            h (dict):
+                Linear biases of the Ising model.
+
+            J (dict):
+                Quadratic biases of the Ising model.
+
+            **kwargs:
+                Optional keyword arguments for the sampling method.
+
+        Returns:
+            :obj:: `openjij.sampler.response.Response` object.
+
+        Examples:
+            This example submits a two-variable Ising problem.
+
+            >>> import openjij as oj
+            >>> sampler = oj.SASampler()
+            >>> response = sampler.sample_ising({0: -1, 1: 1}, {})
+            >>> for sample in response.samples():    # doctest: +SKIP
+            ...    print(sample)
+            ...
+            {0: 1, 1: -1}
+
+        """
+
         var_type = 'SPIN'
         ising_dense_graph = self._make_dense_graph(h=h, J=J, var_type=var_type)
         return self._sampling(ising_dense_graph, var_type=var_type)
 
     def sample_qubo(self, Q, **kwargs):
+        """Sample from the specified QUBO.
+
+        Args:
+            Q (dict):
+                Coefficients of a quadratic unconstrained binary optimization (QUBO) model.
+
+            **kwargs:
+                Optional keyword arguments for the sampling method.
+
+        Returns:
+            :obj:: `openjij.sampler.response.Response` object.
+
+        Examples:
+            This example submits a two-variable QUBO model.
+
+            >>> import openjij as oj
+            >>> sampler = oj.SASampler()
+            >>> Q = {(0, 0): -1, (4, 4): -1, (0, 4): 2}
+            >>> response = sampler.sample_qubo(Q)
+            >>> for sample in response.samples():    # doctest: +SKIP
+            ...    print(sample)
+            ...
+            {0: 0, 4: 1}
+
+        """
+
         var_type = 'BINARY'
         ising_dense_graph = self._make_dense_graph(Q=Q, var_type=var_type)
         return self._sampling(ising_dense_graph, var_type=var_type)
 
     def _sampling(self, ising_dense_graph, var_type, **kwargs):
-
         self._sampling_kwargs_setting(**kwargs)
 
         sa_system = cj.system.ClassicalIsing(ising_dense_graph)
@@ -129,6 +225,58 @@ class SASampler(BaseSampler):
         return response
 
 class SQASampler(BaseSampler):
+    """Sampler with Simulated Quantum Annealing (SQA).
+
+    Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
+
+    Args:
+        beta (float):
+            Inverse temperature.
+
+        gamma (float):
+            Amplitude of quantum fluctuation.
+
+        trotter (int):
+            Trotter number.
+
+        step_length (int):
+            Length of Monte Carlo step.
+
+        step_num (int):
+            Number of Monte Carlo step.
+
+        schedule_info (dict):
+            Information about a annealing schedule.
+
+        iteration (int):
+            Number of iterations.
+
+    Attributes:
+        energy_bias (float):
+            Energy bias.
+
+        var_type (str):    
+            Type of variables: 'SPIN' or 'BINARY' which mean {-1, 1} or {0, 1}.
+
+        indices (int):
+            Indices of `openjij.model.model.BinaryQuadraticModel` object.
+
+        N (int):
+            Number of the indices.
+
+        system_class (:class:):
+            `cxxjij.system.QuantumIsing` class.
+
+        sqa_kwargs (dict):
+            Parameters of SQA: beta, gamma, and schedule_info.
+
+    Raises:
+        ValueError: If the schedule violates as below.
+        - not list or numpy.array.
+        - schedule range is '0 <= s < 1'.
+
+    """
+
     def __init__(self, beta=5.0, gamma=1.0,
                  trotter=4, step_length=10, step_num=100, schedule=None, iteration=1):
 
@@ -149,7 +297,6 @@ class SQASampler(BaseSampler):
 
         self.iteration = iteration
         self.energy_bias = 0.0
-        self.var_type = 'SPIN'
 
         self.system_class = cj.system.QuantumIsing  # CPU Trotterize quantum system
         self.sqa_kwargs = dict(beta=self.beta, gamma=self.gamma, **self.schedule_info)
@@ -164,17 +311,70 @@ class SQASampler(BaseSampler):
             raise ValueError("schedule range is '0 <= s < 1'.")
 
     def sample_ising(self, h, J, **kwargs):
+        """Sample from the specified Ising model.
+
+        Args:
+            h (dict):
+                Linear biases of the Ising model.
+
+            J (dict):
+                Quadratic biases of the Ising model.
+
+            **kwargs:
+                Optional keyword arguments for the sampling method.
+
+        Returns:
+            :obj:: `openjij.sampler.response.Response` object.
+
+        Examples:
+            This example submits a two-variable Ising problem.
+
+            >>> import openjij as oj
+            >>> sampler = oj.SQASampler()
+            >>> response = sampler.sample_ising({0: -1, 1: 1}, {})
+            >>> for sample in response.samples():    # doctest: +SKIP
+            ...    print(sample)
+            ...
+            {0: 1, 1: -1}
+
+        """
+
         var_type = 'SPIN'
         ising_dense_graph = self._make_dense_graph(h=h, J=J, var_type=var_type)
         return self._sampling(ising_dense_graph, var_type=var_type)
 
     def sample_qubo(self, Q, **kwargs):
+        """Sample from the specified QUBO.
+
+        Args:
+            Q (dict):
+                Coefficients of a quadratic unconstrained binary optimization (QUBO) model.
+
+            **kwargs:
+                Optional keyword arguments for the sampling method.
+
+        Returns:
+            :obj:: `openjij.sampler.response.Response` object.
+
+        Examples:
+            This example submits a two-variable QUBO model.
+
+            >>> import openjij as oj
+            >>> sampler = oj.SQASampler()
+            >>> Q = {(0, 0): -1, (4, 4): -1, (0, 4): 2}
+            >>> response = sampler.sample_qubo(Q)
+            >>> for sample in response.samples():    # doctest: +SKIP
+            ...    print(sample)
+            ...
+            {0: 0, 4: 1}
+
+        """
+
         var_type = 'BINARY'
         ising_dense_graph = self._make_dense_graph(Q=Q, var_type=var_type)
         return self._sampling(ising_dense_graph, var_type=var_type)
 
     def _sampling(self, ising_graph, var_type, **kwargs):
-
         self._sampling_kwargs_setting(**kwargs)
 
         # system = self.system_class(ising_graph, num_trotter_slices=self.trotter)

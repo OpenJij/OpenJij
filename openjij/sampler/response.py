@@ -15,6 +15,36 @@
 import numpy as np
 
 class Response:
+    """A class of response from samplers.
+
+    Args:
+        var_type (str):
+            Type of variables: 'SPIN' or 'BINARY' which mean {-1, 1} or {0, 1}.
+
+        indices (int):
+            Indices of `openjij.sampler.response.Response` object.
+
+    Attributes:
+        states (list):
+            States of the system.
+
+        energies (list):
+            Energies for the states.
+
+        q_states (list):
+            Quantum states of the system.
+
+        q_energies (list):
+            Quantum energies for the quantum states.
+        
+        min_samples (list):
+            Samples with minimum energy.
+
+        info (dict):
+            Other information.
+
+    """
+
     def __init__(self, var_type, indices):
         self.states = []
         self.energies = []
@@ -36,6 +66,21 @@ class Response:
         return ret_str
 
     def update_ising_states_energies(self, states, energies):
+        """Update states and energies.
+
+        Args:
+            states (list):
+                Updated states.
+
+            energies (list):
+                Updated energies.
+
+        Attributes:
+            min_samples (dict):
+                Minimun energies, states, and number of occurrences.
+
+        """
+
         if self.var_type == 'SPIN':
             self.states = states
         else:
@@ -44,6 +89,21 @@ class Response:
         self.min_samples = self._minmum_sample()
 
     def update_quantum_ising_states_energies(self, trotter_states, q_energies):
+        """Update quantum states and energies.
+
+        Args:
+            trotter_states (list):
+                Updated trotter states.
+
+            q_energies (list):
+                Updated quantum energies.
+
+        Attributes:
+            min_samples (dict):
+                Minimun energies, states, and number of occurrences.
+
+        """
+
         if self.var_type == 'SPIN':
             self.q_states = trotter_states
         else:
@@ -65,4 +125,11 @@ class Response:
 
     @property
     def samples(self):
+        """Returns samples as list.
+
+        Returns:
+            list: all the samples.
+
+        """
+
         return [dict(zip(self.indices, state)) for state in self.states]
