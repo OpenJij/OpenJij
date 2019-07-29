@@ -238,7 +238,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
     using namespace openjij;
 
     //generate classical dense system
-    const auto interaction = generate_interaction<graph::Dense>();
+    const auto interaction = generate_interaction<graph::Dense<double>>();
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
     auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
@@ -255,7 +255,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Sparse_NoEigenImpl) {
     using namespace openjij;
 
     //generate classical dense system
-    const auto interaction = generate_interaction<graph::Sparse>();
+    const auto interaction = generate_interaction<graph::Sparse<double>>();
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
     auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
@@ -272,7 +272,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Dense_WithEigenImpl) {
     using namespace openjij;
 
     //generate classical dense system
-    const auto interaction = generate_interaction<graph::Dense>();
+    const auto interaction = generate_interaction<graph::Dense<double>>();
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
     auto classical_ising = system::make_classical_ising<true>(spin, interaction); //Eigen implementation enabled
@@ -289,7 +289,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Sparse_WithEigenImpl) {
     using namespace openjij;
 
     //generate classical dense system
-    const auto interaction = generate_interaction<graph::Sparse>();
+    const auto interaction = generate_interaction<graph::Sparse<double>>();
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
     auto classical_ising = system::make_classical_ising<true>(spin, interaction); //Eigen implementation enabled
@@ -306,7 +306,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Dense_NoEigenImpl) {
     using namespace openjij;
 
     //generate classical dense system
-    const auto interaction = generate_interaction<graph::Dense>();
+    const auto interaction = generate_interaction<graph::Dense<double>>();
     auto engine_for_spin = std::mt19937(1);
     std::size_t num_trotter_slices = 10;
 
@@ -330,7 +330,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse_NoEigenImpl) {
     using namespace openjij;
 
     //generate classical dense system
-    const auto interaction = generate_interaction<graph::Sparse>();
+    const auto interaction = generate_interaction<graph::Sparse<double>>();
     auto engine_for_spin = std::mt19937(1);
     std::size_t num_trotter_slices = 10;
 
@@ -354,7 +354,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Dense_WithEigenImpl) {
     using namespace openjij;
 
     //generate classical dense system
-    const auto interaction = generate_interaction<graph::Dense>();
+    const auto interaction = generate_interaction<graph::Dense<double>>();
     auto engine_for_spin = std::mt19937(1);
     std::size_t num_trotter_slices = 10;
 
@@ -380,7 +380,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse_WithEigenImpl) {
     using namespace openjij;
 
     //generate classical dense system
-    const auto interaction = generate_interaction<graph::Sparse>();
+    const auto interaction = generate_interaction<graph::Sparse<double>>();
     auto engine_for_spin = std::mt19937(1);
     std::size_t num_trotter_slices = 10;
 
@@ -433,7 +433,7 @@ TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
     using namespace openjij;
 
     //generate classical dense system
-    const auto interaction = generate_interaction<graph::Dense>();
+    const auto interaction = generate_interaction<graph::Dense<double>>();
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
     auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation

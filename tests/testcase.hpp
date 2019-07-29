@@ -20,9 +20,9 @@
 
 #if TEST_CASE_INDEX == 1
 //GraphType -> Dense or Sparse
-template<template<class> class GraphType>
-GraphType<double> generate_interaction() {
-    auto interaction = GraphType<double>(num_system_size);
+template<typename GraphType>
+GraphType generate_interaction() {
+    auto interaction = GraphType(num_system_size);
     interaction.J(0,0)=-0.1;
     interaction.J(0,1)=-0.9;
     interaction.J(0,2)=0.2;
@@ -67,9 +67,9 @@ openjij::graph::Spins get_true_groundstate(){
 }
 
 #elif TEST_CASE_INDEX == 2
-template<template<class> class GraphType>
-GraphType<double> generate_interaction() {
-    auto interaction = GraphType<double>(num_system_size);
+template<typename GraphType>
+GraphType generate_interaction() {
+    auto interaction = GraphType(num_system_size);
     interaction.J(0,0)=2.8;
     interaction.J(0,1)=2.5;
     interaction.J(0,2)=-0.2;
@@ -114,9 +114,9 @@ openjij::graph::Spins get_true_groundstate(){
 }
 #elif TEST_CASE_INDEX == 3
 //WARNING: Hard Instance
-template<template<class> class GraphType>
-GraphType<double> generate_interaction() {
-    auto interaction = GraphType<double>(num_system_size);
+template<typename GraphType>
+GraphType generate_interaction() {
+    auto interaction = GraphType(num_system_size);
     interaction.J(0,0)=2.7;
     interaction.J(0,1)=-0.6;
     interaction.J(0,2)=-2.6;
@@ -160,9 +160,9 @@ openjij::graph::Spins get_true_groundstate(){
     return openjij::graph::Spins({-1, -1, -1, 1, -1, -1, 1, 1});
 }
 #elif TEST_CASE_INDEX == 4
-template<template<class> class GraphType>
-GraphType<double> generate_interaction() {
-    auto interaction = GraphType<double>(num_system_size);
+template<typename GraphType>
+GraphType generate_interaction() {
+    auto interaction = GraphType(num_system_size);
     interaction.J(0,0)=-1.6;
     interaction.J(0,1)=-1.8;
     interaction.J(0,2)=1.3;
@@ -208,8 +208,8 @@ openjij::graph::Spins get_true_groundstate(){
 
 #elif TEST_CASE_INDEX == 5
 template<template<class> class GraphType>
-GraphType<double> generate_interaction() {
-    auto interaction = GraphType<double>(num_system_size);
+GraphType generate_interaction() {
+    auto interaction = GraphType(num_system_size);
     interaction.J(0,0)=-0.30;
     interaction.J(0,1)=-1.16;
     interaction.J(0,2)=0.05;
