@@ -56,7 +56,7 @@ namespace openjij {
                 /**
                  * @brief number of real spins (dummy spin excluded)
                  */
-                std::size_t num_spins; //spin.size()
+                const std::size_t num_spins; //spin.size()
             };
 
         //TODO: unify Dense and Sparse Eigen-implemented ClassicalIsing struct
@@ -94,7 +94,7 @@ namespace openjij {
                 /**
                  * @brief number of real spins (dummy spin excluded)
                  */
-                std::size_t num_spins; //spin.size()-1
+                const std::size_t num_spins; //spin.size()-1
             };
 
         /**
