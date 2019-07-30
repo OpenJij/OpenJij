@@ -79,8 +79,7 @@ namespace openjij {
                             int ldb,
                             const float    *beta,
                             utility::cuda::unique_dev_ptr<FloatType>& C,
-                            int ldc
-                            ){
+                            int ldc){
                         HANDLE_ERROR_CUBLAS(cublasSgemmEx(
                                     _handle,
                                     transa,
@@ -99,6 +98,53 @@ namespace openjij {
                                     C.get(),
                                     cudaDataType_impl<typename std::remove_extent<FloatType>::type>::type,
                                     ldc)
+                                );
+                    }
+
+                    /**
+                     * @brief matrix multiplication
+                     * C_mn = A_mk B_kn
+                     *
+                     * @tparam FloatType
+                     * @param m
+                     * @param k
+                     * @param n
+                     * @param A
+                     * @param B
+                     * @param C
+                     */
+                    template<typename FloatType>
+                    inline void matmul(
+                            int m,
+                            int k,
+                            int n,
+                            const utility::cuda::unique_dev_ptr<FloatType>& A,
+                            const utility::cuda::unique_dev_ptr<FloatType>& B,
+                            utility::cuda::unique_dev_ptr<FloatType>& C,
+                            cublasOperation_t transa = CUBLAS_OP_N,
+                            cublasOperation_t transb = CUBLAS_OP_N
+                            ){
+                        typename std::remove_extent<FloatType>::type alpha = 1.0;
+                        typename std::remove_extent<FloatType>::type beta = 0;
+
+                        HANDLE_ERROR_CUBLAS(cublasSgemmEx(
+                                    _handle,
+                                    transa,
+                                    transb,
+                                    m,
+                                    n,
+                                    k,
+                                    &alpha,
+                                    A.get(),
+                                    cudaDataType_impl<typename std::remove_extent<FloatType>::type>::type,
+                                    m,
+                                    B.get(),
+                                    cudaDataType_impl<typename std::remove_extent<FloatType>::type>::type,
+                                    k,
+                                    &beta,
+                                    C.get(),
+                                    cudaDataType_impl<typename std::remove_extent<FloatType>::type>::type,
+                                    m)
                                 );
                     }
 

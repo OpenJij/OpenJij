@@ -711,46 +711,42 @@ TEST(GPUUtil, CurandWrapperTest){
 }
 TEST(GPUUtil, CuBLASWrapperTest){
     using namespace openjij;
-    constexpr std::size_t SIZE = 1000;
-    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> host_A(SIZE, SIZE);
+    constexpr std::size_t M = 1000;
+    constexpr std::size_t K = 205;
+    constexpr std::size_t N = 6;
 
-    host_A = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>::Random(SIZE, SIZE);
+    //Note: matrix in cuBLAS in column major
+    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> host_A(M, K);
 
-    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> host_x(SIZE, 1);
+    host_A = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>::Random(M, K);
 
-    host_x = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>::Random(SIZE, 1);
+    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> host_B(K, N);
 
-    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> host_b_answer(SIZE, 1);
-    host_b_answer = host_A * host_x;
+    host_B = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>::Random(K, N);
 
-    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> host_b(SIZE, 1);
+    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> host_C_answer(M, N);
+    host_C_answer = host_A * host_B;
+
+    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> host_C(M, N);
 
     //copy to gpu
-    auto A = utility::cuda::make_dev_unique<float[]>(SIZE*SIZE);
-    auto x = utility::cuda::make_dev_unique<float[]>(SIZE);
-    auto b = utility::cuda::make_dev_unique<float[]>(SIZE);
+    auto A = utility::cuda::make_dev_unique<float[]>(M*K);
+    auto B = utility::cuda::make_dev_unique<float[]>(K*N);
+    auto C = utility::cuda::make_dev_unique<float[]>(M*N);
 
-    HANDLE_ERROR_CUDA(cudaMemcpy(A.get(), host_A.data(), SIZE*SIZE*sizeof(float), cudaMemcpyHostToDevice));
-    HANDLE_ERROR_CUDA(cudaMemcpy(x.get(), host_x.data(), SIZE*sizeof(float), cudaMemcpyHostToDevice));
+    HANDLE_ERROR_CUDA(cudaMemcpy(A.get(), host_A.data(), M*K*sizeof(float), cudaMemcpyHostToDevice));
+    HANDLE_ERROR_CUDA(cudaMemcpy(B.get(), host_B.data(), K*N*sizeof(float), cudaMemcpyHostToDevice));
 
     auto cublas = utility::cuda::CuBLASWrapper();
 
-    float alpha = 1.0f;
-    float beta = 0.0f;
+    //matrix product
+    cublas.matmul(M, K, N, A, B, C);
 
-    //matrix in cuBLAS is colmajor
-    cublas.SgemmEx(
-            CUBLAS_OP_N, CUBLAS_OP_N,
-            SIZE, 1, SIZE,
-            &alpha, A, SIZE, x, SIZE,
-            &beta, b, SIZE
-            );
-
-    cudaDeviceSynchronize();
-    
-    HANDLE_ERROR_CUDA(cudaMemcpy(host_b.data(), b.get(), SIZE*sizeof(float), cudaMemcpyDeviceToHost));
-    for(std::size_t i=0; i<SIZE; i++){
-        EXPECT_NEAR(host_b(i), host_b_answer(i), 1e-4);
+    HANDLE_ERROR_CUDA(cudaMemcpy(host_C.data(), C.get(), M*N*sizeof(float), cudaMemcpyDeviceToHost));
+    for(std::size_t i=0; i<M; i++){
+        for(std::size_t j=0; j<N; j++){
+            EXPECT_NEAR(host_C(i,j), host_C_answer(i,j), 1e-5);
+        }
     }
 }
 
