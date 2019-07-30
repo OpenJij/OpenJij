@@ -2,18 +2,83 @@ import unittest
 
 import numpy as np
 import openjij as oj
+import cxxjij as cj
+
+
+def calculate_ising_energy(h, J, spins):
+    energy = 0.0
+    for (i, j), Jij in J.items():
+        energy += Jij*spins[i]*spins[j]
+    for i, hi in h.items():
+        energy += hi * spins[i]
+    return energy
+
+
+def calculate_qubo_energy(Q, binary):
+    energy = 0.0
+    for (i, j), Qij in Q.items():
+        energy += Qij*binary[i]*binary[j]
+    return energy
+
+
+class VariableTypeTest(unittest.TestCase):
+    def test_variable_type(self):
+        spin = oj.cast_var_type('SPIN')
+        self.assertEqual(spin, oj.SPIN)
+
+        binary = oj.cast_var_type('BINARY')
+        self.assertEqual(binary, oj.BINARY)
 
 
 class ModelTest(unittest.TestCase):
 
     def setUp(self):
-        self.h = {0: 1}
-        self.J = {(0, 1): -1, (1, 2): -3}
+        self.h = {0: 1, 1: -2}
+        self.J = {(0, 1): -1, (1, 2): -3, (2, 3): 0.5}
+        self.spins = [1, -1, 1, 1]
 
-    def test_bqm_construct(self):
+        self.Q = {(0, 0): 1, (1, 2): -1, (2, 0): -0.2, (1, 3): 3}
+        self.binaries = [0, 1, 1, 0]
+
+    def test_bqm_constructor(self):
         # Test BinaryQuadraticModel constructor
         bqm = oj.BinaryQuadraticModel(h=self.h, J=self.J)
         self.assertEqual(type(bqm.ising_interactions()), np.ndarray)
+
+        self.assertEqual(bqm.var_type, oj.SPIN)
+
+        dense_graph = bqm.get_cxxjij_ising_graph(sparse=False)
+        self.assertTrue(isinstance(dense_graph, cj.graph.Dense))
+
+        bqm_qubo = oj.BinaryQuadraticModel(Q=self.Q, var_type='BINARY')
+        self.assertEqual(bqm_qubo.var_type, oj.BINARY)
+
+    def test_interaction_matrix(self):
+        bqm = oj.BinaryQuadraticModel(h=self.h, J=self.J)
+        ising_matrix = np.array([
+            [1, -1,  0,  0],
+            [-1, -2, -3, 0],
+            [0, -3, 0, 0.5],
+            [0, 0, 0.5, 0]
+        ])
+        np.testing.assert_array_equal(
+            bqm.ising_interactions(), ising_matrix
+        )
+
+    def test_bqm_calc_energy(self):
+        # Test to calculate energy
+
+        # Test Ising energy
+        bqm = oj.BinaryQuadraticModel(h=self.h, J=self.J)
+        ising_energy_bqm = bqm.calc_energy(self.spins)
+        true_ising_e = calculate_ising_energy(self.h, self.J, self.spins)
+        self.assertEqual(ising_energy_bqm, true_ising_e)
+
+        # Test QUBO energy
+        bqm = oj.BinaryQuadraticModel(Q=self.Q, var_type='BINARY')
+        qubo_energy_bqm = bqm.calc_energy(self.binaries)
+        true_qubo_e = calculate_qubo_energy(self.Q, self.binaries)
+        self.assertEqual(qubo_energy_bqm, true_qubo_e)
 
     def test_bqm(self):
         h = {}

@@ -15,9 +15,11 @@
 import numpy as np
 import cxxjij as cj
 from openjij.model import BinaryQuadraticModel
+import openjij
 from .response import Response
 
 import time
+
 
 def measure_time(func):
     def wrapper(*args, **kwargs):
@@ -27,13 +29,14 @@ def measure_time(func):
         return calc_time
     return wrapper
 
+
 class BaseSampler:
     def _make_dense_graph(self, h=None, J=None, Q=None, var_type='SPIN'):
-        if var_type=='BINARY':
+        if var_type == 'BINARY':
             if Q is None:
                 raise ValueError('Input QUBO matrix: Q')
             model = BinaryQuadraticModel(Q=Q, var_type='BINARY')
-        elif var_type=='SPIN':
+        elif var_type == 'SPIN':
             if h is None or J is None:
                 raise ValueError('Input h and J')
             model = BinaryQuadraticModel(h=h, J=J, var_type='SPIN')
@@ -52,6 +55,7 @@ class BaseSampler:
             self.iteration = kwargs['iteration']
         elif 'num_reads' in kwargs:
             self.iteration = kwargs['num_reads']
+
 
 class SASampler(BaseSampler):
     """Sampler with Simulated Annealing (SA).
@@ -114,7 +118,7 @@ class SASampler(BaseSampler):
             self.schedule_info = {
                 'beta_min': beta_min, 'beta_max': beta_max,
                 'step_length': step_length, 'step_num': step_num
-                }
+            }
         self.iteration = iteration
 
     def _validation_schedule(self, schedule):
@@ -122,13 +126,13 @@ class SASampler(BaseSampler):
             raise ValueError("schedule should be list or numpy.array")
 
         if not isinstance(schedule[0], tuple):
-            raise ValueError("schedule is list of tuple (beta : float, step_length : int)")
+            raise ValueError(
+                "schedule is list of tuple (beta : float, step_length : int)")
 
-         # schedule validation  0 <= beta
+        # schedule validation  0 <= beta
         beta = np.array(schedule).T[0]
         if not np.all(0 <= beta):
             raise ValueError("schedule beta range is '0 <= beta'.")
-
 
     def sample_ising(self, h, J, **kwargs):
         """Sample from the specified Ising model.
@@ -159,7 +163,7 @@ class SASampler(BaseSampler):
 
         """
 
-        var_type = 'SPIN'
+        var_type = openjij.SPIN
         ising_dense_graph = self._make_dense_graph(h=h, J=J, var_type=var_type)
         return self._sampling(ising_dense_graph, var_type=var_type)
 
@@ -207,22 +211,28 @@ class SASampler(BaseSampler):
         def exec_sampling():
             for _ in range(self.iteration):
                 sa_system.initialize_spins()
-                _exec_time = measure_time(sa_system.simulated_annealing)(**self.schedule_info)
+                _exec_time = measure_time(
+                    sa_system.simulated_annealing)(**self.schedule_info)
                 execution_time.append(_exec_time)
                 state = sa_system.get_spins()
                 states.append(state)
-                energies.append(ising_dense_graph.calc_energy(state) + self.energy_bias)
-        
+                energies.append(ising_dense_graph.calc_energy(
+                    state) + self.energy_bias)
+
         sampling_time = exec_sampling()
-    
+
         response = Response(var_type=var_type, indices=self.indices)
         response.update_ising_states_energies(states, energies)
 
-        response.info['sampling_time'] = sampling_time * 10**6              # micro sec
-        response.info['execution_time'] = np.mean(execution_time) * 10**6   # micro sec
-        response.info['list_exec_times'] = np.array(execution_time) * 10**6 # micro sec
+        response.info['sampling_time'] = sampling_time * \
+            10**6              # micro sec
+        response.info['execution_time'] = np.mean(
+            execution_time) * 10**6   # micro sec
+        response.info['list_exec_times'] = np.array(
+            execution_time) * 10**6  # micro sec
 
         return response
+
 
 class SQASampler(BaseSampler):
     """Sampler with Simulated Quantum Annealing (SQA).
@@ -289,7 +299,8 @@ class SQASampler(BaseSampler):
         else:
             self.step_length = step_length
             self.step_num = step_num
-            self.schedule_info = {'step_num': step_num, 'step_length': step_length}
+            self.schedule_info = {
+                'step_num': step_num, 'step_length': step_length}
 
         self.beta = beta
         self.gamma = gamma
@@ -299,7 +310,8 @@ class SQASampler(BaseSampler):
         self.energy_bias = 0.0
 
         self.system_class = cj.system.QuantumIsing  # CPU Trotterize quantum system
-        self.sqa_kwargs = dict(beta=self.beta, gamma=self.gamma, **self.schedule_info)
+        self.sqa_kwargs = dict(
+            beta=self.beta, gamma=self.gamma, **self.schedule_info)
 
     def _validate_schedule(self, schedule):
         if not isinstance(schedule, (list, np.array)):
@@ -380,7 +392,7 @@ class SQASampler(BaseSampler):
         # system = self.system_class(ising_graph, num_trotter_slices=self.trotter)
 
         # to calculate energy
-        int_mat = self.model.interactions() 
+        int_mat = self.model.interactions()
         linear = np.diag(int_mat)
         quad = np.triu(int_mat) - np.diag(linear)
 
@@ -393,25 +405,29 @@ class SQASampler(BaseSampler):
         def exec_sampling():
             for _ in range(self.iteration):
                 # system.initialize_spins()  # not support yet on GPU
-                system = self.system_class(ising_graph, num_trotter_slices=self.trotter)
-                _exec_time = measure_time(system.simulated_quantum_annealing)(**self.sqa_kwargs)
+                system = self.system_class(
+                    ising_graph, num_trotter_slices=self.trotter)
+                _exec_time = measure_time(
+                    system.simulated_quantum_annealing)(**self.sqa_kwargs)
                 execution_time.append(_exec_time)
                 q_state = self._post_process4state(system.get_spins())
                 q_states.append(q_state)
-                q_energies.append([state @ quad @ state + linear @ state + self.energy_bias for state in q_state])
-        
+                q_energies.append(
+                    [state @ quad @ state + linear @ state + self.energy_bias for state in q_state])
+
         sampling_time = exec_sampling()
 
         response = Response(var_type=var_type, indices=self.indices)
         response.update_quantum_ising_states_energies(q_states, q_energies)
 
-        response.info['sampling_time'] = sampling_time * 10**6              # micro sec
-        response.info['execution_time'] = np.mean(execution_time) * 10**6   # micro sec
-        response.info['list_exec_times'] = np.array(execution_time) * 10**6 # micro sec
+        response.info['sampling_time'] = sampling_time * \
+            10**6              # micro sec
+        response.info['execution_time'] = np.mean(
+            execution_time) * 10**6   # micro sec
+        response.info['list_exec_times'] = np.array(
+            execution_time) * 10**6  # micro sec
 
         return response
 
     def _post_process4state(self, q_state):
         return q_state
-
-

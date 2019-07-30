@@ -13,28 +13,42 @@
 # limitations under the License.
 
 import numpy as np
-import cxxjij.graph as cjg
+import cxxjij
+import openjij
 import warnings
 
+
 class BinaryQuadraticModel:
-    def __init__(self, h=None, J=None, Q=None, var_type='SPIN'): 
-        if var_type == 'SPIN':
+    """Represents Binary quadratic model
+    Attributes:
+        var_type (openjij.VariableType): variable type SPIN or BINARY
+        linear (dict): represents linear term
+        quad (dict): represents quadratic term
+        labels (list): labels of each variables sorted by results variables
+        indices (list): deprecated same labels
+        energy_bias (float): represents constant energy term when convert to SPIN from BINARY
+        size (int): number of variables
+    """
+
+    def __init__(self, h=None, J=None, Q=None, var_type=openjij.SPIN):
+
+        self.var_type = openjij.cast_var_type(var_type)
+
+        if self.var_type == openjij.SPIN:
             if (h is None) or (J is None):
                 raise ValueError('Input h and J.')
             self.linear = h
             self.quad = J
-        elif var_type=='BINARY':
+        elif self.var_type == openjij.BINARY:
             if not isinstance(Q, dict) or Q is None:
                 raise ValueError('Q should be dictionary.')
             self.linear = {}
             self.quad = {}
-            for (i,j),qij in Q.items():
-                if i==j:
+            for (i, j), qij in Q.items():
+                if i == j:
                     self.linear[i] = qij
                 else:
                     self.quad[(i, j)] = qij
-        else:
-            raise ValueError('var_type should be "SPIN" or "BINARY"')
 
         index_set = set(self.linear.keys())
         for v1, v2 in self.quad.keys():
@@ -49,22 +63,49 @@ class BinaryQuadraticModel:
                                'Please pay attention to the symmetry of interaction J.'
                 warnings.warn(warn_message, SyntaxWarning)
         self.indices = list(index_set)
-        self.var_type = var_type
-        if var_type == 'SPIN':
+        if var_type == openjij.SPIN:
             self.energy_bias = 0.0
-        else:
-            self.energy_bias = (sum(list(self.linear.values()))*2 + sum(list(self.quad.values())))/4
-
+        else:  # BINARY
+            self.energy_bias = (sum(list(self.linear.values()))
+                                * 2 + sum(list(self.quad.values())))/4
 
         self._interaction_matrix = None  # calculated at interactions()
+        self.size = len(self.indices)
 
+    def get_cxxjij_ising_graph(self, sparse=False):
+        """
+        Convert to cxxjij.graph.Dense or Sparse class from Python dictionary (h, J) or Q
+        Args:
+            sparse (bool): if true returns sparse graph
+        Returns:
+            openjij.graph.Dense openjij.graph.Sparse
+        """
+        if not sparse:
+            GraphClass = cxxjij.graph.Dense
+        else:
+            GraphClass = cxxjij.graph.Sparse
+
+        cxxjij_graph = GraphClass(self.size)
+
+        ising_int = self.ising_interactions()
+        # cxxjij.graph.dense
+        for i in range(self.size):
+            if ising_int[i, i] != 0.0:
+                cxxjij_graph[i, i] = ising_int[i, i]
+            for j in range(i+1, self.size):
+                if ising_int[i, j] != 0.0:
+                    cxxjij_graph[i, j] = ising_int[i, j]
+
+        return cxxjij_graph
 
     def ising_interactions(self):
         interactions = self.interactions()
-        if self.var_type == 'BINARY':
-            self.energy_bias = (np.sum(np.triu(interactions)) + np.trace(interactions))/4.0
+        if self.var_type == openjij.BINARY:
+            self.energy_bias = (
+                np.sum(np.triu(interactions)) + np.trace(interactions))/4.0
             for i in range(len(interactions)):
-                interactions[i, i] = np.sum(interactions[i, :]) + interactions[i, i]
+                interactions[i, i] = np.sum(
+                    interactions[i, :]) + interactions[i, i]
             interactions /= 4.0
         return interactions
 
@@ -94,42 +135,26 @@ class BinaryQuadraticModel:
         return self._interaction_matrix
 
     def calc_energy(self, state):
-        if self.var_type == 'SPIN':
+        _state = np.array(state)
+        if self.var_type == openjij.SPIN:
             int_mat = self.ising_interactions()
-        else: # var_type == qubo
-            int_mat = self.interactions()
-        return np.dot(state, np.dot(int_mat, state)) + np.dot(np.diag(int_mat), -1+np.array(state))
-
+            linear_term = np.diag(int_mat)
+            energy = (np.dot(_state, np.dot(int_mat, _state)) -
+                      np.sum(linear_term))/2
+            energy += np.dot(linear_term, _state)
+            return energy
+        else:  # var_type == BINARY
+            int_mat = np.triu(self.interactions())
+            return np.dot(_state, np.dot(int_mat, _state))
 
     def ising_dictionary(self):
-        if self.var_type == 'SPIN':
+        if self.var_type == openjij.SPIN:
             return self.linear, self.quad
-        elif self.var_type == 'BINARY':
+        elif self.var_type == openjij.BINARY:
             ising_int = self.ising_interactions()
             h = {}
-            J = {(i,j): qij/4.0 for (i, j), qij in self.quad.items()}
+            J = {(i, j): qij/4.0 for (i, j), qij in self.quad.items()}
             for i in range(len(ising_int)):
                 if ising_int[i][i] != 0:
                     h[self.indices[i]] = ising_int[i][i]
         return h, J
-
-    def convert_to_dense_graph(self) -> cjg.Dense:
-        """
-        Convert to cxxjij.graph.Dense class from Python dictionary (h, J) or Q
-        """
-        N = len(self.indices)
-        ising_int = self.ising_interactions()
-
-        # cxxjij.graph.dense
-        cxx_dense_ising = cjg.Dense(N)
-        for i in range(N):
-            if ising_int[i,i] != 0.0:
-                cxx_dense_ising[i,i] = ising_int[i,i]
-            for j in range(i+1, N):
-                if ising_int[i,j] != 0.0:
-                    cxx_dense_ising[i,j] = ising_int[i,j]
-        
-        return cxx_dense_ising
-
-
-
