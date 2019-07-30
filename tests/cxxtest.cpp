@@ -20,6 +20,7 @@
 #include <utility/union_find.hpp>
 #include <utility/random.hpp>
 #include <utility/gpu/memory.hpp>
+#include <utility/gpu/cublas.hpp>
 
 // #####################################
 // helper functions
@@ -706,6 +707,50 @@ TEST(GPUUtil, CurandWrapperTest){
     for(std::size_t i=1; i<SIZE; i++){
         EXPECT_NE(output[i-1], output[i]);
         EXPECT_TRUE(0 <= output[i] && output[i] <= 1);
+    }
+}
+TEST(GPUUtil, CuBLASWrapperTest){
+    using namespace openjij;
+    constexpr std::size_t SIZE = 1000;
+    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> host_A(SIZE, SIZE);
+
+    host_A = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>::Random(SIZE, SIZE);
+
+    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> host_x(SIZE, 1);
+
+    host_x = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>::Random(SIZE, 1);
+
+    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> host_b_answer(SIZE, 1);
+    host_b_answer = host_A * host_x;
+
+    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> host_b(SIZE, 1);
+
+    //copy to gpu
+    auto A = utility::cuda::make_dev_unique<float[]>(SIZE*SIZE);
+    auto x = utility::cuda::make_dev_unique<float[]>(SIZE);
+    auto b = utility::cuda::make_dev_unique<float[]>(SIZE);
+
+    HANDLE_ERROR_CUDA(cudaMemcpy(A.get(), host_A.data(), SIZE*SIZE*sizeof(float), cudaMemcpyHostToDevice));
+    HANDLE_ERROR_CUDA(cudaMemcpy(x.get(), host_x.data(), SIZE*sizeof(float), cudaMemcpyHostToDevice));
+
+    auto cublas = utility::cuda::CuBLASWrapper();
+
+    float alpha = 1.0f;
+    float beta = 0.0f;
+
+    //matrix in cuBLAS is colmajor
+    cublas.SgemmEx(
+            CUBLAS_OP_N, CUBLAS_OP_N,
+            SIZE, 1, SIZE,
+            &alpha, A, SIZE, x, SIZE,
+            &beta, b, SIZE
+            );
+
+    cudaDeviceSynchronize();
+    
+    HANDLE_ERROR_CUDA(cudaMemcpy(host_b.data(), b.get(), SIZE*sizeof(float), cudaMemcpyDeviceToHost));
+    for(std::size_t i=0; i<SIZE; i++){
+        EXPECT_NEAR(host_b(i), host_b_answer(i), 1e-4);
     }
 }
 
