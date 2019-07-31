@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import numpy as np
+import openjij
+
 
 class Response:
     """A class of response from samplers.
@@ -36,7 +38,7 @@ class Response:
 
         q_energies (list):
             Quantum energies for the quantum states.
-        
+
         min_samples (list):
             Samples with minimum energy.
 
@@ -48,7 +50,7 @@ class Response:
     def __init__(self, var_type, indices):
         self.states = []
         self.energies = []
-        self.var_type = var_type
+        self.var_type = openjij.cast_var_type(var_type)
 
         self.q_states = []
         self.q_energies = []
@@ -57,12 +59,14 @@ class Response:
         self.info = {}
 
     def __repr__(self):
-        min_energy_index = np.argmin(self.energies) if len(self.energies) != 0 else None
+        min_energy_index = np.argmin(self.energies) if len(
+            self.energies) != 0 else None
         ground_energy = self.energies[min_energy_index]
         ground_state = self.states[min_energy_index]
         ret_str = "iteration : {}, minimum energy : {}, var_type : {}\n".format(
             len(self.states), ground_energy, self.var_type)
-        ret_str += "indices: {} \nminmum energy state sample : {}".format(self.indices, ground_state)
+        ret_str += "indices: {} \nminmum energy state sample : {}".format(
+            self.indices, ground_state)
         return ret_str
 
     def update_ising_states_energies(self, states, energies):
@@ -81,10 +85,11 @@ class Response:
 
         """
 
-        if self.var_type == 'SPIN':
+        if self.var_type == openjij.SPIN:
             self.states = states
         else:
-            self.states = [list(np.array((np.array(state) + 1)/2).astype(np.int)) for state in states]
+            self.states = [
+                list(np.array((np.array(state) + 1)/2).astype(np.int)) for state in states]
         self.energies = energies
         self.min_samples = self._minmum_sample()
 
@@ -107,16 +112,20 @@ class Response:
         if self.var_type == 'SPIN':
             self.q_states = trotter_states
         else:
-            self.q_states = [[list(np.array((np.array(state) + 1)/2).astype(np.int)) for state in t_state] for t_state in trotter_states]
+            self.q_states = [[list(np.array((np.array(state) + 1)/2).astype(np.int))
+                              for state in t_state] for t_state in trotter_states]
         self.q_energies = q_energies
         # save minimum energy of each trotter_state
         min_e_indices = np.argmin(q_energies, axis=1)
-        self.energies = [q_e[min_ind] for min_ind, q_e in zip(min_e_indices, q_energies)]
-        self.states = [list(t_state[min_ind]) for min_ind, t_state in zip(min_e_indices, self.q_states)]
+        self.energies = [q_e[min_ind]
+                         for min_ind, q_e in zip(min_e_indices, q_energies)]
+        self.states = [list(t_state[min_ind]) for min_ind,
+                       t_state in zip(min_e_indices, self.q_states)]
         self.min_samples = self._minmum_sample()
 
     def _minmum_sample(self):
-        min_energy_ind = np.argmin(self.energies) if len(self.energies) != 0 else None
+        min_energy_ind = np.argmin(self.energies) if len(
+            self.energies) != 0 else None
         min_energy = self.energies[min_energy_ind]
         min_e_indices = np.where(np.array(self.energies) == min_energy)[0]
         min_states = np.array(self.states)[min_e_indices]
