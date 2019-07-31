@@ -54,16 +54,17 @@ class SQASampler(BaseSampler):
     Raises:
         ValueError: If the schedule violates as below.
         - not list or numpy.array.
-        - schedule range is '0 <= s < 1'.
+        - schedule range is '0 <= s <= 1'.
 
     """
 
     def __init__(self, beta=5.0, gamma=1.0,
-                 trotter=4, step_length=10, step_num=100, schedule=None, iteration=1):
+                 trotter=4, step_length=10,
+                 step_num=100, schedule=None, iteration=1):
 
         # make schedule
         if schedule is not None:
-            self._validate_schedule(schedule)
+            self.schedule = self._convert_validate_schedule(schedule, beta)
             self.step_length = None
             self.step_num = None
             self.schedule_info = {'schedule': schedule}
@@ -72,6 +73,10 @@ class SQASampler(BaseSampler):
             self.step_num = step_num
             self.schedule_info = {
                 'step_num': step_num, 'step_length': step_length}
+            self.schedule = cxxjij.utility.make_transverse_field_schedule_list(
+                beta=beta, one_mc_step=step_length,
+                num_call_updater=step_num
+            )
 
         self.beta = beta
         self.gamma = gamma
@@ -80,18 +85,27 @@ class SQASampler(BaseSampler):
         self.iteration = iteration
         self.energy_bias = 0.0
 
-        self.system_class = cj.system.QuantumIsing  # CPU Trotterize quantum system
         self.sqa_kwargs = dict(
             beta=self.beta, gamma=self.gamma, **self.schedule_info)
 
-    def _validate_schedule(self, schedule):
+    def _convert_validate_schedule(self, schedule, beta):
         if not isinstance(schedule, (list, np.array)):
             raise ValueError("schedule should be list or numpy.array")
 
-        # schedule validation  0 <= s < 1
+        # schedule validation  0 <= s <= 1
         sch = np.array(schedule).T[0]
-        if not np.all((0 <= sch) & (sch < 1)):
+        if not np.all((0 <= sch) & (sch <= 1)):
             raise ValueError("schedule range is '0 <= s < 1'.")
+
+        # convert to list of cxxjij.utility.TransverseFieldSchedule
+        cxxjij_schedule = []
+        for s, one_mc_step in schedule:
+            _schedule = cxxjij.utility.TransverseFieldSchedule()
+            _schedule.one_mc_step = one_mc_step
+            _schedule.updater_parameter.beta = beta
+            _schedule.updater_parameter.s = s
+            cxxjij_schedule.append(_schedule)
+        return cxxjij_schedule
 
     def sample_ising(self, h, J,
                      initial_state=None, updater='single spin flip',
@@ -126,7 +140,7 @@ class SQASampler(BaseSampler):
 
         var_type = openjij.SPIN
         bqm = openjij.BinaryQuadraticModel(h=h, J=J, var_type=var_type)
-        return self.sampling(bqm, var_type=var_type,
+        return self.sampling(bqm,
                              initial_state=initial_state, updater=updater,
                              reinitilize_state=reinitilize_state,
                              seed=seed,
@@ -135,7 +149,7 @@ class SQASampler(BaseSampler):
 
     def sample_qubo(self, Q,
                     initial_state=None, updater='single spin flip',
-                    reinitilize_state=False, seed=None, **kwargs):
+                    reinitilize_state=True, seed=None, **kwargs):
         """Sample from the specified QUBO.
 
         Args:
@@ -164,20 +178,20 @@ class SQASampler(BaseSampler):
 
         var_type = openjij.BINARY
         bqm = openjij.BinaryQuadraticModel(Q=Q, var_type=var_type)
-        return self.sampling(bqm, var_type=var_type,
+        return self.sampling(bqm,
                              initial_state=initial_state, updater=updater,
                              reinitilize_state=reinitilize_state,
                              seed=seed,
                              **kwargs
                              )
 
-    def sampling(self, model, var_type,
+    def sampling(self, model,
                  initial_state=None, updater='single spin flip',
                  reinitilize_state=True, seed=None,
                  **kwargs):
         self._sampling_kwargs_setting(**kwargs)
         self._set_model(model)
-        ising_graph = model.get_cxxjjij_ising_graph()
+        ising_graph = model.get_cxxjij_ising_graph()
 
         if initial_state is None:
             if not reinitilize_state:
@@ -192,23 +206,23 @@ class SQASampler(BaseSampler):
 
             def _init_state(): return trotter_init_state
 
-        sqa_system = cxxjij.system.make_transverse_ising(
-            _init_state(), ising_graph
+        sqa_system = cxxjij.system.make_transverse_ising_Eigen(
+            _init_state(), ising_graph, self.gamma
         )
 
         # choose updater
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         if _updater_name == 'singlespinflip':
-            algorithm = cxxjij.algorith.Algorithm_SingleSpinFlip_run
+            algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
         else:
             raise ValueError('updater is one of "single spin flip"')
 
         # seed for MonteCarlo
         if seed is None:
-            def simulated_annealing(system): return algorithm(
+            def sqa_algorithm(system): return algorithm(
                 system, self.schedule)
         else:
-            def simulated_annealing(system): return algorithm(
+            def sqa_algorithm(system): return algorithm(
                 system, seed, self.schedule)
 
         q_states = []
@@ -224,19 +238,20 @@ class SQASampler(BaseSampler):
                     sqa_system.reset_spins(_init_state())
                 else:
                     sqa_system.reset_spins(previous_state)
-                _exec_time = measure_time(algorithm)(sqa_system)
+                _exec_time = measure_time(sqa_algorithm)(sqa_system)
                 execution_time.append(_exec_time)
                 # trotter_spins is transposed because it is stored as [Spin ​​space][Trotter].
                 # [-1] is excluded because it is a tentative spin of s = 1 for convenience in SQA.
                 q_state = self._post_process4state(
                     sqa_system.trotter_spins[:-1].T)
                 q_states.append(q_state)
-                q_energies.append([ising_graph.calc_energy(
-                    state) + self.energy_bias for state in q_state])
+                q_energies.append([model.calc_energy(state)
+                                   for state in q_state])
 
         sampling_time = exec_sampling()
 
-        response = openjij.Response(var_type=var_type, indices=self.indices)
+        response = openjij.Response(
+            var_type=model.var_type, indices=self.indices)
         response.update_quantum_ising_states_energies(q_states, q_energies)
 
         response.info['sampling_time'] = sampling_time * \

@@ -109,7 +109,7 @@ class Response:
 
         """
 
-        if self.var_type == 'SPIN':
+        if self.var_type == openjij.SPIN:
             self.q_states = trotter_states
         else:
             self.q_states = [[list(np.array((np.array(state) + 1)/2).astype(np.int))

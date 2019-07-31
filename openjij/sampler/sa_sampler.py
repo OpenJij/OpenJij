@@ -146,11 +146,16 @@ class SASampler(BaseSampler):
 
         var_type = openjij.SPIN
         model = openjij.BinaryQuadraticModel(h=h, J=J, var_type=var_type)
-        return self.sampling(model, var_type=var_type)
+        return self.sampling(model,
+                             initial_state=initial_state, updater=updater,
+                             reinitilize_state=reinitilize_state,
+                             seed=seed,
+                             **kwargs
+                             )
 
     def sample_qubo(self, Q,
                     initial_state=None, updater='single spin flip',
-                    reinitilize_state=False, seed=None, **kwargs):
+                    reinitilize_state=True, seed=None, **kwargs):
         """Sample from the specified QUBO.
 
         Args:
@@ -191,9 +196,14 @@ class SASampler(BaseSampler):
 
         var_type = openjij.BINARY
         model = openjij.BinaryQuadraticModel(Q=Q, var_type=var_type)
-        return self.sampling(model, var_type=var_type)
+        return self.sampling(model,
+                             initial_state=initial_state, updater=updater,
+                             reinitilize_state=reinitilize_state,
+                             seed=seed,
+                             **kwargs
+                             )
 
-    def sampling(self, model, var_type,
+    def sampling(self, model,
                  initial_state=None, updater='single spin flip',
                  reinitilize_state=True, seed=None,
                  **kwargs):
@@ -254,7 +264,8 @@ class SASampler(BaseSampler):
 
         sampling_time = exec_sampling()
 
-        response = openjij.Response(var_type=var_type, indices=self.indices)
+        response = openjij.Response(
+            var_type=model.var_type, indices=self.indices)
         response.update_ising_states_energies(states, energies)
 
         response.info['sampling_time'] = sampling_time * \
