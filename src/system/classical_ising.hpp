@@ -51,12 +51,21 @@ namespace openjij {
                         assert(init_spin.size() == init_interaction.get_num_spins());
                     }
 
+                /**
+                 * @brief reset spins
+                 *
+                 * @param init_spin
+                 */
+                void reset_spins(const graph::Spins& init_spin){
+                    this->spin = init_spin;
+                }
+
                 graph::Spins spin;
                 const GraphType interaction;
                 /**
                  * @brief number of real spins (dummy spin excluded)
                  */
-                std::size_t num_spins; //spin.size()
+                const std::size_t num_spins; //spin.size()
             };
 
         //TODO: unify Dense and Sparse Eigen-implemented ClassicalIsing struct
@@ -88,13 +97,22 @@ namespace openjij {
                         assert(init_spin.size() == init_interaction.get_num_spins());
                     }
 
+                /**
+                 * @brief reset spins
+                 *
+                 * @param init_spin
+                 */
+                void reset_spins(const graph::Spins& init_spin){
+                    this->spin = utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(init_spin);
+                }
+
                 VectorXx spin;
                 const MatrixXx interaction;
 
                 /**
                  * @brief number of real spins (dummy spin excluded)
                  */
-                std::size_t num_spins; //spin.size()-1
+                const std::size_t num_spins; //spin.size()-1
             };
 
         /**
@@ -123,6 +141,15 @@ namespace openjij {
                     num_spins(init_interaction.get_num_spins()){
                         assert(init_spin.size() == init_interaction.get_num_spins());
                     }
+
+                /**
+                 * @brief reset spins
+                 *
+                 * @param init_spin
+                 */
+                void reset_spins(const graph::Spins& init_spin){
+                    this->spin = utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(init_spin);
+                }
 
                 VectorXx spin;
                 const SparseMatrixXx interaction;

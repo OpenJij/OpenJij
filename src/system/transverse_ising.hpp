@@ -76,6 +76,26 @@ namespace openjij {
                 }
 
                 /**
+                 * @brief reset spins with trotter spins
+                 *
+                 * @param init_trotter_spins
+                 */
+                void reset_spins(const TrotterSpins& init_trotter_spins){
+                    this->trotter_spins = init_trotter_spins;
+                }
+                
+                /**
+                 * @brief reset spins with trotter spins
+                 *
+                 * @param classical_spins
+                 */
+                void reset_spins(const graph::Spins& classical_spins){
+                    for(auto& spins : this->trotter_spins){
+                        spins = classical_spins;
+                    }
+                }
+
+                /**
                  * @brief trotterlized spins
                  */
                 TrotterSpins trotter_spins;
@@ -151,6 +171,30 @@ namespace openjij {
 
                     //init trotter_spins
                     trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
+                }
+
+                /**
+                 * @brief reset spins with trotter spins
+                 *
+                 * @param init_trotter_spins
+                 */
+                void reset_spins(const TrotterSpins& init_trotter_spins){
+                    this->trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
+                }
+                
+                /**
+                 * @brief reset spins with trotter spins
+                 *
+                 * @param classical_spins
+                 */
+                void reset_spins(const graph::Spins& classical_spins){
+                    TrotterSpins init_trotter_spins(trotter_spins.cols()); //cols -> num_trotter_slices
+
+                    for(auto& spins : init_trotter_spins){
+                        spins = classical_spins;
+                    }
+                    //init trotter_spins
+                    this->trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
                 }
 
                 /**
@@ -230,6 +274,29 @@ namespace openjij {
                     trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
                 }
 
+                /**
+                 * @brief reset spins with trotter spins
+                 *
+                 * @param init_trotter_spins
+                 */
+                void reset_spins(const TrotterSpins& init_trotter_spins){
+                    this->trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
+                }
+                
+                /**
+                 * @brief reset spins with trotter spins
+                 *
+                 * @param classical_spins
+                 */
+                void reset_spins(const graph::Spins& classical_spins){
+                    TrotterSpins init_trotter_spins(trotter_spins.cols()); //cols -> num_trotter_slices
+
+                    for(auto& spins : init_trotter_spins){
+                        spins = classical_spins;
+                    }
+                    //init trotter_spins
+                    this->trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
+                }
                 /**
                  * @brief trotterlized spins
                  */
