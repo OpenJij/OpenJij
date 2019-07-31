@@ -123,6 +123,62 @@ namespace openjij {
                         }
 
                     /**
+                     * @brief reset spins with trotter spins
+                     *
+                     * @param init_trotter_spins
+                     */
+                    void reset_spins(const TrotterSpins& init_trotter_spins){
+                        //generate temporary interaction and spin
+                        const std::size_t localsize = info.rows*info.cols*info.chimera_unitsize;
+                        auto temp_spin = utility::cuda::make_host_unique<int32_t[]>(localsize*info.trotters);
+
+                        using namespace chimera_cuda;
+                        //copy spin info to std::vector variables
+                        for(size_t t=0; t<info.trotters; t++){
+                            for(size_t r=0; r<info.rows; r++){
+                                for(size_t c=0; c<info.cols; c++){
+                                    for(size_t i=0; i<info.chimera_unitsize; i++){
+                                        temp_spin[glIdx(info,r,c,i,t)] = init_trotter_spins[t][glIdx(info,r,c,i)];
+                                    }
+                                }
+                            }
+                        }
+                        //copy to gpu
+                        HANDLE_ERROR_CUDA(cudaMemcpy(spin.get(), temp_spin.get(), localsize*info.trotters*sizeof(int32_t), cudaMemcpyHostToDevice));
+                    }
+
+                    /**
+                     * @brief reset spins with trotter spins
+                     *
+                     * @param classical_spins
+                     */
+                    void reset_spins(const graph::Spins& classical_spins){
+                        TrotterSpins init_trotter_spins(info.trotters); //info.trotters -> num_trotter_slices
+
+                        for(auto& spins : init_trotter_spins){
+                            spins = classical_spins;
+                        }
+
+                        //generate temporary interaction and spin
+                        const std::size_t localsize = info.rows*info.cols*info.chimera_unitsize;
+                        auto temp_spin = utility::cuda::make_host_unique<int32_t[]>(localsize*info.trotters);
+
+                        using namespace chimera_cuda;
+                        //copy spin info to std::vector variables
+                        for(size_t t=0; t<info.trotters; t++){
+                            for(size_t r=0; r<info.rows; r++){
+                                for(size_t c=0; c<info.cols; c++){
+                                    for(size_t i=0; i<info.chimera_unitsize; i++){
+                                        temp_spin[glIdx(info,r,c,i,t)] = init_trotter_spins[t][glIdx(info,r,c,i)];
+                                    }
+                                }
+                            }
+                        }
+                        //copy to gpu
+                        HANDLE_ERROR_CUDA(cudaMemcpy(spin.get(), temp_spin.get(), localsize*info.trotters*sizeof(int32_t), cudaMemcpyHostToDevice));
+                    }
+
+                    /**
                      * @brief coefficient of transverse field term
                      */
                     FloatType gamma;

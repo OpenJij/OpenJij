@@ -145,6 +145,7 @@ inline void declare_ClassicalIsing(py::module &m, const std::string& gtype_str, 
     auto str = std::string("ClassicalIsing")+gtype_str+eigen_str;
     py::class_<ClassicalIsing>(m, str.c_str())
         .def(py::init<const graph::Spins&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
+        .def("reset_spins", [](ClassicalIsing& self, const graph::Spins& init_spin){self.reset_spins(init_spin);},"init_spin"_a)
         .def_readwrite("spin", &ClassicalIsing::spin)
         .def_readonly("interaction", &ClassicalIsing::interaction)
         .def_readonly("num_spin", &ClassicalIsing::num_spins);
@@ -168,6 +169,8 @@ inline void declare_TransverseIsing(py::module &m, const std::string& gtype_str,
     py::class_<TransverseIsing>(m, str.c_str())
         .def(py::init<const system::TrotterSpins&, const GraphType&, FloatType>(), "init_spin"_a, "init_interaction"_a, "gamma"_a)
         .def(py::init<const graph::Spins&, const GraphType&, FloatType, size_t>(), "init_classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a)
+        .def("reset_spins", [](TransverseIsing& self, const system::TrotterSpins& init_trotter_spins){self.reset_spins(init_trotter_spins);},"init_trotter_spins"_a)
+        .def("reset_spins", [](TransverseIsing& self, const graph::Spins& classical_spins){self.reset_spins(classical_spins);},"classical_spins"_a)
         .def_readwrite("trotter_spins", &TransverseIsing::trotter_spins)
         .def_readonly("interaction", &TransverseIsing::interaction)
         .def_readonly("num_classical_spins", &TransverseIsing::num_classical_spins)
@@ -196,6 +199,8 @@ template<typename FloatType,
         py::class_<ChimeraTransverseGPU>(m, "ChimeraTransverseGPU")
             .def(py::init<const system::TrotterSpins&, const graph::Chimera<FloatType>&, FloatType, int>(), "init_trotter_spins"_a, "init_interaction"_a, "gamma"_a, "device_num"_a=0)
             .def(py::init<const graph::Spins&, const graph::Chimera<FloatType>&, FloatType, size_t, int>(), "classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a, "device_num"_a=0)
+            .def("reset_spins", [](ChimeraTransverseGPU& self, const system::TrotterSpins& init_trotter_spins){self.reset_spins(init_trotter_spins);},"init_trotter_spins"_a)
+            .def("reset_spins", [](ChimeraTransverseGPU& self, const graph::Spins& classical_spins){self.reset_spins(classical_spins);},"classical_spins"_a)
             .def_readwrite("gamma", &ChimeraTransverseGPU::gamma);
 
         //make_chimera_transverse_gpu
