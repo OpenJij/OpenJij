@@ -206,9 +206,9 @@ class SASampler(BaseSampler):
                 raise ValueError(
                     'You need initial_state if reinitilize_state is False.')
 
-            def _init_state(): return np.append(ising_graph.gen_spin(), 1)
+            def _init_state(): return ising_graph.gen_spin()
         else:
-            def _init_state(): return np.append(np.array(initial_state), 1)
+            def _init_state(): return np.array(initial_state)
 
         sa_system = cxxjij.system.make_classical_ising_Eigen(
             _init_state(), ising_graph)
@@ -241,9 +241,9 @@ class SASampler(BaseSampler):
             previous_state = _init_state()
             for _ in range(self.iteration):
                 if reinitilize_state:
-                    sa_system.spin = _init_state()
+                    sa_system.reset_spins(_init_state())
                 else:
-                    sa_system.spin = previous_state
+                    sa_system.reset_spins(previous_state)
 
                 _exec_time = measure_time(simulated_annealing)(sa_system)
                 execution_time.append(_exec_time)

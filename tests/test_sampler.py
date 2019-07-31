@@ -34,64 +34,42 @@ class SamplerOptimizeTest(unittest.TestCase):
 
     def test_seed(self):
         initial_state = [1 for _ in range(self.size)]
+        _J = self.J.copy()
+        _J[(1, 2)] = 1
         sampler = oj.SASampler(iteration=10)
         response = sampler.sample_ising(
-            h=self.h, J=self.J,
-            initial_state=initial_state
+            h=self.h, J=_J,
+            initial_state=initial_state,
+            seed=1
         )
-        print('unique ', np.unique(response.energies))
-        print('energy ', response.energies[0])
-        print('state ', response.states[0])
+        unique_energy = np.unique(response.energies)
+        self.assertEqual(len(unique_energy), 1)
 
-        model = oj.BinaryQuadraticModel(h=self.h, J=self.J)
-        schedule = cj.utility.make_classical_schedule_list(
-            0.1, 5.0, 10, 100)
-        graph = model.get_cxxjij_ising_graph()
-        system = cj.system.make_classical_ising_Eigen(
-            graph.gen_spin(), graph)
+    def test_sa(self):
+        initial_state = [1 for _ in range(self.size)]
 
-        seed = None
-        algorithm = cj.algorithm.Algorithm_SingleSpinFlip_run
-        if seed is None:
-            def simulated_annealing(system): return algorithm(
-                system, schedule)
-        else:
-            def simulated_annealing(system): return algorithm(
-                system, seed, schedule)
+        response = oj.SASampler().sample_ising(
+            self.h, self.J, initial_state=initial_state, seed=1)
+        self.assertEqual(len(response.states), 1)
+        self.assertListEqual(response.states[0], [-1, -1, -1])
 
-        for _ in range(10):
-            system.spin = initial_state + [1]
-            simulated_annealing(system)
-            print('spin ', system.spin)
-            print(cj.result.get_solution(system))
+        response = oj.SASampler(beta_max=100).sample_qubo(self.Q, seed=1)
+        self.assertEqual(len(response.states), 1)
+        self.assertListEqual(response.states[0], [0, 0, 0])
 
-    # def test_sa(self):
-    #     initial_state = [1 for _ in range(self.size)]
+        valid_sche = [(beta, 1) for beta in np.linspace(-1, 1, 5)]
+        with self.assertRaises(ValueError):
+            _ = oj.SASampler(schedule=valid_sche)
 
-    #     response = oj.SASampler().sample_ising(
-    #         self.h, self.J, initial_state=initial_state, seed=1)
-    #     print('energy ', response.energies[0])
-    #     self.assertEqual(len(response.states), 1)
-    #     self.assertListEqual(response.states[0], [-1, -1, -1])
+    def test_time_sa(self):
+        fast_res = oj.SASampler(beta_max=100, step_num=10,
+                                iteration=10).sample_ising(self.h, self.J)
+        slow_res = oj.SASampler(beta_max=100, step_num=50,
+                                iteration=10).sample_ising(self.h, self.J)
 
-    #     response = oj.SASampler(beta_max=100).sample_qubo(self.Q)
-    #     self.assertEqual(len(response.states), 1)
-    #     self.assertListEqual(response.states[0], [0, 0, 0])
-
-    #     valid_sche = [(beta, 1) for beta in np.linspace(-1, 1, 5)]
-    #     with self.assertRaises(ValueError
-        # print('unique', np.unique(response.energies))):
-    #         sampler = oj.SASampler(schedule=valid_sche)
-
-    # def test_time_sa(self):
-    #     fast_res = oj.SASampler(beta_max=100, step_num=10,
-    #                             iteration=10).sample_ising(self.h, self.J)
-    #     slow_res = oj.SASampler(beta_max=100, step_num=50,
-    #                             iteration=10).sample_ising(self.h, self.J)
-
-    #     self.assertEqual(len(fast_res.info['list_exec_times']), 10)
-    #     self.assertTrue(fast_res.info['execution_time']
-    #                     < slow_res.info['execution_time'])
+        self.assertEqual(len(fast_res.info['list_exec_times']), 10)
+        self.assertTrue(fast_res.info['execution_time']
+                        < slow_res.info['execution_time'])
 
     # def test_sqa(self):
     #     response = oj.SQASampler().sample_ising(self.h, self.J)
