@@ -39,7 +39,7 @@ namespace openjij {
 #endif
 
 #ifndef HANDLE_ERROR_CUBLAS
-#define HANDLE_ERROR_CUBLAS(expr) {cublasStatus_t bst=(expr); if(bst != CUBLAS_STATUS_SUCCESS) std::cerr << "cublas_error: " << st << " at " << __FILE__ << " line " << __LINE__ << std::endl;}
+#define HANDLE_ERROR_CUBLAS(expr) {cublasStatus_t st=(expr); if(st != CUBLAS_STATUS_SUCCESS) std::cerr << "cublas_error: " << st << " at " << __FILE__ << " line " << __LINE__ << std::endl;}
 #endif
 
 #else

@@ -20,6 +20,7 @@
 #include <utility/union_find.hpp>
 #include <utility/random.hpp>
 #include <utility/gpu/memory.hpp>
+#include <utility/gpu/cublas.hpp>
 
 // #####################################
 // helper functions
@@ -706,6 +707,46 @@ TEST(GPUUtil, CurandWrapperTest){
     for(std::size_t i=1; i<SIZE; i++){
         EXPECT_NE(output[i-1], output[i]);
         EXPECT_TRUE(0 <= output[i] && output[i] <= 1);
+    }
+}
+TEST(GPUUtil, CuBLASWrapperTest){
+    using namespace openjij;
+    constexpr std::size_t M = 1000;
+    constexpr std::size_t K = 205;
+    constexpr std::size_t N = 6;
+
+    //Note: matrix in cuBLAS in column major
+    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> host_A(M, K);
+
+    host_A = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>::Random(M, K);
+
+    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> host_B(K, N);
+
+    host_B = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>::Random(K, N);
+
+    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> host_C_answer(M, N);
+    host_C_answer = host_A * host_B;
+
+    Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> host_C(M, N);
+
+    //copy to gpu
+    auto A = utility::cuda::make_dev_unique<float[]>(M*K);
+    auto B = utility::cuda::make_dev_unique<float[]>(K*N);
+    auto C = utility::cuda::make_dev_unique<float[]>(M*N);
+
+    HANDLE_ERROR_CUDA(cudaMemcpy(A.get(), host_A.data(), M*K*sizeof(float), cudaMemcpyHostToDevice));
+    HANDLE_ERROR_CUDA(cudaMemcpy(B.get(), host_B.data(), K*N*sizeof(float), cudaMemcpyHostToDevice));
+
+    auto cublas = utility::cuda::CuBLASWrapper();
+
+    //matrix product
+    cublas.matmul(M, K, N, A, B, C);
+
+    HANDLE_ERROR_CUDA(cudaMemcpy(host_C.data(), C.get(), M*N*sizeof(float), cudaMemcpyDeviceToHost));
+    for(std::size_t i=0; i<M; i++){
+        for(std::size_t j=0; j<N; j++){
+            EXPECT_NEAR(host_C(i,j), host_C_answer(i,j), 1e-5);
+        }
     }
 }
 
