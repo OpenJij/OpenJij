@@ -71,33 +71,34 @@ class SamplerOptimizeTest(unittest.TestCase):
         self.assertTrue(fast_res.info['execution_time']
                         < slow_res.info['execution_time'])
 
-    # def test_sqa(self):
-    #     response = oj.SQASampler().sample_ising(self.h, self.J)
-    #     self.assertEqual(len(response.states), 1)
-    #     self.assertListEqual(response.states[0], [-1, -1, -1])
-    #     self.assertEqual(response.energies[0], -18)
+    def test_sqa(self):
+        response = oj.SQASampler().sample_ising(self.h, self.J)
+        self.assertEqual(len(response.states), 1)
+        self.assertEqual(response.var_type, oj.SPIN)
+        self.assertListEqual(response.states[0], [-1, -1, -1])
+        self.assertEqual(response.energies[0], -18)
 
-    #     response = oj.SQASampler().sample_qubo(self.Q)
-    #     self.assertEqual(len(response.states), 1)
-    #     self.assertListEqual(response.states[0], [0, 0, 0])
+        response = oj.SQASampler().sample_qubo(self.Q)
+        self.assertEqual(len(response.states), 1)
+        self.assertListEqual(response.states[0], [0, 0, 0])
 
-    #     schedule = [(s, 10) for s in np.arange(0, 1, 5)] + [(0.99, 100)]
-    #     response = oj.SQASampler(schedule=schedule).sample_qubo(self.Q)
-    #     self.assertListEqual(response.states[0], [0, 0, 0])
+        schedule = [(s, 10) for s in np.arange(0, 1, 5)] + [(0.99, 100)]
+        response = oj.SQASampler(schedule=schedule).sample_qubo(self.Q, seed=1)
+        self.assertListEqual(response.states[0], [0, 0, 0])
 
-    #     vaild_sche = [(s, 10) for s in np.linspace(0, 1, 5)]
-    #     with self.assertRaises(ValueError):
-    #         sampler = oj.SQASampler(schedule=vaild_sche)
+        vaild_sche = [(s, 10) for s in np.linspace(0, 1.1, 5)]
+        with self.assertRaises(ValueError):
+            _ = oj.SQASampler(schedule=vaild_sche)
 
-    # def test_time_sqa(self):
-    #     fast_res = oj.SQASampler(
-    #         step_num=10, iteration=10).sample_ising(self.h, self.J)
-    #     slow_res = oj.SQASampler(
-    #         step_num=50, iteration=10).sample_ising(self.h, self.J)
+    def test_time_sqa(self):
+        fast_res = oj.SQASampler(
+            step_num=10, iteration=10).sample_ising(self.h, self.J, seed=1)
+        slow_res = oj.SQASampler(
+            step_num=50, iteration=10).sample_ising(self.h, self.J, seed=1)
 
-    #     self.assertEqual(len(fast_res.info['list_exec_times']), 10)
-    #     self.assertTrue(fast_res.info['execution_time']
-    #                     < slow_res.info['execution_time'])
+        self.assertEqual(len(fast_res.info['list_exec_times']), 10)
+        self.assertTrue(fast_res.info['execution_time']
+                        < slow_res.info['execution_time'])
 
     # def test_gpu_sqa(self):
     #     gpu_sampler = oj.GPUSQASampler()
