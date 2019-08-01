@@ -71,6 +71,18 @@ class SamplerOptimizeTest(unittest.TestCase):
         self.assertTrue(fast_res.info['execution_time']
                         < slow_res.info['execution_time'])
 
+    def test_sqa_response(self):
+        iteration = 10
+        trotter = 4
+        sampler = oj.SQASampler(iteration=iteration, trotter=trotter)
+        response = sampler.sample_ising(h=self.h, J=self.J)
+
+        self.assertEqual(len(response.states), iteration)
+        self.assertEqual(len(response.q_states), iteration)
+        self.assertEqual(len(response.q_states[0]), trotter)
+        print(response.q_states[0])
+        self.assertTrue(isinstance(response.q_states[0][0], int))
+
     def test_sqa(self):
         response = oj.SQASampler().sample_ising(self.h, self.J)
         self.assertEqual(len(response.states), 1)
