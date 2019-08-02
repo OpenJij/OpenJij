@@ -20,6 +20,9 @@ class VarTypeTest(unittest.TestCase):
 class SamplerOptimizeTest(unittest.TestCase):
 
     def setUp(self):
+        # the following interactions has
+        # the ground state [-1, -1, -1]
+        # and ground energy -18
         self.h = {0: 5, 1: 5, 2: 5}
         self.J = {(0, 1): -1.0, (1, 2): -1.0, (2, 0): -1.0}
         self.Q = {(i, i): hi for i, hi in self.h.items()}
@@ -80,8 +83,8 @@ class SamplerOptimizeTest(unittest.TestCase):
         self.assertEqual(len(response.states), iteration)
         self.assertEqual(len(response.q_states), iteration)
         self.assertEqual(len(response.q_states[0]), trotter)
-        print(response.q_states[0])
-        self.assertTrue(isinstance(response.q_states[0][0], int))
+        self.assertTrue(isinstance(
+            response.q_states[0][0][0], (int, np.int, np.int64)))
 
     def test_sqa(self):
         response = oj.SQASampler().sample_ising(self.h, self.J)

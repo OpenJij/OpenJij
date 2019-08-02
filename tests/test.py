@@ -578,7 +578,7 @@ class CXXTest(unittest.TestCase):
 #        self.assertTrue(chimera.validate_chimera())
 #
 #
-#if __name__ == '__main__':
+if __name__ == '__main__':
     unittest.main()
 
 

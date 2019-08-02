@@ -184,3 +184,13 @@ class BinaryQuadraticModel:
                 if ising_int[i][i] != 0:
                     h[self.indices[i]] = ising_int[i][i]
         return h, J
+
+
+if __name__ == '__main__':
+    import openjij as oj
+    h = {0: 5, 1: 5, 2: 5}
+    J = {(0, 1): -1.0, (1, 2): -1.0, (2, 0): -1.0}
+    model = BinaryQuadraticModel(h=h, J=J)
+    e = model.calc_energy([-1, -1, -1])
+    e2 = model.calc_energy([-1, -1, -1], True)
+    print(e, e2)

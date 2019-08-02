@@ -1,214 +1,289 @@
-# Copyright 2019 Jij Inc.
-
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-
-#     http://www.apache.org/licenses/LICENSE-2.0
-
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import openjij as oj
 import numpy as np
-import cxxjij
 import openjij
-import warnings
+from openjij.sampler import measure_time
+from openjij.sampler import BaseSampler
+import cxxjij
 
 
-class BinaryQuadraticModel:
-    """Represents Binary quadratic model
+class SQASampler(BaseSampler):
+    """Sampler with Simulated Quantum Annealing (SQA).
+
+    Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
+
+    Args:
+        beta (float):
+            Inverse temperature.
+
+        gamma (float):
+            Amplitude of quantum fluctuation.
+
+        trotter (int):
+            Trotter number.
+
+        step_length (int):
+            Length of Monte Carlo step.
+
+        step_num (int):
+            Number of Monte Carlo step.
+
+        schedule_info (dict):
+            Information about a annealing schedule.
+
+        iteration (int):
+            Number of iterations.
+
     Attributes:
-        var_type (openjij.VariableType): variable type SPIN or BINARY
-        linear (dict): represents linear term
-        quad (dict): represents quadratic term
-        labels (list): labels of each variables sorted by results variables
-        indices (list): deprecated same labels
-        energy_bias (float): represents constant energy term when convert to SPIN from BINARY
-        size (int): number of variables
+        energy_bias (float):
+            Energy bias.
+
+        var_type (str):
+            Type of variables: 'SPIN' or 'BINARY' which mean {-1, 1} or {0, 1}.
+
+        indices (int):
+            Indices of `openjij.model.model.BinaryQuadraticModel` object.
+
+        N (int):
+            Number of the indices.
+
+        system_class (:class:):
+            `cxxjij.system.QuantumIsing` class.
+
+        sqa_kwargs (dict):
+            Parameters of SQA: beta, gamma, and schedule_info.
+
+    Raises:
+        ValueError: If the schedule violates as below.
+        - not list or numpy.array.
+        - schedule range is '0 <= s <= 1'.
+
     """
 
-    def __init__(self, h=None, J=None, Q=None, var_type=openjij.SPIN):
+    def __init__(self, beta=5.0, gamma=1.0,
+                 trotter=4, step_length=10,
+                 step_num=100, schedule=None, iteration=1):
 
-        self.var_type = openjij.cast_var_type(var_type)
-
-        if self.var_type == openjij.SPIN:
-            if (h is None) or (J is None):
-                raise ValueError('Input h and J.')
-            self.linear = h
-            self.quad = J
-        elif self.var_type == openjij.BINARY:
-            if not isinstance(Q, dict) or Q is None:
-                raise ValueError('Q should be dictionary.')
-            self.linear = {}
-            self.quad = {}
-            for (i, j), qij in Q.items():
-                if i == j:
-                    self.linear[i] = qij
-                else:
-                    self.quad[(i, j)] = qij
-
-        index_set = set(self.linear.keys())
-        for v1, v2 in self.quad.keys():
-            indices_len = len(index_set)
-            index_set.add(v1)
-            index_set.add(v2)
-
-            # When the same index add to index set, check the existence of inverse indices in the J
-            if (len(index_set) - indices_len < 2 and (v2, v1) in self.quad):
-                warn_message = 'Two connections J[(a, b)] and J[(b, a)] are defined. ' \
-                               'Adopt the (lower index, higher index) connection. ' \
-                               'Please pay attention to the symmetry of interaction J.'
-                warnings.warn(warn_message, SyntaxWarning)
-        self.indices = list(index_set)
-        if var_type == openjij.SPIN:
-            self.energy_bias = 0.0
-        else:  # BINARY
-            self.energy_bias = (sum(list(self.linear.values()))
-                                * 2 + sum(list(self.quad.values())))/4
-
-        self._interaction_matrix = None  # calculated at interactions()
-        self.size = len(self.indices)
-
-    def get_cxxjij_ising_graph(self, sparse=False):
-        """
-        Convert to cxxjij.graph.Dense or Sparse class from Python dictionary (h, J) or Q
-        Args:
-            sparse (bool): if true returns sparse graph
-        Returns:
-            openjij.graph.Dense openjij.graph.Sparse
-        """
-        if not sparse:
-            GraphClass = cxxjij.graph.Dense
+        # make schedule
+        if schedule is not None:
+            self.schedule = self._convert_validate_schedule(schedule, beta)
+            self.step_length = None
+            self.step_num = None
+            self.schedule_info = {'schedule': schedule}
         else:
-            GraphClass = cxxjij.graph.Sparse
+            self.step_length = step_length
+            self.step_num = step_num
+            self.schedule_info = {
+                'step_num': step_num, 'step_length': step_length}
+            self.schedule = cxxjij.utility.make_transverse_field_schedule_list(
+                beta=beta, one_mc_step=step_length,
+                num_call_updater=step_num
+            )
 
-        cxxjij_graph = GraphClass(self.size)
+        self.beta = beta
+        self.gamma = gamma
+        self.trotter = trotter
 
-        ising_int = self.ising_interactions()
-        # cxxjij.graph.dense
-        for i in range(self.size):
-            if ising_int[i, i] != 0.0:
-                cxxjij_graph[i, i] = ising_int[i, i]
-            for j in range(i+1, self.size):
-                if ising_int[i, j] != 0.0:
-                    cxxjij_graph[i, j] = ising_int[i, j]
+        self.iteration = iteration
+        self.energy_bias = 0.0
 
-        return cxxjij_graph
+        self.sqa_kwargs = dict(
+            beta=self.beta, gamma=self.gamma, **self.schedule_info)
 
-    def ising_interactions(self):
-        """ Interactions in the Ising representation
-        QUBO formulation to the Ising formulation
-        We assumption Q is a triangular matrix.
-        H = q^T Q q
-          = 1/4 (1+s)^T Q (1+s)
-          = s^T Q/4 s + 1^T Q/4 s + s^T Q/4 1  + 1^T Q/4 1
-          = s^T nondiag(Q)/4 s + 1^T Q/4 s + s^T Q/4 1  + 1^T (Q + diag(Q))/4 1
-          = \sum_{i<j} Q_{ij}/4 s_i s_j 
-            + \sum{i<=j} (Q_{ij} + Q_{ji}) s_i 
-            + sum_{i<=j} (Q_{ij} + Q_{ii})/4
-        Therefore
-          J_{ij} = Q_{ij}/4
-          h_i =  \sum{i<=j} (Q_{ij} + Q_{ji})/4
-          constant_term = sum_{i<=j} Q_{ij}/4 + Tr(Q) (energy bias)
-        """
-        if self.var_type == openjij.SPIN:
-            return self.interactions()
-        interactions = self.interactions()/4
-        if self.var_type == openjij.BINARY:
-            # convert to the Ising interaction
-            self.energy_bias = (
-                np.sum(np.triu(interactions)) + np.trace(interactions))
-            for i in range(len(interactions)):
-                interactions[i, i] = np.sum(
-                    interactions[i, :]) + interactions[i, i]
-        return interactions
+    def _convert_validate_schedule(self, schedule, beta):
+        if not isinstance(schedule, (list, np.array)):
+            raise ValueError("schedule should be list or numpy.array")
 
-    def interactions(self, re_calculate=False):
+        # schedule validation  0 <= s <= 1
+        sch = np.array(schedule).T[0]
+        if not np.all((0 <= sch) & (sch <= 1)):
+            raise ValueError("schedule range is '0 <= s < 1'.")
 
-        if (self._interaction_matrix is not None) and (not re_calculate):
-            return self._interaction_matrix
+        # convert to list of cxxjij.utility.TransverseFieldSchedule
+        cxxjij_schedule = []
+        for s, one_mc_step in schedule:
+            _schedule = cxxjij.utility.TransverseFieldSchedule()
+            _schedule.one_mc_step = one_mc_step
+            _schedule.updater_parameter.beta = beta
+            _schedule.updater_parameter.s = s
+            cxxjij_schedule.append(_schedule)
+        return cxxjij_schedule
 
-        system_size = len(self.indices)
-        interactions = np.zeros((system_size, system_size))
+    def sample_ising(self, h, J,
+                     initial_state=None, updater='single spin flip',
+                     reinitilize_state=True, seed=None, **kwargs):
+        """Sample from the specified Ising model.
 
-        for i, i_index in enumerate(self.indices):
-            interactions[i, i] = self.linear[i_index] if i_index in self.linear else 0.0
-            for j, j_index in enumerate(self.indices[i+1:]):
-                j += i+1
-                if (i_index, j_index) in self.quad:
-                    jval = self.quad[(i_index, j_index)]
-                elif (j_index, i_index) in self.quad:
-                    jval = self.quad[(j_index, i_index)]
-                else:
-                    jval = 0.0
-                interactions[i, j] = jval
-                interactions[j, i] = jval
-
-        self._interaction_matrix = interactions
-
-        return self._interaction_matrix
-
-    def calc_energy(self, state, need_to_convert_from_spin=False):
-        """calculate energy from state
         Args:
-            state (list, numpy.array): BINARY or SPIN state
-            need_to_convet_to_spin (bool): if state is SPIN and need 
-                                           to convert to BINARY from SPIN
+            h (dict):
+                Linear biases of the Ising model.
+
+            J (dict):
+                Quadratic biases of the Ising model.
+
+            **kwargs:
+                Optional keyword arguments for the sampling method.
+
+        Returns:
+            :obj:: `openjij.sampler.response.Response` object.
+
+        Examples:
+            This example submits a two-variable Ising problem.
+
+            >>> import openjij as oj
+            >>> sampler = oj.SQASampler()
+            >>> response = sampler.sample_ising({0: -1, 1: 1}, {})
+            >>> for sample in response.samples():    # doctest: +SKIP
+            ...    print(sample)
+            ...
+            {0: 1, 1: -1}
+
         """
-        _state = np.array(state)
-        if need_to_convert_from_spin:
-            _state = (1+_state)/2
 
-        if self.var_type == openjij.BINARY:
-            int_mat = np.triu(self.interactions())
-            return np.dot(_state, np.dot(int_mat, _state))
-        elif self.var_type == openjij.SPIN:
-            int_mat = self.ising_interactions()
-            linear_term = np.diag(int_mat)
-            energy = (np.dot(_state, np.dot(int_mat, _state)) -
-                      np.sum(linear_term))/2
-            energy += np.dot(linear_term, _state)
-            return energy
+        var_type = openjij.SPIN
+        bqm = openjij.BinaryQuadraticModel(h=h, J=J, var_type=var_type)
+        return self.sampling(bqm,
+                             initial_state=initial_state, updater=updater,
+                             reinitilize_state=reinitilize_state,
+                             seed=seed,
+                             **kwargs
+                             )
 
-    def ising_dictionary(self):
-        if self.var_type == openjij.SPIN:
-            return self.linear, self.quad
-        elif self.var_type == openjij.BINARY:
-            ising_int = self.ising_interactions()
-            h = {}
-            J = {(i, j): qij/4.0 for (i, j), qij in self.quad.items()}
-            for i in range(len(ising_int)):
-                if ising_int[i][i] != 0:
-                    h[self.indices[i]] = ising_int[i][i]
-        return h, J
+    def sample_qubo(self, Q,
+                    initial_state=None, updater='single spin flip',
+                    reinitilize_state=True, seed=None, **kwargs):
+        """Sample from the specified QUBO.
+
+        Args:
+            Q (dict):
+                Coefficients of a quadratic unconstrained binary optimization (QUBO) model.
+
+            **kwargs:
+                Optional keyword arguments for the sampling method.
+
+        Returns:
+            :obj:: `openjij.sampler.response.Response` object.
+
+        Examples:
+            This example submits a two-variable QUBO model.
+
+            >>> import openjij as oj
+            >>> sampler = oj.SQASampler()
+            >>> Q = {(0, 0): -1, (4, 4): -1, (0, 4): 2}
+            >>> response = sampler.sample_qubo(Q)
+            >>> for sample in response.samples():    # doctest: +SKIP
+            ...    print(sample)
+            ...
+            {0: 0, 4: 1}
+
+        """
+
+        var_type = openjij.BINARY
+        bqm = openjij.BinaryQuadraticModel(Q=Q, var_type=var_type)
+        return self.sampling(bqm,
+                             initial_state=initial_state, updater=updater,
+                             reinitilize_state=reinitilize_state,
+                             seed=seed,
+                             **kwargs
+                             )
+
+    def sampling(self, model,
+                 initial_state=None, updater='single spin flip',
+                 reinitilize_state=True, seed=None,
+                 **kwargs):
+        self._sampling_kwargs_setting(**kwargs)
+        self._set_model(model)
+        ising_graph = model.get_cxxjij_ising_graph()
+
+        if initial_state is None:
+            if not reinitilize_state:
+                raise ValueError(
+                    'You need initial_state if reinitilize_state is False.')
+
+            def _init_state(): return [ising_graph.gen_spin()
+                                       for _ in range(self.trotter)]
+        else:
+            trotter_init_state = [np.array(initial_state)
+                                  for _ in range(self.trotter)]
+
+            def _init_state(): return trotter_init_state
+
+        sqa_system = cxxjij.system.make_transverse_ising_Eigen(
+            _init_state(), ising_graph, self.gamma
+        )
+
+        # choose updater
+        _updater_name = updater.lower().replace('_', '').replace(' ', '')
+        if _updater_name == 'singlespinflip':
+            algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
+        else:
+            raise ValueError('updater is one of "single spin flip"')
+
+        # seed for MonteCarlo
+        if seed is None:
+            def sqa_algorithm(system): return algorithm(
+                system, self.schedule)
+        else:
+            def sqa_algorithm(system): return algorithm(
+                system, seed, self.schedule)
+
+        q_states = []
+        q_energies = []
+
+        execution_time = []
+
+        @measure_time
+        def exec_sampling():
+            previous_state = _init_state()
+            for _ in range(self.iteration):
+                if reinitilize_state:
+                    sqa_system.reset_spins(_init_state())
+                else:
+                    sqa_system.reset_spins(previous_state)
+                _exec_time = measure_time(sqa_algorithm)(sqa_system)
+                execution_time.append(_exec_time)
+                # trotter_spins is transposed because it is stored as [Spin ​​space][Trotter].
+                # [-1] is excluded because it is a tentative spin of s = 1 for convenience in SQA.
+                q_state = self._post_process4state(
+                    sqa_system.trotter_spins[:-1].T)
+                q_energies.append(
+                    [model.calc_energy(state,
+                                       need_to_convert_from_spin=True)
+                     for state in q_state])
+                q_states.append(q_state.astype(np.int))
+
+        sampling_time = exec_sampling()
+        response = openjij.Response(
+            var_type=model.var_type, indices=self.indices)
+        response.update_quantum_ising_states_energies(q_states, q_energies)
+
+        response.info['sampling_time'] = sampling_time * \
+            10**6              # micro sec
+        response.info['execution_time'] = np.mean(
+            execution_time) * 10**6   # micro sec
+        response.info['list_exec_times'] = np.array(
+            execution_time) * 10**6  # micro sec
+
+        return response
+
+    def _post_process4state(self, q_state):
+        return q_state
 
 
 if __name__ == '__main__':
 
-    Q = {(0, 0): 1, (1, 2): -1, (2, 0): -0.2, (1, 3): 3}
+    h = {0: 5, 1: 5, 2: 5}
+    J = {(0, 1): -1.0, (1, 2): -1.0, (2, 0): -1.0}
+    iteration = 10
+    trotter = 4
+    sampler = SQASampler(iteration=iteration, trotter=trotter)
+    response = sampler.sample_ising(h=h, J=J)
 
-    # QUBO == Ising
-    spins = [1, 1, -1, 1]
-    binary = [1, 1, 0, 1]
-    qubo_bqm = BinaryQuadraticModel(Q=Q, var_type='BINARY')
-    # ising_mat = qubo_bqm.ising_interactions()
+    model = oj.BinaryQuadraticModel(h=h, J=J)
+    print(model.calc_energy([-1, -1, -1], need_to_convert_from_spin=True))
 
-    print(qubo_bqm.var_type)
-
-    qubo_energy = qubo_bqm.calc_energy(binary)
-    # ising_energy = ising_bqm.calc_energy(spins)
-
-    print(qubo_energy, qubo_bqm.calc_energy(
-        spins, need_to_convert_from_spin=True))
-
-    h = {}
-    J = {(0, 1): -1.0, (1, 2): -3.0}
-    bqm = BinaryQuadraticModel(h=h, J=J)
-    print(bqm.var_type)
-    correct_mat = np.array([[0, -1, 0, ], [-1, 0, -3], [0, -3, 0]])
-    np.testing.assert_array_equal(
-        bqm.ising_interactions(), correct_mat.astype(np.float))
+    print(len(response.states), iteration)
+    print(len(response.q_states), iteration)
+    print(len(response.q_states[0]), trotter)
+    print(type(response.q_states[0][0][0]))
+    print(response.energies[0], -18)
+    print(isinstance(response.q_states[0][0][0], np.int64))
