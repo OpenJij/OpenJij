@@ -218,6 +218,11 @@ class SASampler(BaseSampler):
 
             def _init_state(): return ising_graph.gen_spin()
         else:
+            if model.var_type == openjij.SPIN:
+                _init_state = np.array(initial_state)
+            else:  # BINARY
+                _init_state = (2*np.array(initial_state)-1).astype(np.int)
+
             def _init_state(): return np.array(initial_state)
 
         sa_system = cxxjij.system.make_classical_ising_Eigen(
@@ -259,8 +264,9 @@ class SASampler(BaseSampler):
                 execution_time.append(_exec_time)
                 previous_state = cxxjij.result.get_solution(sa_system)
                 states.append(previous_state)
-                energies.append(ising_graph.calc_energy(
-                    previous_state) + self.energy_bias)
+                energies.append(model.calc_energy(
+                    previous_state,
+                    need_to_convert_from_spin=True))
 
         sampling_time = exec_sampling()
 

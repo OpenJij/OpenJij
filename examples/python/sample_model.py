@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import openjij as oj
 import numpy as np
 import cxxjij
 import openjij
@@ -184,3 +185,30 @@ class BinaryQuadraticModel:
                 if ising_int[i][i] != 0:
                     h[self.indices[i]] = ising_int[i][i]
         return h, J
+
+
+if __name__ == '__main__':
+
+    Q = {(0, 0): 1, (1, 2): -1, (2, 0): -0.2, (1, 3): 3}
+
+    # QUBO == Ising
+    spins = [1, 1, -1, 1]
+    binary = [1, 1, 0, 1]
+    qubo_bqm = BinaryQuadraticModel(Q=Q, var_type='BINARY')
+    # ising_mat = qubo_bqm.ising_interactions()
+
+    print(qubo_bqm.var_type)
+
+    qubo_energy = qubo_bqm.calc_energy(binary)
+    # ising_energy = ising_bqm.calc_energy(spins)
+
+    print(qubo_energy, qubo_bqm.calc_energy(
+        spins, need_to_convert_from_spin=True))
+
+    h = {}
+    J = {(0, 1): -1.0, (1, 2): -3.0}
+    bqm = BinaryQuadraticModel(h=h, J=J)
+    print(bqm.var_type)
+    correct_mat = np.array([[0, -1, 0, ], [-1, 0, -3], [0, -3, 0]])
+    np.testing.assert_array_equal(
+        bqm.ising_interactions(), correct_mat.astype(np.float))

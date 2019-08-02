@@ -244,12 +244,13 @@ class SQASampler(BaseSampler):
                 # [-1] is excluded because it is a tentative spin of s = 1 for convenience in SQA.
                 q_state = self._post_process4state(
                     sqa_system.trotter_spins[:-1].T)
-                q_states.append(q_state)
-                q_energies.append([model.calc_energy(state)
-                                   for state in q_state])
+                q_energies.append(
+                    [model.calc_energy(state,
+                                       need_to_convert_from_spin=True)
+                     for state in q_state])
+                q_states.append(q_state.astype(np.int))
 
         sampling_time = exec_sampling()
-
         response = openjij.Response(
             var_type=model.var_type, indices=self.indices)
         response.update_quantum_ising_states_energies(q_states, q_energies)

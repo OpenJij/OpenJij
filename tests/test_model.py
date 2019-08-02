@@ -80,6 +80,24 @@ class ModelTest(unittest.TestCase):
         true_qubo_e = calculate_qubo_energy(self.Q, self.binaries)
         self.assertEqual(qubo_energy_bqm, true_qubo_e)
 
+        # QUBO == Ising
+        spins = [1, 1, -1, 1]
+        binary = [1, 1, 0, 1]
+        qubo_bqm = oj.BinaryQuadraticModel(Q=self.Q, var_type='BINARY')
+        # ising_mat = qubo_bqm.ising_interactions()
+        # h, J = {}, {}
+        # for i in range(len(ising_mat)-1):
+        #     for j in range(i, len(ising_mat)):
+        #         if i == j:
+        #             h[i] = ising_mat[i][i]
+        #         else:
+        #             J[(i, j)] = ising_mat[i][j]
+
+        qubo_energy = qubo_bqm.calc_energy(binary)
+
+        self.assertEqual(qubo_energy, qubo_bqm.calc_energy(
+            spins, need_to_convert_from_spin=True))
+
     def test_bqm(self):
         h = {}
         J = {(0, 1): -1.0, (1, 2): -3.0}
