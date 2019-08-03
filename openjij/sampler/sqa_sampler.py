@@ -92,10 +92,15 @@ class SQASampler(BaseSampler):
         if not isinstance(schedule, (list, np.array)):
             raise ValueError("schedule should be list or numpy.array")
 
+        if len(schedule[0]) != 2:
+            raise ValueError(
+                """schedule is list of tuple or list
+                (annealing parameter s : float, step_length : int)""")
+
         # schedule validation  0 <= s <= 1
         sch = np.array(schedule).T[0]
         if not np.all((0 <= sch) & (sch <= 1)):
-            raise ValueError("schedule range is '0 <= s < 1'.")
+            raise ValueError("schedule range is '0 <= s <= 1'.")
 
         # convert to list of cxxjij.utility.TransverseFieldSchedule
         cxxjij_schedule = []
@@ -198,16 +203,21 @@ class SQASampler(BaseSampler):
                 raise ValueError(
                     'You need initial_state if reinitilize_state is False.')
 
-            def _init_state(): return [ising_graph.gen_spin()
-                                       for _ in range(self.trotter)]
+            def _generate_init_state(): return [ising_graph.gen_spin()
+                                                for _ in range(self.trotter)]
         else:
-            trotter_init_state = [np.array(initial_state)
-                                  for _ in range(self.trotter)]
+            if model.var_type == openjij.SPIN:
+                trotter_init_state = [np.array(initial_state)
+                                      for _ in range(self.trotter)]
+            else:  # BINARY
+                trotter_init_state = [
+                    (2*np.array(initial_state)-1).astype(int)
+                    for _ in range(self.trotter)]
 
-            def _init_state(): return trotter_init_state
+            def _generate_init_state(): return trotter_init_state
 
         sqa_system = cxxjij.system.make_transverse_ising_Eigen(
-            _init_state(), ising_graph, self.gamma
+            _generate_init_state(), ising_graph, self.gamma
         )
 
         # choose updater
@@ -232,10 +242,10 @@ class SQASampler(BaseSampler):
 
         @measure_time
         def exec_sampling():
-            previous_state = _init_state()
+            previous_state = _generate_init_state()
             for _ in range(self.iteration):
                 if reinitilize_state:
-                    sqa_system.reset_spins(_init_state())
+                    sqa_system.reset_spins(_generate_init_state())
                 else:
                     sqa_system.reset_spins(previous_state)
                 _exec_time = measure_time(sqa_algorithm)(sqa_system)
@@ -253,7 +263,7 @@ class SQASampler(BaseSampler):
         sampling_time = exec_sampling()
         response = openjij.Response(
             var_type=model.var_type, indices=self.indices)
-        response.update_quantum_ising_states_energies(q_states, q_energies)
+        response.update_trotter_ising_states_energies(q_states, q_energies)
 
         response.info['sampling_time'] = sampling_time * \
             10**6              # micro sec

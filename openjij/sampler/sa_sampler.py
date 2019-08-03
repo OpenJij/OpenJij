@@ -83,9 +83,9 @@ class SASampler(BaseSampler):
         if isinstance(schedule[0], cxxjij.utility.ClassicalSchedule):
             return schedule
 
-        if not isinstance(schedule[0], tuple):
+        if len(schedule[0]) != 2:
             raise ValueError(
-                "schedule is list of tuple (beta : float, step_length : int)")
+                "schedule is list of tuple or list (beta : float, step_length : int)")
 
         # schedule validation  0 <= beta
         beta = np.array(schedule).T[0]
@@ -97,7 +97,7 @@ class SASampler(BaseSampler):
         for beta, step_length in schedule:
             _schedule = cxxjij.utility.ClassicalSchedule()
             _schedule.one_mc_step = step_length
-            _schedule.updater_parameter = beta
+            _schedule.updater_parameter.beta = beta
             cxxjij_schedule.append(_schedule)
         return cxxjij_schedule
 
@@ -216,17 +216,17 @@ class SASampler(BaseSampler):
                 raise ValueError(
                     'You need initial_state if reinitilize_state is False.')
 
-            def _init_state(): return ising_graph.gen_spin()
+            def _generate_init_state(): return ising_graph.gen_spin()
         else:
             if model.var_type == openjij.SPIN:
                 _init_state = np.array(initial_state)
             else:  # BINARY
                 _init_state = (2*np.array(initial_state)-1).astype(np.int)
 
-            def _init_state(): return np.array(initial_state)
+            def _generate_init_state(): return np.array(_init_state)
 
         sa_system = cxxjij.system.make_classical_ising_Eigen(
-            _init_state(), ising_graph)
+            _generate_init_state(), ising_graph)
 
         # choose updater
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
@@ -253,23 +253,22 @@ class SASampler(BaseSampler):
 
         @measure_time
         def exec_sampling():
-            previous_state = _init_state()
+            previous_state = _generate_init_state()
             for _ in range(self.iteration):
                 if reinitilize_state:
-                    sa_system.reset_spins(_init_state())
+                    sa_system.reset_spins(_generate_init_state())
                 else:
                     sa_system.reset_spins(previous_state)
 
                 _exec_time = measure_time(simulated_annealing)(sa_system)
+
                 execution_time.append(_exec_time)
                 previous_state = cxxjij.result.get_solution(sa_system)
                 states.append(previous_state)
                 energies.append(model.calc_energy(
                     previous_state,
                     need_to_convert_from_spin=True))
-
         sampling_time = exec_sampling()
-
         response = openjij.Response(
             var_type=model.var_type, indices=self.indices)
         response.update_ising_states_energies(states, energies)

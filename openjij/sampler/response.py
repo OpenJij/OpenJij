@@ -93,7 +93,7 @@ class Response:
         self.energies = energies
         self.min_samples = self._minmum_sample()
 
-    def update_quantum_ising_states_energies(self, trotter_states, q_energies):
+    def update_trotter_ising_states_energies(self, trotter_states, q_energies):
         """Update quantum states and energies.
 
         Args:

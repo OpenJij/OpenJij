@@ -48,6 +48,43 @@ class SamplerOptimizeTest(unittest.TestCase):
         unique_energy = np.unique(response.energies)
         self.assertEqual(len(unique_energy), 1)
 
+    def test_openjij_cxxjij_compare(self):
+        seed_for_mc = 1
+        Q = {
+            (0, 0): 1, (1, 1): -1, (2, 2): 2,
+            (0, 1): 1, (1, 2): -1, (2, 0): -1
+        }
+        # solution is [0, 1, 0]
+
+        init_binary = [1, 0, 1]
+        init_spin = [1, -1, 1]
+
+        # openjij
+        sampler = oj.SASampler(
+            beta_min=0.01, beta_max=10,
+            step_length=10, step_num=100
+        )
+        res = sampler.sample_qubo(
+            Q=Q, initial_state=init_binary,
+            seed=seed_for_mc
+        )
+
+        # cxxjij
+        model = oj.BinaryQuadraticModel(Q=Q, var_type='BINARY')
+        graph = model.get_cxxjij_ising_graph()
+        system = cj.system.make_classical_ising_Eigen(init_spin, graph)
+        sch = cj.utility.make_classical_schedule_list(
+            beta_min=0.01, beta_max=10,
+            one_mc_step=10, num_call_updater=100
+        )
+        cj.algorithm.Algorithm_SingleSpinFlip_run(
+            system, seed_for_mc, sch
+        )
+
+        self.assertListEqual(
+            res.states[0], list((system.spin[:-1]+1)/2)
+        )
+
     def test_sa(self):
         initial_state = [1 for _ in range(self.size)]
 
@@ -114,6 +151,42 @@ class SamplerOptimizeTest(unittest.TestCase):
         self.assertEqual(len(fast_res.info['list_exec_times']), 10)
         self.assertTrue(fast_res.info['execution_time']
                         < slow_res.info['execution_time'])
+
+    def test_reverse_annealing(self):
+        seed_for_mc = 1
+        initial_state = [0, 0, 0]
+        qubo = {
+            (0, 0): 1, (1, 1): -1, (2, 2): 2,
+            (0, 1): 1, (1, 2): -1, (2, 0): -1
+        }
+        # solution is [0, 1, 0]
+        solution = [0, 1, 0]
+
+        # Reverse simulated annealing
+        # beta, step_length
+        reverse_schedule = [
+            [10, 3], [1, 3], [0.5, 3], [1, 3], [10, 5]
+        ]
+        rsa_sampler = oj.SASampler(schedule=reverse_schedule, iteration=10)
+        res = rsa_sampler.sample_qubo(
+            qubo, initial_state=initial_state, seed=seed_for_mc)
+        self.assertListEqual(
+            solution,
+            list(res.min_samples['min_states'][0])
+        )
+
+        # Reverse simulated quantum annealing
+        # annealing parameter s, step_length
+        reverse_schedule = [
+            [1, 1], [0.3, 3], [0.1, 5], [0.3, 3], [1, 3]
+        ]
+        rqa_sampler = oj.SQASampler(schedule=reverse_schedule, iteration=10)
+        res = rqa_sampler.sample_qubo(
+            qubo, initial_state=initial_state, seed=seed_for_mc)
+        self.assertListEqual(
+            solution,
+            list(res.min_samples['min_states'][0])
+        )
 
     # def test_gpu_sqa(self):
     #     gpu_sampler = oj.GPUSQASampler()
