@@ -172,7 +172,7 @@ class SamplerOptimizeTest(unittest.TestCase):
             qubo, initial_state=initial_state, seed=seed_for_mc)
         self.assertListEqual(
             solution,
-            list(res.min_samples['min_states'][0])
+            list(res.min_samples['states'][0])
         )
 
         # Reverse simulated quantum annealing
@@ -185,7 +185,7 @@ class SamplerOptimizeTest(unittest.TestCase):
             qubo, initial_state=initial_state, seed=seed_for_mc)
         self.assertListEqual(
             solution,
-            list(res.min_samples['min_states'][0])
+            list(res.min_samples['states'][0])
         )
 
     # def test_gpu_sqa(self):

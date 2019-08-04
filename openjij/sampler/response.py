@@ -59,15 +59,21 @@ class Response:
         self.info = {}
 
     def __repr__(self):
+        if len(self.states) == 0:
+            return "Response\n\tvar_type: {}\n\tstates: empty".format(self.var_type)
+        
+        if len(min_samples) == 0:
+            self.min_samples = self._minimum_sample()
         min_energy_index = np.argmin(self.energies) if len(
             self.energies) != 0 else None
         ground_energy = self.energies[min_energy_index]
         ground_state = self.states[min_energy_index]
-        ret_str = "iteration : {}, minimum energy : {}, var_type : {}\n".format(
-            len(self.states), ground_energy, self.var_type)
-        ret_str += "indices: {} \nminmum energy state sample : {}".format(
+        res_str = "Response\n\titeration : {},\n\t".format(len(self.states))
+        res_str += "minimum energy: {}\n\t".format(ground_energy)
+        res_str += "var_type: {}\n\t".format(self.var_type)
+        res_str += "indices: {} \n\tminimum energy state : {}".format(
             self.indices, ground_state)
-        return ret_str
+        return res_str
 
     def update_ising_states_energies(self, states, energies):
         """Update states and energies.
@@ -91,7 +97,7 @@ class Response:
             self.states = [
                 list(np.array((np.array(state) + 1)/2).astype(np.int)) for state in states]
         self.energies = energies
-        self.min_samples = self._minmum_sample()
+        self.min_samples = self._minimum_sample()
 
     def update_trotter_ising_states_energies(self, trotter_states, q_energies):
         """Update quantum states and energies.
@@ -121,16 +127,16 @@ class Response:
                          for min_ind, q_e in zip(min_e_indices, q_energies)]
         self.states = [list(t_state[min_ind]) for min_ind,
                        t_state in zip(min_e_indices, self.q_states)]
-        self.min_samples = self._minmum_sample()
+        self.min_samples = self._minimum_sample()
 
-    def _minmum_sample(self):
+    def _minimum_sample(self):
         min_energy_ind = np.argmin(self.energies) if len(
             self.energies) != 0 else None
         min_energy = self.energies[min_energy_ind]
         min_e_indices = np.where(np.array(self.energies) == min_energy)[0]
         min_states = np.array(self.states)[min_e_indices]
         min_states, counts = np.unique(min_states, axis=0, return_counts=True)
-        return {'min_states': min_states, 'num_occurrences': counts, 'min_energy': min_energy}
+        return {'states': min_states, 'num_occurrences': counts, 'min_energy': min_energy}
 
     @property
     def samples(self):

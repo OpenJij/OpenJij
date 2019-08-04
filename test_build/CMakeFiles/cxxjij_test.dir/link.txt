@@ -1,0 +1,1 @@
+/usr/bin/c++  -g -flto -fno-fat-lto-objects   CMakeFiles/cxxjij_test.dir/cxxtest.cpp.o  -o cxxjij_test -lcxxjij_header_only -leigen_lib -lgmock_main -lgmock -lgtest_main -lgtest -lpthread 
