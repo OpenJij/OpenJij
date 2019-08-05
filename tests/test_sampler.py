@@ -103,7 +103,7 @@ class SamplerOptimizeTest(unittest.TestCase):
 
     def test_swendsenwang(self):
         sampler = oj.SASampler()
-        initial_state = [1,1,-1,1,1,-1,1,1,1,1-1]
+        initial_state = [1,1,-1,1,1,-1,1,1,1,1,-1]
         h = {0 :-1, 10: -1}
         J = {(i, i+1): -1 for i in range(10)}
         res = sampler.sample_ising(h, J, 
