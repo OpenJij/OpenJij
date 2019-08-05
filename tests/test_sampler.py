@@ -101,6 +101,17 @@ class SamplerOptimizeTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             _ = oj.SASampler(schedule=valid_sche)
 
+    def test_swendsenwang(self):
+        sampler = oj.SASampler()
+        initial_state = [1,1,-1,1,1,-1,1,1,1,1-1]
+        h = {0 :-1, 10: -1}
+        J = {(i, i+1): -1 for i in range(10)}
+        res = sampler.sample_ising(h, J, 
+        updater="swendsenwang", 
+        seed=1, initial_state=initial_state)
+        self.assertListEqual(res.states[0], [1]*11)
+
+
     def test_time_sa(self):
         fast_res = oj.SASampler(beta_max=100, step_num=10,
                                 iteration=10).sample_ising(self.h, self.J)

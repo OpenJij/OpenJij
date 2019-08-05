@@ -218,9 +218,6 @@ class SASampler(BaseSampler):
 
             def _generate_init_state(): return ising_graph.gen_spin()
         else:
-            # validate initial_state size
-            if len(initial_state) != len(ising_graph.size()):
-                raise ValueError("the size of the initial state should be {}".format(ising_graph.size()))
             if model.var_type == openjij.SPIN:
                 _init_state = np.array(initial_state)
             else:  # BINARY
@@ -228,6 +225,8 @@ class SASampler(BaseSampler):
 
             def _generate_init_state(): return np.array(_init_state)
 
+        sa_system = cxxjij.system.make_classical_ising_Eigen(
+            _generate_init_state(), ising_graph)
 
         # choose updater
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
@@ -246,7 +245,8 @@ class SASampler(BaseSampler):
 
         # seed for MonteCarlo
         if seed is None:
-            def simulated_annealing(system): return algorithm(
+            def simulated_annealing(system): 
+                return algorithm(
                 system, self.schedule)
         else:
             def simulated_annealing(system): return algorithm(
@@ -287,3 +287,11 @@ class SASampler(BaseSampler):
             execution_time) * 10**6  # micro sec
 
         return response
+
+
+if __name__ == "__main__":
+    sampler = SASampler()
+    h = {}
+    J = {(i, i+1): -1 for i in range(10)}
+    res = sampler.sample_ising(h, J, updater="swendsenwang")
+    print(res.states)
