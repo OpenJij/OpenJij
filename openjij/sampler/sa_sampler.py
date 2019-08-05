@@ -219,7 +219,7 @@ class SASampler(BaseSampler):
             def _generate_init_state(): return ising_graph.gen_spin()
         else:
             # validate initial_state size
-            if len(initial_state) != len(ising_graph.size()):
+            if len(initial_state) != ising_graph.size():
                 raise ValueError("the size of the initial state should be {}".format(ising_graph.size()))
             if model.var_type == openjij.SPIN:
                 _init_state = np.array(initial_state)
