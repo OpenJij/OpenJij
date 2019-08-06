@@ -39,8 +39,8 @@
 if(USE_CUDA)
     # include cuda toolkit directory and link with cuda library.
     target_include_directories(cxxjij_header_only INTERFACE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-    add_library(cxxjij_chimera_gpu_kernel_static STATIC gpu/chimera_cuda/kernel.cu)
-    add_library(cxxjij_chimera_gpu_kernel SHARED gpu/chimera_cuda/kernel.cu)
+    add_library(cxxjij_chimera_gpu_kernel_static STATIC "${PROJECT_SOURCE_DIR}/src/system/gpu/chimera_cuda/kernel.cu")
+    add_library(cxxjij_chimera_gpu_kernel SHARED "${PROJECT_SOURCE_DIR}/src/system/gpu/chimera_cuda/kernel.cu")
 
  	set_target_properties(cxxjij_chimera_gpu_kernel_static PROPERTIES
         POSITION_INDEPENDENT_CODE ON

@@ -96,6 +96,7 @@ class GoogleTestCommand(TestCommand):
                         shell=True)
 
 # Load the package's __version__.py module as a dictionary.
+here = os.path.abspath(os.path.dirname(__file__))
 about = {}
 if not VERSION:
     project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
