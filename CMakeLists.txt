@@ -7,63 +7,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-long-long -pedantic")
 # add fPIC option to all object files
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# list(APPEND CMAKE_MODULE_PATH external)
-# include(${CMAKE_SOURCE_DIR}/external/googletest.cmake)
-# include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
-# include(${CMAKE_SOURCE_DIR}/external/eigen.cmake)
+list(APPEND CMAKE_MODULE_PATH external)
+include(${CMAKE_SOURCE_DIR}/external/googletest.cmake)
+include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
+include(${CMAKE_SOURCE_DIR}/external/eigen.cmake)
  
-#### Fetch external projects ####
-
-include(FetchContent)
-
-#### Google test ####
-FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY  https://github.com/google/googletest.git
-    GIT_TAG         release-1.8.1
-)
-
-FetchContent_GetProperties(googletest)
-if(NOT googletest_POPULATED)
-    message(STATUS "Fetch googletest for C++ testing")
-    FetchContent_Populate(googletest)
-    add_subdirectory(${googletest_SOURCE_DIR} ${googletest_SOURCE_DIR}/googlemock)
-endif()
-
-#### pybind11 ####
-FetchContent_Declare(
-    pybind11
-    GIT_REPOSITORY  https://github.com/pybind/pybind11
-    GIT_TAG         v2.2.4
-)
-
-FetchContent_GetProperties(pybind11)
-if(NOT pybind11_fetch_POPULATED)
-    message(STATUS "Fetch pybind11 for python-binding")
-    FetchContent_Populate(pybind11)
-    add_subdirectory(${pybind11_SOURCE_DIR})
-endif()
-
-set(PYBIND11_CPP_STANDARD -std=c++11)
-
-#### Eigen ####
-FetchContent_Declare(
-    eigen
-    URL http://bitbucket.org/eigen/eigen/get/3.3.7.tar.gz
-    )
-
-FetchContent_GetProperties(eigen)
-if(NOT eigen_POPULATED)
-    message(STATUS "Fetch eigen")
-    FetchContent_Populate(eigen)
-    message(${eigen_SOURCE_DIR})
-    add_subdirectory(${eigen_SOURCE_DIR})
-endif()
-
-add_library(eigen_lib INTERFACE)
-target_include_directories(eigen_lib INTERFACE ${eigen_SOURCE_DIR})
-
-
 
 ##### Set default behavior #####
 set(DEFAULT_USE_OMP No)
