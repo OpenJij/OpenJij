@@ -66,18 +66,6 @@ class CMakeBuild(build_ext):
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
 
-        print("**** show pwd command ****")
-        subprocess.check_call(["pwd"])
-
-        print("**** show ls command ****")
-        subprocess.check_call(["ls"])
-
-        print("**** show ls command under src ****")
-        subprocess.check_call(["ls", "src/"])
-
-        print("**** show ls command under system ****")
-        subprocess.check_call(["ls", "src/system/"])
-
 
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_kwargs, cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.', '--target', 'python'] + build_kwargs, cwd=self.build_temp)
