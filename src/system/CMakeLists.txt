@@ -57,14 +57,11 @@ if(USE_CUDA)
         CUDA_SEPARABLE_COMPILATION ON
  		)
 
- 	# target_link_libraries(cxxjij_chimera_gpu_kernel_static PRIVATE ${CUDA_curand_LIBRARY})
-       # target_link_libraries(cxxjij_chimera_gpu_kernel_static PRIVATE ${CUDA_CUBLAS_LIBRARIES})
-       target_link_libraries(cxxjij_chimera_gpu_kernel_static PRIVATE -lcurand -lcublas)
-
- 	target_link_libraries(cxxjij_chimera_gpu_kernel_static PRIVATE cxxjij_header_only)
- 	# target_link_libraries(cxxjij_chimera_gpu_kernel PRIVATE ${CUDA_curand_LIBRARY})
-       # target_link_libraries(cxxjij_chimera_gpu_kernel PRIVATE ${CUDA_CUBLAS_LIBRARIES})
-       target_link_libraries(cxxjij_chimera_gpu_kernel PRIVATE -lcurand -lcublas)
- 	target_link_libraries(cxxjij_chimera_gpu_kernel PRIVATE cxxjij_header_only)
+ 	target_link_libraries(cxxjij_chimera_gpu_kernel_static ${CUDA_curand_LIBRARY})
+      target_link_libraries(cxxjij_chimera_gpu_kernel_static ${CUDA_CUBLAS_LIBRARIES})
+ 	target_link_libraries(cxxjij_chimera_gpu_kernel_static cxxjij_header_only)
+ 	target_link_libraries(cxxjij_chimera_gpu_kernel ${CUDA_curand_LIBRARY})
+      target_link_libraries(cxxjij_chimera_gpu_kernel ${CUDA_CUBLAS_LIBRARIES})
+ 	target_link_libraries(cxxjij_chimera_gpu_kernel cxxjij_header_only)
 
 endif()
