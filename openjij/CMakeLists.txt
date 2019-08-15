@@ -20,17 +20,16 @@ else()
 endif()
 
 
-target_link_libraries(cxxjij PRIVATE
+target_link_libraries(cxxjij
     pybind11::module
     eigen_lib
     cxxjij_header_only
 )
 
 if(USE_CUDA)
-    target_link_libraries(cxxjij PRIVATE cxxjij_chimera_gpu_kernel)
-    target_link_libraries(cxxjij PRIVATE ${CUDA_LIBRARIES})
-    target_link_libraries(cxxjij PRIVATE ${CUDA_curand_LIBRARY})
-    target_link_libraries(cxxjij PRIVATE ${CUDA_CUBLAS_LIBRARIES})
+    target_link_libraries(cxxjij 
+        ${CUDA_LIBRARIES} ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} 
+        cxxjij_chimera_gpu_kernel_static)
 endif()
 
 add_custom_target(python

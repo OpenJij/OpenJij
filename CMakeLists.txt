@@ -28,7 +28,6 @@ if(NOT DEFINED USE_CUDA)
     check_language(CUDA)
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
-        find_package(CUDA)
         set(USE_CUDA ${DEFAULT_USE_CUDA})
 
         #for cuda-memcheck
