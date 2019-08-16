@@ -161,8 +161,18 @@ namespace openjij {
                                 );
                     }
 
+                    /**
+                     * @brief wrap function of cublasIsamax
+                     * Note: returned value will be 1-indexed!
+                     *
+                     * @tparam FloatType
+                     * @param n
+                     * @param x
+                     * @param incx
+                     * @param result
+                     */
                     template<typename FloatType>
-                    inline void Iamax(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, int incx, const utility::cuda::unique_dev_ptr<int[]>& result){
+                    inline void Iamax(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, int incx, utility::cuda::unique_dev_ptr<int[]>& result){
                         cublasPointerMode_t mode;
                         HANDLE_ERROR_CUBLAS(cublasGetPointerMode(_handle, &mode));
                         //set pointermode to device
@@ -172,8 +182,17 @@ namespace openjij {
                         HANDLE_ERROR_CUBLAS(cublasSetPointerMode(_handle, mode));
                     }
 
+                    /**
+                     * @brief return the index of maximal element
+                     * Note: returned value will be 1-indexed!
+                     *
+                     * @tparam FloatType
+                     * @param n
+                     * @param x
+                     * @param result
+                     */
                     template<typename FloatType>
-                    inline void max_val_index(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, const utility::cuda::unique_dev_ptr<int[]>& result){
+                    inline void max_val_index(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, utility::cuda::unique_dev_ptr<int[]>& result){
                         Iamax(n, x, 1, result);
                     }
 

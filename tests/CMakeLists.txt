@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
 
-set(CMAKE_CXX_FLAGS "-DDEBUGTEST")
-set(CMAKE_CXX_FLAGS "-g")
-
 add_executable(cxxjij_test
     EXCLUDE_FROM_ALL
     cxxtest.cpp
