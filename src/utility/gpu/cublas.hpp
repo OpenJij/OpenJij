@@ -38,6 +38,19 @@ namespace openjij {
                 struct cudaDataType_impl<double>{
                     constexpr static cudaDataType_t type = CUDA_R_64F;
                 };
+
+            template<typename FloatType>
+                inline cublasStatus_t cublas_Iamax_impl(cublasHandle_t handle, int n, const FloatType *x, int incx, int *result);
+
+            template<>
+                inline cublasStatus_t cublas_Iamax_impl(cublasHandle_t handle, int n, const float *x, int incx, int *result){
+                    return cublasIsamax(handle, n, x, incx, result);
+                }
+
+            template<>
+                inline cublasStatus_t cublas_Iamax_impl(cublasHandle_t handle, int n, const double *x, int incx, int *result){
+                    return cublasIdamax(handle, n, x, incx, result);
+                }
                 
 
             /**
@@ -146,6 +159,22 @@ namespace openjij {
                                     cudaDataType_impl<typename std::remove_extent<FloatType>::type>::type,
                                     m)
                                 );
+                    }
+
+                    template<typename FloatType>
+                    inline void Iamax(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, int incx, const utility::cuda::unique_dev_ptr<int[]>& result){
+                        cublasPointerMode_t mode;
+                        HANDLE_ERROR_CUBLAS(cublasGetPointerMode(_handle, &mode));
+                        //set pointermode to device
+                        HANDLE_ERROR_CUBLAS(cublasSetPointerMode(_handle, CUBLAS_POINTER_MODE_DEVICE));
+                        HANDLE_ERROR_CUBLAS(cublas_Iamax_impl(_handle, n, x.get(), incx, result.get()));
+                        //reset pointermode
+                        HANDLE_ERROR_CUBLAS(cublasSetPointerMode(_handle, mode));
+                    }
+
+                    template<typename FloatType>
+                    inline void max_val_index(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, const utility::cuda::unique_dev_ptr<int[]>& result){
+                        Iamax(n, x, 1, result);
                     }
 
                 private:
