@@ -1,11 +1,7 @@
 import numpy as np
-import openjij as oj
-import cxxjij as cj
-
-
+import openjij
 from openjij.sampler import measure_time
 from openjij.sampler import BaseSampler
-import openjij
 import cxxjij
 
 
@@ -246,8 +242,6 @@ class SQASampler(BaseSampler):
 
         @measure_time
         def exec_sampling():
-            # import pdb
-            # pdb.set_trace()
             previous_state = _generate_init_state()
             for _ in range(self.iteration):
                 if reinitilize_state:
@@ -282,56 +276,3 @@ class SQASampler(BaseSampler):
 
     def _post_process4state(self, q_state):
         return q_state
-
-
-def make_qubo():
-    Q = {
-        (0, 0): 1, (1, 1): -1, (2, 2): 2,
-        (0, 1): 1, (1, 2): -1, (2, 0): -1
-    }
-    # solution is [0, 1, 0]
-    return Q
-
-
-def reverse_annealing():
-    initial_state = [0, 0, 0]
-    qubo = make_qubo()
-    reverse_schedule = [
-        [10, 3], (1, 3), (0.5, 3), (1, 3), (10, 5)
-    ]
-    sqa = oj.SASampler(schedule=reverse_schedule, iteration=20)
-    res = sqa.sample_qubo(qubo, initial_state=initial_state)
-    print(res.min_samples)
-    model = oj.BinaryQuadraticModel(Q=qubo, var_type='BINARY')
-    print(model.calc_energy(res.min_samples['min_states'][0]))
-
-    print('RQA')
-    reverse_schedule = [
-        [1, 1], [0.3, 3], [0.1, 5], [0.3, 3], [1, 3]
-    ]
-    rqa_sampler = oj.SQASampler(
-        schedule=reverse_schedule, iteration=10, beta=10)
-    rqa_sampler = SQASampler(schedule=reverse_schedule, iteration=10)
-    res = rqa_sampler.sample_qubo(
-        qubo, initial_state=initial_state, seed=1)
-    print(res.min_samples)
-
-
-if __name__ == '__main__':
-    h = {0: -1, 1: 1, 2: -1}
-    J = {(0, 1): 1, (1, 2): 1,
-         (2, 3): -1, (3, 1): -1}
-    # This problem has degenerated solutions
-    # [1,-1,1,-1] and [1,-1,1,1]
-
-    # Simulated annealing (classical) 10 times
-    response = oj.SASampler(iteration=10).sample_ising(h, J)
-    # show the lowest energy solution in ten times
-    print("SA results: \n", response.min_samples['min_states'])
-
-    # Simulated quantum annealing (quantum simulation) 10 times
-    response = oj.SQASampler(iteration=10).sample_ising(h, J)
-    # show the lowest energy solution in ten times
-    print("SQA results: \n", response.min_samples['min_states'])
-
-    reverse_annealing()

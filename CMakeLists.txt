@@ -7,10 +7,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-long-long -pedantic")
 # add fPIC option to all object files
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/external)
-include(googletest)
-include(pybind11)
-include(eigen)
+list(APPEND CMAKE_MODULE_PATH external)
+include(${CMAKE_SOURCE_DIR}/external/googletest.cmake)
+include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
+include(${CMAKE_SOURCE_DIR}/external/eigen.cmake)
+ 
 
 ##### Set default behavior #####
 set(DEFAULT_USE_OMP No)
@@ -27,7 +28,6 @@ if(NOT DEFINED USE_CUDA)
     check_language(CUDA)
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
-        find_package(CUDA)
         set(USE_CUDA ${DEFAULT_USE_CUDA})
 
         #for cuda-memcheck

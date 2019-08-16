@@ -36,28 +36,31 @@
 # 	target_link_libraries(system_static PRIVATE ${CUDA_curand_LIBRARY})
 # endif()
 
+
 if(USE_CUDA)
+
+    find_package(CUDA REQUIRED)
+
     # include cuda toolkit directory and link with cuda library.
     target_include_directories(cxxjij_header_only INTERFACE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-    add_library(cxxjij_chimera_gpu_kernel_static STATIC gpu/chimera_cuda/kernel.cu)
-    add_library(cxxjij_chimera_gpu_kernel SHARED gpu/chimera_cuda/kernel.cu)
+    add_library(cxxjij_chimera_gpu_kernel_static STATIC "${PROJECT_SOURCE_DIR}\/src\/system\/gpu\/chimera_cuda\/kernel.cu")
+    add_library(cxxjij_chimera_gpu_kernel SHARED "${PROJECT_SOURCE_DIR}\/src\/system\/gpu\/chimera_cuda\/kernel.cu")
 
  	set_target_properties(cxxjij_chimera_gpu_kernel_static PROPERTIES
         POSITION_INDEPENDENT_CODE ON
         #CUDA_VISIBILITY_PRESET "hidden"
         CUDA_SEPARABLE_COMPILATION ON
- 		)
+           )
+
  	set_target_properties(cxxjij_chimera_gpu_kernel PROPERTIES
         POSITION_INDEPENDENT_CODE ON
         #CUDA_VISIBILITY_PRESET "hidden"
         CUDA_SEPARABLE_COMPILATION ON
  		)
 
- 	target_link_libraries(cxxjij_chimera_gpu_kernel_static PRIVATE ${CUDA_curand_LIBRARY})
- 	target_link_libraries(cxxjij_chimera_gpu_kernel_static PRIVATE ${CUDA_CUBLAS_LIBRARIES})
- 	target_link_libraries(cxxjij_chimera_gpu_kernel_static PRIVATE cxxjij_header_only)
- 	target_link_libraries(cxxjij_chimera_gpu_kernel PRIVATE ${CUDA_curand_LIBRARY})
- 	target_link_libraries(cxxjij_chimera_gpu_kernel PRIVATE ${CUDA_CUBLAS_LIBRARIES})
- 	target_link_libraries(cxxjij_chimera_gpu_kernel PRIVATE cxxjij_header_only)
+ 	target_link_libraries(cxxjij_chimera_gpu_kernel_static ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} ${CUDA_LIBRARIES})
+ 	target_link_libraries(cxxjij_chimera_gpu_kernel_static cxxjij_header_only)
+ 	target_link_libraries(cxxjij_chimera_gpu_kernel ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} ${CUDA_LIBRARIES})
+ 	target_link_libraries(cxxjij_chimera_gpu_kernel cxxjij_header_only)
 
 endif()
