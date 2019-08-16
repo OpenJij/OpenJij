@@ -42,7 +42,6 @@ class CMakeBuild(build_ext):
             self.build_extension(ext)
 
     def build_extension(self, ext):
-        print(ext, ext.name)
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_kwargs = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DCMAKE_VERBOSE_MAKEFILE=ON',
@@ -66,6 +65,8 @@ class CMakeBuild(build_ext):
                                                               self.distribution.get_version())
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
+
+
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_kwargs, cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.', '--target', 'python'] + build_kwargs, cwd=self.build_temp)
 
@@ -96,6 +97,7 @@ class GoogleTestCommand(TestCommand):
                         shell=True)
 
 # Load the package's __version__.py module as a dictionary.
+here = os.path.abspath(os.path.dirname(__file__))
 about = {}
 if not VERSION:
     project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
