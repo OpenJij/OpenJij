@@ -58,9 +58,9 @@ if(USE_CUDA)
         CUDA_SEPARABLE_COMPILATION ON
  		)
 
- 	target_link_libraries(cxxjij_chimera_gpu_kernel_static ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES})
+ 	target_link_libraries(cxxjij_chimera_gpu_kernel_static ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} ${CUDA_LIBRARIES})
  	target_link_libraries(cxxjij_chimera_gpu_kernel_static cxxjij_header_only)
- 	target_link_libraries(cxxjij_chimera_gpu_kernel ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES})
+ 	target_link_libraries(cxxjij_chimera_gpu_kernel ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} ${CUDA_LIBRARIES})
  	target_link_libraries(cxxjij_chimera_gpu_kernel cxxjij_header_only)
 
 endif()
