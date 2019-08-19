@@ -192,7 +192,7 @@ namespace openjij {
                      * @param result
                      */
                     template<typename FloatType>
-                    inline void max_val_index(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, utility::cuda::unique_dev_ptr<int[]>& result){
+                    inline void absmax_val_index(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, utility::cuda::unique_dev_ptr<int[]>& result){
                         Iamax(n, x, 1, result);
                     }
 

@@ -752,8 +752,8 @@ TEST(GPUUtil, CuBLASWrapperTest){
 
     //Iamax test
     const size_t SIZE = 10000;
-    auto r = utility::Xorshift(12345678);
-    auto urd = std::uniform_real_distribution<float>{-10, 10};
+    auto r = utility::Xorshift(23456678);
+    auto urd = std::uniform_real_distribution<float>{0, 10};
     std::vector<float> host_vec(SIZE);
     auto device_vec = utility::cuda::make_dev_unique<float[]>(SIZE);
     for(auto&& elem : host_vec){
@@ -770,7 +770,7 @@ TEST(GPUUtil, CuBLASWrapperTest){
     //calc maxind (host)
     host_idx = std::distance(host_vec.begin(), std::max_element(host_vec.begin(), host_vec.end()));
     //calc maxind (device)
-    cublas.max_val_index(SIZE, device_vec, device_idx);
+    cublas.absmax_val_index(SIZE, device_vec, device_idx);
     HANDLE_ERROR_CUDA(cudaMemcpy(&dev_idx, device_idx.get(), 1*sizeof(int), cudaMemcpyDeviceToHost));
     //NOTE: max_val will return 1-indexed value!!
     EXPECT_EQ(host_idx, dev_idx-1);
