@@ -19,6 +19,7 @@
 #include <system/all.hpp>
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 #ifdef USE_CUDA
 #include <utility/gpu/memory.hpp>
@@ -41,7 +42,7 @@ namespace openjij {
         }
 
         /**
-         *a @brief get solution of classical ising system (with Eigen implementation)
+         * @brief get solution of classical ising system (with Eigen implementation)
          *
          * @tparam GraphType graph type
          * @param system classical ising system with Eigen implementation
@@ -68,17 +69,17 @@ namespace openjij {
          */
         template<typename GraphType>
         const graph::Spins get_solution(const system::TransverseIsing<GraphType, false>& system){
-            graph::Spins ret_spins(system.trotter_spins[0].size());
-            for(std::size_t i=0; i<system.trotter_spins[0].size(); i++){
-                double mean = 0;
-                for(std::size_t j=0; j<system.trotter_spins.size(); j++){
-                    mean += system.trotter_spins[j][i];
+            std::size_t mininum_trotter = 0;
+            double energy = 0.0;
+            double min_energy = std::numeric_limits<double>::max();
+            for (std::size_t t=0; t<system.trotter_spins.size(); t++){
+                energy = system.interaction.calc_energy(system.trotter_spins[t]);
+                if(energy < min_energy){
+                    mininum_trotter = t;
+                    min_energy = energy;
                 }
-                mean /= (double)system.trotter_spins.size();
-                ret_spins[i] = mean>0 ? 1 : mean<0 ? -1 : 0;
             }
-
-            return ret_spins;
+           return system.trotter_spins[mininum_trotter];
         }
 
         /**
@@ -91,11 +92,27 @@ namespace openjij {
          */
         template<typename GraphType>
         const graph::Spins get_solution(const system::TransverseIsing<GraphType, true>& system){
-            graph::Spins ret_spins(system.num_classical_spins);
-            for(std::size_t i=0; i<system.num_classical_spins; i++){
-                ret_spins[i] = std::round(system.trotter_spins.row(i).mean());
+            std::size_t minimum_trotter = 0;
+            //aliases
+            auto& spins = system.trotter_spins;
+            double energy = 0.0;
+            double min_energy = std::numeric_limits<double>::max();
+            //get number of trotter slices
+            std::size_t num_trotter_slices = system.trotter_spins.cols();
+            for (std::size_t t=0; t<num_trotter_slices; t++){
+                // calculate classical energy in each classical spin
+                energy = spins.col(t).transpose() * system.interaction * spins.col(t);
+                if(energy < min_energy){
+                    minimum_trotter = t;
+                    min_energy = energy;
+                }
             }
 
+            //convert from Eigen::Vector to std::vector
+            graph::Spins ret_spins(system.num_classical_spins);
+            for(std::size_t i=0; i<system.num_classical_spins; i++){
+                ret_spins[i] = spins(i, minimum_trotter);
+            }
             return ret_spins;
         }
 
@@ -123,7 +140,7 @@ namespace openjij {
                             mean += temp_spin[system::chimera_cuda::glIdx(system.info, r,c,i,t)];
                         }
                         mean /= (double)system.info.trotters;
-                        ret_spins[system::chimera_cuda::glIdx(system.info, r,c,i)] = mean>0 ? 1 : mean<0 ? -1 : 0;
+                        ret_spins[system::chimera_cuda::glIdx(system.info, r,c,i)] = mean>0 ? 1 : mean<0 ? -1 : 1;
                     }
                 }
             }

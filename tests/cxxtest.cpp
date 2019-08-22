@@ -442,12 +442,82 @@ TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
     auto random_numder_engine = std::mt19937(1);
 
     //in general swendsen wang is not efficient in simulating frustrated systems. We need more annealing time.
-    const auto schedule_list = openjij::utility::make_classical_schedule_list(0.1, 100.0, 2000, 2000);
+    const auto schedule_list = openjij::utility::make_classical_schedule_list(0.01, 100.0, 100, 3000);
 
     algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
 
     EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
 }
+
+// result test
+TEST(RESULT, GetSolutionFromTrotter){
+    auto graph = openjij::graph::Dense<float>(4);
+    graph.J(1, 1) = -1.0;
+    graph.J(0, 1) = -1.0;
+    graph.J(1, 2) = -1.0;
+    graph.J(2, 3) = -1.0;
+
+    auto r = openjij::utility::Xorshift(1234);
+    int num_trotter_slices = 4;
+    openjij::system::TrotterSpins init_trotter_spins(num_trotter_slices);
+    for(auto& spins : init_trotter_spins){
+        spins = graph.gen_spin(r);
+    }
+
+    init_trotter_spins[0] = openjij::graph::Spins({1, 1, 1, 1});
+
+    auto q_sys = openjij::system::make_transverse_ising(init_trotter_spins, graph, 1.0);
+    // get_solution get minimum energy state
+    auto solution = openjij::result::get_solution(q_sys);
+    EXPECT_EQ(solution, init_trotter_spins[0]);
+}
+
+TEST(RESULT, GetSolutionFromTrotterWithEigen){
+    auto graph = openjij::graph::Dense<float>(4);
+    graph.J(1, 1) = -1.0;
+    graph.J(0, 1) = -1.0;
+    graph.J(1, 2) = -1.0;
+    graph.J(2, 3) = 1.0;
+
+    auto r = openjij::utility::Xorshift(1234);
+    int num_trotter_slices = 4;
+    openjij::system::TrotterSpins init_trotter_spins(num_trotter_slices);
+    for(auto& spins : init_trotter_spins){
+        spins = graph.gen_spin(r);
+    }
+
+    init_trotter_spins[0] = openjij::graph::Spins({1, 1, 1, -1});
+
+    auto q_sys = openjij::system::make_transverse_ising<true>(init_trotter_spins, graph, 1.0);
+    // get_solution get minimum energy state
+    auto solution = openjij::result::get_solution(q_sys);
+    EXPECT_EQ(solution, init_trotter_spins[0]);
+}
+
+TEST(RESULT, GetSolutionFromChimera){
+    auto graph = openjij::graph::Chimera<float>(1,1);
+    graph.h(0, 0, 0) = 1.0;
+    graph.J(0, 0, 0, openjij::graph::ChimeraDir::IN_0or4) = -1.0;
+    graph.J(0, 0, 4, openjij::graph::ChimeraDir::IN_1or5) = -1.0;
+    graph.J(0, 0, 2, openjij::graph::ChimeraDir::IN_2or6) = -1.0;
+    graph.J(0, 0, 6, openjij::graph::ChimeraDir::IN_3or7) = -1.0;
+    graph.J(0, 0, 3, openjij::graph::ChimeraDir::IN_3or7) = -1.0;
+
+    auto r = openjij::utility::Xorshift(1234);
+    int num_trotter_slices = 4;
+    openjij::system::TrotterSpins init_trotter_spins(num_trotter_slices);
+    for(auto& spins : init_trotter_spins){
+        spins = graph.gen_spin(r);
+    }
+
+    init_trotter_spins[0] = openjij::graph::Spins({-1,-1,-1,-1,-1,-1,-1,-1});
+
+    auto q_sys = openjij::system::make_transverse_ising(init_trotter_spins, graph, 1.0);
+    // get_solution get minimum energy state
+    auto solution = openjij::result::get_solution(q_sys);
+    EXPECT_EQ(solution, init_trotter_spins[0]);
+}
+
 
 //gpu test
 
@@ -749,5 +819,7 @@ TEST(GPUUtil, CuBLASWrapperTest){
         }
     }
 }
+
+
 
 #endif
