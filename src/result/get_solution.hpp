@@ -69,17 +69,17 @@ namespace openjij {
          */
         template<typename GraphType>
         const graph::Spins get_solution(const system::TransverseIsing<GraphType, false>& system){
-            graph::Spins ret_spins(system.trotter_spins[0].size());
+            std::size_t mininum_trotter = 0;
             double energy = 0.0;
             double min_energy = std::numeric_limits<double>::max();
-            for (graph::Spins spins: system.trotter_spins){
-                energy = system.interaction.calc_energy(spins);
+            for (std::size_t t=0; t<system.trotter_spins.size(); t++){
+                energy = system.interaction.calc_energy(system.trotter_spins[t]);
                 if(energy < min_energy){
-                    ret_spins = spins;
+                    mininum_trotter = t;
                     min_energy = energy;
                 }
             }
-           return ret_spins;
+           return system.trotter_spins[mininum_trotter];
         }
 
         /**
@@ -140,7 +140,7 @@ namespace openjij {
                             mean += temp_spin[system::chimera_cuda::glIdx(system.info, r,c,i,t)];
                         }
                         mean /= (double)system.info.trotters;
-                        ret_spins[system::chimera_cuda::glIdx(system.info, r,c,i)] = mean>0 ? 1 : mean<0 ? -1 : 0;
+                        ret_spins[system::chimera_cuda::glIdx(system.info, r,c,i)] = mean>0 ? 1 : mean<0 ? -1 : 1;
                     }
                 }
             }
