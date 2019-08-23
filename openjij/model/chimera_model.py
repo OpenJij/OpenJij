@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import openjij
 from openjij.model import BinaryQuadraticModel
 import cxxjij as cj
+
 
 class ChimeraModel(BinaryQuadraticModel):
     """Binary quadnratic model dealing with chimera graph
@@ -25,8 +27,15 @@ class ChimeraModel(BinaryQuadraticModel):
         >>> chimera_model = ChimeraModel(Q, unit_num_L=2)  # make 
         >>> chimera_self.validate_chimera()
     """
-    def __init__(self, h=None, J=None, Q=None, unit_num_L=None, model=None, var_type='SPIN'):
+
+    def __init__(self, h=None, J=None, Q=None,
+                 unit_num_L=None, model=None, var_type=openjij.SPIN,
+                 gpu=False):
+
+        # if you use gpu, gpu=True
+        self.gpu = gpu
         if model:
+            # convert to ChimeraModel from BinaryQuadraticModel
             self.linear = model.linear
             self.quad = model.quad
             self.indices = model.indices
@@ -37,9 +46,10 @@ class ChimeraModel(BinaryQuadraticModel):
             super().__init__(h=h, J=J, Q=Q, var_type=var_type)
 
         if not unit_num_L:
-            raise ValueError('Input unit_num_L which is the length of the side of the two-dimensional grid where chimera unit cells are arranged.')
+            raise ValueError(
+                'Input unit_num_L which is the length of the side of the two-dimensional grid where chimera unit cells are arranged.')
         self.unit_num_L = unit_num_L
-        
+
         self.coordinate = self._validate_indices(self.indices)
         if self.coordinate == 'index':
             self._chimera_index = lambda x, y, z, L: self.to_index(x, y, z, L)
@@ -51,19 +61,20 @@ class ChimeraModel(BinaryQuadraticModel):
     def _validate_indices(self, indices):
         if isinstance(indices[0], int):
             return 'index'
-        elif isinstance(indices[0], (tuple, list)): 
+        elif isinstance(indices[0], (tuple, list)):
             if len(indices[0]) == len(indices[-1]) == 3:
                 return 'chimera coordinate'
-        
-        raise ValueError('In the chimera graph, index should be int or tuple or list.')
+
+        raise ValueError(
+            'In the chimera graph, index should be int or tuple or list.')
 
     def full_indices(self):
         if self.coordinate == 'index':
             return list(range(0, 8 * self.unit_num_L * self.unit_num_L))
         else:
             L = self.unit_num_L
-            return [(x, y, i) for y in range(0, L*L) for x in range(0, L*L) for i in range(0,8)]
-        
+            return [(x, y, i) for y in range(0, L*L) for x in range(0, L*L) for i in range(0, 8)]
+
     def validate_chimera(self):
         """
         Chimera coordinate: r, c, z 
@@ -72,36 +83,44 @@ class ChimeraModel(BinaryQuadraticModel):
 
         Chimera unit cell (column reprezentation)
         0 - 4
-          ×
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ×
         1 - 5
-          ×
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ×
         2 - 6
-          ×
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ×
         3 - 7
         """
         # check chimera interaction
-        for (i,j) in self.quad.keys():
+        for (i, j) in self.quad.keys():
             r_i, c_i, z_i = self._to_index(i, self.unit_num_L)
             # list up indices which can connect i
             adj_list = []
             if z_i >= 4:
                 # part of right side of a Chimera unit cell (in the column representation).
                 if c_i > 0:
-                    adj_list.append(self._chimera_index(r_i, c_i-1, z_i, self.unit_num_L))
+                    adj_list.append(self._chimera_index(
+                        r_i, c_i-1, z_i, self.unit_num_L))
                 if c_i < self.unit_num_L-1:
-                    adj_list.append(self._chimera_index(r_i, c_i+1, z_i, self.unit_num_L))
-                adj_list += [self._chimera_index(r_i, c_i, z, self.unit_num_L) for z in range(0, 4)]
+                    adj_list.append(self._chimera_index(
+                        r_i, c_i+1, z_i, self.unit_num_L))
+                adj_list += [self._chimera_index(r_i, c_i, z, self.unit_num_L)
+                             for z in range(0, 4)]
             else:
                 # part of left side of a Chimera unit cell (in the column representation).
                 if r_i > 0:
-                    adj_list.append(self._chimera_index(r_i-1, c_i, z_i, self.unit_num_L))
+                    adj_list.append(self._chimera_index(
+                        r_i-1, c_i, z_i, self.unit_num_L))
                 if r_i < self.unit_num_L-1:
-                    adj_list.append(self._chimera_index(r_i+1, c_i, z_i, self.unit_num_L)) 
-                adj_list += [self._chimera_index(r_i, c_i, z, self.unit_num_L) for z in range(4, 8)]
-            
+                    adj_list.append(self._chimera_index(
+                        r_i+1, c_i, z_i, self.unit_num_L))
+                adj_list += [self._chimera_index(r_i, c_i, z, self.unit_num_L)
+                             for z in range(4, 8)]
+
             if not j in adj_list:
-                incomp_part = 'The connectable nodes of {} are {}, not {}.'.format(i, adj_list, j)
-                raise ValueError('Problem graph incompatible with chimera graph.\n' + incomp_part)
+                incomp_part = 'The connectable nodes of {} are {}, not {}.'.format(
+                    i, adj_list, j)
+                raise ValueError(
+                    'Problem graph incompatible with chimera graph.\n' + incomp_part)
                 return False
         return True
 
@@ -116,14 +135,13 @@ class ChimeraModel(BinaryQuadraticModel):
             i (int): index in Chimera unit cell.
             unit_num_L (int): Row and Column length of 2-D Chimera grid.
         """
-        return 8*unit_num_L*r + 8*c + i 
+        return 8*unit_num_L*r + 8*c + i
 
     def chimera_coordinate(self, i, unit_num_L):
         z_i = i % 8
         c_i = (i % (8 * unit_num_L) - z_i)/8
         r_i = (i - 8*c_i - z_i) / (8 * unit_num_L)
         return int(r_i), int(c_i), int(z_i)
-
 
     def get_chimera_graph(self):
         chimera_L = self.unit_num_L
@@ -134,23 +152,31 @@ class ChimeraModel(BinaryQuadraticModel):
 
         self.energy_bias = self.energy_bias
 
-        chimera = cj.graph.Chimera(chimera_L, chimera_L)
+        if self.gpu:
+            chimera = cj.graph.ChimeraGPU(chimera_L, chimera_L)
+        else:
+            chimera = cj.graph.Chimera(chimera_L, chimera_L)
+
         for i, hi in _h.items():
             r_i, c_i, zi = self.chimera_coordinate(i, unit_num_L=chimera_L)
             if not self._index_validate(i, chimera_L):
-                raise ValueError("Problem graph incompatible with chimera graph. Node {}.".format(i))
+                raise ValueError(
+                    "Problem graph incompatible with chimera graph. Node {}.".format(i))
             chimera[r_i, c_i, zi] = hi
         for (i, j), Jij in _J.items():
             r_i, c_i, zi = self.chimera_coordinate(i, unit_num_L=chimera_L)
             r_j, c_j, zj = self.chimera_coordinate(j, unit_num_L=chimera_L)
 
-
             # validate connection
-            error_msg = "In the {}*{} Chimera grid, ".format(chimera_L, chimera_L)
-            error_msg += "there is no connection between node {} and node {}.".format(i, j)
-            linear_vldt = self._index_validate(i, chimera_L) and self._index_validate(j, chimera_L)
+            error_msg = "In the {}*{} Chimera grid, ".format(
+                chimera_L, chimera_L)
+            error_msg += "there is no connection between node {} and node {}.".format(
+                i, j)
+            linear_vldt = self._index_validate(
+                i, chimera_L) and self._index_validate(j, chimera_L)
             if not (linear_vldt and self._validate((r_i, c_i, zi), (r_j, c_j, zj), chimera_L)):
-                raise ValueError("Problem graph incompatible with chimera graph.\n" + error_msg)
+                raise ValueError(
+                    "Problem graph incompatible with chimera graph.\n" + error_msg)
 
             if r_i == r_j and c_i == c_j:
                 # connection in Chimera unit cell
@@ -166,7 +192,7 @@ class ChimeraModel(BinaryQuadraticModel):
             elif r_i - r_j == -1:
                 chimera[r_i, c_i, zi, cj.graph.ChimeraDir.PLUS_R] = Jij
             elif r_i - r_j == 1:
-                chimera[r_i, c_i, zi, cj.graph.ChimeraDir.MINUS_R] = Jij 
+                chimera[r_i, c_i, zi, cj.graph.ChimeraDir.MINUS_R] = Jij
             elif c_i - c_j == -1:
                 chimera[r_i, c_i, zi, cj.graph.ChimeraDir.PLUS_C] = Jij
             elif c_i - c_j == 1:
@@ -175,20 +201,19 @@ class ChimeraModel(BinaryQuadraticModel):
         return chimera
 
     def _validate(self, rcz1, rcz2, L):
-        r1,c1,z1 = rcz1
-        r2,c2,z2 = rcz2
-        left_side = [0,1,2,3]
-        right_side = [4,5,6,7]
-        if r1==r2 and c1==c2:
+        r1, c1, z1 = rcz1
+        r2, c2, z2 = rcz2
+        left_side = [0, 1, 2, 3]
+        right_side = [4, 5, 6, 7]
+        if r1 == r2 and c1 == c2:
             if ((z1 in left_side) and (z2 in right_side)):
                 return True
             elif ((z2 in left_side) and (z1 in right_side)):
-                return True 
+                return True
         elif ((c1 == c2 and abs(r1 - r2) == 1) or (r1 == r2 and abs(c1 - c2) == 1)):
             return True
         return False
-    
+
     def _index_validate(self, i, L):
         max_index = 8 * L * L
         return 0 <= i < max_index
-
