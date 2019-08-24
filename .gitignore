@@ -158,3 +158,8 @@ dmypy.json
 .vim.custom
 
 .vscode/
+
+# visual studio
+*.iobj
+*.ipdb
+.vs/
