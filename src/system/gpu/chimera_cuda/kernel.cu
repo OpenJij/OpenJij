@@ -185,42 +185,52 @@ namespace openjij {
                 if(ti < count){
                     dE_cache[ti] += dE_cache[ti+count]; 
                 }
+                __syncthreads();
                 count = count/2; //512 -> 256
                 if(ti < count){
                     dE_cache[ti] += dE_cache[ti+count]; 
                 }
+                __syncthreads();
                 count = count/2; //256 -> 128
                 if(ti < count){
                     dE_cache[ti] += dE_cache[ti+count]; 
                 }
+                __syncthreads();
                 count = count/2; //128 -> 64
                 if(ti < count){
                     dE_cache[ti] += dE_cache[ti+count]; 
                 }
+                __syncthreads();
                 count = count/2; //64 -> 32
                 if(ti < count){
                     dE_cache[ti] += dE_cache[ti+count]; 
                 }
+                __syncthreads();
                 count = count/2; //32 -> 16
                 if(ti < count){
                     dE_cache[ti] += dE_cache[ti+count]; 
                 }
+                __syncthreads();
                 count = count/2; //16 -> 8
                 if(ti < count){
                     dE_cache[ti] += dE_cache[ti+count]; 
                 }
+                __syncthreads();
                 count = count/2; //8 -> 4
                 if(ti < count){
                     dE_cache[ti] += dE_cache[ti+count]; 
                 }
+                __syncthreads();
                 count = count/2; //4 -> 2
                 if(ti < count){
                     dE_cache[ti] += dE_cache[ti+count]; 
                 }
+                __syncthreads();
                 count = count/2; //2 -> 1
                 if(ti < count){
                     dE_cache[ti] += dE_cache[ti+count]; 
                 }
+                __syncthreads();
 
                 if(ti == 0){
                     //add 'em
