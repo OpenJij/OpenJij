@@ -148,7 +148,7 @@ inline void declare_ClassicalIsing(py::module &m, const std::string& gtype_str, 
         .def("reset_spins", [](ClassicalIsing& self, const graph::Spins& init_spin){self.reset_spins(init_spin);},"init_spin"_a)
         .def_readwrite("spin", &ClassicalIsing::spin)
         .def_readonly("interaction", &ClassicalIsing::interaction)
-        .def_readonly("num_spin", &ClassicalIsing::num_spins);
+        .def_readonly("num_spins", &ClassicalIsing::num_spins);
 
     //make_classical_ising
     auto mkci_str = std::string("make_classical_ising")+eigen_str;

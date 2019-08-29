@@ -207,7 +207,7 @@ openjij::graph::Spins get_true_groundstate(){
 }
 
 #elif TEST_CASE_INDEX == 5
-template<template<class> class GraphType>
+template<typename GraphType>
 GraphType generate_interaction() {
     auto interaction = GraphType(num_system_size);
     interaction.J(0,0)=-0.30;
