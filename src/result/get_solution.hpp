@@ -117,6 +117,18 @@ namespace openjij {
         }
 
 #ifdef USE_CUDA
+        
+        /**
+         * @brief get solution of chimera transverse gpu system
+         *
+         * @tparam FloatType
+         * @tparam rows_per_block
+         * @tparam cols_per_block
+         * @tparam trotters_per_block
+         * @param system
+         *
+         * @return solution
+         */
         template<typename FloatType,
             std::size_t rows_per_block,
             std::size_t cols_per_block,
