@@ -145,6 +145,25 @@ namespace openjij {
 
             return ret_spins;
         }
+
+        /**
+         * @brief get solution of chimera classical gpu system
+         *
+         * @tparam FloatType
+         * @tparam rows_per_block
+         * @tparam cols_per_block
+         * @param system
+         *
+         * @return solution
+         */
+        template<typename FloatType,
+            std::size_t rows_per_block,
+            std::size_t cols_per_block>
+        const graph::Spins get_solution(const system::ChimeraClassicalGPU<FloatType, rows_per_block, cols_per_block>& system){
+            using Base = typename system::ChimeraClassicalGPU<FloatType, rows_per_block, cols_per_block>::Base;
+
+            return get_solution(static_cast<const Base&>(system));
+        }
 #endif
 
 

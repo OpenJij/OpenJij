@@ -546,10 +546,10 @@ TEST(GPU, glIdxConsistencyCheck_Chimera) {
 TEST(GPU, FindTrueGroundState_ChimeraTransverseGPU) {
     using namespace openjij;
 
-    //generate classical dense system
+    //generate classical chimera system
     const auto interaction = generate_chimera_interaction<float>();
     auto engine_for_spin = std::mt19937(1253);
-    std::size_t num_trotter_slices = 10;
+    std::size_t num_trotter_slices = 1;
     system::TrotterSpins init_trotter_spins(num_trotter_slices);
     for(auto& spins : init_trotter_spins){
         spins = interaction.gen_spin(engine_for_spin);
@@ -567,6 +567,27 @@ TEST(GPU, FindTrueGroundState_ChimeraTransverseGPU) {
     graph::Spins res = result::get_solution(chimera_quantum_gpu);
     
     EXPECT_EQ(get_true_chimera_groundstate(interaction), result::get_solution(chimera_quantum_gpu));
+}
+
+TEST(GPU, FindTrueGroundState_ChimeraClassicalGPU) {
+    using namespace openjij;
+
+    //generate classical chimera system
+    const auto interaction = generate_chimera_interaction<float>();
+    auto engine_for_spin = std::mt19937(1264);
+    const auto spin = interaction.gen_spin(engine_for_spin);
+
+    auto chimera_classical_gpu = system::make_chimera_classical_gpu<1,1>(spin, interaction); 
+
+    auto random_number_engine = utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>(interaction.size(), 12356);
+
+    const auto schedule_list = generate_schedule_list();
+
+    algorithm::Algorithm<updater::GPU>::run(chimera_classical_gpu, random_number_engine, schedule_list);
+
+    graph::Spins res = result::get_solution(chimera_classical_gpu);
+    
+    EXPECT_EQ(get_true_chimera_groundstate(interaction), result::get_solution(chimera_classical_gpu));
 }
 
 #endif

@@ -283,11 +283,17 @@ namespace openjij {
             template void metropolis_interface<float,2,2,2>(FLOAT_ARGTYPE);
             template void metropolis_interface<float,3,3,3>(FLOAT_ARGTYPE);
             template void metropolis_interface<float,4,4,4>(FLOAT_ARGTYPE);
+            template void metropolis_interface<float,2,2,1>(FLOAT_ARGTYPE);
+            template void metropolis_interface<float,3,3,1>(FLOAT_ARGTYPE);
+            template void metropolis_interface<float,4,4,1>(FLOAT_ARGTYPE);
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 600
             template void metropolis_interface<double,1,1,1>(DOUBLE_ARGTYPE);
             template void metropolis_interface<double,2,2,2>(DOUBLE_ARGTYPE);
             template void metropolis_interface<double,3,3,3>(DOUBLE_ARGTYPE);
             template void metropolis_interface<double,4,4,4>(DOUBLE_ARGTYPE);
+            template void metropolis_interface<double,2,2,1>(DOUBLE_ARGTYPE);
+            template void metropolis_interface<double,3,3,1>(DOUBLE_ARGTYPE);
+            template void metropolis_interface<double,4,4,1>(DOUBLE_ARGTYPE);
 #endif
         } // namespace chimera_cuda
     } // namespace system

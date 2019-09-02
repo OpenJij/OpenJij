@@ -55,11 +55,13 @@ namespace openjij {
                     }
             };
 
-
         /**
          * @brief Chimera Transverse Ising structure with cuda
          *
          * @tparam FloatType
+         * @tparam rows_per_block
+         * @tparam cols_per_block
+         * @tparam trotters_per_block
          */
         template<typename FloatType,
             std::size_t rows_per_block=2,
@@ -214,6 +216,8 @@ namespace openjij {
                      * @brief send interaction information to GPU device
                      *
                      * @param init_interaction
+                     * @param trotter_spins
+                     * @param gpu_num
                      */
                     inline void initialize_gpu(const graph::Chimera<FloatType>& init_interaction, const TrotterSpins& trotter_spins, int gpu_num){
 
