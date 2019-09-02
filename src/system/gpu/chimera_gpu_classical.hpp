@@ -53,7 +53,7 @@ namespace openjij {
                      *
                      * @param init__spin
                      */
-                    void reset_spins(const graph::Spin& init_spin){
+                    void reset_spins(const graph::Spins& init_spin){
                         Base::reset_spins(init_spin);
                     }
                 };

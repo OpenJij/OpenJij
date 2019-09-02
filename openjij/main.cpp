@@ -62,6 +62,8 @@ PYBIND11_MODULE(cxxjij, m){
 #ifdef USE_CUDA
     //ChimeraTransverseGPU
     ::declare_ChimeraTranseverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>(m_system);
+    //ChimeraClassicalGPU
+    ::declare_ChimeraClassicalGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL>(m_system);
 #endif
 
     /**********************************************************
@@ -86,6 +88,7 @@ PYBIND11_MODULE(cxxjij, m){
 #ifdef USE_CUDA
     //GPU
     ::declare_Algorithm_run<updater::GPU, system::ChimeraTransverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>, utility::cuda::CurandWrapper<GPUFloatType, GPURandomEngine>>(m_algorithm, "GPU");
+    ::declare_Algorithm_run<updater::GPU, system::ChimeraClassicalGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL>, utility::cuda::CurandWrapper<GPUFloatType, GPURandomEngine>>(m_algorithm, "GPU");
 #endif
 
     /**********************************************************
@@ -138,6 +141,7 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>, true>>(m_result);
 #ifdef USE_CUDA
     ::declare_get_solution<system::ChimeraTransverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>>(m_result);
+    ::declare_get_solution<system::ChimeraClassicalGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL>>(m_result);
 #endif
 }
 
