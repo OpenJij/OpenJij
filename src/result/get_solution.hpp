@@ -117,6 +117,18 @@ namespace openjij {
         }
 
 #ifdef USE_CUDA
+        
+        /**
+         * @brief get solution of chimera transverse gpu system
+         *
+         * @tparam FloatType
+         * @tparam rows_per_block
+         * @tparam cols_per_block
+         * @tparam trotters_per_block
+         * @param system
+         *
+         * @return solution
+         */
         template<typename FloatType,
             std::size_t rows_per_block,
             std::size_t cols_per_block,
@@ -128,22 +140,8 @@ namespace openjij {
 
             graph::Spins ret_spins(localsize);
 
-            //host pinned memory
-            auto temp_spin = utility::cuda::make_host_unique<int32_t[]>(globalsize);
-            HANDLE_ERROR_CUDA(cudaMemcpy(temp_spin.get(), system.spin.get(), globalsize*sizeof(int32_t), cudaMemcpyDeviceToHost));
-
-            for(std::size_t r=0; r<system.info.rows; r++){
-                for(std::size_t c=0; c<system.info.cols; c++){
-                    for(std::size_t i=0; i<system.info.chimera_unitsize; i++){
-                        double mean = 0;
-                        for(std::size_t t=0; t<system.info.trotters; t++){
-                            mean += temp_spin[system::chimera_cuda::glIdx(system.info, r,c,i,t)];
-                        }
-                        mean /= (double)system.info.trotters;
-                        ret_spins[system::chimera_cuda::glIdx(system.info, r,c,i)] = mean>0 ? 1 : mean<0 ? -1 : 1;
-                    }
-                }
-            }
+            size_t select_t = system.info.trotters/2;
+            HANDLE_ERROR_CUDA(cudaMemcpy(ret_spins.data(), system.spin.get()+(localsize*select_t), localsize*sizeof(int), cudaMemcpyDeviceToHost));
 
             return ret_spins;
         }

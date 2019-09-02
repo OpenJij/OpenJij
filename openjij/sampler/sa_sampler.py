@@ -144,8 +144,7 @@ class SASampler(BaseSampler):
 
         """
 
-        var_type = openjij.SPIN
-        model = openjij.BinaryQuadraticModel(h=h, J=J, var_type=var_type)
+        model = openjij.BinaryQuadraticModel(h=h, J=J, var_type=openjij.SPIN)
         return self.sampling(model,
                              initial_state=initial_state, updater=updater,
                              reinitilize_state=reinitilize_state,
@@ -194,8 +193,7 @@ class SASampler(BaseSampler):
 
         """
 
-        var_type = openjij.BINARY
-        model = openjij.BinaryQuadraticModel(Q=Q, var_type=var_type)
+        model = openjij.BinaryQuadraticModel(Q=Q, var_type=openjij.BINARY)
         return self.sampling(model,
                              initial_state=initial_state, updater=updater,
                              reinitilize_state=reinitilize_state,
@@ -220,7 +218,8 @@ class SASampler(BaseSampler):
         else:
             # validate initial_state size
             if len(initial_state) != ising_graph.size():
-                raise ValueError("the size of the initial state should be {}".format(ising_graph.size()))
+                raise ValueError(
+                    "the size of the initial state should be {}".format(ising_graph.size()))
             if model.var_type == openjij.SPIN:
                 _init_state = np.array(initial_state)
             else:  # BINARY
@@ -228,18 +227,17 @@ class SASampler(BaseSampler):
 
             def _generate_init_state(): return np.array(_init_state)
 
-
         # choose updater
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         if _updater_name == 'singlespinflip':
             algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
             sa_system = cxxjij.system.make_classical_ising_Eigen(
-            _generate_init_state(), ising_graph)
+                _generate_init_state(), ising_graph)
         elif _updater_name == 'swendsenwang':
             # swendsen-wang is not support Eigen system
             algorithm = cxxjij.algorithm.Algorithm_SwendsenWang_run
             sa_system = cxxjij.system.make_classical_ising(
-            _generate_init_state(), ising_graph)
+                _generate_init_state(), ising_graph)
         else:
             raise ValueError(
                 'updater is one of "single spin flip or swendsen wang"')

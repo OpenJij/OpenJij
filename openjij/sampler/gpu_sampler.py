@@ -13,10 +13,12 @@
 # limitations under the License.
 
 import cxxjij as cj
+import openjij
 from openjij.sampler import SQASampler
 from openjij.model import BinaryQuadraticModel, ChimeraModel
 from .response import Response
 import numpy as np
+
 
 class GPUSQASampler(SQASampler):
     """Sampler with Simulated Quantum Annealing (SQA) on GPU.
@@ -79,7 +81,8 @@ class GPUSQASampler(SQASampler):
     """
 
     def __init__(self, beta=5.0, gamma=1.0,
-                 trotter=4, step_length=10, step_num=100, schedule=None, iteration=1, unit_num_L=None):
+                 trotter=4, step_length=10, step_num=100,
+                 schedule=None, iteration=1, unit_num_L=None):
         # GPU Sampler allows only even trotter number
         if trotter % 2 != 0:
             raise ValueError('GPU Sampler allows only even trotter number')
@@ -91,10 +94,11 @@ class GPUSQASampler(SQASampler):
 
     def _post_process4state(self, q_state):
         if self.model.coordinate == 'chimera coordinate':
-            indices = [self.model.to_index(x, y, z, self.model.unit_num_L) for x,y,z in self.indices]
+            indices = [self.model.to_index(
+                x, y, z, self.model.unit_num_L) for x, y, z in self.indices]
         else:
             indices = self.indices
-        
+
         return [list(np.array(state)[indices]) for state in q_state]
 
     def sampling(self, model, **kwargs):
@@ -102,17 +106,20 @@ class GPUSQASampler(SQASampler):
         try:
             self.system_class = cj.system.ChimeraGPUQuantum
         except AttributeError:
-            raise AttributeError('Does the computer you are running have a GPU? Compilation for the GPU has not been done. Please reinstall or compile.')
+            raise AttributeError(
+                'Does the computer you are running have a GPU? Compilation for the GPU has not been done. Please reinstall or compile.')
 
+        # convert to ChimeraModel from normal BQM
         if isinstance(model, BinaryQuadraticModel):
             if 'unit_num_L' in kwargs:
                 self.unit_num_L = kwargs['unit_num_L']
             elif not self.unit_num_L:
-                raise ValueError('Input "unit_num_L" to the argument or the constructor of GPUSQASampler.')
-            chimera_model = ChimeraModel(model=model, unit_num_L=self.unit_num_L)
+                raise ValueError(
+                    'Input "unit_num_L" to the argument or the constructor of GPUSQASampler.')
+            chimera_model = ChimeraModel(
+                model=model, unit_num_L=self.unit_num_L)
         else:
-            chiemra_model = model
-
+            chimera_model = model
 
         if chimera_model.unit_num_L % 2 != 0:
             raise ValueError('unit_num_L should be even number.')
@@ -120,7 +127,7 @@ class GPUSQASampler(SQASampler):
         self.unit_num_L = chimera_model.unit_num_L
         self._set_model(chimera_model)
 
-        chimera = self.model.get_chimera_graph() 
+        chimera = self.model.get_chimera_graph()
 
         response = self._sampling(ising_graph=chimera, var_type=self.var_type)
 
@@ -154,9 +161,7 @@ class GPUSQASampler(SQASampler):
             minmum energy state sample : [1, -1, 1, 1]
 
         """
-
-        model = BinaryQuadraticModel(h=h, J=J, var_type='SPIN')
-        self.var_type = 'SPIN'
+        model = BinaryQuadraticModel(h=h, J=J, var_type=openjij.SPIN)
         return self.sampling(model, **kwargs)
 
     def sample_qubo(self, Q, **kwargs):
@@ -186,16 +191,12 @@ class GPUSQASampler(SQASampler):
 
         """
 
-        model = BinaryQuadraticModel(Q=Q, var_type='BINARY')
-        self.var_type = 'BINARY'
+        model = BinaryQuadraticModel(Q=Q, var_type=openjij.BINARY)
+        self.var_type = openjij.BINARY
         return self.sampling(model, **kwargs)
-        
+
     def _set_model(self, model):
         self.model = model
         self.indices = model.indices
         self.energy_bias = model.energy_bias
         self.var_type = model.var_type
-
-    
-        
-
