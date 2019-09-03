@@ -361,39 +361,39 @@ class CXXTest(unittest.TestCase):
 
 # GPU Test is currently disabled.
 
-    def test_GPU_ChimeraTransverseGPU(self):
+    # def test_GPU_ChimeraTransverseGPU(self):
 
-       #classial ising (sparse)
-       system = S.make_chimera_transverse_gpu(self.chimera.gen_spin(self.seed_for_spin), self.chimera, 1.0, 10)
+    #    #classial ising (sparse)
+    #    system = S.make_chimera_transverse_gpu(self.chimera.gen_spin(self.seed_for_spin), self.chimera, 1.0, 10)
 
-       #schedulelist
-       schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
+    #    #schedulelist
+    #    schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
 
-       #anneal
-       A.Algorithm_GPU_run(system, self.seed_for_mc, schedule_list)
+    #    #anneal
+    #    A.Algorithm_GPU_run(system, self.seed_for_mc, schedule_list)
 
-       #result spin
-       result_spin = R.get_solution(system)
+    #    #result spin
+    #    result_spin = R.get_solution(system)
 
-       #compare
-       self.assertTrue(self.true_chimera_spin == result_spin)
+    #    #compare
+    #    self.assertTrue(self.true_chimera_spin == result_spin)
 
-    def test_GPU_ChimeraClassicalGPU(self):
+    # def test_GPU_ChimeraClassicalGPU(self):
 
-       #classial ising (sparse)
-       system = S.make_chimera_classical_gpu(self.chimera.gen_spin(self.seed_for_spin), self.chimera)
+    #    #classial ising (sparse)
+    #    system = S.make_chimera_classical_gpu(self.chimera.gen_spin(self.seed_for_spin), self.chimera)
 
-       #schedulelist
-       schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 100)
+    #    #schedulelist
+    #    schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 100)
 
-       #anneal
-       A.Algorithm_GPU_run(system, self.seed_for_mc, schedule_list)
+    #    #anneal
+    #    A.Algorithm_GPU_run(system, self.seed_for_mc, schedule_list)
 
-       #result spin
-       result_spin = R.get_solution(system)
+    #    #result spin
+    #    result_spin = R.get_solution(system)
 
-       #compare
-       self.assertTrue(self.true_chimera_spin == result_spin)
+    #    #compare
+    #    self.assertTrue(self.true_chimera_spin == result_spin)
 
 #class UtilsTest(unittest.TestCase):
 #
