@@ -69,11 +69,11 @@ namespace openjij {
                 HANDLE_ERROR_CUDA(cudaMemcpy(dE.get(), &ret_dE, 1*sizeof(FloatType), cudaMemcpyHostToDevice));
 
                 //generate uniform random sequence
-                random_number_engine.generate_uniform(system.info.rows*system.info.cols*system.info.trotters*system.info.chimera_unitsize);
+                random_number_engine.generate_uniform(system.info.rows*system.info.cols*system.info.trotters*system.info.chimera_unitsize, system.dev_random);
                 //do metropolis
                 system::chimera_cuda::metropolis_interface<FloatType, rows_per_block, cols_per_block, trotters_per_block>(
                         0,
-                        system.spin.get(), random_number_engine.get(),
+                        system.spin.get(), system.dev_random.get(),
                         dE.get(),
                         system.interaction.J_out_p.get(),
                         system.interaction.J_out_n.get(),
@@ -87,11 +87,11 @@ namespace openjij {
                         );
 
                 //generate uniform random sequence
-                random_number_engine.generate_uniform(system.info.rows*system.info.cols*system.info.trotters*system.info.chimera_unitsize);
+                random_number_engine.generate_uniform(system.info.rows*system.info.cols*system.info.trotters*system.info.chimera_unitsize, system.dev_random);
                 //do metropolis
                 system::chimera_cuda::metropolis_interface<FloatType, rows_per_block, cols_per_block, trotters_per_block>(
                         1,
-                        system.spin.get(), random_number_engine.get(),
+                        system.spin.get(), system.dev_random.get(),
                         dE.get(),
                         system.interaction.J_out_p.get(),
                         system.interaction.J_out_n.get(),

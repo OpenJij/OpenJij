@@ -110,18 +110,16 @@ namespace openjij {
             template<typename FloatType, curandRngType_t rng_type>
                 class CurandWrapper{
                     public:
-                       CurandWrapper(std::size_t n, std::uint64_t seed)
-                       : _dev_random(cuda::make_dev_unique<FloatType[]>(n)), _alloc_size(n){
+                       CurandWrapper(std::uint64_t seed){
                            //generate psudo_random_number generator
                            HANDLE_ERROR_CURAND(curandCreateGenerator(&_rng, rng_type));
                            //set seed
                            HANDLE_ERROR_CURAND(curandSetPseudoRandomGeneratorSeed(_rng, seed));
                        }
 
-                       CurandWrapper(std::size_t n) : CurandWrapper(n, std::random_device{}()){}
+                       CurandWrapper() : CurandWrapper(std::random_device{}()){}
 
-                       CurandWrapper(CurandWrapper&& obj) noexcept
-                       : _dev_random(std::move(obj._dev_random)),_alloc_size(std::move(obj._alloc_size)){
+                       CurandWrapper(CurandWrapper&& obj) noexcept{
                            //move curand handler
                            this->_rng = obj._rng;
                            obj._rng = NULL;
@@ -133,19 +131,12 @@ namespace openjij {
                                HANDLE_ERROR_CURAND(curandDestroyGenerator(_rng));
                        }
 
-                       inline const FloatType* get() const{
-                           return _dev_random.get();
-                       }
-
-                       inline void generate_uniform(std::size_t n){
-                           assert(n <= _alloc_size);
-                           HANDLE_ERROR_CURAND(curand_generate_uniform_impl(_rng, _dev_random.get(), n));
+                       inline void generate_uniform(std::size_t n, cuda::unique_dev_ptr<FloatType[]>& dev_random){
+                           HANDLE_ERROR_CURAND(curand_generate_uniform_impl(_rng, dev_random.get(), n));
                        }
 
                     private:
                         curandGenerator_t _rng;
-                        cuda::unique_dev_ptr<FloatType[]> _dev_random;
-                        std::size_t _alloc_size;
                 };
         } // namespace cuda
 #endif
