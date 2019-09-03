@@ -219,7 +219,7 @@ template<typename FloatType,
     std::size_t cols_per_block>
     inline void declare_ChimeraClassicalGPU(py::module &m){
         using ChimeraClassicalGPU = system::ChimeraClassicalGPU<FloatType, rows_per_block, cols_per_block>;
-        py::class_<ChimeraClassicalGPU>(m, "ChimeraClassicalGPU")
+        py::class_<ChimeraClassicalGPU, typename ChimeraClassicalGPU::Base>(m, "ChimeraClassicalGPU")
             .def(py::init<const graph::Spins&, const graph::Chimera<FloatType>&, int>(), "init_spin"_a, "init_interaction"_a, "device_num"_a=0)
             .def("reset_spins", [](ChimeraClassicalGPU& self, const graph::Spins& init_spin){self.reset_spins(init_spin);},"init_spin"_a);
 

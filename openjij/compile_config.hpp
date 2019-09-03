@@ -77,7 +77,7 @@ namespace openjij {
     //note that the size of sharedmem must be smaller than 64kB.
     constexpr std::size_t BLOCK_ROW  = 2; // row 
     constexpr std::size_t BLOCK_COL  = 2; // column
-    constexpr std::size_t BLOCK_TROT = 2; // trotter size
+    constexpr std::size_t BLOCK_TROT = 1; // trotter size (should not be changed)
 
 
 } // namespace openjij
