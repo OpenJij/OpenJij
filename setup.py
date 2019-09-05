@@ -33,9 +33,6 @@ class CMakeBuild(build_ext):
         build_ext.initialize_options(self)
 
     def run(self):
-        print("self gpu {}".format(self.gpu))
-        for op in self.user_options:
-            print("**", op)
         try:
             out = subprocess.check_output(['cmake', '--version'])
         except OSError:
