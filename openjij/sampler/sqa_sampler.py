@@ -235,8 +235,8 @@ class SQASampler(BaseSampler):
             def sqa_algorithm(system): return algorithm(
                 system, seed, self.schedule)
 
-        q_states = []
-        q_energies = []
+        q_states = []    # store trotterized_states
+        c_energies = []  # store classical energy at each trotter slices
 
         execution_time = []
 
@@ -250,20 +250,19 @@ class SQASampler(BaseSampler):
                     sqa_system.reset_spins(previous_state)
                 _exec_time = measure_time(sqa_algorithm)(sqa_system)
                 execution_time.append(_exec_time)
-                # trotter_spins is transposed because it is stored as [Spin ​​space][Trotter].
-                # [-1] is excluded because it is a tentative spin of s = 1 for convenience in SQA.
-                q_state = self._post_process4state(
-                    sqa_system.trotter_spins[:-1].T)
-                q_energies.append(
-                    [model.calc_energy(state,
-                                       need_to_convert_from_spin=True)
-                     for state in q_state])
-                q_states.append(q_state.astype(np.int))
+                self._post_process4state(sqa_system, model, q_states=q_states, c_energies=c_energies)
+#                 q_state = self._post_process4state(
+#                     sqa_system.trotter_spins[:-1].T)
+#                 q_energies.append(
+#                     [model.calc_energy(state,
+#                                        need_to_convert_from_spin=True)
+#                      for state in q_state])
+#                 q_states.append(q_state.astype(np.int))
 
         sampling_time = exec_sampling()
         response = openjij.Response(
             var_type=model.var_type, indices=self.indices)
-        response.update_trotter_ising_states_energies(q_states, q_energies)
+        response.update_trotter_ising_states_energies(q_states, c_energies)
 
         response.info['sampling_time'] = sampling_time * \
             10**6              # micro sec
@@ -274,5 +273,13 @@ class SQASampler(BaseSampler):
 
         return response
 
-    def _post_process4state(self, q_state):
-        return q_state
+    def _post_process4state(self, q_system, model, **args):
+        # trotter_spins is transposed because it is stored as [Spin ​​space][Trotter].
+        # [-1] is excluded because it is a tentative spin of s = 1 for convenience in SQA.
+        q_state = q_system.trotter_spins[:-1].T.astype(np.int)
+        # calculate classical energy at each trotter slices
+        c_energies = [model.calc_energy(state, need_to_convert_from_spin=True) for state in q_state]
+
+        args["q_states"].append(q_state.astype(np.int))
+        args["c_energies"].append(c_energies)
+
