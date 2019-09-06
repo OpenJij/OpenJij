@@ -106,7 +106,7 @@ class GPUSQASampler(SQASampler):
                  **kwargs):
         # Check the system for GPU is compiled
         try:
-            self.system_class = cj.system.ChimeraGPUQuantum
+            self.system_class = cxxjij.system.ChimeraTransverseGPU
         except AttributeError:
             raise AttributeError(
                 'Does the computer you are running have a GPU? Compilation for the GPU has not been done. Please reinstall or compile.')
@@ -119,7 +119,7 @@ class GPUSQASampler(SQASampler):
                 raise ValueError(
                     'Input "unit_num_L" to the argument or the constructor of GPUSQASampler.')
             chimera_model = ChimeraModel(
-                model=model, unit_num_L=self.unit_num_L)
+                model=model, unit_num_L=self.unit_num_L, gpu=True)
         else:
             chimera_model = model
 
@@ -130,6 +130,10 @@ class GPUSQASampler(SQASampler):
         self._set_model(chimera_model)
 
         chimera = self.model.get_chimera_graph()
+
+        # use all spins ?
+        self._use_all = len(model.indices) == (
+            self.unit_num_L * self.unit_num_L * 8)
 
         if initial_state is None:
             def init_generator(): return [chimera.gen_spin()
@@ -152,80 +156,25 @@ class GPUSQASampler(SQASampler):
         )
 
         response = self._sampling(
-            model, init_generator,
+            chimera_model, init_generator,
             algorithm, sqa_system, initial_state,
             reinitialize_state, seed, **kwargs
         )
 
+        response.update_ising_states_energies(
+            response.states, response.energies)
+
         return response
 
     def _post_save(self, result_state, system, model, response):
+
+        if not self._use_all:
+            result_state = np.array(result_state)[model.indices]
+
         response.states.append(result_state)
         response.energies.append(model.calc_energy(
             result_state,
             need_to_convert_from_spin=True))
-
-    def sample_ising(self, h, J, **kwargs):
-        """Sample from the specified Ising model.
-
-        Args:
-            h (dict):
-                Linear biases of the Ising model.
-
-            J (dict):
-                Quadratic biases of the Ising model.
-
-            **kwargs:
-                Optional keyword arguments for the sampling method.
-
-        Returns:
-            :obj:: `openjij.sampler.response.Response` object.
-
-        Examples:
-            This example submits an Ising problem.
-
-            >>> import openjij as oj
-            >>> sampler = oj.GPUSASampler(unit_num_L=2)
-            >>> response = sampler.sample_ising({}, {(0, 4): -1, (0, 5): -1, (4, 12): 1})
-            >>> print(sample)
-            iteration : 1, minimum energy : -2.0, var_type : BINARY
-            indices: [0, 12, 4, 5]
-            minmum energy state sample : [1, -1, 1, 1]
-
-        """
-        model = BinaryQuadraticModel(h=h, J=J, var_type=openjij.SPIN)
-        return self.sampling(model, **kwargs)
-
-    def sample_qubo(self, Q, **kwargs):
-        """Sample from the specified QUBO.
-
-        Args:
-            Q (dict):
-                Coefficients of a quadratic unconstrained binary optimization (QUBO) model.
-
-            **kwargs:
-                Optional keyword arguments for the sampling method.
-
-        Returns:
-            :obj:: `openjij.sampler.response.Response` object.
-
-        Examples:
-            This example submits a QUBO model.
-
-            >>> import openjij as oj
-            >>> sampler = oj.GPUSQASampler(unit_num_L=2)
-            >>> Q = {(0, 4): -1, (0, 5): -1, (4, 12): 1}
-            >>> response = sampler.sample_qubo(Q)
-            >>> print(response)
-            iteration : 1, minimum energy : -2.0, var_type : BINARY
-            indices: [0, 12, 4, 5]
-            minmum energy state sample : [1, 0, 1, 1]
-
-        """
-
-        model = BinaryQuadraticModel(Q=Q, var_type=openjij.BINARY)
-        self.var_type = openjij.BINARY
-        return self.sampling(model, **kwargs)
 
     def _set_model(self, model):
         self.model = model
