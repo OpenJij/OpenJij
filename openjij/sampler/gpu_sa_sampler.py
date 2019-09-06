@@ -163,10 +163,6 @@ class GPUSASampler(SASampler):
         return response
 
     def _post_save(self, result_state, system, model, response):
-
-        if not self._use_all:
-            result_state = np.array(result_state)[model.indices]
-
         response.states.append(result_state)
         response.energies.append(model.calc_energy(
             result_state,
