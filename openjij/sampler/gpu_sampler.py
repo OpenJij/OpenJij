@@ -100,7 +100,10 @@ class GPUSQASampler(SQASampler):
 
         return [list(np.array(state)[indices]) for state in q_state]
 
-    def sampling(self, model, **kwargs):
+    def sampling(self, model,
+                 initial_state=None,
+                 reinitialize_state=True, seed=None,
+                 **kwargs):
         # Check the system for GPU is compiled
         try:
             self.system_class = cxxjij.system.ChimeraTransverseGPU
@@ -164,6 +167,7 @@ class GPUSQASampler(SQASampler):
         return response
 
     def _post_save(self, result_state, system, model, response):
+        print(result_state)
 
         if not self._use_all:
             result_state = np.array(result_state)[model.indices]
