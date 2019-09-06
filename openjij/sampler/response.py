@@ -61,7 +61,7 @@ class Response:
     def __repr__(self):
         if len(self.states) == 0:
             return "Response\n\tvar_type: {}\n\tstates: empty".format(self.var_type)
-        
+
         if len(min_samples) == 0:
             self.min_samples = self._minimum_sample()
         min_energy_index = np.argmin(self.energies) if len(

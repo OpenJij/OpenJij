@@ -13,10 +13,9 @@
 # limitations under the License.
 
 import numpy as np
-import cxxjij as cj
+import cxxjij
 from openjij.model import BinaryQuadraticModel
 import openjij
-from .response import Response
 
 import time
 
@@ -62,3 +61,47 @@ class BaseSampler:
             self.iteration = kwargs['iteration']
         elif 'num_reads' in kwargs:
             self.iteration = kwargs['num_reads']
+
+    def _sampling(self, model, init_generator, algorithm, system,
+                  initial_state=None,
+                  reinitialize_state=True, seed=None, **kwargs):
+        self._sampling_kwargs_setting(**kwargs)
+        self._set_model(model)
+
+        # seed for MonteCarlo
+        if seed is None:
+            def sampling_algorithm(system): return algorithm(
+                system, self.schedule)
+        else:
+            def sampling_algorithm(system): return algorithm(
+                system, seed, self.schedule)
+
+        # run algorithm
+        execution_time = []
+        response = openjij.Response(
+            var_type=model.var_type, indices=self.indices)
+
+        @measure_time
+        def exec_sampling():
+            previous_state = init_generator()
+            for _ in range(self.iteration):
+                if reinitialize_state:
+                    system.reset_spins(init_generator())
+                else:
+                    system.reset_spins(previous_state)
+                _exec_time = measure_time(sampling_algorithm)(system)
+                execution_time.append(_exec_time)
+                previous_state = cxxjij.result.get_solution(system)
+                self._post_save(previous_state, system, model, response)
+
+        sampling_time = exec_sampling()
+        response.info['sampling_time'] = sampling_time * 10**6  # micro sec
+        response.info['execution_time'] = np.mean(
+            execution_time) * 10**6  # micro sec
+        response.info['list_exec_times'] = np.array(
+            execution_time) * 10**6  # micro sec
+
+        return response
+
+    def _post_save(self, result_state, system, model, response):
+        pass
