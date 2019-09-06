@@ -13,10 +13,9 @@
 # limitations under the License.
 
 import numpy as np
-import cxxjij as cj
+import cxxjij
 from openjij.model import BinaryQuadraticModel
 import openjij
-from .response import Response
 
 import time
 
@@ -63,29 +62,11 @@ class BaseSampler:
         elif 'num_reads' in kwargs:
             self.iteration = kwargs['num_reads']
 
-    def _sampling(self, model, ising_graph, algorithm, system, initial_state=None,
+    def _sampling(self, model, init_generator, algorithm, system,
+                  initial_state=None,
                   reinitialize_state=True, seed=None, **kwargs):
         self._sampling_kwargs_setting(**kwargs)
         self._set_model(model)
-
-        # make initial state generator
-        if initial_state is None:
-            if not reinitialize_state:
-                raise ValueError(
-                    'You need initial_state if reinitilize_state is False.')
-
-            def _generate_init_state(): return [ising_graph.gen_spin()
-                                                for _ in range(self.trotter)]
-        else:
-            if model.var_type == openjij.SPIN:
-                trotter_init_state = [np.array(initial_state)
-                                      for _ in range(self.trotter)]
-            else:  # BINARY
-                trotter_init_state = [
-                    (2*np.array(initial_state)-1).astype(int)
-                    for _ in range(self.trotter)]
-
-            def _generate_init_state(): return trotter_init_state
 
         # seed for MonteCarlo
         if seed is None:
@@ -102,15 +83,16 @@ class BaseSampler:
 
         @measure_time
         def exec_sampling():
-            previous_state = _generate_init_state()
+            previous_state = init_generator()
             for _ in range(self.iteration):
                 if reinitialize_state:
-                    system.reset_spins(_generate_init_state())
+                    system.reset_spins(init_generator())
                 else:
                     system.reset_spins(previous_state)
                 _exec_time = measure_time(sampling_algorithm)(system)
                 execution_time.append(_exec_time)
-                self._post_save(system, model, response)
+                previous_state = cxxjij.result.get_solution(system)
+                self._post_save(previous_state, system, model, response)
 
         sampling_time = exec_sampling()
         response.info['sampling_time'] = sampling_time * 10**6  # micro sec
@@ -121,5 +103,5 @@ class BaseSampler:
 
         return response
 
-    def _post_save(self, model, response):
+    def _post_save(self, result_state, system, model, response):
         pass

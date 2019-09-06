@@ -203,14 +203,14 @@ class SASampler(BaseSampler):
 
     def sampling(self, model,
                  initial_state=None, updater='single spin flip',
-                 reinitilize_state=True, seed=None,
+                 reinitialize_state=True, seed=None,
                  **kwargs):
-        self._sampling_kwargs_setting(**kwargs)
-        self._set_model(model)
+
         ising_graph = model.get_cxxjij_ising_graph()
 
+        # make init state generator
         if initial_state is None:
-            if not reinitilize_state:
+            if not reinitialize_state:
                 raise ValueError(
                     'You need initial_state if reinitilize_state is False.')
 
@@ -242,46 +242,19 @@ class SASampler(BaseSampler):
             raise ValueError(
                 'updater is one of "single spin flip or swendsen wang"')
 
-        # seed for MonteCarlo
-        if seed is None:
-            def simulated_annealing(system): return algorithm(
-                system, self.schedule)
-        else:
-            def simulated_annealing(system): return algorithm(
-                system, seed, self.schedule)
+        response = self._sampling(
+            model, _generate_init_state,
+            algorithm, sa_system, initial_state,
+            reinitialize_state, seed, **kwargs
+        )
 
-        states = []
-        energies = []
-
-        execution_time = []
-
-        @measure_time
-        def exec_sampling():
-            previous_state = _generate_init_state()
-            for _ in range(self.iteration):
-                if reinitilize_state:
-                    sa_system.reset_spins(_generate_init_state())
-                else:
-                    sa_system.reset_spins(previous_state)
-
-                _exec_time = measure_time(simulated_annealing)(sa_system)
-
-                execution_time.append(_exec_time)
-                previous_state = cxxjij.result.get_solution(sa_system)
-                states.append(previous_state)
-                energies.append(model.calc_energy(
-                    previous_state,
-                    need_to_convert_from_spin=True))
-        sampling_time = exec_sampling()
-        response = openjij.Response(
-            var_type=model.var_type, indices=self.indices)
-        response.update_ising_states_energies(states, energies)
-
-        response.info['sampling_time'] = sampling_time * \
-            10**6              # micro sec
-        response.info['execution_time'] = np.mean(
-            execution_time) * 10**6   # micro sec
-        response.info['list_exec_times'] = np.array(
-            execution_time) * 10**6  # micro sec
+        response.update_ising_states_energies(
+            response.states, response.energies)
 
         return response
+
+    def _post_save(self, result_state, system, model, response):
+        response.states.append(result_state)
+        response.energies.append(model.calc_energy(
+            result_state,
+            need_to_convert_from_spin=True))
