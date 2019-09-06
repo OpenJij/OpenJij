@@ -16,7 +16,7 @@ NAME = 'openjij'
 DESCRIPTION = 'Framework for the Ising model and QUBO'
 EMAIL = 'openjij@j-ij.com'
 AUTHOR = 'Jij Inc.'
-VERSION = '0.0.7'
+VERSION = '0.0.8'
 
 
 class CMakeExtension(Extension):
@@ -26,12 +26,6 @@ class CMakeExtension(Extension):
 
 
 class CMakeBuild(build_ext):
-    user_options = [('gpu=', 'gpu', "If True compile with GPU" )] + build_ext.user_options
-
-    def initialize_options(self):
-        self.gpu = False
-        build_ext.initialize_options(self)
-
     def run(self):
         try:
             out = subprocess.check_output(['cmake', '--version'])

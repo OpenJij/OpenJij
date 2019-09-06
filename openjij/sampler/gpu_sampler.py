@@ -16,6 +16,7 @@ import cxxjij
 import openjij
 from openjij.sampler import SQASampler
 from openjij.model import BinaryQuadraticModel, ChimeraModel
+from openjij import Response
 import numpy as np
 
 
@@ -100,10 +101,7 @@ class GPUSQASampler(SQASampler):
 
         return [list(np.array(state)[indices]) for state in q_state]
 
-    def sampling(self, model,
-                 initial_state=None,
-                 reinitialize_state=True, seed=None,
-                 **kwargs):
+    def sampling(self, model, **kwargs):
         # Check the system for GPU is compiled
         try:
             self.system_class = cxxjij.system.ChimeraTransverseGPU
