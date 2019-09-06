@@ -16,7 +16,6 @@ import cxxjij
 import openjij
 from openjij.sampler import SQASampler
 from openjij.model import BinaryQuadraticModel, ChimeraModel
-from openjij import Response
 import numpy as np
 
 
