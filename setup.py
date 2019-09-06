@@ -16,7 +16,7 @@ NAME = 'openjij'
 DESCRIPTION = 'Framework for the Ising model and QUBO'
 EMAIL = 'openjij@j-ij.com'
 AUTHOR = 'Jij Inc.'
-VERSION = '0.0.8'
+VERSION = '0.0.7'
 
 
 class CMakeExtension(Extension):
@@ -34,7 +34,8 @@ class CMakeBuild(build_ext):
                                ", ".join(e.name for e in self.extensions))
 
         if platform.system() == "Windows":
-            cmake_version = LooseVersion(re.search(r'version\s*([\d.]+)', out.decode()).group(1))
+            cmake_version = LooseVersion(
+                re.search(r'version\s*([\d.]+)', out.decode()).group(1))
             if cmake_version < '3.1.0':
                 raise RuntimeError("CMake >= 3.1.0 is required on Windows")
 
@@ -42,17 +43,19 @@ class CMakeBuild(build_ext):
             self.build_extension(ext)
 
     def build_extension(self, ext):
-        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+        extdir = os.path.abspath(os.path.dirname(
+            self.get_ext_fullpath(ext.name)))
         cmake_kwargs = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
-                      '-DCMAKE_VERBOSE_MAKEFILE=ON',
-                      #'-DCMAKE_CUDA_FLAGS= -arch=sm_60 ',
-                      '-DPYTHON_EXECUTABLE=' + sys.executable]
+                        '-DCMAKE_VERBOSE_MAKEFILE=ON',
+                        #'-DCMAKE_CUDA_FLAGS= -arch=sm_60 ',
+                        '-DPYTHON_EXECUTABLE=' + sys.executable]
 
         cfg = 'Debug' if self.debug else 'Release'
         build_kwargs = ['--config', cfg]
 
         if platform.system() == "Windows":
-            cmake_kwargs += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
+            cmake_kwargs += [
+                '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
             if sys.maxsize > 2**32:
                 cmake_kwargs += ['-A', 'x64']
             build_kwargs += ['--', '/m']
@@ -66,14 +69,17 @@ class CMakeBuild(build_ext):
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
 
+        subprocess.check_call(['cmake', ext.sourcedir] +
+                              cmake_kwargs, cwd=self.build_temp, env=env)
+        subprocess.check_call(
+            ['cmake', '--build', '.', '--target', 'python'] + build_kwargs, cwd=self.build_temp)
 
-        subprocess.check_call(['cmake', ext.sourcedir] + cmake_kwargs, cwd=self.build_temp, env=env)
-        subprocess.check_call(['cmake', '--build', '.', '--target', 'python'] + build_kwargs, cwd=self.build_temp)
 
 class GoogleTestCommand(TestCommand):
     """
     A custom test runner to execute both Python unittest tests and C++ Google Tests.
     """
+
     def distutils_dir_name(self, dname):
         """Returns the name of a distutils build directory"""
         dir_name = "{dirname}.{platform}-{version[0]}.{version[1]}"
@@ -88,13 +94,14 @@ class GoogleTestCommand(TestCommand):
         # Run catch tests
         print(os.path.join('build/', self.distutils_dir_name('lib')))
         subprocess.call(['make cxxjij_test'],
-                cwd=os.path.join('build',
-                                 self.distutils_dir_name('temp')),
-                shell=True)
+                        cwd=os.path.join('build',
+                                         self.distutils_dir_name('temp')),
+                        shell=True)
         subprocess.call(['./tests/cxxjij_test'],
                         cwd=os.path.join('build',
                                          self.distutils_dir_name('temp')),
                         shell=True)
+
 
 # Load the package's __version__.py module as a dictionary.
 here = os.path.abspath(os.path.dirname(__file__))
@@ -111,7 +118,7 @@ setup(
     version=about['__version__'],
     author='Jij Inc.',
     author_email='openjij@j-ij.com',
-    url = 'https://openjij.github.io/OpenJij/',
+    url='https://openjij.github.io/OpenJij/',
     description='Framework for the Ising model and QUBO',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",

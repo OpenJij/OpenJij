@@ -167,7 +167,6 @@ class GPUSQASampler(SQASampler):
         return response
 
     def _post_save(self, result_state, system, model, response):
-        print(result_state)
 
         if not self._use_all:
             result_state = np.array(result_state)[model.indices]
