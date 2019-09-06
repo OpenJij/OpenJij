@@ -61,7 +61,7 @@ namespace openjij {
                         if (node >= adj_node) continue;
                         //check if bond can be connected
                         if (system.interaction.J(node, adj_node) * system.spin[node] * system.spin[adj_node] > 0) continue;
-                        const auto unite_rate = std::max(0.0, 1.0 - std::exp( - 2.0 * parameter.beta * std::abs(system.interaction.J(node, adj_node))));
+                        const auto unite_rate = std::max(static_cast<FloatType>(0.0), static_cast<FloatType>(1.0 - std::exp( - 2.0 * parameter.beta * std::abs(system.interaction.J(node, adj_node)))));
                         if (urd(random_number_engine) < unite_rate)
                             union_find_tree.unite_sets(node, adj_node);
                     }
