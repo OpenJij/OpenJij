@@ -378,6 +378,23 @@ class CXXTest(unittest.TestCase):
     #    #compare
     #    self.assertTrue(self.true_chimera_spin == result_spin)
 
+    # def test_GPU_ChimeraClassicalGPU(self):
+
+    #    #classial ising (sparse)
+    #    system = S.make_chimera_classical_gpu(self.chimera.gen_spin(self.seed_for_spin), self.chimera)
+
+    #    #schedulelist
+    #    schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 100)
+
+    #    #anneal
+    #    A.Algorithm_GPU_run(system, self.seed_for_mc, schedule_list)
+
+    #    #result spin
+    #    result_spin = R.get_solution(system)
+
+    #    #compare
+    #    self.assertTrue(self.true_chimera_spin == result_spin)
+
 #class UtilsTest(unittest.TestCase):
 #
 #    def test_benchmark(self):

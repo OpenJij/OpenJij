@@ -6,7 +6,9 @@
 
 //        http://www.apache.org/licenses/LICENSE-2.0
 
-//    Unless required by applicable law or agreed to in writing, software //    distributed under the License is distributed on an "AS IS" BASIS, //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    Unless required by applicable law or agreed to in writing, software 
+//    distributed under the License is distributed on an "AS IS" BASIS, 
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
@@ -62,6 +64,8 @@ PYBIND11_MODULE(cxxjij, m){
 #ifdef USE_CUDA
     //ChimeraTransverseGPU
     ::declare_ChimeraTranseverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>(m_system);
+    //ChimeraClassicalGPU
+    ::declare_ChimeraClassicalGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL>(m_system);
 #endif
 
     /**********************************************************
@@ -86,6 +90,7 @@ PYBIND11_MODULE(cxxjij, m){
 #ifdef USE_CUDA
     //GPU
     ::declare_Algorithm_run<updater::GPU, system::ChimeraTransverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>, utility::cuda::CurandWrapper<GPUFloatType, GPURandomEngine>>(m_algorithm, "GPU");
+    ::declare_Algorithm_run<updater::GPU, system::ChimeraClassicalGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL>, utility::cuda::CurandWrapper<GPUFloatType, GPURandomEngine>>(m_algorithm, "GPU");
 #endif
 
     /**********************************************************
@@ -138,6 +143,7 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>, true>>(m_result);
 #ifdef USE_CUDA
     ::declare_get_solution<system::ChimeraTransverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>>(m_result);
+    ::declare_get_solution<system::ChimeraClassicalGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL>>(m_result);
 #endif
 }
 

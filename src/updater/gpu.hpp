@@ -17,6 +17,7 @@
 #ifdef USE_CUDA
 
 #include <system/gpu/chimera_gpu_transverse.hpp>
+#include <system/gpu/chimera_gpu_classical.hpp>
 #include <utility/schedule_list.hpp>
 #include <utility/random.hpp>
 #include <system/gpu/chimera_cuda/kernel.hpp>
@@ -51,7 +52,7 @@ namespace openjij {
              * @brief operate GPU monte carlo in a chimera transverse ising system
              *
              * @param system object of a chimera transverse system
-             * @param random_number_engine random number gengine
+             * @param random_number_engine random number engine
              * @param parameter parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f
              *
              * @return energy difference \f\Delta E\f
@@ -68,11 +69,11 @@ namespace openjij {
                 HANDLE_ERROR_CUDA(cudaMemcpy(dE.get(), &ret_dE, 1*sizeof(FloatType), cudaMemcpyHostToDevice));
 
                 //generate uniform random sequence
-                random_number_engine.generate_uniform(system.info.rows*system.info.cols*system.info.trotters*system.info.chimera_unitsize);
+                random_number_engine.generate_uniform(system.info.rows*system.info.cols*system.info.trotters*system.info.chimera_unitsize, system.dev_random);
                 //do metropolis
                 system::chimera_cuda::metropolis_interface<FloatType, rows_per_block, cols_per_block, trotters_per_block>(
                         0,
-                        system.spin.get(), random_number_engine.get(),
+                        system.spin.get(), system.dev_random.get(),
                         dE.get(),
                         system.interaction.J_out_p.get(),
                         system.interaction.J_out_n.get(),
@@ -86,11 +87,11 @@ namespace openjij {
                         );
 
                 //generate uniform random sequence
-                random_number_engine.generate_uniform(system.info.rows*system.info.cols*system.info.trotters*system.info.chimera_unitsize);
+                random_number_engine.generate_uniform(system.info.rows*system.info.cols*system.info.trotters*system.info.chimera_unitsize, system.dev_random);
                 //do metropolis
                 system::chimera_cuda::metropolis_interface<FloatType, rows_per_block, cols_per_block, trotters_per_block>(
                         1,
-                        system.spin.get(), random_number_engine.get(),
+                        system.spin.get(), system.dev_random.get(),
                         dE.get(),
                         system.interaction.J_out_p.get(),
                         system.interaction.J_out_n.get(),
@@ -108,6 +109,40 @@ namespace openjij {
                 HANDLE_ERROR_CUDA(cudaMemcpy(&ret_dE, dE.get(), 1*sizeof(FloatType), cudaMemcpyDeviceToHost));
 
                 return ret_dE;
+            }
+        };
+
+
+        /**
+         * @brief GPU algorithm for chimera classical model
+         *
+         */
+        template<typename FloatType,
+            std::size_t rows_per_block,
+            std::size_t cols_per_block>
+        struct GPU<system::ChimeraClassicalGPU<FloatType, rows_per_block, cols_per_block>> {
+            
+            /**
+             * @brief Chimera Classical type
+             */
+            using CIsing = system::ChimeraClassicalGPU<FloatType, rows_per_block, cols_per_block>;
+            /**
+             * 
+             * @brief operate GPU monte carlo in a chimera classical ising system
+             *
+             * @param system object of a chimera transverse system
+             * @param random_number_engine random number engine
+             * @param parameter parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f
+             *
+             * @return energy difference \f\Delta E\f
+             */
+          template<curandRngType_t rng_type>
+            inline static FloatType update(CIsing& system,
+                                 utility::cuda::CurandWrapper<FloatType, rng_type>& random_number_engine,
+                                 const utility::ClassicalUpdaterParameter& parameter) {
+
+                //cast to chimera transverse field system with single trotter slice.
+                return GPU<typename CIsing::Base>::update(system, random_number_engine, utility::TransverseFieldUpdaterParameter(parameter.beta, 1));
             }
         };
 

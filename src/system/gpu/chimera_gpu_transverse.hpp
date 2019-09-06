@@ -55,11 +55,13 @@ namespace openjij {
                     }
             };
 
-
         /**
          * @brief Chimera Transverse Ising structure with cuda
          *
          * @tparam FloatType
+         * @tparam rows_per_block
+         * @tparam cols_per_block
+         * @tparam trotters_per_block
          */
         template<typename FloatType,
             std::size_t rows_per_block=2,
@@ -82,7 +84,8 @@ namespace openjij {
                         interaction(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize),
                         spin(utility::cuda::make_dev_unique<std::int32_t[]>(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize*init_trotter_spins.size())),
                         grid(dim3(init_interaction.get_num_column()/cols_per_block, init_interaction.get_num_row()/rows_per_block, init_trotter_spins.size()/trotters_per_block)),
-                        block(dim3(info.chimera_unitsize*cols_per_block, rows_per_block, trotters_per_block)){
+                        block(dim3(info.chimera_unitsize*cols_per_block, rows_per_block, trotters_per_block)),
+                        dev_random(utility::cuda::make_dev_unique<FloatType[]>(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize*init_trotter_spins.size())){
 
                             if(!(info.rows%rows_per_block == 0 && info.cols%cols_per_block == 0 && info.trotters%trotters_per_block == 0)){
                                 throw std::invalid_argument("invalid number of rows, cols, or trotters");
@@ -107,7 +110,8 @@ namespace openjij {
                         interaction(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize),
                         spin(utility::cuda::make_dev_unique<std::int32_t[]>(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize*num_trotter_slices)),
                         grid(dim3(init_interaction.get_num_column()/cols_per_block, init_interaction.get_num_row()/rows_per_block, num_trotter_slices/trotters_per_block)),
-                        block(dim3(info.chimera_unitsize*cols_per_block, rows_per_block, trotters_per_block)){
+                        block(dim3(info.chimera_unitsize*cols_per_block, rows_per_block, trotters_per_block)),
+                        dev_random(utility::cuda::make_dev_unique<FloatType[]>(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize*num_trotter_slices)){
                             //initialize trotter_spins with classical_spins
                             if(!(info.rows%rows_per_block == 0 && info.cols%cols_per_block == 0 && info.trotters%trotters_per_block == 0)){
                                 throw std::invalid_argument("invalid number of rows, cols, or trotters");
@@ -208,12 +212,20 @@ namespace openjij {
                      */
                     const dim3 block;
 
+
+                    /**
+                     * @brief buffer for random variables
+                     */
+                    utility::cuda::unique_dev_ptr<FloatType[]> dev_random;
+
                     private:
 
                     /**
                      * @brief send interaction information to GPU device
                      *
                      * @param init_interaction
+                     * @param trotter_spins
+                     * @param gpu_num
                      */
                     inline void initialize_gpu(const graph::Chimera<FloatType>& init_interaction, const TrotterSpins& trotter_spins, int gpu_num){
 

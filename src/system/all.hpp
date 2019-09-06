@@ -20,6 +20,7 @@
 
 #ifdef USE_CUDA
 #include <system/gpu/chimera_gpu_transverse.hpp>
+#include <system/gpu/chimera_gpu_classical.hpp>
 #endif
 
 #endif
