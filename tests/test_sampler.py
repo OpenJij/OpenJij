@@ -131,10 +131,8 @@ class SamplerOptimizeTest(unittest.TestCase):
         self.assertEqual(len(response.states), iteration)
         self.assertEqual(len(response.q_states), iteration)
         self.assertEqual(len(response.q_states[0]), trotter)
-
-        self.assertIsInstance(response.q_states[0][0][0], (int, np.int, np.int64, np.int32))
-
-
+        self.assertTrue(isinstance(
+            response.q_states[0][0][0], (int, np.int, np.int64)))
 
     def test_sqa(self):
         response = oj.SQASampler().sample_ising(self.h, self.J)

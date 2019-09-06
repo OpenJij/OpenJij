@@ -190,27 +190,21 @@ class SQASampler(BaseSampler):
                              **kwargs
                              )
 
-    def _post_save(self, result_state, system, model, response):
-        # trotter_spins is transposed because it is stored as [Spin ​​space][Trotter].
-        # [-1] is excluded because it is a tentative spin of s = 1 for convenience in SQA.
-        q_state = system.trotter_spins[:-1].T.astype(np.int)
-        # calculate classical energy at each trotter slices
-        c_energies = [model.calc_energy(
-            state, need_to_convert_from_spin=True) for state in q_state]
-
-        response.q_states.append(q_state)
-        response.q_energies.append(c_energies)
-
     def sampling(self, model,
                  initial_state=None, updater='single spin flip',
-                 reinitialize_state=True, seed=None,
+                 reinitilize_state=True, seed=None,
                  **kwargs):
-
+        self._sampling_kwargs_setting(**kwargs)
+        self._set_model(model)
         ising_graph = model.get_cxxjij_ising_graph()
 
         if initial_state is None:
-            def init_generator(): return [ising_graph.gen_spin()
-                                          for _ in range(self.trotter)]
+            if not reinitilize_state:
+                raise ValueError(
+                    'You need initial_state if reinitilize_state is False.')
+
+            def _generate_init_state(): return [ising_graph.gen_spin()
+                                                for _ in range(self.trotter)]
         else:
             if model.var_type == openjij.SPIN:
                 trotter_init_state = [np.array(initial_state)
@@ -220,10 +214,10 @@ class SQASampler(BaseSampler):
                     (2*np.array(initial_state)-1).astype(int)
                     for _ in range(self.trotter)]
 
-            def init_generator(): return trotter_init_state
+            def _generate_init_state(): return trotter_init_state
 
         sqa_system = cxxjij.system.make_transverse_ising_Eigen(
-            init_generator(), ising_graph, self.gamma
+            _generate_init_state(), ising_graph, self.gamma
         )
 
         # choose updater
@@ -233,13 +227,52 @@ class SQASampler(BaseSampler):
         else:
             raise ValueError('updater is one of "single spin flip"')
 
-        response = self._sampling(
-            model, init_generator,
-            algorithm, sqa_system, initial_state,
-            reinitialize_state, seed, **kwargs
-        )
+        # seed for MonteCarlo
+        if seed is None:
+            def sqa_algorithm(system): return algorithm(
+                system, self.schedule)
+        else:
+            def sqa_algorithm(system): return algorithm(
+                system, seed, self.schedule)
 
-        response.update_trotter_ising_states_energies(
-            response.q_states, response.q_energies)
+        q_states = []
+        q_energies = []
+
+        execution_time = []
+
+        @measure_time
+        def exec_sampling():
+            previous_state = _generate_init_state()
+            for _ in range(self.iteration):
+                if reinitilize_state:
+                    sqa_system.reset_spins(_generate_init_state())
+                else:
+                    sqa_system.reset_spins(previous_state)
+                _exec_time = measure_time(sqa_algorithm)(sqa_system)
+                execution_time.append(_exec_time)
+                # trotter_spins is transposed because it is stored as [Spin ​​space][Trotter].
+                # [-1] is excluded because it is a tentative spin of s = 1 for convenience in SQA.
+                q_state = self._post_process4state(
+                    sqa_system.trotter_spins[:-1].T)
+                q_energies.append(
+                    [model.calc_energy(state,
+                                       need_to_convert_from_spin=True)
+                     for state in q_state])
+                q_states.append(q_state.astype(np.int))
+
+        sampling_time = exec_sampling()
+        response = openjij.Response(
+            var_type=model.var_type, indices=self.indices)
+        response.update_trotter_ising_states_energies(q_states, q_energies)
+
+        response.info['sampling_time'] = sampling_time * \
+            10**6              # micro sec
+        response.info['execution_time'] = np.mean(
+            execution_time) * 10**6   # micro sec
+        response.info['list_exec_times'] = np.array(
+            execution_time) * 10**6  # micro sec
 
         return response
+
+    def _post_process4state(self, q_state):
+        return q_state

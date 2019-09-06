@@ -36,7 +36,7 @@ if(NOT DEFINED USE_CUDA)
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
         set(USE_CUDA ${DEFAULT_USE_CUDA})
-		message(STATUS "CUDA Support")
+
         #for cuda-memcheck
         set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lineinfo")
         # set CXX compiler to nvcc host compiler in order to avoid linker error
@@ -63,7 +63,6 @@ endif()
 
 
 add_subdirectory(src)
-
 add_subdirectory(openjij)
 add_subdirectory(tests)
 

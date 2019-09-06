@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cxxjij
+import cxxjij as cj
 import openjij
 from openjij.sampler import SQASampler
 from openjij.model import BinaryQuadraticModel, ChimeraModel
+from .response import Response
 import numpy as np
 
 
@@ -100,10 +101,7 @@ class GPUSQASampler(SQASampler):
 
         return [list(np.array(state)[indices]) for state in q_state]
 
-    def sampling(self, model,
-                 initial_state=None,
-                 reinitialize_state=True, seed=None,
-                 **kwargs):
+    def sampling(self, model, **kwargs):
         # Check the system for GPU is compiled
         try:
             self.system_class = cj.system.ChimeraGPUQuantum
@@ -131,39 +129,9 @@ class GPUSQASampler(SQASampler):
 
         chimera = self.model.get_chimera_graph()
 
-        if initial_state is None:
-            def init_generator(): return [chimera.gen_spin()
-                                          for _ in range(self.trotter)]
-        else:
-            if model.var_type == openjij.SPIN:
-                trotter_init_state = [np.array(initial_state)
-                                      for _ in range(self.trotter)]
-            else:  # BINARY
-                trotter_init_state = [
-                    (2*np.array(initial_state)-1).astype(int)
-                    for _ in range(self.trotter)]
-
-            def init_generator(): return trotter_init_state
-
-        algorithm = cxxjij.algorithm.Algorithm_GPU_run
-
-        sqa_system = cxxjij.system.make_chimera_transverse_gpu(
-            init_generator(), chimera, self.gamma
-        )
-
-        response = self._sampling(
-            model, init_generator,
-            algorithm, sqa_system, initial_state,
-            reinitialize_state, seed, **kwargs
-        )
+        response = self._sampling(ising_graph=chimera, var_type=self.var_type)
 
         return response
-
-    def _post_save(self, result_state, system, model, response):
-        response.states.append(result_state)
-        response.energies.append(model.calc_energy(
-            result_state,
-            need_to_convert_from_spin=True))
 
     def sample_ising(self, h, J, **kwargs):
         """Sample from the specified Ising model.
