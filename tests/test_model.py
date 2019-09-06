@@ -171,5 +171,25 @@ class ModelTest(unittest.TestCase):
             king_interaction, king_graph._ising_king_graph)
 
 
+class TestChimera(unittest.TestCase):
+
+    def setUp(self):
+        self.h = {0: 1, 1: -2}
+        self.J = {(0, 1): -1, (1, 2): -3, (2, 3): 0.5}
+        self.spins = [1, -1, 1, 1]
+
+        self.Q = {(0, 0): 1, (1, 2): -1, (2, 0): -0.2, (1, 3): 3}
+        self.binaries = [0, 1, 1, 0]
+
+    def test_calc_energy(self):
+        h = {}
+        J = {(0, 0): -1.0, (0, 4): -3.0}
+        bqm = oj.ChimeraModel(Q=J, unit_num_L=2, var_type='BINARY')
+        # import pdb
+        # pdb.set_trace()
+        print(bqm.interactions())
+        print(bqm.calc_energy([1, 1]))
+
+
 if __name__ == '__main__':
     unittest.main()
