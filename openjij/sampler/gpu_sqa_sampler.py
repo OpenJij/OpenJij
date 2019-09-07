@@ -14,12 +14,12 @@
 
 import cxxjij
 import openjij
-from openjij.sampler import SQASampler
+from openjij.sampler import SASampler
 from openjij.model import BinaryQuadraticModel, ChimeraModel
 import numpy as np
 
 
-class GPUSQASampler(SQASampler):
+class GPUSASampler(SASampler):
     """Sampler with Simulated Quantum Annealing (SQA) on GPU.
 
     Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
@@ -79,26 +79,27 @@ class GPUSQASampler(SQASampler):
 
     """
 
-    def __init__(self, beta=5.0, gamma=1.0,
-                 trotter=4, step_length=10, step_num=100,
-                 schedule=None, iteration=1, unit_num_L=None):
-        # GPU Sampler allows only even trotter number
-        if trotter % 2 != 0:
-            raise ValueError('GPU Sampler allows only even trotter number')
-        self.trotter = trotter
+    def __init__(self,
+                 beta_min=0.1, beta_max=5.0,
+                 step_length=10, step_num=100, schedule=None, iteration=1, unit_num_L=None):
 
         self.unit_num_L = unit_num_L
 
-        super().__init__(beta, gamma, trotter, step_length, step_num, schedule, iteration)
+        super().__init__(beta_min, beta_max, step_length, step_num, schedule, iteration)
 
-    def _post_process4state(self, q_state):
-        if self.model.coordinate == 'chimera coordinate':
-            indices = [self.model.to_index(
-                x, y, z, self.model.unit_num_L) for x, y, z in self.indices]
-        else:
-            indices = self.indices
+    def _dict_to_model(self, var_type, h=None, J=None, Q=None, **kwargs):
 
-        return [list(np.array(state)[indices]) for state in q_state]
+        if 'unit_num_L' in kwargs:
+            self.unit_num_L = kwargs['unit_num_L']
+        elif not self.unit_num_L:
+            raise ValueError(
+                'Input "unit_num_L" to the argument or the constructor of GPUSASampler.')
+
+        test_c = openjij.ChimeraModel(Q=Q, var_type="BINARY", unit_num_L=2)
+        chimera = openjij.ChimeraModel(h=None, J=None, Q={(
+            (0, 0, 1), (0, 0, 4)): -1}, var_type=openjij.BINARY, unit_num_L=2, gpu=True)
+
+        return chimera
 
     def sampling(self, model,
                  initial_state=None,
@@ -106,7 +107,7 @@ class GPUSQASampler(SQASampler):
                  **kwargs):
         # Check the system for GPU is compiled
         try:
-            self.system_class = cxxjij.system.ChimeraTransverseGPU
+            self.system_class = cxxjij.system.ChimeraClassicalGPU
         except AttributeError:
             raise AttributeError(
                 'Does the computer you are running have a GPU? Compilation for the GPU has not been done. Please reinstall or compile.')
@@ -117,7 +118,7 @@ class GPUSQASampler(SQASampler):
                 self.unit_num_L = kwargs['unit_num_L']
             elif not self.unit_num_L:
                 raise ValueError(
-                    'Input "unit_num_L" to the argument or the constructor of GPUSQASampler.')
+                    'Input "unit_num_L" to the argument or the constructor of GPUSASampler.')
             chimera_model = ChimeraModel(
                 model=model, unit_num_L=self.unit_num_L, gpu=True)
         else:
@@ -136,28 +137,24 @@ class GPUSQASampler(SQASampler):
             self.unit_num_L * self.unit_num_L * 8)
 
         if initial_state is None:
-            def init_generator(): return [chimera.gen_spin()
-                                          for _ in range(self.trotter)]
+            def init_generator(): return chimera.gen_spin()
         else:
             if model.var_type == openjij.SPIN:
-                trotter_init_state = [np.array(initial_state)
-                                      for _ in range(self.trotter)]
+                _init_state = np.array(initial_state)
             else:  # BINARY
-                trotter_init_state = [
-                    (2*np.array(initial_state)-1).astype(int)
-                    for _ in range(self.trotter)]
+                _init_state = (2*np.array(initial_state)-1).astype(int)
 
-            def init_generator(): return trotter_init_state
+            def init_generator(): return _init_state
 
         algorithm = cxxjij.algorithm.Algorithm_GPU_run
 
-        sqa_system = cxxjij.system.make_chimera_transverse_gpu(
-            init_generator(), chimera, self.gamma
+        sa_system = cxxjij.system.make_chimera_classical_gpu(
+            init_generator(), chimera
         )
 
         response = self._sampling(
             chimera_model, init_generator,
-            algorithm, sqa_system, initial_state,
+            algorithm, sa_system, initial_state,
             reinitialize_state, seed, **kwargs
         )
 
@@ -167,10 +164,13 @@ class GPUSQASampler(SQASampler):
         return response
 
     def _post_save(self, result_state, system, model, response):
-
         if not self._use_all:
-            result_state = np.array(result_state)[model.indices]
-
+            if model.coordinate == 'chimera coordinate':
+                indices = [model.to_index(
+                    x, y, z, model.unit_num_L) for x, y, z in model.indices]
+            else:
+                indices = model.indices
+            result_state = np.array(result_state)[indices]
         response.states.append(result_state)
         response.energies.append(model.calc_energy(
             result_state,

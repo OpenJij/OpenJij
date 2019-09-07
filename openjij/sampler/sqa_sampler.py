@@ -112,6 +112,9 @@ class SQASampler(BaseSampler):
             cxxjij_schedule.append(_schedule)
         return cxxjij_schedule
 
+    def _dict_to_model(self, var_type, h=None, J=None, Q=None, **kwargs):
+        return openjij.BinaryQuadraticModel(h=h, J=J, Q=Q, var_type=var_type)
+
     def sample_ising(self, h, J,
                      initial_state=None, updater='single spin flip',
                      reinitilize_state=True, seed=None, **kwargs):
@@ -143,9 +146,8 @@ class SQASampler(BaseSampler):
 
         """
 
-        var_type = openjij.SPIN
-        bqm = openjij.BinaryQuadraticModel(h=h, J=J, var_type=var_type)
-        return self.sampling(bqm,
+        model = self._dict_to_model(var_type=openjij.SPIN, h=h, J=J, **kwargs)
+        return self.sampling(model,
                              initial_state=initial_state, updater=updater,
                              reinitilize_state=reinitilize_state,
                              seed=seed,
@@ -181,9 +183,9 @@ class SQASampler(BaseSampler):
 
         """
 
-        var_type = openjij.BINARY
-        bqm = openjij.BinaryQuadraticModel(Q=Q, var_type=var_type)
-        return self.sampling(bqm,
+        model = self._dict_to_model(
+            var_type=openjij.BINARY, Q=Q, **kwargs)
+        return self.sampling(model,
                              initial_state=initial_state, updater=updater,
                              reinitilize_state=reinitilize_state,
                              seed=seed,

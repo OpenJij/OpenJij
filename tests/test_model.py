@@ -170,6 +170,19 @@ class ModelTest(unittest.TestCase):
         np.testing.assert_array_equal(
             king_interaction, king_graph._ising_king_graph)
 
+    def test_get_chimera_graph(self):
+        c_model = oj.ChimeraModel(
+            Q={(0, 4): -1, (1, 1): -1, (1, 5): 1},
+            var_type=oj.BINARY, unit_num_L=2)
+        chimera = c_model.get_chimera_graph()
+        self.assertIsInstance(chimera, cj.graph.Chimera)
+
+        c_model = oj.ChimeraModel(
+            Q={((0, 0, 1), (0, 0, 4)): -1, ((0, 0, 4), (0, 0, 2)): -1},
+            var_type=oj.BINARY, unit_num_L=2)
+        chimera = c_model.get_chimera_graph()
+        self.assertIsInstance(chimera, cj.graph.Chimera)
+
 
 if __name__ == '__main__':
     unittest.main()

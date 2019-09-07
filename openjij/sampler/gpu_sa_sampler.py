@@ -100,6 +100,19 @@ class GPUSASampler(SASampler):
 
         return [list(np.array(state)[indices]) for state in q_state]
 
+    def _dict_to_model(self, var_type, h=None, J=None, Q=None, **kwargs):
+
+        if 'unit_num_L' in kwargs:
+            self.unit_num_L = kwargs['unit_num_L']
+        elif not self.unit_num_L:
+            raise ValueError(
+                'Input "unit_num_L" to the argument or the constructor of GPUSASampler.')
+
+        return openjij.ChimeraModel(h=h, J=J,
+                                    var_type=openjij.SPIN,
+                                    unit_num_L=self.unit_num_L,
+                                    gpu=True)
+
     def sampling(self, model,
                  initial_state=None,
                  reinitialize_state=True, seed=None,

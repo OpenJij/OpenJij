@@ -23,8 +23,9 @@ class ChimeraModel(BinaryQuadraticModel):
     ChimeraModel provide methods to verify whether a given interaction graph matches a Chimera graph and to convert it to cxxjij.graph.Chimera.
 
     Examples:
-        >>> Q={(0, 4): -1, (4, 12): -1}  # This interactions satisfy chimera topology.
-        >>> chimera_model = ChimeraModel(Q, unit_num_L=2)  # make 
+        # This interactions satisfy chimera topology.
+        >>> Q={(0, 4): -1, (4, 12): -1}
+        >>> chimera_model = ChimeraModel(Q, unit_num_L=2)  # make
         >>> chimera_self.validate_chimera()
     """
 
@@ -51,12 +52,15 @@ class ChimeraModel(BinaryQuadraticModel):
         self.unit_num_L = unit_num_L
 
         self.coordinate = self._validate_indices(self.indices)
+
+        # _chimera_index: 1-D index i,L -> chimera coordinate x,y,z
+        # _to_index: chimera coordinate x,y,z,L -> 1-D index i
         if self.coordinate == 'index':
-            self._chimera_index = lambda x, y, z, L: self.to_index(x, y, z, L)
-            self._to_index = lambda i, L: self.chimera_coordinate(i, L)
+            self._chimera_index = lambda i, L: self.chimera_coordinate(i, L)
+            self._to_index = lambda x, y, z, L: self.to_index(x, y, z, L)
         elif self.coordinate == 'chimera coordinate':
-            self._chimera_index = lambda x, y, z, L: (x, y, z)
-            self._to_index = lambda i, L: i
+            self._chimera_index = lambda i, L: i
+            self._to_index = lambda x, y, z, L: self.to_index(x, y, z, L)
 
     def _validate_indices(self, indices):
         if isinstance(indices[0], int):
@@ -77,46 +81,45 @@ class ChimeraModel(BinaryQuadraticModel):
 
     def validate_chimera(self):
         """
-        Chimera coordinate: r, c, z 
+        Chimera coordinate: r, c, z
         One dimension coordinate: i
         Relation: i = 8Lr + 8c + z
 
         Chimera unit cell (column reprezentation)
         0 - 4
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ×
         1 - 5
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ×
         2 - 6
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ×
         3 - 7
         """
         # check chimera interaction
         for (i, j) in self.quad.keys():
-            r_i, c_i, z_i = self._to_index(i, self.unit_num_L)
+            r_i, c_i, z_i = self._chimera_index(i, self.unit_num_L)
             # list up indices which can connect i
             adj_list = []
             if z_i >= 4:
                 # part of right side of a Chimera unit cell (in the column representation).
                 if c_i > 0:
-                    adj_list.append(self._chimera_index(
+                    adj_list.append(self._to_index(
                         r_i, c_i-1, z_i, self.unit_num_L))
                 if c_i < self.unit_num_L-1:
-                    adj_list.append(self._chimera_index(
+                    adj_list.append(self._to_index(
                         r_i, c_i+1, z_i, self.unit_num_L))
-                adj_list += [self._chimera_index(r_i, c_i, z, self.unit_num_L)
+                adj_list += [self._to_index(r_i, c_i, z, self.unit_num_L)
                              for z in range(0, 4)]
             else:
                 # part of left side of a Chimera unit cell (in the column representation).
                 if r_i > 0:
-                    adj_list.append(self._chimera_index(
+                    adj_list.append(self._to_index(
                         r_i-1, c_i, z_i, self.unit_num_L))
                 if r_i < self.unit_num_L-1:
-                    adj_list.append(self._chimera_index(
+                    adj_list.append(self._to_index(
                         r_i+1, c_i, z_i, self.unit_num_L))
-                adj_list += [self._chimera_index(r_i, c_i, z, self.unit_num_L)
+                adj_list += [self._to_index(r_i, c_i, z, self.unit_num_L)
                              for z in range(4, 8)]
 
-            if not j in adj_list:
+            connect_i = j if isinstance(
+                j, int) else self._to_index(*j, self.unit_num_L)
+            if connect_i not in adj_list:
                 incomp_part = 'The connectable nodes of {} are {}, not {}.'.format(
                     i, adj_list, j)
                 raise ValueError(
@@ -126,7 +129,7 @@ class ChimeraModel(BinaryQuadraticModel):
 
     def to_index(self, r, c, i, unit_num_L):
         """
-        Chimera coordinate: r, c, i 
+        Chimera coordinate: r, c, i
         One dimension coordinate: i
         Relation: i = 8*L*r + 8*c + i
         Args:
@@ -138,6 +141,13 @@ class ChimeraModel(BinaryQuadraticModel):
         return 8*unit_num_L*r + 8*c + i
 
     def chimera_coordinate(self, i, unit_num_L):
+        """Convert 1-d index to chimera corrdinate
+        Args:
+            i (int): 1-D index 0~L*L*8-1
+            unit_num_L (int): number of chimera grid size
+        Returns:
+            (int, int, int): chimera corrdinate
+        """
         z_i = i % 8
         c_i = (i % (8 * unit_num_L) - z_i)/8
         r_i = (i - 8*c_i - z_i) / (8 * unit_num_L)
@@ -158,14 +168,14 @@ class ChimeraModel(BinaryQuadraticModel):
             chimera = cj.graph.Chimera(chimera_L, chimera_L)
 
         for i, hi in _h.items():
-            r_i, c_i, zi = self.chimera_coordinate(i, unit_num_L=chimera_L)
+            r_i, c_i, zi = self._chimera_index(i, L=chimera_L)
             if not self._index_validate(i, chimera_L):
                 raise ValueError(
                     "Problem graph incompatible with chimera graph. Node {}.".format(i))
             chimera[r_i, c_i, zi] = hi
         for (i, j), Jij in _J.items():
-            r_i, c_i, zi = self.chimera_coordinate(i, unit_num_L=chimera_L)
-            r_j, c_j, zj = self.chimera_coordinate(j, unit_num_L=chimera_L)
+            r_i, c_i, zi = self._chimera_index(i, L=chimera_L)
+            r_j, c_j, zj = self._chimera_index(j, L=chimera_L)
 
             # validate connection
             error_msg = "In the {}*{} Chimera grid, ".format(
@@ -215,5 +225,8 @@ class ChimeraModel(BinaryQuadraticModel):
         return False
 
     def _index_validate(self, i, L):
+        if isinstance(i, tuple):
+            two_d_bool = (i[0] < self.unit_num_L) and (i[1] < self.unit_num_L)
+            return two_d_bool and (i[2] < 8)
         max_index = 8 * L * L
         return 0 <= i < max_index
