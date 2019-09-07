@@ -65,4 +65,3 @@ endif()
 add_subdirectory(src)
 add_subdirectory(openjij)
 add_subdirectory(tests)
-
