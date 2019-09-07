@@ -79,26 +79,13 @@ class GPUSASampler(SASampler):
 
     """
 
-    def __init__(self, beta=5.0, gamma=1.0,
-                 trotter=4, step_length=10, step_num=100,
-                 schedule=None, iteration=1, unit_num_L=None):
-        # GPU Sampler allows only even trotter number
-        if trotter % 2 != 0:
-            raise ValueError('GPU Sampler allows only even trotter number')
-        self.trotter = trotter
+    def __init__(self,
+                 beta_min=0.1, beta_max=5.0,
+                 step_length=10, step_num=100, schedule=None, iteration=1, unit_num_L=None):
 
         self.unit_num_L = unit_num_L
 
-        super().__init__(beta, gamma, trotter, step_length, step_num, schedule, iteration)
-
-    def _post_process4state(self, q_state):
-        if self.model.coordinate == 'chimera coordinate':
-            indices = [self.model.to_index(
-                x, y, z, self.model.unit_num_L) for x, y, z in self.indices]
-        else:
-            indices = self.indices
-
-        return [list(np.array(state)[indices]) for state in q_state]
+        super().__init__(beta_min, beta_max, step_length, step_num, schedule, iteration)
 
     def _dict_to_model(self, var_type, h=None, J=None, Q=None, **kwargs):
 
@@ -108,10 +95,10 @@ class GPUSASampler(SASampler):
             raise ValueError(
                 'Input "unit_num_L" to the argument or the constructor of GPUSASampler.')
 
-        return openjij.ChimeraModel(h=h, J=J,
-                                    var_type=openjij.SPIN,
-                                    unit_num_L=self.unit_num_L,
-                                    gpu=True)
+        chimera = openjij.ChimeraModel(h=None, J=None, Q={(
+            (0, 0, 1), (0, 0, 4)): -1}, var_type=openjij.BINARY, unit_num_L=2, gpu=True)
+
+        return chimera
 
     def sampling(self, model,
                  initial_state=None,
@@ -176,6 +163,13 @@ class GPUSASampler(SASampler):
         return response
 
     def _post_save(self, result_state, system, model, response):
+        if not self._use_all:
+            if model.coordinate == 'chimera coordinate':
+                indices = [model.to_index(
+                    x, y, z, model.unit_num_L) for x, y, z in model.indices]
+            else:
+                indices = model.indices
+            result_state = np.array(result_state)[indices]
         response.states.append(result_state)
         response.energies.append(model.calc_energy(
             result_state,

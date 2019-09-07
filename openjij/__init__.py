@@ -5,6 +5,7 @@ from .variable_type import SPIN, BINARY, cast_var_type, VariableType
 
 
 from .sampler import Response
-from .sampler import SASampler, SQASampler, GPUSQASampler, CMOSAnnealer
+from .sampler import SASampler, SQASampler, CMOSAnnealer
+from .sampler import GPUSQASampler, GPUSASampler
 from .model import BinaryQuadraticModel, KingGraph, ChimeraModel
 from .utils import benchmark, convert_response
