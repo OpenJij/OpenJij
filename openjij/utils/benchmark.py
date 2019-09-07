@@ -18,11 +18,12 @@ import inspect
 from logging import getLogger
 
 
+logger = getLogger(__name__)
 
-def solver_benchmark(solver, time_list, solutions, args={}, p_r=0.99, ref_energy=0, measure_with_energy=False, time_name='execution_time'):
+def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_energy=0, measure_with_energy=False, time_name='execution_time'):
     """Calculate 'success probability', 'TTS', 'Residual energy' with computation time
     Args:
-        solver (callable): returns openjij.Response, and that has arguments 'time' and '**args'
+        solver (callable): returns openjij.Response, and solver has arguments 'time' and '**args'
         time_list (list):
         solutions (list(list(int)), list(int)): true solution or list of solution (if solutions are degenerated).
         args (dict): Arguments for solver.
@@ -39,6 +40,12 @@ def solver_benchmark(solver, time_list, solutions, args={}, p_r=0.99, ref_energy
                 "info" (dict): Parameter information for the benchmark
             }
     """
+
+    if not measure_with_energy:
+        if solutions == []:
+            raise ValueError("need input 'solutions': (list(list))")
+
+    logger.info( 'function ' + inspect.currentframe().f_code.co_name + ' start')
 
     computation_times = []
     success_probabilities = []
