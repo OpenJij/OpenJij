@@ -32,7 +32,18 @@ class TestUtils(unittest.TestCase):
             ref_energy=ground_energy, measure_with_energy=True)
         self.assertTrue(set(bench) >= {'time', 'success_prob', 'residual_energy', 'tts', 'info'})
 
-        print(bench)
+    def test_str_key_success_prob(self):
+        solutions = [{'a': 1, 'b': -1, 'c': -1}]
+        response = oj.Response(indices=['c', 'b', 'a'], var_type=oj.SPIN)
+        response.update_ising_states_energies(
+            states=[[-1, -1, 1], [1, -1, -1], [1, -1, -1]], energies=[0, 0, 0])
+
+        ps = oj.utils.success_probability(response, solutions)
+
+        self.assertEqual(ps, 1/3)
+
+
+
 
 
 

@@ -105,9 +105,13 @@ def success_probability(response, solutions,ref_energy=0, measure_with_energy=Fa
     """
 
     if measure_with_energy:
-        suc_prob = np.count_nonzero(np.array(response.energies) <= ref_energy)
+        suc_prob = np.count_nonzero(np.array(response.energies) <= ref_energy)/len(response.energies)
     else:
-        suc_prob = np.mean([1 if state in solutions else 0 for state in response.states])
+        if isinstance(solutions[0], dict):
+            sampled_states = response.samples
+        else:
+            sampled_states = response.states
+        suc_prob = np.mean([1 if state in solutions else 0 for state in sampled_states])
 
     return suc_prob
 
@@ -130,4 +134,3 @@ def time_to_solution(success_prob, computation_time, p_r):
         tts = computation_time * np.log(1 - p_r) / np.log(1-success_prob)
     
     return tts
-
