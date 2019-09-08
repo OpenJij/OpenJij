@@ -31,7 +31,7 @@ class KingGraph(BinaryQuadraticModel):
         Quadratic term [x1, y1, x2, y2, value]
         Linear term    [x1, y1, x1, y1, value]
     """
-    def __init__(self, machine_type, h=None, J=None, Q=None, king_graph=None, var_type='SPIN'):
+    def __init__(self, machine_type, h=None, J=None, Q=None, king_graph=None, var_type=openjij.SPIN):
         """
         The constructor reformat interactions to Web API format (ising king graph),
         and validates that the interaction is in King Graph. 
@@ -44,6 +44,9 @@ class KingGraph(BinaryQuadraticModel):
             Quadratic term [x1, y1, x2, y2, value]
             Linear term    [x1, y1, x1, y1, value]
         """
+
+        var_type = openjij.cast_var_type(var_type)
+
         # set parameter ranges
         self.machine_type = machine_type
         if self.machine_type == "ASIC":
@@ -108,7 +111,7 @@ class KingGraph(BinaryQuadraticModel):
         if isinstance(self.indices[0], tuple):
             return self.indices
         else:
-            return [self.convert_to_xy(i) for i in self.indices]
+            return [self._convert_to_xy(i) for i in self.indices]
             
     def _convert_to_xy(self, index):
         if isinstance(index, tuple):
@@ -132,7 +135,3 @@ class KingGraph(BinaryQuadraticModel):
                 raise ValueError('Graph is incomplete xi: {}, yi: {}, xj: {}, yj: {}, p: {}'
                 .format(xi, yi, xj, yj, p))
             
-            
-    def convert_ising(self):
-        interactions = {(x + y*self.xrange[1], xn + yn*self.xrange[1]): p for x,y, xn, yn, p in self.king_graph}
-        return interactions
