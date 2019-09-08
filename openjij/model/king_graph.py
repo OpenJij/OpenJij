@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import openjij
 from .model import BinaryQuadraticModel
 
 class KingGraph(BinaryQuadraticModel):
@@ -62,9 +63,9 @@ class KingGraph(BinaryQuadraticModel):
         super().__init__(h=h, J=J, Q=Q, var_type=var_type)
 
         # reformat to ising king graph (which is Web API format)
-        if king_graph is not None and var_type == "SPIN":
+        if king_graph is not None and var_type == openjij.SPIN:
             self._ising_king_graph = king_graph
-        elif var_type == "SPIN":
+        elif var_type == openjij.SPIN:
             self._ising_king_graph = []
             for index, h in self.linear.items():
                 x, y = self._convert_to_xy(index)
@@ -89,7 +90,7 @@ class KingGraph(BinaryQuadraticModel):
         
     def _convert_to_BQM_format(self, king_graph, var_type):
         h, J, Q = None, None, None
-        if var_type == "SPIN":
+        if var_type == openjij.SPIN:
             h, J = {}, {}
             for x1, y1, x2, y2, value in king_graph:
                 if (x1, y1) == (x2, y2):

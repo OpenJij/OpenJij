@@ -65,6 +65,15 @@ class ModelTest(unittest.TestCase):
             bqm.ising_interactions(), ising_matrix
         )
 
+        # check Hij = Jij + Jji 
+        J = self.J.copy()
+        J[0, 1] /= 3 
+        J[1, 0] = J[0, 1] * 2
+        bqm = oj.BinaryQuadraticModel(self.h, J)
+        np.testing.assert_array_equal(
+            bqm.ising_interactions(), ising_matrix
+        )
+
     def test_bqm_calc_energy(self):
         # Test to calculate energy
 
