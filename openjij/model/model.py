@@ -24,8 +24,7 @@ class BinaryQuadraticModel:
         var_type (openjij.VariableType): variable type SPIN or BINARY
         linear (dict): represents linear term
         quad (dict): represents quadratic term
-        labels (list): labels of each variables sorted by results variables
-        indices (list): deprecated same labels
+        indices (list): labels of each variables sorted by results variables
         energy_bias (float): represents constant energy term when convert to SPIN from BINARY
         size (int): number of variables
     """
@@ -52,16 +51,9 @@ class BinaryQuadraticModel:
 
         index_set = set(self.linear.keys())
         for v1, v2 in self.quad.keys():
-            indices_len = len(index_set)
             index_set.add(v1)
             index_set.add(v2)
 
-            # When the same index add to index set, check the existence of inverse indices in the J
-            if (len(index_set) - indices_len < 2 and (v2, v1) in self.quad):
-                warn_message = 'Two connections J[(a, b)] and J[(b, a)] are defined. ' \
-                               'Adopt the (lower index, higher index) connection. ' \
-                               'Please pay attention to the symmetry of interaction J.'
-                warnings.warn(warn_message, SyntaxWarning)
         self.indices = list(index_set)
         if var_type == openjij.SPIN:
             self.energy_bias = 0.0
@@ -127,6 +119,16 @@ class BinaryQuadraticModel:
         return interactions
 
     def interactions(self, re_calculate=False):
+        """make interaction matrix
+        The Ising model: E = ΣJ_ij σiσj + Σhiσi 
+            Interaction matrix -> H_ij = J_ij + J_ji, H_ii = hi
+        QUBO: E = Σ1/2Q_ij q_iq_j + ΣQ_ii q_i 
+
+        Args:
+            re_calculate (bool): Whether to force a recalculation
+        Returns:
+            numpy.ndarray: interactioin matrix H_{ij} or Q_{ij}
+        """
 
         if (self._interaction_matrix is not None) and (not re_calculate):
             return self._interaction_matrix
@@ -138,12 +140,11 @@ class BinaryQuadraticModel:
             interactions[i, i] = self.linear[i_index] if i_index in self.linear else 0.0
             for j, j_index in enumerate(self.indices[i+1:]):
                 j += i+1
+                jval = 0.0
                 if (i_index, j_index) in self.quad:
-                    jval = self.quad[(i_index, j_index)]
-                elif (j_index, i_index) in self.quad:
-                    jval = self.quad[(j_index, i_index)]
-                else:
-                    jval = 0.0
+                    jval += self.quad[(i_index, j_index)]
+                if (j_index, i_index) in self.quad:
+                    jval += self.quad[(j_index, i_index)]
                 interactions[i, j] = jval
                 interactions[j, i] = jval
 

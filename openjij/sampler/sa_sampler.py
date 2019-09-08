@@ -4,6 +4,8 @@ from openjij.sampler import measure_time
 from openjij.sampler import BaseSampler
 import cxxjij
 
+from debtcollector import renames
+
 
 class SASampler(BaseSampler):
     """Sampler with Simulated Annealing (SA).
@@ -18,10 +20,10 @@ class SASampler(BaseSampler):
             Maximum beta (inverse temperature).
 
         step_length (int):
-            Length of Monte Carlo step.
+            Number of annealing temperature divisions
 
         step_num (int):
-            Number of Monte Carlo step.
+            Number of steps per temperature.
 
         schedule_info (dict):
             Information about an annealing schedule.
@@ -50,29 +52,33 @@ class SASampler(BaseSampler):
 
     """
 
+    # @renames.renamed_kwarg(old_name='step_length', new_name='num_call_updater', removal_version='0.1.0')
+    # @renames.renamed_kwarg(old_name='step_num', new_name='one_mc_step', removal_version='0.1.0')
     def __init__(self,
                  beta_min=0.1, beta_max=5.0,
-                 step_length=10, step_num=100, schedule=None, iteration=1):
+                 step_num=10, step_length=100, schedule=None, iteration=1, **kwargs):
+
+
         if schedule:
             self.schedule = self._convert_validation_schedule(schedule)
             self.beta_min = None
             self.beta_max = None
-            self.step_length = None
             self.step_num = None
+            self.step_length = None
             self.schedule_info = {'schedule': schedule}
         else:
             self.beta_min = beta_min
             self.beta_max = beta_max
-            self.step_length = step_length
-            self.step_num = step_num
+            self.step_num = step_length 
+            self.step_length = step_num 
             self.schedule = cxxjij.utility.make_classical_schedule_list(
                 beta_min=beta_min, beta_max=beta_max,
-                one_mc_step=step_length,
-                num_call_updater=step_num
+                one_mc_step=step_num,
+                num_call_updater=step_length
             )
             self.schedule_info = {
                 'beta_min': beta_min, 'beta_max': beta_max,
-                'step_length': step_length, 'step_num': step_num
+                'step_num': step_num, 'step_length': step_length 
             }
         self.iteration = iteration
 

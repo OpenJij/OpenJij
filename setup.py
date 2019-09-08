@@ -122,7 +122,7 @@ setup(
     description='Framework for the Ising model and QUBO',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    install_requires=['numpy', 'requests'],
+    install_requires=['numpy', 'requests', 'debtcollector'],
     ext_modules=[CMakeExtension('cxxjij')],
     cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand),
     packages=find_packages(exclude=('tests', 'docs')),
