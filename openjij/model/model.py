@@ -13,62 +13,122 @@
 # limitations under the License.
 
 import numpy as np
-import cxxjij.graph as cjg
+import cxxjij
+import openjij
 import warnings
 
+
 class BinaryQuadraticModel:
-    def __init__(self, h=None, J=None, Q=None, var_type='SPIN'): 
-        if var_type == 'SPIN':
+    """Represents Binary quadratic model
+    Attributes:
+        var_type (openjij.VariableType): variable type SPIN or BINARY
+        linear (dict): represents linear term
+        quad (dict): represents quadratic term
+        indices (list): labels of each variables sorted by results variables
+        energy_bias (float): represents constant energy term when convert to SPIN from BINARY
+        size (int): number of variables
+    """
+
+    def __init__(self, h=None, J=None, Q=None, var_type=openjij.SPIN):
+
+        self.var_type = openjij.cast_var_type(var_type)
+
+        if self.var_type == openjij.SPIN:
             if (h is None) or (J is None):
                 raise ValueError('Input h and J.')
             self.linear = h
             self.quad = J
-        elif var_type=='BINARY':
+        elif self.var_type == openjij.BINARY:
             if not isinstance(Q, dict) or Q is None:
                 raise ValueError('Q should be dictionary.')
             self.linear = {}
             self.quad = {}
-            for (i,j),qij in Q.items():
-                if i==j:
+            for (i, j), qij in Q.items():
+                if i == j:
                     self.linear[i] = qij
                 else:
                     self.quad[(i, j)] = qij
-        else:
-            raise ValueError('var_type should be "SPIN" or "BINARY"')
 
         index_set = set(self.linear.keys())
         for v1, v2 in self.quad.keys():
-            indices_len = len(index_set)
             index_set.add(v1)
             index_set.add(v2)
 
-            # When the same index add to index set, check the existence of inverse indices in the J
-            if (len(index_set) - indices_len < 2 and (v2, v1) in self.quad):
-                warn_message = 'Two connections J[(a, b)] and J[(b, a)] are defined. ' \
-                               'Adopt the (lower index, higher index) connection. ' \
-                               'Please pay attention to the symmetry of interaction J.'
-                warnings.warn(warn_message, SyntaxWarning)
         self.indices = list(index_set)
-        self.var_type = var_type
-        if var_type == 'SPIN':
+        if var_type == openjij.SPIN:
             self.energy_bias = 0.0
-        else:
-            self.energy_bias = (sum(list(self.linear.values()))*2 + sum(list(self.quad.values())))/4
-
+        else:  # BINARY
+            self.energy_bias = (sum(list(self.linear.values()))
+                                * 2 + sum(list(self.quad.values())))/4
 
         self._interaction_matrix = None  # calculated at interactions()
+        self.size = len(self.indices)
 
+    def get_cxxjij_ising_graph(self, sparse=False):
+        """
+        Convert to cxxjij.graph.Dense or Sparse class from Python dictionary (h, J) or Q
+        Args:
+            sparse (bool): if true returns sparse graph
+        Returns:
+            openjij.graph.Dense openjij.graph.Sparse
+        """
+        if not sparse:
+            GraphClass = cxxjij.graph.Dense
+        else:
+            GraphClass = cxxjij.graph.Sparse
+
+        cxxjij_graph = GraphClass(self.size)
+
+        ising_int = self.ising_interactions()
+        # cxxjij.graph.dense
+        for i in range(self.size):
+            if ising_int[i, i] != 0.0:
+                cxxjij_graph[i, i] = ising_int[i, i]
+            for j in range(i+1, self.size):
+                if ising_int[i, j] != 0.0:
+                    cxxjij_graph[i, j] = ising_int[i, j]
+
+        return cxxjij_graph
 
     def ising_interactions(self):
-        interactions = self.interactions()
-        if self.var_type == 'BINARY':
-            self.energy_bias = (np.sum(np.triu(interactions)) + np.trace(interactions))/4.0
+        """ Interactions in the Ising representation
+        QUBO formulation to the Ising formulation
+        We assumption Q is a triangular matrix.
+        H = q^T Q q
+          = 1/4 (1+s)^T Q (1+s)
+          = s^T Q/4 s + 1^T Q/4 s + s^T Q/4 1  + 1^T Q/4 1
+          = s^T nondiag(Q)/4 s + 1^T Q/4 s + s^T Q/4 1  + 1^T (Q + diag(Q))/4 1
+          = \sum_{i<j} Q_{ij}/4 s_i s_j 
+            + \sum{i<=j} (Q_{ij} + Q_{ji}) s_i 
+            + sum_{i<=j} (Q_{ij} + Q_{ii})/4
+        Therefore
+          J_{ij} = Q_{ij}/4
+          h_i =  \sum{i<=j} (Q_{ij} + Q_{ji})/4
+          constant_term = sum_{i<=j} Q_{ij}/4 + Tr(Q) (energy bias)
+        """
+        if self.var_type == openjij.SPIN:
+            return self.interactions()
+        interactions = self.interactions()/4
+        if self.var_type == openjij.BINARY:
+            # convert to the Ising interaction
+            self.energy_bias = (
+                np.sum(np.triu(interactions)) + np.trace(interactions))
             for i in range(len(interactions)):
-                interactions[i, i] = np.sum(interactions[i, :]) + interactions[i, i]
-            interactions /= 4.0
+                interactions[i, i] = np.sum(
+                    interactions[i, :]) + interactions[i, i]
         return interactions
 
     def interactions(self, re_calculate=False):
+        """make interaction matrix
+        The Ising model: E = ΣJ_ij σiσj + Σhiσi 
+            Interaction matrix -> H_ij = J_ij + J_ji, H_ii = hi
+        QUBO: E = Σ1/2Q_ij q_iq_j + ΣQ_ii q_i 
+
+        Args:
+            re_calculate (bool): Whether to force a recalculation
+        Returns:
+            numpy.ndarray: interactioin matrix H_{ij} or Q_{ij}
+        """
 
         if (self._interaction_matrix is not None) and (not re_calculate):
             return self._interaction_matrix
@@ -80,12 +140,11 @@ class BinaryQuadraticModel:
             interactions[i, i] = self.linear[i_index] if i_index in self.linear else 0.0
             for j, j_index in enumerate(self.indices[i+1:]):
                 j += i+1
+                jval = 0.0
                 if (i_index, j_index) in self.quad:
-                    jval = self.quad[(i_index, j_index)]
-                elif (j_index, i_index) in self.quad:
-                    jval = self.quad[(j_index, i_index)]
-                else:
-                    jval = 0.0
+                    jval += self.quad[(i_index, j_index)]
+                if (j_index, i_index) in self.quad:
+                    jval += self.quad[(j_index, i_index)]
                 interactions[i, j] = jval
                 interactions[j, i] = jval
 
@@ -93,43 +152,36 @@ class BinaryQuadraticModel:
 
         return self._interaction_matrix
 
-    def calc_energy(self, state):
-        if self.var_type == 'SPIN':
-            int_mat = self.ising_interactions()
-        else: # var_type == qubo
-            int_mat = self.interactions()
-        return np.dot(state, np.dot(int_mat, state)) + np.dot(np.diag(int_mat), -1+np.array(state))
+    def calc_energy(self, state, need_to_convert_from_spin=False):
+        """calculate energy from state
+        Args:
+            state (list, numpy.array): BINARY or SPIN state
+            need_to_convet_to_spin (bool): if state is SPIN and need 
+                                           to convert to BINARY from SPIN
+        """
+        _state = np.array(state)
+        if need_to_convert_from_spin and self.var_type == openjij.BINARY:
+            _state = (1+_state)/2
 
+        if self.var_type == openjij.BINARY:
+            int_mat = np.triu(self.interactions())
+            return np.dot(_state, np.dot(int_mat, _state))
+        elif self.var_type == openjij.SPIN:
+            int_mat = self.ising_interactions()
+            linear_term = np.diag(int_mat)
+            energy = (np.dot(_state, np.dot(int_mat, _state)) -
+                      np.sum(linear_term))/2
+            energy += np.dot(linear_term, _state)
+            return energy
 
     def ising_dictionary(self):
-        if self.var_type == 'SPIN':
+        if self.var_type == openjij.SPIN:
             return self.linear, self.quad
-        elif self.var_type == 'BINARY':
+        elif self.var_type == openjij.BINARY:
             ising_int = self.ising_interactions()
             h = {}
-            J = {(i,j): qij/4.0 for (i, j), qij in self.quad.items()}
+            J = {(i, j): qij/4.0 for (i, j), qij in self.quad.items()}
             for i in range(len(ising_int)):
                 if ising_int[i][i] != 0:
                     h[self.indices[i]] = ising_int[i][i]
         return h, J
-
-    def convert_to_dense_graph(self) -> cjg.Dense:
-        """
-        Convert to cxxjij.graph.Dense class from Python dictionary (h, J) or Q
-        """
-        N = len(self.indices)
-        ising_int = self.ising_interactions()
-
-        # cxxjij.graph.dense
-        cxx_dense_ising = cjg.Dense(N)
-        for i in range(N):
-            if ising_int[i,i] != 0.0:
-                cxx_dense_ising[i,i] = ising_int[i,i]
-            for j in range(i+1, N):
-                if ising_int[i,j] != 0.0:
-                    cxx_dense_ising[i,j] = ising_int[i,j]
-        
-        return cxx_dense_ising
-
-
-
