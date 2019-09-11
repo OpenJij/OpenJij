@@ -58,15 +58,9 @@ namespace openjij {
              * @return energy difference \f\Delta E\f
              */
           template<curandRngType_t rng_type>
-            inline static FloatType update(QIsing& system,
+            inline static void update(QIsing& system,
                                  utility::cuda::CurandWrapper<FloatType, rng_type>& random_number_engine,
                                  const utility::TransverseFieldUpdaterParameter& parameter) {
-
-                static auto dE = utility::cuda::make_dev_unique<FloatType[]>(1);
-
-                FloatType ret_dE = 0;
-                //initialize dE
-                HANDLE_ERROR_CUDA(cudaMemcpy(dE.get(), &ret_dE, 1*sizeof(FloatType), cudaMemcpyHostToDevice));
 
                 //generate uniform random sequence
                 random_number_engine.generate_uniform(system.info.rows*system.info.cols*system.info.trotters*system.info.chimera_unitsize, system.dev_random);
@@ -74,7 +68,6 @@ namespace openjij {
                 system::chimera_cuda::metropolis_interface<FloatType, rows_per_block, cols_per_block, trotters_per_block>(
                         0,
                         system.spin.get(), system.dev_random.get(),
-                        dE.get(),
                         system.interaction.J_out_p.get(),
                         system.interaction.J_out_n.get(),
                         system.interaction.J_in_04.get(),
@@ -92,7 +85,6 @@ namespace openjij {
                 system::chimera_cuda::metropolis_interface<FloatType, rows_per_block, cols_per_block, trotters_per_block>(
                         1,
                         system.spin.get(), system.dev_random.get(),
-                        dE.get(),
                         system.interaction.J_out_p.get(),
                         system.interaction.J_out_n.get(),
                         system.interaction.J_in_04.get(),
@@ -104,11 +96,6 @@ namespace openjij {
                         parameter.beta, system.gamma, parameter.s
                         );
 
-
-                //retrieve dE
-                HANDLE_ERROR_CUDA(cudaMemcpy(&ret_dE, dE.get(), 1*sizeof(FloatType), cudaMemcpyDeviceToHost));
-
-                return ret_dE;
             }
         };
 
@@ -137,7 +124,7 @@ namespace openjij {
              * @return energy difference \f\Delta E\f
              */
           template<curandRngType_t rng_type>
-            inline static FloatType update(CIsing& system,
+            inline static void update(CIsing& system,
                                  utility::cuda::CurandWrapper<FloatType, rng_type>& random_number_engine,
                                  const utility::ClassicalUpdaterParameter& parameter) {
 

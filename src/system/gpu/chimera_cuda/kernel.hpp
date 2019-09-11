@@ -34,7 +34,6 @@ namespace openjij {
             void metropolis_interface(
                     int32_t sw,
                     int32_t* spin, const FloatType* rand,
-                    FloatType* dE,
                     const FloatType* J_out_p,
                     const FloatType* J_out_n,
                     const FloatType* J_in_04,

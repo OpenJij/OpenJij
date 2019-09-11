@@ -34,7 +34,6 @@ namespace openjij {
             __global__ void metropolis(
                     int32_t sw,
                     int32_t* spin, const FloatType* rand,
-                    FloatType* dE,
                     const FloatType* J_out_p,
                     const FloatType* J_out_n,
                     const FloatType* J_in_04,
@@ -65,7 +64,7 @@ namespace openjij {
 				__shared__ FloatType J_in_26_cache[block_row * block_col * block_trot * unitsize];
 				__shared__ FloatType J_in_37_cache[block_row * block_col * block_trot * unitsize];
 				__shared__ FloatType       h_cache[block_row * block_col * block_trot * unitsize];
-				__shared__ FloatType      dE_cache[block_row * block_col * block_trot * unitsize];
+				//__shared__ FloatType      dE_cache[block_row * block_col * block_trot * unitsize];
 
                 FloatType J_trot = 0;
 
@@ -100,7 +99,7 @@ namespace openjij {
                 spincache[spin_index] =  spin[global_index];
 
                 //be sure that dE_cache is initialized with zero
-                dE_cache[block_index] = 0;
+                //dE_cache[block_index] = 0;
 
                 //copy boundary spins to shared memory
                 //row
@@ -177,65 +176,65 @@ namespace openjij {
                 __syncthreads();
 
                 // reduction for calculating dE
-                uint32_t count = block_row * block_col * block_trot * unitsize; // <= 1024
-                // thread index
-                uint32_t ti = threadIdx.z*(blockDim.y*blockDim.x)+threadIdx.y*(blockDim.x)+threadIdx.x;
+                //uint32_t count = block_row * block_col * block_trot * unitsize; // <= 1024
+                //// thread index
+                //uint32_t ti = threadIdx.z*(blockDim.y*blockDim.x)+threadIdx.y*(blockDim.x)+threadIdx.x;
 
-                count = count/2; //1024 -> 512
-                if(ti < count){
-                    dE_cache[ti] += dE_cache[ti+count]; 
-                }
-                __syncthreads();
-                count = count/2; //512 -> 256
-                if(ti < count){
-                    dE_cache[ti] += dE_cache[ti+count]; 
-                }
-                __syncthreads();
-                count = count/2; //256 -> 128
-                if(ti < count){
-                    dE_cache[ti] += dE_cache[ti+count]; 
-                }
-                __syncthreads();
-                count = count/2; //128 -> 64
-                if(ti < count){
-                    dE_cache[ti] += dE_cache[ti+count]; 
-                }
-                __syncthreads();
-                count = count/2; //64 -> 32
-                if(ti < count){
-                    dE_cache[ti] += dE_cache[ti+count]; 
-                }
-                __syncthreads();
-                count = count/2; //32 -> 16
-                if(ti < count){
-                    dE_cache[ti] += dE_cache[ti+count]; 
-                }
-                __syncthreads();
-                count = count/2; //16 -> 8
-                if(ti < count){
-                    dE_cache[ti] += dE_cache[ti+count]; 
-                }
-                __syncthreads();
-                count = count/2; //8 -> 4
-                if(ti < count){
-                    dE_cache[ti] += dE_cache[ti+count]; 
-                }
-                __syncthreads();
-                count = count/2; //4 -> 2
-                if(ti < count){
-                    dE_cache[ti] += dE_cache[ti+count]; 
-                }
-                __syncthreads();
-                count = count/2; //2 -> 1
-                if(ti < count){
-                    dE_cache[ti] += dE_cache[ti+count]; 
-                }
-                __syncthreads();
+                //count = count/2; //1024 -> 512
+                //if(ti < count){
+                //    dE_cache[ti] += dE_cache[ti+count]; 
+                //}
+                //__syncthreads();
+                //count = count/2; //512 -> 256
+                //if(ti < count){
+                //    dE_cache[ti] += dE_cache[ti+count]; 
+                //}
+                //__syncthreads();
+                //count = count/2; //256 -> 128
+                //if(ti < count){
+                //    dE_cache[ti] += dE_cache[ti+count]; 
+                //}
+                //__syncthreads();
+                //count = count/2; //128 -> 64
+                //if(ti < count){
+                //    dE_cache[ti] += dE_cache[ti+count]; 
+                //}
+                //__syncthreads();
+                //count = count/2; //64 -> 32
+                //if(ti < count){
+                //    dE_cache[ti] += dE_cache[ti+count]; 
+                //}
+                //__syncthreads();
+                //count = count/2; //32 -> 16
+                //if(ti < count){
+                //    dE_cache[ti] += dE_cache[ti+count]; 
+                //}
+                //__syncthreads();
+                //count = count/2; //16 -> 8
+                //if(ti < count){
+                //    dE_cache[ti] += dE_cache[ti+count]; 
+                //}
+                //__syncthreads();
+                //count = count/2; //8 -> 4
+                //if(ti < count){
+                //    dE_cache[ti] += dE_cache[ti+count]; 
+                //}
+                //__syncthreads();
+                //count = count/2; //4 -> 2
+                //if(ti < count){
+                //    dE_cache[ti] += dE_cache[ti+count]; 
+                //}
+                //__syncthreads();
+                //count = count/2; //2 -> 1
+                //if(ti < count){
+                //    dE_cache[ti] += dE_cache[ti+count]; 
+                //}
+                //__syncthreads();
 
-                if(ti == 0){
-                    //add 'em
-                    atomicAdd(&dE[0], dE_cache[ti]);
-                }
+                //if(ti == 0){
+                //    //add 'em
+                //    atomicAdd(&dE[0], dE_cache[ti]);
+                //}
 
             }
 
@@ -247,7 +246,6 @@ namespace openjij {
             void metropolis_interface(
                     int32_t sw,
                     int32_t* spin, const FloatType* rand,
-                    FloatType* dE,
                     const FloatType* J_out_p,
                     const FloatType* J_out_n,
                     const FloatType* J_in_04,
@@ -261,7 +259,6 @@ namespace openjij {
                 metropolis<FloatType, block_row, block_col, block_trot, info.chimera_unitsize><<<grid, block>>>(
                         sw,
                         spin, rand,
-                        dE,
                         J_out_p,
                         J_out_n,
                         J_in_04,
@@ -276,8 +273,8 @@ namespace openjij {
 
             //template instantiation
 
-#define FLOAT_ARGTYPE int32_t,int32_t*,const float*,float*,const float*,const float*,const float*,const float*,const float*,const float*,const float*,const ChimeraInfo&,const dim3&,const dim3&,double,float,double
-#define DOUBLE_ARGTYPE int32_t,int32_t*,const double*,double*,const double*,const double*,const double*,const double*,const double*,const double*,const double*,const ChimeraInfo&,const dim3&,const dim3&,double,double,double
+#define FLOAT_ARGTYPE int32_t,int32_t*,const float*,const float*,const float*,const float*,const float*,const float*,const float*,const float*,const ChimeraInfo&,const dim3&,const dim3&,double,float,double
+#define DOUBLE_ARGTYPE int32_t,int32_t*,const double*,const double*,const double*,const double*,const double*,const double*,const double*,const double*,const ChimeraInfo&,const dim3&,const dim3&,double,double,double
 
             template void metropolis_interface<float,1,1,1>(FLOAT_ARGTYPE);
             template void metropolis_interface<float,2,2,2>(FLOAT_ARGTYPE);
