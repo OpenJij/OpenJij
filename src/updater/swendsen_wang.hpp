@@ -98,9 +98,6 @@ namespace openjij {
                     }
                 }
 
-                // TODO: implement calculation of total energy difference
-                // DEPRECATED: Dense::calc_energy
-                //return system.interaction.calc_energy(system.spin);
                 return;
             }
         };

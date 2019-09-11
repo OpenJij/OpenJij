@@ -59,7 +59,7 @@ namespace openjij {
              * @return energy difference \f\Delta E\f
              */
           template<typename RandomNumberEngine>
-            inline static FloatType update(ClIsing& system,
+            inline static void update(ClIsing& system,
                                  RandomNumberEngine& random_numder_engine,
                                  const utility::ClassicalUpdaterParameter& parameter) {
                 // set probability distribution object
@@ -67,9 +67,6 @@ namespace openjij {
                 auto uid = std::uniform_int_distribution<std::size_t>(0, system.spin.size()-1);
                 // to do Metropolis
                 auto urd = std::uniform_real_distribution<>(0, 1.0);
-
-                // energy difference
-                FloatType total_dE = 0;
 
                 for (std::size_t time = 0, num_spins = system.spin.size(); time < num_spins; ++time) {
                     // index of spin selected at random
@@ -86,11 +83,8 @@ namespace openjij {
                     // Flip the spin?
                     if (dE < 0 || std::exp( -parameter.beta * dE) > urd(random_numder_engine)) {
                         system.spin[index] *= -1;
-                        total_dE += dE;
                     }
                 }
-
-                return total_dE;
             }
         };
 
@@ -123,7 +117,7 @@ namespace openjij {
              * @return energy difference \f\Delta E\f
              */
           template<typename RandomNumberEngine>
-            inline static FloatType update(ClIsing& system,
+            inline static void update(ClIsing& system,
                                  RandomNumberEngine& random_numder_engine,
                                  const utility::ClassicalUpdaterParameter& parameter) {
                 // set probability distribution object
@@ -131,9 +125,6 @@ namespace openjij {
                 auto uid = std::uniform_int_distribution<std::size_t>(0, system.num_spins-1); //to avoid flipping last spin (must be set to 1.)
                 // to do Metroopolis
                 auto urd = std::uniform_real_distribution<>(0, 1.0);
-
-                // energy difference
-                FloatType total_dE = 0;
 
                 for (std::size_t time = 0; time < system.num_spins; ++time) {
 
@@ -147,14 +138,11 @@ namespace openjij {
                     // Flip the spin?
                     if (dE < 0 || std::exp( -parameter.beta * dE) > urd(random_numder_engine)) {
                         system.spin(index) *= -1;
-                        total_dE += dE;
                     }
 
                     //assure that the dummy spin is not changed.
                     system.spin(system.num_spins) = 1;
                 }
-
-                return total_dE;
             }
         };
 
@@ -186,7 +174,7 @@ namespace openjij {
              * @return energy difference \f\Delta E\f
              */
             template<typename RandomNumberEngine>
-                inline static FloatType update(QIsing& system,
+                inline static void update(QIsing& system,
                         RandomNumberEngine& random_numder_engine,
                         const utility::TransverseFieldUpdaterParameter& parameter) {
 
@@ -206,8 +194,6 @@ namespace openjij {
                     auto& gamma = system.gamma;
                     auto& beta = parameter.beta;
                     auto& s = parameter.s;
-
-                    FloatType totaldE = 0;
 
                     for(std::size_t i=0; i<num_classical_spins*num_trotter_slices; i++){
                         //select random trotter slice
@@ -231,12 +217,9 @@ namespace openjij {
                         //metropolis 
                         if(dE < 0 || exp(-dE) > urd(random_numder_engine)){
                             spins[index_trot][index] *= -1;
-                            totaldE += dE;
                         }
 
                     }
-
-                    return totaldE;
                 }
 
             private: 
@@ -275,7 +258,7 @@ namespace openjij {
              * @return energy difference \f\Delta E\f
              */
             template<typename RandomNumberEngine>
-                inline static FloatType update(QIsing& system,
+                inline static void update(QIsing& system,
                         RandomNumberEngine& random_numder_engine,
                         const utility::TransverseFieldUpdaterParameter& parameter) {
 
@@ -295,8 +278,6 @@ namespace openjij {
                     auto& gamma = system.gamma;
                     auto& beta = parameter.beta;
                     auto& s = parameter.s;
-
-                    FloatType totaldE = 0;
 
                     for(std::size_t i=0; i<num_classical_spins*num_trotter_slices; i++){
                         //select random trotter slice
@@ -318,12 +299,9 @@ namespace openjij {
                         //metropolis 
                         if(dE < 0 || exp(-dE) > urd(random_numder_engine)){
                             spins(index, index_trot) *= -1;
-                            totaldE += dE;
                         }
 
                     }
-
-                    return totaldE;
                 }
 
             private: 
