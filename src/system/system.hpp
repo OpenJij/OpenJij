@@ -26,11 +26,6 @@ namespace openjij {
         struct mc_system {};
 
         /**
-         * @brief composite monte carlo system
-         */
-        struct composite_system : public mc_system {};
-
-        /**
          * @brief classical monte carlo system (using beta (inverse temperature) for annealing parameter)
          */
         struct classical_system : public mc_system {};
@@ -64,6 +59,16 @@ namespace openjij {
          * @brief system tag for solving real time schrodinger dynamics
          */
         struct realtime_dynamics_system{};
+
+        /**
+         * @brief composite_system tag
+         *
+         * @tparam system_type
+         */
+        template<typename system_type>
+            struct composite_system {
+                using inner_system_type = system_type;
+            };
 
         /**
          * @brief meta function for getting system type

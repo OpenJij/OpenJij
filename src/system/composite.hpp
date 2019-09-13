@@ -17,18 +17,31 @@
 
 #include <system/system.hpp>
 #include <system/all.hpp>
-#include <unordered_map>
+#include <utility/schedule_list.hpp>
+#include <set>
+#include <utility>
 
 namespace openjij {
     namespace system {
 
         /**
-         * @brief composite monte carlo system (used for parallel tempering, houdayer update...)
+         * @brief pair of parameter (temperature etc) and system
          *
          * @tparam System
          */
         template<typename System>
-            using Composite = std::unordered_map
+            using WithParam = std::pair<utility::UpdaterParameter<typename System::system_type>, System>;
+
+        /**
+         * @brief composite system
+         *
+         * @tparam System
+         */
+        template<typename System>
+            struct Composite : public std::set<WithParam<System>>{
+                using system_type = system::composite_system<typename System::system_type>;
+            };
+
 
 
     } // namespace system
