@@ -26,6 +26,11 @@ namespace openjij {
         struct mc_system {};
 
         /**
+         * @brief composite monte carlo system
+         */
+        struct composite_system : public mc_system {};
+
+        /**
          * @brief classical monte carlo system (using beta (inverse temperature) for annealing parameter)
          */
         struct classical_system : public mc_system {};
