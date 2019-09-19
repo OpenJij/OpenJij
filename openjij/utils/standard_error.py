@@ -36,3 +36,4 @@ def standard_error(solver, time_list, iteration_list, args={}):
             "iteration_list": iteration_list,
             }
         }
+
