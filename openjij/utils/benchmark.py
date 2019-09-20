@@ -37,8 +37,8 @@ def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_ene
                 "success_prob" list of success probability at each computation time
                 "tts": list of time to solusion at each computation time
                 "residual_energy": list of residual energy at each computation time
-                "sample_mean": list of sample mean at each computation time
-                "se": list of standard error at each computation time
+                "se_success_prob": list of success probability's standard error at each computation time
+                "se_residual_energy": list of residual_energy's standard error at each computation time
                 "info" (dict): Parameter information for the benchmark
             }
     """
@@ -54,8 +54,8 @@ def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_ene
     tts_list = []
     residual_energies = []
 
-    sample_mean_list = []
-    se_list = []
+    se_success_prob_list = []
+    se_residual_energy_list = []
 
     for time in time_list:
         response = solver(time, **args)
@@ -70,8 +70,10 @@ def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_ene
         tts_list.append(time_to_solution(ps, comp_time, p_r))
         residual_energies.append(residual_energy(response, ref_energy))
 
-        sample_mean_list.append(sample_mean(response))
-        se_list.append(standard_error(response))
+        se_ps = se_success_probability(response, solutions, ref_energy, measure_with_energy)
+
+        se_success_prob_list.append(se_ps)
+        se_residual_energy_list.append(se_residual_energy(response, ref_energy))
 
 
     return {
@@ -79,8 +81,8 @@ def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_ene
         "success_prob": success_probabilities, 
         "tts": tts_list, 
         "residual_energy": residual_energies,
-        "sample_mean": sample_mean_list,
-        "se": se_list,
+        "se_success_prob": se_success_prob_list,
+        "se_residual_energy": se_residual_energy_list,
         "info":{
             "tts_threshold_prob": p_r,
             "ref_energy": ref_energy,
@@ -101,6 +103,16 @@ def residual_energy(response, ref_energy):
     """
     return np.mean(response.energies) - ref_energy
 
+
+def se_residual_energy(response, ref_energy):
+    """Calculate redisual energy's standard error from measure energy
+    Args:
+        response (openjij.Response): response from solver (or sampler).
+        ref_energy (float): the reference energy (usually use the ground energy)
+    Returns:
+        float: redisual energy's standard error from measure energy
+    """
+    return sp.std(response.energies, ddof=1)
 
 
 def success_probability(response, solutions,ref_energy=0, measure_with_energy=False):
@@ -126,6 +138,29 @@ def success_probability(response, solutions,ref_energy=0, measure_with_energy=Fa
     return suc_prob
 
 
+def se_success_probability(response, solutions,ref_energy=0, measure_with_energy=False):
+    """Calculate success probability's standard error from openjij.response
+    Args:
+        response (openjij.Response): response from solver (or sampler).
+        solutions (list[int]): true solutions.
+    Returns:
+        float: Success probability's standard error.
+              When measure_with_energy is False, success is defined as getting the same state as solutions.
+              When measure_with_energy is True, success is defined as getting a state which energy is below reference energy
+    """
+
+    if measure_with_energy:
+        se_suc_prob = sp.sqrt(np.count_nonzero(np.array(response.energies) <= ref_energy)/(len(response.energies)-1))
+    else:
+        if isinstance(solutions[0], dict):
+            sampled_states = response.samples
+        else:
+            sampled_states = response.states
+        se_suc_prob = sp.std([1 if state in solutions else 0 for state in sampled_states], ddof=1)
+
+    return se_suc_prob
+
+
 def time_to_solution(success_prob, computation_time, p_r):
     """
     Args:
@@ -144,27 +179,3 @@ def time_to_solution(success_prob, computation_time, p_r):
         tts = computation_time * np.log(1 - p_r) / np.log(1-success_prob)
     
     return tts
-
-def sample_mean(response):
-    """Calculate 'Sample Mean' with computation time
-    Args:
-        response (openjij.Response): response from solver (or sampler).
-    Returns:
-        dict: {
-                float: sample mean 
-            }
-    """
-
-    return sp.mean(response.energies)
-
-def standard_error(response):
-    """Calculate 'Standard Error' with computation time
-    Args:
-        response (openjij.Response): response from solver (or sampler).
-    Returns:
-        dict: {
-                float: standard_error
-            }
-    """
-
-    return sp.std(response.energies, ddof=1)
