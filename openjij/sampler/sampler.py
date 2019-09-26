@@ -17,14 +17,15 @@ import cxxjij
 from openjij.model import BinaryQuadraticModel
 import openjij
 
-import timeit
+import time
 
 
 def measure_time(func):
     def wrapper(*args, **kwargs):
-        loop = 1000
-        calc_time = timeit.timeit('func(*args, **kwargs)', globals=globals(), number=loop)
-        return (calc_time / loop)
+        start = time.time()
+        func(*args, **kwargs)
+        calc_time = time.time() - start
+        return calc_time
     return wrapper
 
 
