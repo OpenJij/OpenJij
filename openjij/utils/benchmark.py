@@ -37,7 +37,8 @@ def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_ene
                 "success_prob" list of success probability at each computation time
                 "tts": list of time to solusion at each computation time
                 "residual_energy": list of residual energy at each computation time
-                "se_tts": list of tts's standard error at each computation time
+                "se_lower_tts": list of tts's lower standard error at each computation time
+                "se_upper_tts": list of tts's upper standard error at each computation time
                 "se_success_prob": list of success probability's standard error at each computation time
                 "se_residual_energy": list of residual_energy's standard error at each computation time
                 "info" (dict): Parameter information for the benchmark
@@ -55,7 +56,8 @@ def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_ene
     tts_list = []
     residual_energies = []
 
-    se_tts_list = []
+    se_lower_tts_list = []
+    se_upper_tts_list = []
     se_success_prob_list = []
     se_residual_energy_list = []
 
@@ -76,7 +78,8 @@ def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_ene
         se_ps = se_success_probability(response, solutions, ref_energy, measure_with_energy)
 
         se_success_prob_list.append(se_ps)
-        se_tts_list.append(se_tts(tts, ps, comp_time, p_r, se_ps))
+        se_lower_tts_list.append(se_lower_tts(tts, ps, comp_time, p_r, se_ps))
+        se_upper_tts_list.append(se_upper_tts(tts, ps, comp_time, p_r, se_ps))
         se_residual_energy_list.append(se_residual_energy(response, ref_energy))
 
 
@@ -85,7 +88,8 @@ def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_ene
         "success_prob": success_probabilities, 
         "tts": tts_list, 
         "residual_energy": residual_energies,
-        "se_tts": se_tts_list,
+        "se_lower_tts": se_lower_tts_list,
+        "se_upper_tts": se_upper_tts_list,
         "se_success_prob": se_success_prob_list,
         "se_residual_energy": se_residual_energy_list,
         "info":{
@@ -186,7 +190,7 @@ def time_to_solution(success_prob, computation_time, p_r):
     return tts
 
 
-def se_tts(tts, success_prob, computation_time, p_r, se_success_prob):
+def se_lower_tts(tts, success_prob, computation_time, p_r, se_success_prob):
     """
     Args:
         success_prob (float): success probability.
@@ -196,7 +200,32 @@ def se_tts(tts, success_prob, computation_time, p_r, se_success_prob):
         float: time to solution `tau * log(1-pr)/log(1-ps)` 's standard error which pr is thereshold probability, ps is success probability and tau is computation time.
     """
 
-    tts_error =  computation_time * np.log(1 - p_r) / np.log(1 - (success_prob - se_success_prob))
-    se_tts =  tts_error - tts
+    if (success_prob + se_success_prob) >= 1.0:
+        tts_low_error = 0.0
+
+    else:
+        tts_low_error =  computation_time * np.log(1 - p_r) / np.log(1 - (success_prob + se_success_prob))
+
+    se_lower_tts =  abs(tts_low_error - tts)
     
-    return se_tts
+    return se_lower_tts
+
+
+def se_upper_tts(tts, success_prob, computation_time, p_r, se_success_prob):
+    """
+    Args:
+        success_prob (float): success probability.
+        computation_time (float):
+        p_r (float): thereshold probability to calculate time to solution.
+    Returens:
+        float: time to solution `tau * log(1-pr)/log(1-ps)` 's standard error which pr is thereshold probability, ps is success probability and tau is computation time.
+    """
+    if (success_prob + se_success_prob) == 1.0:
+        tts_up_error = 0.0
+
+    else:
+        tts_up_error =  computation_time * np.log(1 - p_r) / np.log(1 - (success_prob - se_success_prob))
+
+    se_upper_tts =  abs(tts_up_error - tts)
+    
+    return se_upper_tts
