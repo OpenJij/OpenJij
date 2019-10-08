@@ -199,9 +199,9 @@ def se_lower_tts(tts, success_prob, computation_time, p_r, se_success_prob):
     Returens:
         float: time to solution `tau * log(1-pr)/log(1-ps)` 's standard error which pr is thereshold probability, ps is success probability and tau is computation time.
     """
-
-    if (success_prob + se_success_prob) >= 1.0:
-        tts_low_error = 0.0
+    
+    if 1 - (success_prob + se_success_prob) <= 0:
+        tts_low_error = 0
 
     else:
         tts_low_error =  computation_time * np.log(1 - p_r) / np.log(1 - (success_prob + se_success_prob))
@@ -220,8 +220,8 @@ def se_upper_tts(tts, success_prob, computation_time, p_r, se_success_prob):
     Returens:
         float: time to solution `tau * log(1-pr)/log(1-ps)` 's standard error which pr is thereshold probability, ps is success probability and tau is computation time.
     """
-    if (success_prob + se_success_prob) == 1.0:
-        tts_up_error = 0.0
+    if success_prob == 1:
+        tts_up_error = 0
 
     else:
         tts_up_error =  computation_time * np.log(1 - p_r) / np.log(1 - (success_prob - se_success_prob))
