@@ -12,6 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
+//disable Eigen warning
+#include <utility/disable_eigen_warning.hpp>
 
 #include "./compile_config.hpp"
 #include "./declare.hpp"

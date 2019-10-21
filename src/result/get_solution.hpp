@@ -136,7 +136,6 @@ namespace openjij {
         const graph::Spins get_solution(const system::ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block>& system){
 
             std::size_t localsize = system.info.rows*system.info.cols*system.info.chimera_unitsize;
-            std::size_t globalsize = localsize * system.info.trotters;
 
             graph::Spins ret_spins(localsize);
 
