@@ -16,7 +16,7 @@ $ pip install openjij
 
 ### cmake setup
 
-If you had not installed cmake>=3.11, you need install cmake>=3.11
+If you had not installed cmake>=3.12, you need install cmake>=3.12
 
 macOS
 ```
