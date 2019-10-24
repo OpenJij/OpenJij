@@ -15,8 +15,8 @@
 #include <graph/all.hpp>
 #include <system/all.hpp>
 #include <updater/all.hpp>
-#include <algorithm/algorithm.hpp>
-#include <result/get_solution.hpp>
+#include <algorithm/all.hpp>
+#include <result/all.hpp>
 #include <utility/schedule_list.hpp>
 #include <utility/union_find.hpp>
 #include <utility/random.hpp>

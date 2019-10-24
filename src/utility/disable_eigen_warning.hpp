@@ -12,18 +12,19 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_ALL_HPP__
-#define OPENJIJ_SYSTEM_ALL_HPP__
+#ifndef OPENJIJ_UTILITY_DISABLE_EIGEN_WARNING_HPP__
+#define OPENJIJ_UTILITY_DISABLE_EIGEN_WARNING_HPP__
 
-//disable eigen -Wdeprecated-copy warning
-#include <utility/disable_eigen_warning.hpp>
-
-#include <system/classical_ising.hpp>
-#include <system/transverse_ising.hpp>
-
-#ifdef USE_CUDA
-#include <system/gpu/chimera_gpu_transverse.hpp>
-#include <system/gpu/chimera_gpu_classical.hpp>
-#endif
+#  ifdef __clang__
+//   Eigen generates a bunch of implicit-copy-constructor-is-deprecated warnings with -Wdeprecated
+//   under Clang, so disable that warning here:
+#    pragma GCC diagnostic ignored "-Wdeprecated"
+#  endif
+#  if __GNUC__ >= 7
+#    pragma GCC diagnostic ignored "-Wint-in-bool-context"
+//   Eigen generates a bunch of implicit-copy-constructor-is-deprecated warnings with -Wdeprecated
+//   under GCC, so disable that warning here:
+#    pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#  endif
 
 #endif
