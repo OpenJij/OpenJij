@@ -28,3 +28,6 @@ install:
 
 script:
   - python tests/test.py
+  - python tests/test_model.py
+  - python tests/test_sampler.py
+  - python tests/test_utils.py
