@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/OpenJij/OpenJij.svg?branch=master)](https://travis-ci.org/OpenJij/OpenJij)
 
-cmake >= 3.11
+cmake >= 3.12.2
 
 - [Tutorials](https://openjij.github.io/OpenJijTutorial/_build/html/index.html)
 - [Documents](https://openjij.github.io/OpenJij/)
@@ -16,7 +16,7 @@ $ pip install openjij
 
 ### cmake setup
 
-If you had not installed cmake>=3.11, you need install cmake>=3.11
+If you had not installed cmake>=3.12.2, you need install cmake>=3.12.2
 
 macOS
 ```

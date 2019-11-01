@@ -1,0 +1,9 @@
+var searchData=
+[
+  ['n_237',['N',['../classopenjij_1_1sampler_1_1sampler_1_1_base_sampler.html#ae71a3bedc9c70697cc58c4d729a68290',1,'openjij::sampler::sampler::BaseSampler']]],
+  ['node_238',['Node',['../structopenjij_1_1utility_1_1_union_find.html#ae3e03d754805c19895f7350e7ffcf2a2',1,'openjij::utility::UnionFind']]],
+  ['nodes_239',['Nodes',['../namespaceopenjij_1_1graph.html#a6e7f78b6c411e8367ff996672e8efeae',1,'openjij::graph']]],
+  ['nonstoquastic_5fsystem_240',['nonstoquastic_system',['../structopenjij_1_1system_1_1nonstoquastic__system.html',1,'openjij::system']]],
+  ['num_5fclassical_5fspins_241',['num_classical_spins',['../structopenjij_1_1system_1_1_transverse_ising.html#a826da3763ca2971f865760e806768a55',1,'openjij::system::TransverseIsing::num_classical_spins()'],['../structopenjij_1_1system_1_1_transverse_ising_3_01graph_1_1_dense_3_01_float_type_01_4_00_01true_01_4.html#a2540395571e806efcc9fd66bf12218f9',1,'openjij::system::TransverseIsing&lt; graph::Dense&lt; FloatType &gt;, true &gt;::num_classical_spins()'],['../structopenjij_1_1system_1_1_transverse_ising_3_01graph_1_1_sparse_3_01_float_type_01_4_00_01true_01_4.html#aa0df8b48e72fc70e1344eb366c7eadbc',1,'openjij::system::TransverseIsing&lt; graph::Sparse&lt; FloatType &gt;, true &gt;::num_classical_spins()']]],
+  ['num_5fspins_242',['num_spins',['../structopenjij_1_1system_1_1_classical_ising.html#afa2c94243b0c74b7f70398c26218408b',1,'openjij::system::ClassicalIsing::num_spins()'],['../structopenjij_1_1system_1_1_classical_ising_3_01graph_1_1_dense_3_01_float_type_01_4_00_01true_01_4.html#ab8b38cd10c41cafaf437728244d28308',1,'openjij::system::ClassicalIsing&lt; graph::Dense&lt; FloatType &gt;, true &gt;::num_spins()'],['../structopenjij_1_1system_1_1_classical_ising_3_01graph_1_1_sparse_3_01_float_type_01_4_00_01true_01_4.html#ad3037b594020339972f3baea8dd6a56d',1,'openjij::system::ClassicalIsing&lt; graph::Sparse&lt; FloatType &gt;, true &gt;::num_spins()']]]
+];
