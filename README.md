@@ -5,7 +5,7 @@
 cmake >= 3.12.2
 
 - [Tutorials](https://openjij.github.io/OpenJijTutorial/_build/html/index.html)
-- [Documents](https://openjij.github.io/OpenJij/)
+- [C++ Docs](https://openjij.github.io/OpenJij/html/index.html)
 
 ## install
 
