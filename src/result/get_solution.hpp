@@ -54,7 +54,7 @@ namespace openjij {
             //convert from Eigen::Vector to std::vector
             graph::Spins ret_spins(system.num_spins);
             for(std::size_t i=0; i<system.num_spins; i++){
-                ret_spins[i] = system.spin(i);
+                ret_spins[i] = system.spin(i)*system.spin(system.num_spins);
             }
             return ret_spins;
         }
