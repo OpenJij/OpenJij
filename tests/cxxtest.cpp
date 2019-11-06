@@ -450,6 +450,25 @@ TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
     EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
 }
 
+TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Sparse_WithEigenImpl) {
+    using namespace openjij;
+
+    //generate classical dense system
+    const auto interaction = generate_interaction<graph::Sparse<double>>();
+    auto engine_for_spin = std::mt19937(1);
+    const auto spin = interaction.gen_spin(engine_for_spin);
+    auto classical_ising = system::make_classical_ising<true>(spin, interaction); //with eigen implementation
+
+    auto random_numder_engine = std::mt19937(1);
+
+    //in general swendsen wang is not efficient in simulating frustrated systems. We need more annealing time.
+    const auto schedule_list = openjij::utility::make_classical_schedule_list(0.01, 100.0, 100, 3000);
+
+    algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
+
+    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
+}
+
 // result test
 TEST(RESULT, GetSolutionFromTrotter){
     auto graph = openjij::graph::Dense<float>(4);

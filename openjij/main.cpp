@@ -89,6 +89,9 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Dense<FloatType>, false>,  RandomEngine>(m_algorithm, "SwendsenWang");
     ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Sparse<FloatType>, false>, RandomEngine>(m_algorithm, "SwendsenWang");
 
+    //swendsen-wang (with Eigen implementation on a Sparse graph)
+    ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Sparse<FloatType>, true>, RandomEngine>(m_algorithm, "SwendsenWang");
+
 #ifdef USE_CUDA
     //GPU
     ::declare_Algorithm_run<updater::GPU, system::ChimeraTransverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>, utility::cuda::CurandWrapper<GPUFloatType, GPURandomEngine>>(m_algorithm, "GPU");

@@ -20,7 +20,7 @@ class CXXTest(unittest.TestCase):
         self.dense = self.gen_testcase(self.dense)
         #sparse graph
         self.sparse = G.Sparse(self.size)
-        self.sparse = self.gen_testcase(self.dense)
+        self.sparse = self.gen_testcase(self.sparse)
         #chimera graph
         #Note: make sure to use ChimeraGPU (not Chimera) when using GPU since the type between FloatType and GPUFloatType is in general different.
         self.chimera = G.ChimeraGPU(2,2)
@@ -331,7 +331,7 @@ class CXXTest(unittest.TestCase):
         system = S.make_classical_ising(self.dense.gen_spin(self.seed_for_spin), self.dense)
 
         #schedulelist
-        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 2000, 2000)
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 2000)
 
         #anneal
         A.Algorithm_SwendsenWang_run(system, self.seed_for_mc, schedule_list)
@@ -348,7 +348,24 @@ class CXXTest(unittest.TestCase):
         system = S.make_classical_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse)
 
         #schedulelist
-        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 2000, 2000)
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 2000)
+
+        #anneal
+        A.Algorithm_SwendsenWang_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_SwendsenWang_ClassicalIsing_Sparse_WithEigenImpl(self):
+
+        #classial ising with Eigen implementation(sparse)
+        system = S.make_classical_ising_Eigen(self.sparse.gen_spin(self.seed_for_spin), self.sparse)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 2000)
 
         #anneal
         A.Algorithm_SwendsenWang_run(system, self.seed_for_mc, schedule_list)
