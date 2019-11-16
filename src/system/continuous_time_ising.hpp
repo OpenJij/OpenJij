@@ -17,6 +17,7 @@
 
 #include <system/system.hpp>
 #include <graph/all.hpp>
+#include <cassert>
 #include <vector>
 #include <utility>
 
@@ -33,7 +34,7 @@ namespace openjij {
         
         template<typename GraphType>
         struct ContinuousTimeIsing {
-            using system_type = continuous_time_system;
+            using system_type = transverse_field_system;
             using FloatType = typename GraphType::value_type;
             
             /**
