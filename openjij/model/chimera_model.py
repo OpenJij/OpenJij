@@ -29,23 +29,16 @@ class ChimeraModel(BinaryQuadraticModel):
         >>> chimera_self.validate_chimera()
     """
 
-    def __init__(self, h=None, J=None, Q=None,
-                 unit_num_L=None, model=None, var_type=openjij.SPIN,
+    def __init__(self, linear=None, quadratic=None,
+                 offset=0.0, var_type=openjij.SPIN,
+                 unit_num_L=None, model=None,
                  gpu=False):
-
-        # if you use gpu, gpu=True
         self.gpu = gpu
         if model:
-            # convert to ChimeraModel from BinaryQuadraticModel
-            self.linear = model.linear
-            self.quad = model.quad
-            self.indices = model.indices
-            self.energy_bias = model.energy_bias
-            self.var_type = model.var_type
-            self._interaction_matrix = None
+            super().__init__(model.linear, model.quadratic,
+                             model.offset, model.var_type)
         else:
-            super().__init__(h=h, J=J, Q=Q, var_type=var_type)
-
+            super().__init__(linear, quadratic, offset, var_type)
         if not unit_num_L:
             raise ValueError(
                 'Input unit_num_L which is the length of the side of the two-dimensional grid where chimera unit cells are arranged.')
@@ -61,6 +54,64 @@ class ChimeraModel(BinaryQuadraticModel):
         elif self.coordinate == 'chimera coordinate':
             self._chimera_index = lambda i, L: i
             self._to_index = lambda x, y, z, L: self.to_index(x, y, z, L)
+
+    # @classmethod
+    # def from_qubo(cls, Q: dict, offset=0.0, unit_num_L=None, gpu=False):
+    #     linear = {}
+    #     quadratic = {}
+    #     for (u, v), bias in Q.items():
+    #         if u == v:
+    #             linear[u] = bias
+    #         else:
+    #             quadratic[(u, v)] = bias
+    #     return cls(linear, quadratic, offset, openjij.BINARY, unit_num_L, gpu=gpu)
+
+
+# class ChimeraModel(BinaryQuadraticModel):
+#     """Binary quadnratic model dealing with chimera graph
+#     This model deal with chimera graph.
+#     ChimeraModel provide methods to verify whether a given interaction graph matches a Chimera graph and to convert it to cxxjij.graph.Chimera.
+
+#     Examples:
+#         # This interactions satisfy chimera topology.
+#         >>> Q={(0, 4): -1, (4, 12): -1}
+#         >>> chimera_model = ChimeraModel(Q, unit_num_L=2)  # make
+#         >>> chimera_self.validate_chimera()
+#     """
+
+#     def __init__(self, h=None, J=None, Q=None,
+#                  unit_num_L=None, model=None, var_type=openjij.SPIN,
+#                  gpu=False):
+
+#         # if you use gpu, gpu=True
+#         self.gpu = gpu
+#         if model:
+#             # convert to ChimeraModel from BinaryQuadraticModel
+#             self.linear = model.linear
+#             self.quad = model.quad
+#             self.indices = model.indices
+#             self.energy_bias = model.energy_bias
+#             self.var_type = model.var_type
+#             self._interaction_matrix = None
+#         else:
+#             super().__init__(linear=h, quadratic=J, Q=Q, var_type=var_type)
+
+#         if not unit_num_L:
+#             raise ValueError(
+#                 'Input unit_num_L which is the length of the side of the two-dimensional grid where chimera unit cells are arranged.')
+#         self.unit_num_L = unit_num_L
+
+#         self.coordinate = self._validate_indices(self.indices)
+
+#         # _chimera_index: 1-D index i,L -> chimera coordinate x,y,z
+#         # _to_index: chimera coordinate x,y,z,L -> 1-D index i
+#         if self.coordinate == 'index':
+#             self._chimera_index = lambda i, L: self.chimera_coordinate(i, L)
+#             self._to_index = lambda x, y, z, L: self.to_index(x, y, z, L)
+#         elif self.coordinate == 'chimera coordinate':
+#             self._chimera_index = lambda i, L: i
+#             self._to_index = lambda x, y, z, L: self.to_index(x, y, z, L)
+
 
     def _validate_indices(self, indices):
         if isinstance(indices[0], int):
@@ -92,7 +143,7 @@ class ChimeraModel(BinaryQuadraticModel):
         3 - 7
         """
         # check chimera interaction
-        for (i, j) in self.quad.keys():
+        for (i, j) in self.quadratic.keys():
             r_i, c_i, z_i = self._chimera_index(i, self.unit_num_L)
             # list up indices which can connect i
             adj_list = []

@@ -113,7 +113,14 @@ class SQASampler(BaseSampler):
         return cxxjij_schedule
 
     def _dict_to_model(self, var_type, h=None, J=None, Q=None, **kwargs):
-        return openjij.BinaryQuadraticModel(h=h, J=J, Q=Q, var_type=var_type)
+        if var_type == openjij.SPIN:
+            bqm = openjij.BinaryQuadraticModel(h, J, 0.0, var_type)
+        elif var_type == openjij.BINARY:
+            bqm = openjij.BinaryQuadraticModel.from_qubo(Q)
+        else:
+            raise ValueError(
+                'var_type should be openjij.SPIN or openjij.BINARY')
+        return bqm
 
     def sample_ising(self, h, J,
                      initial_state=None, updater='single spin flip',
@@ -147,12 +154,12 @@ class SQASampler(BaseSampler):
         """
 
         model = self._dict_to_model(var_type=openjij.SPIN, h=h, J=J, **kwargs)
-        return self.sampling(model,
-                             initial_state=initial_state, updater=updater,
-                             reinitilize_state=reinitilize_state,
-                             seed=seed,
-                             **kwargs
-                             )
+        return self.sample(model,
+                           initial_state=initial_state, updater=updater,
+                           reinitilize_state=reinitilize_state,
+                           seed=seed,
+                           **kwargs
+                           )
 
     def sample_qubo(self, Q,
                     initial_state=None, updater='single spin flip',
@@ -185,12 +192,12 @@ class SQASampler(BaseSampler):
 
         model = self._dict_to_model(
             var_type=openjij.BINARY, Q=Q, **kwargs)
-        return self.sampling(model,
-                             initial_state=initial_state, updater=updater,
-                             reinitilize_state=reinitilize_state,
-                             seed=seed,
-                             **kwargs
-                             )
+        return self.sample(model,
+                           initial_state=initial_state, updater=updater,
+                           reinitilize_state=reinitilize_state,
+                           seed=seed,
+                           **kwargs
+                           )
 
     def _post_save(self, result_state, system, model, response):
         # trotter_spins is transposed because it is stored as [Spin ​​space][Trotter].
@@ -203,18 +210,18 @@ class SQASampler(BaseSampler):
         response.q_states.append(q_state)
         response.q_energies.append(c_energies)
 
-    def sampling(self, model,
-                 initial_state=None, updater='single spin flip',
-                 reinitialize_state=True, seed=None,
-                 **kwargs):
+    def sample(self, bqm, initial_state=None, updater='single spin flip',
+               reinitialize_state=True, seed=None, **kwargs):
 
-        ising_graph = model.get_cxxjij_ising_graph()
+        if not isinstance(bqm, openjij.BinaryQuadraticModel):
+            raise ValueError('bqm is openjij.BinaryQuadraticModel')
 
+        ising_graph = bqm.get_cxxjij_ising_graph()
         if initial_state is None:
             def init_generator(): return [ising_graph.gen_spin()
                                           for _ in range(self.trotter)]
         else:
-            if model.var_type == openjij.SPIN:
+            if bqm.var_type == openjij.SPIN:
                 trotter_init_state = [np.array(initial_state)
                                       for _ in range(self.trotter)]
             else:  # BINARY
@@ -222,7 +229,7 @@ class SQASampler(BaseSampler):
                     (2*np.array(initial_state)-1).astype(int)
                     for _ in range(self.trotter)]
 
-            def init_generator(): return trotter_init_state
+                def init_generator(): return trotter_init_state
 
         sqa_system = cxxjij.system.make_transverse_ising_Eigen(
             init_generator(), ising_graph, self.gamma
@@ -236,7 +243,7 @@ class SQASampler(BaseSampler):
             raise ValueError('updater is one of "single spin flip"')
 
         response = self._sampling(
-            model, init_generator,
+            bqm, init_generator,
             algorithm, sqa_system, initial_state,
             reinitialize_state, seed, **kwargs
         )
@@ -245,3 +252,46 @@ class SQASampler(BaseSampler):
             response.q_states, response.q_energies)
 
         return response
+
+    # def sampling(self, model,
+    #              initial_state=None, updater='single spin flip',
+    #              reinitialize_state=True, seed=None,
+    #              **kwargs):
+
+    #     ising_graph = model.get_cxxjij_ising_graph()
+
+    #     if initial_state is None:
+    #         def init_generator(): return [ising_graph.gen_spin()
+    #                                       for _ in range(self.trotter)]
+    #     else:
+    #         if model.var_type == openjij.SPIN:
+    #             trotter_init_state = [np.array(initial_state)
+    #                                   for _ in range(self.trotter)]
+    #         else:  # BINARY
+    #             trotter_init_state = [
+    #                 (2*np.array(initial_state)-1).astype(int)
+    #                 for _ in range(self.trotter)]
+
+    #         def init_generator(): return trotter_init_state
+
+    #     sqa_system = cxxjij.system.make_transverse_ising_Eigen(
+    #         init_generator(), ising_graph, self.gamma
+    #     )
+
+    #     # choose updater
+    #     _updater_name = updater.lower().replace('_', '').replace(' ', '')
+    #     if _updater_name == 'singlespinflip':
+    #         algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
+    #     else:
+    #         raise ValueError('updater is one of "single spin flip"')
+
+    #     response = self._sampling(
+    #         model, init_generator,
+    #         algorithm, sqa_system, initial_state,
+    #         reinitialize_state, seed, **kwargs
+    #     )
+
+    #     response.update_trotter_ising_states_energies(
+    #         response.q_states, response.q_energies)
+
+    #     return response

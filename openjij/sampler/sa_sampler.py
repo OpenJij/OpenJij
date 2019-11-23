@@ -58,7 +58,6 @@ class SASampler(BaseSampler):
                  beta_min=0.1, beta_max=5.0,
                  step_num=10, step_length=100, schedule=None, iteration=1, **kwargs):
 
-
         if schedule:
             self.schedule = self._convert_validation_schedule(schedule)
             self.beta_min = None
@@ -69,8 +68,8 @@ class SASampler(BaseSampler):
         else:
             self.beta_min = beta_min
             self.beta_max = beta_max
-            self.step_num = step_length 
-            self.step_length = step_num 
+            self.step_num = step_length
+            self.step_length = step_num
             self.schedule = cxxjij.utility.make_classical_schedule_list(
                 beta_min=beta_min, beta_max=beta_max,
                 one_mc_step=step_num,
@@ -78,7 +77,7 @@ class SASampler(BaseSampler):
             )
             self.schedule_info = {
                 'beta_min': beta_min, 'beta_max': beta_max,
-                'step_num': step_num, 'step_length': step_length 
+                'step_num': step_num, 'step_length': step_length
             }
         self.iteration = iteration
 
@@ -107,8 +106,8 @@ class SASampler(BaseSampler):
             cxxjij_schedule.append(_schedule)
         return cxxjij_schedule
 
-    def _dict_to_model(self, var_type, h=None, J=None, Q=None, **kwargs):
-        return openjij.BinaryQuadraticModel(h=h, J=J, Q=Q, var_type=var_type)
+    # def _dict_to_model(self, var_type, h=None, J=None, Q=None, **kwargs):
+    #     return openjij.BinaryQuadraticModel(h=h, J=J, Q=Q, var_type=var_type)
 
     def sample_ising(self, h, J,
                      initial_state=None, updater='single spin flip',

@@ -70,7 +70,7 @@ class SamplerOptimizeTest(unittest.TestCase):
         )
 
         # cxxjij
-        model = oj.BinaryQuadraticModel(Q=Q, var_type='BINARY')
+        model = oj.BinaryQuadraticModel.from_qubo(Q=Q)
         graph = model.get_cxxjij_ising_graph()
         system = cj.system.make_classical_ising_Eigen(init_spin, graph)
         sch = cj.utility.make_classical_schedule_list(
