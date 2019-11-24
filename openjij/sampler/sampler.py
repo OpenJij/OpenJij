@@ -66,9 +66,9 @@ class BaseSampler(dimod.Sampler):
                     system.reset_spins(init_generator())
                 else:
                     system.reset_spins(previous_state)
-                # _exec_time = measure_time(sampling_algorithm)(system)
-                _exec_time = timeit.timeit(
-                    lambda: sampling_algorithm(system), number=1)
+                _exec_time = measure_time(sampling_algorithm)(system)
+                # _exec_time = timeit.timeit(
+                #     lambda: sampling_algorithm(system), number=1)
                 execution_time.append(_exec_time)
                 previous_state = cxxjij.result.get_solution(system)
                 self._post_save(previous_state, system, model, response)
