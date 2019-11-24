@@ -131,7 +131,7 @@ setup(
     ext_modules=[CMakeExtension('cxxjij')],
     cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
                   pytest=PyTestCommand),
-    packages=find_packages(exclude=('tests', 'docs')),
+    packages=find_packages(exclude=('tests', 'docs', 'examples')),
     license='Apache License 2.0',
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
