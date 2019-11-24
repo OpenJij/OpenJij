@@ -60,7 +60,7 @@ class BaseSampler(dimod.Sampler):
         @measure_time
         def exec_sampling():
             previous_state = init_generator()
-            for _ in range(self.iteration):
+            for _ in range(self.num_reads):
                 if reinitialize_state:
                     system.reset_spins(init_generator())
                 else:
@@ -71,6 +71,7 @@ class BaseSampler(dimod.Sampler):
                 self._post_save(previous_state, system, model, response)
 
         sampling_time = exec_sampling()
+
         response.info['sampling_time'] = sampling_time * 10**6  # micro sec
         response.info['execution_time'] = np.mean(
             execution_time) * 10**6  # micro sec
@@ -88,6 +89,9 @@ class BaseSampler(dimod.Sampler):
             raise ValueError(
                 'var_type should be openjij.SPIN or openjij.BINARY')
         return bqm
+
+    def _post_save(self, result_state, system, model, response):
+        pass
 
 
 # class BaseSampler:

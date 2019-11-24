@@ -97,20 +97,20 @@ class SamplerOptimizeTest(unittest.TestCase):
         self.assertEqual(len(response.states), 1)
         self.assertListEqual(response.states[0], [0, 0, 0])
 
-        valid_sche = [(beta, 1) for beta in np.linspace(-1, 1, 5)]
+        vaild_sche = [(beta, 1) for beta in np.linspace(-1, 1, 5)]
         with self.assertRaises(ValueError):
-            _ = oj.SASampler(schedule=valid_sche)
+            sampler = oj.SASampler(schedule=vaild_sche)
+            sampler.sample_ising({}, {})
 
     def test_swendsenwang(self):
         sampler = oj.SASampler()
-        initial_state = [1,1,-1,1,1,-1,1,1,1,1,-1]
-        h = {0 :-1, 10: -1}
+        initial_state = [1, 1, -1, 1, 1, -1, 1, 1, 1, 1, -1]
+        h = {0: -1, 10: -1}
         J = {(i, i+1): -1 for i in range(10)}
-        res = sampler.sample_ising(h, J, 
-        updater="swendsenwang", 
-        seed=1, initial_state=initial_state)
+        res = sampler.sample_ising(h, J,
+                                   updater="swendsenwang",
+                                   seed=1, initial_state=initial_state)
         self.assertListEqual(res.states[0], [1]*11)
-
 
     def test_time_sa(self):
         fast_res = oj.SASampler(beta_max=100, step_num=10,
@@ -151,13 +151,14 @@ class SamplerOptimizeTest(unittest.TestCase):
 
         vaild_sche = [(s, 10) for s in np.linspace(0, 1.1, 5)]
         with self.assertRaises(ValueError):
-            _ = oj.SQASampler(schedule=vaild_sche)
+            sampler = oj.SQASampler()
+            _ = sampler.sample_ising({}, {}, schedule=vaild_sche)
 
     def test_time_sqa(self):
         fast_res = oj.SQASampler(
-            step_num=10, iteration=10).sample_ising(self.h, self.J, seed=1)
+            num_sweeps=10, iteration=10).sample_ising(self.h, self.J, seed=1)
         slow_res = oj.SQASampler(
-            step_num=50, iteration=10).sample_ising(self.h, self.J, seed=1)
+            num_sweeps=100, iteration=10).sample_ising(self.h, self.J, seed=1)
 
         self.assertEqual(len(fast_res.info['list_exec_times']), 10)
         self.assertTrue(fast_res.info['execution_time']
