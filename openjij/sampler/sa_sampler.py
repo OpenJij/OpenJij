@@ -65,6 +65,17 @@ class SASampler(BaseSampler):
         self.num_sweeps = num_sweeps
         self.schedule = schedule
         self.num_reads = num_reads
+        self._schedule_setting = {
+            'beta_min': beta_min,
+            'beta_max': beta_max,
+            'num_sweeps': num_sweeps,
+            'num_reads': num_reads,
+        }
+
+    def _setting_overwrite(self, **kwargs):
+        for key, value in kwargs.items():
+            if value:
+                self._schedule_setting[key] = value
 
     def _convert_validation_schedule(self, schedule):
         if not isinstance(schedule, (list, np.array)):
@@ -103,29 +114,32 @@ class SASampler(BaseSampler):
             offset=model.offset, var_type=model.vartype
         )
 
+        self._setting_overwrite(
+            beta_min=beta_min, beta_max=beta_max,
+            num_sweeps=num_sweeps, num_reads=num_reads
+        )
+
         ising_graph = model.get_cxxjij_ising_graph()
 
         self.num_reads = num_reads if num_reads > 1 else self.num_reads
 
         # set annealing schedule -------------------------------
         if schedule or self.schedule:
-            self.schedule = self._convert_validation_schedule(
+            self._schedule = self._convert_validation_schedule(
                 schedule if schedule else self.schedule
             )
             self.schedule_info = {'schedule': 'custom schedule'}
         else:
-            self.beta_min = beta_min if beta_min else self.beta_min
-            self.beta_max = beta_max if beta_max else self.beta_max
-            self.num_sweeps = num_sweeps if num_sweeps else self.num_sweeps
-            self.schedule, beta_range = geometric_ising_beta_schedule(
+            self._schedule, beta_range = geometric_ising_beta_schedule(
                 model=model,
-                beta_max=self.beta_max, beta_min=self.beta_min,
-                num_sweeps=self.num_sweeps
+                beta_max=self._schedule_setting['beta_max'],
+                beta_min=self._schedule_setting['beta_min'],
+                num_sweeps=self._schedule_setting['num_sweeps']
             )
             self.schedule_info = {
                 'beta_max': beta_range[0],
                 'beta_min': beta_range[1],
-                'num_sweeps': self.num_sweeps
+                'num_sweeps': self._schedule_setting['num_sweeps']
             }
         # ------------------------------- set annealing schedule
 

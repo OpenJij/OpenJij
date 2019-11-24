@@ -102,6 +102,16 @@ class SamplerOptimizeTest(unittest.TestCase):
             sampler = oj.SASampler(schedule=vaild_sche)
             sampler.sample_ising({}, {})
 
+    def test_sa_sweeps(self):
+        iteration = 10
+        sampler = oj.SASampler()
+        res = sampler.sample_ising(self.h, self.J, num_reads=iteration)
+        self.assertEqual(iteration, len(res.energies))
+
+        sampler = oj.SASampler(num_reads=iteration)
+        res = sampler.sample_ising(self.h, self.J)
+        self.assertEqual(iteration, len(res.energies))
+
     def test_swendsenwang(self):
         sampler = oj.SASampler()
         initial_state = [1, 1, -1, 1, 1, -1, 1, 1, 1, 1, -1]
@@ -113,9 +123,9 @@ class SamplerOptimizeTest(unittest.TestCase):
         self.assertListEqual(res.states[0], [1]*11)
 
     def test_time_sa(self):
-        fast_res = oj.SASampler(beta_max=100, step_num=10,
+        fast_res = oj.SASampler(beta_max=100, num_sweeps=5,
                                 iteration=10).sample_ising(self.h, self.J)
-        slow_res = oj.SASampler(beta_max=100, step_num=50,
+        slow_res = oj.SASampler(beta_max=100, num_sweeps=50,
                                 iteration=10).sample_ising(self.h, self.J)
 
         self.assertEqual(len(fast_res.info['list_exec_times']), 10)

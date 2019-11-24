@@ -72,6 +72,17 @@ class SQASampler(BaseSampler):
         self.num_sweeps = num_sweeps
         self.schedule = schedule
         self.energy_bias = 0.0
+        self._schedule_setting = {
+            'beta': beta,
+            'gamma': gamma,
+            'num_sweeps': num_sweeps,
+            'num_reads': num_reads,
+        }
+
+    def _setting_overwrite(self, **kwargs):
+        for key, value in kwargs.items():
+            if value:
+                self._schedule_setting[key] = value
 
     def _convert_validation_schedule(self, schedule, beta):
         if not isinstance(schedule, (list, np.array)):
@@ -132,6 +143,11 @@ class SQASampler(BaseSampler):
             offset=bqm.offset, var_type=bqm.vartype
         )
 
+        self._setting_overwrite(
+            beta=beta, gamma=gamma,
+            num_sweeps=num_sweeps, num_reads=num_reads
+        )
+
         ising_graph = bqm.get_cxxjij_ising_graph()
 
         self._annealing_schedule_setting(
@@ -182,22 +198,23 @@ class SQASampler(BaseSampler):
         self.beta = beta if beta else self.beta
         self.gamma = gamma if gamma else self.gamma
         if schedule or self.schedule:
-            self.schedule = self._convert_validation_schedule(
+            self._schedule = self._convert_validation_schedule(
                 schedule if schedule else self.schedule, self.beta
             )
             self.schedule_info = {'schedule': 'custom schedule'}
         else:
 
             self.num_sweeps = num_sweeps if num_sweeps else self.num_sweeps
-            self.schedule, beta_gamma = linear_ising_schedule(
+            self._schedule, beta_gamma = linear_ising_schedule(
                 model=model,
-                beta=self.beta, gamma=self.gamma,
-                num_sweeps=self.num_sweeps
+                beta=self._schedule_setting['beta'],
+                gamma=self._schedule_setting['gamma'],
+                num_sweeps=self._schedule_setting['num_sweeps']
             )
             self.schedule_info = {
                 'beta': beta_gamma[0],
                 'gamma': beta_gamma[1],
-                'num_sweeps': self.num_sweeps
+                'num_sweeps': self._schedule_setting['num_sweeps']
             }
 
 
