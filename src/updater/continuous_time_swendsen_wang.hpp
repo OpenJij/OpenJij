@@ -41,9 +41,9 @@ namespace openjij {
             template <typename RandomNumberEngine>
             static void update(system::ContinuousTimeIsing<GraphType>& system,
                                RandomNumberEngine& random_number_engine,
-                               const utility::TransverseFieldUpdaterParameter& parameter) {                
+                               const utility::TransverseFieldUpdaterParameter& parameter) {
 
-                const graph::Index num_spin = system.num_classical_spins;
+                const graph::Index num_spin = system.num_spins;
                 std::vector<graph::Index> index_helper;
                 index_helper.reserve(num_spin+1);
                 index_helper.push_back(0);
@@ -76,7 +76,7 @@ namespace openjij {
                         const auto bonds = generate_poisson_points(std::abs(0.5*system.interaction.J(i, j)),
                                                                    parameter.beta, random_number_engine);
                         for(const auto bond : bonds) {
-                            const auto dummy_bond = CutPoint(bond, 0); // dummy variable for binary search                            
+                            const auto dummy_bond = CutPoint(bond, 0); // dummy variable for binary search
                             
                             /* find time point at ith site just before the bond */
                             auto ki = std::distance(system.spin_config[i].begin(),
@@ -155,15 +155,16 @@ namespace openjij {
                 new_timeline.reserve(old_timeline.size()); // not actual size, but decrease reallocation frequency
                 size_t old_time_index = 0;
                 size_t cut_index = 0;
-                    
+
                 while(true) {
+                    const auto prev_time_index = (old_time_index - 1 + old_timeline.size()) % old_timeline.size();
+
                     /* add earlier of kink or cut to new timeline */
                     if(cuts[cut_index] < old_timeline[old_time_index].first) {
-                        new_timeline.push_back(CutPoint{cuts[cut_index], old_timeline[old_time_index].second});
+                        new_timeline.push_back(CutPoint{cuts[cut_index], old_timeline[prev_time_index].second});
                         cut_index++;
                     } else {
                         /* if spin direction is different from previous one, place cut (kink) */
-                        const auto prev_time_index = (old_time_index + 1 + old_timeline.size()) % old_timeline.size();
                         if(old_timeline[old_time_index].second != old_timeline[prev_time_index].second) {
                             new_timeline.push_back(old_timeline[old_time_index]);
                         }
@@ -174,7 +175,7 @@ namespace openjij {
                     if(cut_index >= cuts.size()) {
                         for(;old_time_index < old_timeline.size();old_time_index++) {
                             /* if spin direction is different from previous one, place cut (kink) */
-                            const auto prev_time_index = (old_time_index + 1 + old_timeline.size()) % old_timeline.size();
+                            const auto prev_time_index = (old_time_index - 1 + old_timeline.size()) % old_timeline.size();
                             if(old_timeline[old_time_index].second != old_timeline[prev_time_index].second) {
                                 new_timeline.push_back(old_timeline[old_time_index]);
                             }
