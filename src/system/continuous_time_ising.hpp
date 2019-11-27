@@ -142,13 +142,12 @@ namespace openjij {
             const std::size_t num_spins;
             
             /**
-             * @brief interaction 
+             * @brief interaction
              */
             GraphType interaction;
             
             /**
-             * @brief coefficient of transverse field term
-             * @note this variable seems to be unnecessary because transverse field changes dynamically in update process
+             * @brief coefficient of transverse field term, actual field would be gamma * s, where s = [0:1]
              */
             const FloatType gamma;
         };

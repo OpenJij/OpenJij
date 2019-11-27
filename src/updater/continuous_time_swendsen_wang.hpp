@@ -54,7 +54,7 @@ namespace openjij {
                 /* 1. remove old cuts and place new cuts for every site */
                 for(graph::Index i = 0;i < num_spin; i++) {
                     auto& timeline = system.spin_config[i];
-                    auto cuts = generate_poisson_points(0.5*parameter.s, parameter.beta, random_number_engine);
+                    auto cuts = generate_poisson_points(0.5*system.gamma*(1.0-parameter.s), parameter.beta, random_number_engine);
                     // assuming transverse field s is positive
             
                     timeline = create_timeline(timeline, cuts);
@@ -73,7 +73,7 @@ namespace openjij {
                                       // if adj_nodes are sorted, this "continue" can be replaced by "break"
                         }
                         
-                        const auto bonds = generate_poisson_points(std::abs(0.5*system.interaction.J(i, j)),
+                        const auto bonds = generate_poisson_points(std::abs(0.5*system.interaction.J(i, j)*parameter.s),
                                                                    parameter.beta, random_number_engine);
                         for(const auto bond : bonds) {
                             const auto dummy_bond = CutPoint(bond, 0); // dummy variable for binary search
