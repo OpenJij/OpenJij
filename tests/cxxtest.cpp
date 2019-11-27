@@ -469,6 +469,37 @@ TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Sparse_WithEigenImpl) {
     EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
 }
 
+
+/* Continuous time Swendsen-Wang test */
+TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_OneDimensionalIsing) {
+    using namespace openjij;
+
+    const auto interaction = [](){
+        auto interaction = graph::Dense<double>(num_system_size);
+        interaction.J(0,1) = -1;
+        interaction.J(1,2) = -1;
+        interaction.J(2,3) = -1;
+        interaction.J(3,4) = -1;
+        interaction.J(4,5) = +1;
+        interaction.J(5,6) = +1;
+        interaction.J(6,7) = +1;
+        interaction.h(0) = +1;
+        return interaction;
+    }();
+
+    auto engine_for_spin = std::mt19937(1);
+    const auto spin = interaction.gen_spin(engine_for_spin);
+
+    auto ising = system::make_continuous_time_ising(spin, 1, interaction, 1.0);
+
+    auto random_numder_engine = std::mt19937(1);
+    const auto schedule_list = utility::make_transverse_field_schedule_list(10, 100, 100);
+
+    algorithm::Algorithm<updater::ContinuousTimeSwendsenWang>::run(ising, random_numder_engine, schedule_list);
+
+//    EXPECT_EQ(openjij::graph::Spins({-1, -1, -1, -1, -1, +1, -1, +1}), result::get_solution(ising));
+}
+
 // result test
 TEST(RESULT, GetSolutionFromTrotter){
     auto graph = openjij::graph::Dense<float>(4);

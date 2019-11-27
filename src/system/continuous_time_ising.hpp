@@ -31,7 +31,7 @@ namespace openjij {
          */
         using SpinConfiguration = std::vector<std::vector<CutPoint>>;
         
-        template<typename GraphType>
+        template<typename GraphType, bool eigen_impl=false>
         struct ContinuousTimeIsing {
             using system_type = transverse_field_system;
             using FloatType = typename GraphType::value_type;
@@ -151,6 +151,29 @@ namespace openjij {
              */
             const FloatType gamma;
         };
+
+        /**
+         * @brief helper function for ContinuousTimeIsing constructor
+         *
+         * @tparam eigen_impl
+         * @tparam GraphType
+         * @param init_spins
+         * @param init_auxiriary_spin
+         * @param interaction
+         * @param gamma
+         *
+         * @return generated object
+         */
+        template<bool eigen_impl=false,typename GraphType>
+        ContinuousTimeIsing<GraphType, eigen_impl> make_continuous_time_ising(const graph::Spins& init_spins,
+                                                                              const graph::Spin& init_auxiriary_spin,
+                                                                              const GraphType& init_interaction,
+                                                                              double gamma) {
+            return ContinuousTimeIsing<GraphType, eigen_impl>(init_spins,
+                                                              init_auxiriary_spin,
+                                                              init_interaction,
+                                                              static_cast<typename GraphType::value_type>(gamma));
+        }
     } // namespace system
 } // namespace openjij
 

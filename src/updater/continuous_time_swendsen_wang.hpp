@@ -28,8 +28,11 @@
 
 namespace openjij {
     namespace updater {
+        template<typename System>
+        struct ContinuousTimeSwendsenWang;
+        
         template<typename GraphType>
-        struct ContinuousTimeSwendsenWang {
+        struct ContinuousTimeSwendsenWang<system::ContinuousTimeIsing<GraphType, false>> {
             using CutPoint = system::CutPoint;
             using TimeType = system::TimeType;
             using FloatType = typename GraphType::value_type;
@@ -39,7 +42,7 @@ namespace openjij {
              *
              */
             template <typename RandomNumberEngine>
-            static void update(system::ContinuousTimeIsing<GraphType>& system,
+            static void update(system::ContinuousTimeIsing<GraphType, false>& system,
                                RandomNumberEngine& random_number_engine,
                                const utility::TransverseFieldUpdaterParameter& parameter) {
 
