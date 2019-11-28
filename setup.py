@@ -46,7 +46,7 @@ class CMakeBuild(build_ext):
         extdir = os.path.abspath(os.path.dirname(
             self.get_ext_fullpath(ext.name)))
         cmake_kwargs = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
-                        #'-DCMAKE_VERBOSE_MAKEFILE=ON',
+                        # '-DCMAKE_VERBOSE_MAKEFILE=ON',
                         #'-DCMAKE_CUDA_FLAGS= -arch=sm_60 ',
                         '-DPYTHON_EXECUTABLE=' + sys.executable]
 
@@ -103,6 +103,11 @@ class GoogleTestCommand(TestCommand):
                         shell=True)
 
 
+class PyTestCommand(TestCommand):
+    def run(self):
+        super().run()
+
+
 # Load the package's __version__.py module as a dictionary.
 here = os.path.abspath(os.path.dirname(__file__))
 about = {}
@@ -122,10 +127,11 @@ setup(
     description='Framework for the Ising model and QUBO',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    install_requires=['numpy', 'requests', 'debtcollector'],
+    install_requires=['numpy >= 1.15.0', 'dimod', 'requests'],
     ext_modules=[CMakeExtension('cxxjij')],
-    cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand),
-    packages=find_packages(exclude=('tests', 'docs')),
+    cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
+                  pytest=PyTestCommand),
+    packages=find_packages(exclude=('tests', 'docs', 'examples')),
     license='Apache License 2.0',
     classifiers=[
         'License :: OSI Approved :: Apache Software License',

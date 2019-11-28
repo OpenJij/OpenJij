@@ -42,7 +42,7 @@ class ModelTest(unittest.TestCase):
 
     def test_bqm_constructor(self):
         # Test BinaryQuadraticModel constructor
-        bqm = oj.BinaryQuadraticModel(h=self.h, J=self.J)
+        bqm = oj.BinaryQuadraticModel(self.h, self.J)
         self.assertEqual(type(bqm.ising_interactions()), np.ndarray)
 
         self.assertEqual(bqm.var_type, oj.SPIN)
@@ -50,11 +50,11 @@ class ModelTest(unittest.TestCase):
         dense_graph = bqm.get_cxxjij_ising_graph(sparse=False)
         self.assertTrue(isinstance(dense_graph, cj.graph.Dense))
 
-        bqm_qubo = oj.BinaryQuadraticModel(Q=self.Q, var_type='BINARY')
+        bqm_qubo = oj.BinaryQuadraticModel.from_qubo(self.Q)
         self.assertEqual(bqm_qubo.var_type, oj.BINARY)
 
     def test_interaction_matrix(self):
-        bqm = oj.BinaryQuadraticModel(h=self.h, J=self.J)
+        bqm = oj.BinaryQuadraticModel(self.h, self.J)
         ising_matrix = np.array([
             [1, -1,  0,  0],
             [-1, -2, -3, 0],
@@ -65,9 +65,9 @@ class ModelTest(unittest.TestCase):
             bqm.ising_interactions(), ising_matrix
         )
 
-        # check Hij = Jij + Jji 
+        # check Hij = Jij + Jji
         J = self.J.copy()
-        J[0, 1] /= 3 
+        J[0, 1] /= 3
         J[1, 0] = J[0, 1] * 2
         bqm = oj.BinaryQuadraticModel(self.h, J)
         np.testing.assert_array_equal(
@@ -78,13 +78,13 @@ class ModelTest(unittest.TestCase):
         # Test to calculate energy
 
         # Test Ising energy
-        bqm = oj.BinaryQuadraticModel(h=self.h, J=self.J)
+        bqm = oj.BinaryQuadraticModel(self.h, self.J)
         ising_energy_bqm = bqm.calc_energy(self.spins)
         true_ising_e = calculate_ising_energy(self.h, self.J, self.spins)
         self.assertEqual(ising_energy_bqm, true_ising_e)
 
         # Test QUBO energy
-        bqm = oj.BinaryQuadraticModel(Q=self.Q, var_type='BINARY')
+        bqm = oj.BinaryQuadraticModel.from_qubo(Q=self.Q)
         qubo_energy_bqm = bqm.calc_energy(self.binaries)
         true_qubo_e = calculate_qubo_energy(self.Q, self.binaries)
         self.assertEqual(qubo_energy_bqm, true_qubo_e)
@@ -92,7 +92,7 @@ class ModelTest(unittest.TestCase):
         # QUBO == Ising
         spins = [1, 1, -1, 1]
         binary = [1, 1, 0, 1]
-        qubo_bqm = oj.BinaryQuadraticModel(Q=self.Q, var_type='BINARY')
+        qubo_bqm = oj.BinaryQuadraticModel.from_qubo(Q=self.Q)
         # ising_mat = qubo_bqm.ising_interactions()
         # h, J = {}, {}
         # for i in range(len(ising_mat)-1):
@@ -110,7 +110,9 @@ class ModelTest(unittest.TestCase):
     def test_bqm(self):
         h = {}
         J = {(0, 1): -1.0, (1, 2): -3.0}
-        bqm = oj.BinaryQuadraticModel(h=h, J=J)
+        bqm = oj.BinaryQuadraticModel(h, J)
+
+        self.assertEqual(J, bqm.quadratic)
 
         self.assertEqual(type(bqm.ising_interactions()), np.ndarray)
         correct_mat = np.array([[0, -1, 0, ], [-1, 0, -3], [0, -3, 0]])
@@ -120,7 +122,7 @@ class ModelTest(unittest.TestCase):
     def test_chimera_converter(self):
         h = {}
         J = {(0, 4): -1.0, (6, 2): -3.0, (16, 0): 4}
-        chimera = oj.ChimeraModel(h=h, J=J, unit_num_L=2)
+        chimera = oj.ChimeraModel(h, J, offset=0, unit_num_L=2)
         self.assertEqual(chimera.chimera_coordinate(
             4, unit_num_L=2), (0, 0, 4))
         self.assertEqual(chimera.chimera_coordinate(
@@ -131,16 +133,16 @@ class ModelTest(unittest.TestCase):
     def test_chimera(self):
         h = {}
         J = {(0, 4): -1.0, (6, 2): -3.0}
-        bqm = oj.ChimeraModel(h=h, J=J, unit_num_L=3)
+        bqm = oj.ChimeraModel(h, J, offset=0, unit_num_L=3)
         self.assertTrue(bqm.validate_chimera())
 
         J = {(0, 1): -1}
-        bqm = oj.ChimeraModel(h=h, J=J, unit_num_L=3)
+        bqm = oj.ChimeraModel(h, J, unit_num_L=3)
         with self.assertRaises(ValueError):
             bqm.validate_chimera()
 
         J = {(4, 12): -1}
-        bqm = oj.ChimeraModel(h=h, J=J, unit_num_L=2)
+        bqm = oj.ChimeraModel(h, J, unit_num_L=2)
         self.assertTrue(bqm.validate_chimera())
 
         J = {(0, 4): -1, (5, 13): 1, (24, 8): 2,
@@ -153,14 +155,14 @@ class ModelTest(unittest.TestCase):
 
     def test_ising_dict(self):
         Q = {(0, 4): -1.0, (6, 2): -3.0}
-        bqm = oj.ChimeraModel(Q=Q, var_type='BINARY', unit_num_L=3)
+        bqm = oj.ChimeraModel.from_qubo(Q=Q, unit_num_L=3)
 
     def test_king_graph(self):
         h = {}
         J = {(0, 1): -1.0, (1, 2): -3.0}
         king_interaction = [[0, 0, 1, 0, -1.0], [1, 0, 2, 0, -3.0]]
 
-        king_graph = oj.KingGraph(machine_type="ASIC", h=h, J=J)
+        king_graph = oj.KingGraph(machine_type="ASIC", linear=h, quadratic=J)
         correct_mat = np.array([[0, -1, 0, ], [-1, 0, -3], [0, -3, 0]])
         np.testing.assert_array_equal(
             king_graph.ising_interactions(), correct_mat.astype(np.float))
@@ -172,23 +174,22 @@ class ModelTest(unittest.TestCase):
         np.testing.assert_array_equal(
             king_interaction, king_graph._ising_king_graph)
 
-        king_graph = oj.KingGraph(machine_type="ASIC", Q={
-                                  (0, 1): -1}, var_type="BINARY")
+        king_graph = oj.KingGraph.from_qubo(machine_type="ASIC", Q={
+            (0, 1): -1})
         king_interaction = [[0, 0, 0, 0, -0.25],
                             [0, 0, 1, 0, -0.25], [1, 0, 1, 0, -0.25]]
         np.testing.assert_array_equal(
             king_interaction, king_graph._ising_king_graph)
 
     def test_get_chimera_graph(self):
-        c_model = oj.ChimeraModel(
-            Q={(0, 4): -1, (1, 1): -1, (1, 5): 1},
-            var_type=oj.BINARY, unit_num_L=2)
+        c_model = oj.ChimeraModel.from_qubo(
+            Q={(0, 4): -1, (1, 1): -1, (1, 5): 1}, unit_num_L=2)
         chimera = c_model.get_chimera_graph()
         self.assertIsInstance(chimera, cj.graph.Chimera)
 
-        c_model = oj.ChimeraModel(
+        c_model = oj.ChimeraModel.from_qubo(
             Q={((0, 0, 1), (0, 0, 4)): -1, ((0, 0, 4), (0, 0, 2)): -1},
-            var_type=oj.BINARY, unit_num_L=2)
+            unit_num_L=2)
         chimera = c_model.get_chimera_graph()
         self.assertIsInstance(chimera, cj.graph.Chimera)
 
