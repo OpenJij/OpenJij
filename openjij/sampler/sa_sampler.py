@@ -14,21 +14,22 @@ class SASampler(BaseSampler):
     Args:
         beta_min (float):
             Minmum beta (inverse temperature).
+            You can overwrite in methods .sample_*.
 
         beta_max (float):
             Maximum beta (inverse temperature).
+            You can overwrite in methods .sample_*.
 
-        step_length (int):
-            Number of annealing temperature divisions
+        num_reads (int):
+            number of sampling (algorithm) runs. defaults None.
+            You can overwrite in methods .sample_*.
 
-        step_num (int):
-            Number of steps per temperature.
+        num_sweeps (int):
+            number of MonteCarlo steps during SA. defaults None.
+            You can overwrite in methods .sample_*.
 
         schedule_info (dict):
             Information about an annealing schedule.
-
-        iteration (int):
-            Number of iterations.
 
     Attributes:
         energy_bias (float):
@@ -51,8 +52,6 @@ class SASampler(BaseSampler):
 
     """
 
-    # @renames.renamed_kwarg(old_name='step_length', new_name='num_call_updater', removal_version='0.1.0')
-    # @renames.renamed_kwarg(old_name='step_num', new_name='one_mc_step', removal_version='0.1.0')
     @deprecated_alias(iteration='num_reads')
     def __init__(self,
                  beta_min=None, beta_max=None,
