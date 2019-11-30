@@ -125,7 +125,7 @@ class SamplerOptimizeTest(unittest.TestCase):
     def test_time_sa(self):
         fast_res = oj.SASampler(beta_max=100, num_sweeps=5,
                                 iteration=10).sample_ising(self.h, self.J)
-        slow_res = oj.SASampler(beta_max=100, num_sweeps=50,
+        slow_res = oj.SASampler(beta_max=100, num_sweeps=100,
                                 iteration=10).sample_ising(self.h, self.J)
 
         self.assertEqual(len(fast_res.info['list_exec_times']), 10)

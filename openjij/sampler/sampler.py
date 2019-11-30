@@ -19,15 +19,17 @@ import openjij
 import dimod
 
 import time
-import timeit
 
 
 def measure_time(func):
-    def wrapper(*args, **kwargs):
-        start = time.time()
-        func(*args, **kwargs)
-        calc_time = time.time() - start
-        return calc_time
+    def wrapper(*args, **kargs):
+        start_time = time.perf_counter()
+
+        func(*args, **kargs)
+
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
+        return execution_time
     return wrapper
 
 
@@ -67,8 +69,6 @@ class BaseSampler(dimod.Sampler):
                 else:
                     system.reset_spins(previous_state)
                 _exec_time = measure_time(sampling_algorithm)(system)
-                # _exec_time = timeit.timeit(
-                #     lambda: sampling_algorithm(system), number=1)
                 execution_time.append(_exec_time)
                 previous_state = cxxjij.result.get_solution(system)
                 self._post_save(previous_state, system, model, response)

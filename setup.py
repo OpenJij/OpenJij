@@ -16,7 +16,7 @@ NAME = 'openjij'
 DESCRIPTION = 'Framework for the Ising model and QUBO'
 EMAIL = 'openjij@j-ij.com'
 AUTHOR = 'Jij Inc.'
-VERSION = '0.0.8'
+VERSION = '0.0.9'
 
 
 class CMakeExtension(Extension):
@@ -36,8 +36,8 @@ class CMakeBuild(build_ext):
         if platform.system() == "Windows":
             cmake_version = LooseVersion(
                 re.search(r'version\s*([\d.]+)', out.decode()).group(1))
-            if cmake_version < '3.1.0':
-                raise RuntimeError("CMake >= 3.1.0 is required on Windows")
+            if cmake_version < '3.12.0':
+                raise RuntimeError("CMake >= 3.12.0 is required on Windows")
 
         for ext in self.extensions:
             self.build_extension(ext)
@@ -45,7 +45,8 @@ class CMakeBuild(build_ext):
     def build_extension(self, ext):
         extdir = os.path.abspath(os.path.dirname(
             self.get_ext_fullpath(ext.name)))
-        cmake_kwargs = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
+        cmake_kwargs = ['-DUSE_TEST=Yes',
+                        '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                         # '-DCMAKE_VERBOSE_MAKEFILE=ON',
                         #'-DCMAKE_CUDA_FLAGS= -arch=sm_60 ',
                         '-DPYTHON_EXECUTABLE=' + sys.executable]
