@@ -1,0 +1,306 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Install &mdash; OpenJij  documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="OpenJij  documentation" href="index.html"/>
+        <link rel="next" title="Minimum sample code" href="3-Minimum_sample.html"/>
+        <link rel="prev" title="Introduction" href="1-Introduction.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> OpenJij
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1-Introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cmake-setup">CMake setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#macos">macOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linux-ubuntu">Linux (Ubuntu)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Install</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pip">pip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-github">from Github</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#note">Note</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#windows-enviroment">Windows enviroment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpu-cuda">GPU (CUDA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#report-an-installation-problem">Report an installation problem</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="3-Minimum_sample.html">Minimum sample code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4-Parameters_customize.html">Parameters customize</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">OpenJij</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Install</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/2-Install.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="install">
+<h1>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="cmake-setup">
+<h2>CMake setup<a class="headerlink" href="#cmake-setup" title="Permalink to this headline">¶</a></h2>
+<p>OpenJij needs cmake &gt;= 3.12.2</p>
+<div class="section" id="macos">
+<h3>macOS<a class="headerlink" href="#macos" title="Permalink to this headline">¶</a></h3>
+<p>Install newest CMake</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ brew install cmake
+or
+$ pip install cmake
+</pre></div>
+</div>
+</div>
+<div class="section" id="linux-ubuntu">
+<h3>Linux (Ubuntu)<a class="headerlink" href="#linux-ubuntu" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># if you installed old version by apt-get</span>
+$ apt-get purge cmake
+
+<span class="c1"># install cmake </span>
+$ wget https://cmake.org/files/v3.13/cmake-3.13.2.tar.gz
+$ tar xvf cmake-3.13.2.tar.gz
+$ <span class="nb">cd</span> cmake-3.13.2
+$ ./bootstrap <span class="o">&amp;&amp;</span> make <span class="o">&amp;&amp;</span> sudo make install 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>Install<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pip">
+<h3>pip<a class="headerlink" href="#pip" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pip install openjij
+</pre></div>
+</div>
+</div>
+<div class="section" id="from-github">
+<h3>from Github<a class="headerlink" href="#from-github" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ git clone git@github.com:OpenJij/OpenJij.git
+$ <span class="nb">cd</span> openjij
+$ python setup.py install
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="note">
+<h2>Note<a class="headerlink" href="#note" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="windows-enviroment">
+<h3>Windows enviroment<a class="headerlink" href="#windows-enviroment" title="Permalink to this headline">¶</a></h3>
+<p>It has been reported that the installation of OpenJij may fail on Windows.
+We recommend using Linux through WSL.</p>
+</div>
+<div class="section" id="gpu-cuda">
+<h3>GPU (CUDA)<a class="headerlink" href="#gpu-cuda" title="Permalink to this headline">¶</a></h3>
+<p>If a CUDA compiler is found during installation, OpenJij will automatically compile for the GPU.
+Compiling for GPU is planned to be optional, but it is not yet implemented (2019/11).</p>
+</div>
+<div class="section" id="report-an-installation-problem">
+<h3>Report an installation problem<a class="headerlink" href="#report-an-installation-problem" title="Permalink to this headline">¶</a></h3>
+<p>Please report the problem to the issue on Github.</p>
+<p><a class="reference external" href="https://github.com/OpenJij/OpenJij/issues">https://github.com/OpenJij/OpenJij/issues</a></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="3-Minimum_sample.html" class="btn btn-neutral float-right" title="Minimum sample code" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="1-Introduction.html" class="btn btn-neutral" title="Introduction" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Jij Inc..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
