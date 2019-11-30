@@ -34,11 +34,7 @@ class GPUSQASampler(SQASampler):
         trotter (int):
             Trotter number.
 
-        step_length (int):
-            Length of Monte Carlo step.
-
-        step_num (int):
-            Number of Monte Carlo step.
+        num_sweeps (int):
 
         schedule_info (dict):
             Information about a annealing schedule.
@@ -80,8 +76,8 @@ class GPUSQASampler(SQASampler):
     """
 
     def __init__(self, beta=5.0, gamma=1.0,
-                 trotter=4, step_length=10, step_num=100,
-                 schedule=None, iteration=1, unit_num_L=None):
+                 trotter=4, num_sweeps=100,
+                 schedule=None, num_reads=1, unit_num_L=None):
         # GPU Sampler allows only even trotter number
         if trotter % 2 != 0:
             raise ValueError('GPU Sampler allows only even trotter number')
@@ -89,7 +85,8 @@ class GPUSQASampler(SQASampler):
 
         self.unit_num_L = unit_num_L
 
-        super().__init__(beta, gamma, trotter, step_length, step_num, schedule, iteration)
+        super().__init__(beta, gamma, trotter, num_reads=num_reads,
+                         num_sweeps=num_sweeps, schedule=schedule)
 
     def _post_process4state(self, q_state):
         if self.model.coordinate == 'chimera coordinate':
