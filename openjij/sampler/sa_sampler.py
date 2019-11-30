@@ -144,9 +144,9 @@ class SASampler(BaseSampler):
 
         # make init state generator
         if initial_state is None:
-            if not reinitialize_state:
-                raise ValueError(
-                    'You need initial_state if reinitilize_state is False.')
+            # if not reinitialize_state:
+            #     raise ValueError(
+            #         'You need initial_state if reinitilize_state is False.')
 
             def _generate_init_state(): return ising_graph.gen_spin()
         else:
@@ -220,9 +220,12 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
     beta_min = np.log(2) / max_delta_energy if beta_min is None else beta_min
     beta_max = np.log(100) / min_delta_energy if beta_max is None else beta_max
 
+    num_sweeps_per_beta = max(1, num_sweeps // 1000.0)
+
     schedule = cxxjij.utility.make_classical_schedule_list(
         beta_min=beta_min, beta_max=beta_max,
-        one_mc_step=1, num_call_updater=num_sweeps
+        one_mc_step=num_sweeps_per_beta,
+        num_call_updater=num_sweeps
     )
 
     return schedule, [beta_max, beta_min]
