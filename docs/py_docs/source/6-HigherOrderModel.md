@@ -2,7 +2,9 @@
 
 If you want to handle higher order model as follows:
 
-$$H = \sum_{i}h_i\sigma_i + \sum{i < j} J_{ij} \sigma_i \sigma_j + \sum{i, j, k} K_{i,j,k} \sigma_i\sigma_j \sigma_k \cdots$$
+ ```math
+ H = \sum_{i}h_i\sigma_i + \sum{i < j} J_{ij} \sigma_i \sigma_j + \sum{i, j, k} K_{i,j,k} \sigma_i\sigma_j \sigma_k \cdots
+ ```
 
 use ``.sample_hubo``
 
