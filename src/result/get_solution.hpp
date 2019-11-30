@@ -54,7 +54,7 @@ namespace openjij {
             //convert from Eigen::Vector to std::vector
             graph::Spins ret_spins(system.num_spins);
             for(std::size_t i=0; i<system.num_spins; i++){
-                ret_spins[i] = system.spin(i);
+                ret_spins[i] = system.spin(i)*system.spin(system.num_spins);
             }
             return ret_spins;
         }
@@ -136,7 +136,6 @@ namespace openjij {
         const graph::Spins get_solution(const system::ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block>& system){
 
             std::size_t localsize = system.info.rows*system.info.cols*system.info.chimera_unitsize;
-            std::size_t globalsize = localsize * system.info.trotters;
 
             graph::Spins ret_spins(localsize);
 

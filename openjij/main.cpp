@@ -12,6 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
+//disable Eigen warning
+#include <utility/disable_eigen_warning.hpp>
 
 #include "./compile_config.hpp"
 #include "./declare.hpp"
@@ -86,6 +88,9 @@ PYBIND11_MODULE(cxxjij, m){
     //swendsen-wang
     ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Dense<FloatType>, false>,  RandomEngine>(m_algorithm, "SwendsenWang");
     ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Sparse<FloatType>, false>, RandomEngine>(m_algorithm, "SwendsenWang");
+
+    //swendsen-wang (with Eigen implementation on a Sparse graph)
+    ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Sparse<FloatType>, true>, RandomEngine>(m_algorithm, "SwendsenWang");
 
 #ifdef USE_CUDA
     //GPU

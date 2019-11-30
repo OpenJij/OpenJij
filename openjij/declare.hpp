@@ -18,8 +18,8 @@
 #include <graph/all.hpp>
 #include <system/all.hpp>
 #include <updater/all.hpp>
-#include <algorithm/algorithm.hpp>
-#include <result/get_solution.hpp>
+#include <algorithm/all.hpp>
+#include <result/all.hpp>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>

@@ -15,6 +15,9 @@
 #ifndef OPENJIJ_UPDATER_ALL_HPP__
 #define OPENJIJ_UPDATER_ALL_HPP__
 
+//disable Eigen warning
+#include <utility/disable_eigen_warning.hpp>
+
 #include <updater/single_spin_flip.hpp>
 #include <updater/swendsen_wang.hpp>
 

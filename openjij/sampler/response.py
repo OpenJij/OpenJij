@@ -128,7 +128,6 @@ class Response:
         self.states = [list(t_state[min_ind]) for min_ind,
                        t_state in zip(min_e_indices, self.q_states)]
         self.min_samples = self._minimum_sample()
-
     def _minimum_sample(self):
         min_energy_ind = np.argmin(self.energies) if len(
             self.energies) != 0 else None

@@ -15,6 +15,7 @@
 import openjij
 from .model import BinaryQuadraticModel
 
+
 class KingGraph(BinaryQuadraticModel):
     """
     BQM for king graph of HITACHI CMOS Annealer
@@ -31,12 +32,14 @@ class KingGraph(BinaryQuadraticModel):
         Quadratic term [x1, y1, x2, y2, value]
         Linear term    [x1, y1, x1, y1, value]
     """
-    def __init__(self, machine_type, h=None, J=None, Q=None, king_graph=None, var_type=openjij.SPIN):
+
+    def __init__(self, linear=None, quadratic=None, offset=0.0,
+                 king_graph=None, var_type=openjij.SPIN, machine_type=''):
         """
         The constructor reformat interactions to Web API format (ising king graph),
         and validates that the interaction is in King Graph. 
         ----------
-        machine_type : int
+        machine_type : str
             choose 'ASIC' or 'FPGA'
         king_graph : list of list
             represents ising or QUBO interaction.
@@ -62,8 +65,9 @@ class KingGraph(BinaryQuadraticModel):
 
         # convert format h, J, Q and initilize BQM
         if king_graph is not None:
-            h, J, Q = self._convert_to_BQM_format(king_graph, var_type)
-        super().__init__(h=h, J=J, Q=Q, var_type=var_type)
+            linear, quadratic = self._convert_to_BQM_format(
+                king_graph, var_type)
+        super().__init__(linear, quadratic, offset=offset, var_type=var_type)
 
         # reformat to ising king graph (which is Web API format)
         if king_graph is not None and var_type == openjij.SPIN:
@@ -71,12 +75,14 @@ class KingGraph(BinaryQuadraticModel):
         elif var_type == openjij.SPIN:
             self._ising_king_graph = []
             for index, h in self.linear.items():
-                x, y = self._convert_to_xy(index)
-                self._ising_king_graph.append([x,y ,x,y, h])
-            for (i, j), J in self.quad.items():
-                x1, y1 = self._convert_to_xy(i)
-                x2, y2 = self._convert_to_xy(j)
-                self._ising_king_graph.append([x1, y1, x2, y2, J])
+                if h != 0:
+                    x, y = self._convert_to_xy(index)
+                    self._ising_king_graph.append([x, y, x, y, h])
+            for (i, j), J in self.quadratic.items():
+                if J != 0:
+                    x1, y1 = self._convert_to_xy(i)
+                    x2, y2 = self._convert_to_xy(j)
+                    self._ising_king_graph.append([x1, y1, x2, y2, J])
         else:
             ising_int = self.ising_interactions()
             sys_size = len(ising_int)
@@ -87,51 +93,47 @@ class KingGraph(BinaryQuadraticModel):
                         continue
                     x1, y1 = self._convert_to_xy(self.indices[i])
                     x2, y2 = self._convert_to_xy(self.indices[j])
-                    self._ising_king_graph.append([x1, y1, x2, y2, ising_int[i][j]])
+                    self._ising_king_graph.append(
+                        [x1, y1, x2, y2, ising_int[i][j]])
 
         self._validation_ising_king_graph()
-        
+
     def _convert_to_BQM_format(self, king_graph, var_type):
-        h, J, Q = None, None, None
-        if var_type == openjij.SPIN:
-            h, J = {}, {}
-            for x1, y1, x2, y2, value in king_graph:
-                if (x1, y1) == (x2, y2):
-                    h[(x1, y1)] = value
-                else:
-                    J[(x1, y1), (x2, y2)] = value
-        else:  # qubo
-            Q = {((x1, y1), (x2, y2)): value for x1, y1, x2, y2, value in king_graph}
-        return h, J, Q
+        linear, quad = {}, {}
+        for x1, y1, x2, y2, value in king_graph:
+            if (x1, y1) == (x2, y2):
+                linear[(x1, y1)] = value
+            else:
+                quad[(x1, y1), (x2, y2)] = value
+        return linear, quad
 
     def get_ising_king_graph(self):
         return self._ising_king_graph
-        
+
     def king_indices(self):
         if isinstance(self.indices[0], tuple):
             return self.indices
         else:
             return [self._convert_to_xy(i) for i in self.indices]
-            
+
     def _convert_to_xy(self, index):
         if isinstance(index, tuple):
             return index[0], index[1]
         else:
             y = int(index / self.xrange[1])
             return int(index - y * self.xrange[1]), y
-        
+
     def convert_to_index(self, x, y):
         return y * self.xrange[1] + x
-        
+
     def _validation_ising_king_graph(self):
         for xi, yi, xj, yj, p in self._ising_king_graph:
             if yi >= self.yrange[1] or yj >= self.yrange[1]:
                 raise ValueError('Graph is incomplete xi: {}, yi: {}, xj: {}, yj: {}, p:{}'
-                .format(xi, yi, xj, yj, p))
+                                 .format(xi, yi, xj, yj, p))
             if not (xi in [xj, xj-1, xj+1]) or not (yi in [yj, yj-1, yj+1]):
                 raise ValueError('Graph is incomplete xi: {}, yi: {}, xj: {}, yj: {}, p:{}'
-                .format(xi, yi, xj, yj, p))
+                                 .format(xi, yi, xj, yj, p))
             if not (self.prange[0] <= p <= self.prange[1]):
                 raise ValueError('Graph is incomplete xi: {}, yi: {}, xj: {}, yj: {}, p: {}'
-                .format(xi, yi, xj, yj, p))
-            
+                                 .format(xi, yi, xj, yj, p))

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.11)
 project(openjij)
 
+
 set(CMAKE_CXX_STANDARD 11)
 # Set default compile flags for GCC
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -13,17 +14,14 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 # add fPIC option to all object files
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-list(APPEND CMAKE_MODULE_PATH external)
-include(${CMAKE_SOURCE_DIR}/external/googletest.cmake)
-include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
-include(${CMAKE_SOURCE_DIR}/external/eigen.cmake)
  
 
 ##### Set default behavior #####
 set(DEFAULT_USE_OMP No)
 set(DEFAULT_USE_CUDA Yes)
 set(DEFAULT_USE_TEST No)
+option(USE_TEST "Use test code" No)
+
 
 # Use OpenMP as default behavior
 if(NOT DEFINED USE_OMP)
@@ -61,7 +59,17 @@ if(USE_CUDA)
     add_definitions(-DUSE_CUDA)
 endif()
 
+list(APPEND CMAKE_MODULE_PATH external)
+if(USE_TEST)
+    include(${CMAKE_SOURCE_DIR}/external/googletest.cmake)
+else()
+	message(STATUS "Skip downloding googletest")
+endif()
+include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
+include(${CMAKE_SOURCE_DIR}/external/eigen.cmake)
 
 add_subdirectory(src)
 add_subdirectory(openjij)
-add_subdirectory(tests)
+if(USE_TEST)
+    add_subdirectory(tests)
+endif()

@@ -98,9 +98,70 @@ namespace openjij {
                     }
                 }
 
-                // TODO: implement calculation of total energy difference
-                // DEPRECATED: Dense::calc_energy
-                //return system.interaction.calc_energy(system.spin);
+                return;
+            }
+        };
+
+        /**
+         * @brief swendsen wang updater for classical ising model (with Eigen implementation on Sparse graph)
+         *
+         * @tparam FloatType
+         */
+        template<typename FloatType>
+        struct SwendsenWang<system::ClassicalIsing<graph::Sparse<FloatType>, true>> {
+
+            using ClIsing = system::ClassicalIsing<graph::Sparse<FloatType>, true>;
+
+            template<typename RandomNumberEngine>
+            inline static void update(ClIsing& system,
+                                 RandomNumberEngine& random_number_engine,
+                                 const utility::ClassicalUpdaterParameter& parameter) {
+                auto urd = std::uniform_real_distribution<>(0, 1.0);
+
+                // num_spin = system size + additional spin
+                const size_t num_spin = system.spin.size();
+
+                // 1. update bonds
+                auto union_find_tree = utility::UnionFind(num_spin);
+                for (std::size_t node = 0; node < num_spin; ++node) {
+                    for (typename ClIsing::SparseMatrixXx::InnerIterator it(system.interaction, node); it; ++it) {
+                        //fetch adjacent node
+                        std::size_t adj_node = it.index();
+                        //fetch system.interaction(node, adj_node)
+                        const FloatType& J = it.value();
+                        if (node >= adj_node) continue;
+                        //check if bond can be connected
+                        if (J * system.spin(node) * system.spin(adj_node) > 0) continue;
+                        const auto unite_rate = std::max(static_cast<FloatType>(0.0), static_cast<FloatType>(1.0 - std::exp( - 2.0 * parameter.beta * std::abs(J))));
+                        if (urd(random_number_engine) < unite_rate)
+                            union_find_tree.unite_sets(node, adj_node);
+                    }
+                }
+
+                // 2. make clusters
+                const auto cluster_map = [num_spin, &union_find_tree](){
+                    auto cluster_map = std::unordered_multimap<utility::UnionFind::Node, utility::UnionFind::Node>();
+                    for (std::size_t node = 0; node < num_spin; ++node) {
+                        cluster_map.insert({union_find_tree.find_set(node), node});
+                    }
+                    return cluster_map;
+                }();
+
+                // 3. update spin states in each cluster
+                for (auto&& c : union_find_tree.get_roots()) {
+                    const auto range = cluster_map.equal_range(c);
+
+                    // 3.1. decide spin state (flip with the probability 1/2)
+                    const FloatType probability = 1.0 / 2.0;
+                    if(urd(random_number_engine) < probability){
+                        // 3.2. update spin states
+                        for (auto itr = range.first, last = range.second; itr != last; ++itr) {
+                            const auto idx = itr->second;
+                            system.spin(idx) *= -1;
+                        }
+                    }
+                }
+
                 return;
             }
         };
