@@ -1,8 +1,0 @@
-# markdown doc
-
-sample
-
-## 例えば
-
-* aaa
-* bbb
