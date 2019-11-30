@@ -163,6 +163,3 @@ dmypy.json
 *.iobj
 *.ipdb
 .vs/
-
-# not ignore documents file
-!docs/py_docs/build
