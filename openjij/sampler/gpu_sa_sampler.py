@@ -20,30 +20,22 @@ import numpy as np
 
 
 class GPUSASampler(SASampler):
-    """Sampler with Simulated Quantum Annealing (SQA) on GPU.
+    """Sampler with Simulated Annealing (SA) on GPU.
 
     Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
 
     Args:
-        beta (float):
-            Inverse temperature.
-
-        gamma (float):
-            Amplitude of quantum fluctuation.
-
-        trotter (int):
-            Trotter number.
-
-        step_length (int):
+        beta_min (float):
+            Minimum inverse temperature.
+        beta_max (float):
+            Maximum inverse temperature.
+        num_sweeps (int):
             Length of Monte Carlo step.
-
-        step_num (int):
-            Number of Monte Carlo step.
 
         schedule_info (dict):
             Information about a annealing schedule.
 
-        iteration (int):
+        num_reads (int):
             Number of iterations.
 
         unit_num_L (int):
@@ -81,12 +73,13 @@ class GPUSASampler(SASampler):
 
     def __init__(self,
                  beta_min=0.1, beta_max=5.0,
-                 step_length=10, step_num=100,
-                 schedule=None, iteration=1, unit_num_L=None):
+                 num_sweeps=10,
+                 schedule=None, num_reads=1, unit_num_L=None):
 
         self.unit_num_L = unit_num_L
 
-        super().__init__(beta_min, beta_max, step_length, step_num, schedule, iteration)
+        super().__init__(beta_min, beta_max, num_reads=num_reads,
+                         num_sweeps=num_sweeps, schedule=schedule)
 
     def _dict_to_model(self, var_type, h=None, J=None, Q=None, **kwargs):
 

@@ -14,6 +14,8 @@ Welcome to OpenJij's documentation!
    2-Install
    3-Minimum_sample
    4-Parameters_customize
+   5-benchmark
+   6-HigherOrderModel
 
 
 

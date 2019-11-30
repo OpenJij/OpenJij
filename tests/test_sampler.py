@@ -210,6 +210,15 @@ class SamplerOptimizeTest(unittest.TestCase):
             list(res.min_samples['states'][0])
         )
 
+    def test_hubo_sampler(self):
+        sampler = oj.SASampler()
+        h = {0: -1}
+        J = {(0, 1): -1}
+        K = {(0, 1, 2): 1}
+        response = sampler.sample_hubo([h, J, K], var_type='SPIN')
+        print(response.info)
+        self.assertListEqual([1, 1, -1], list(response.states[0]))
+
     # def test_gpu_sqa(self):
     #     gpu_sampler = oj.GPUSQASampler()
     #     h = {0: -1}

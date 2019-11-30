@@ -3,6 +3,9 @@ import openjij
 from openjij.sampler import measure_time
 from openjij.sampler import BaseSampler
 from openjij.utils.decorator import deprecated_alias
+from openjij.model import BinaryHigherOrderModel
+from .hubo_simulated_annealing import hubo_simulated_annealing, default_schedule
+import time
 import cxxjij
 
 
@@ -196,6 +199,80 @@ class SASampler(BaseSampler):
             result_state,
             need_to_convert_from_spin=True))
 
+    def sample_hubo(self, interactions: list, var_type,
+                    beta_min=None, beta_max=None, schedule=None,
+                    num_sweeps=100, num_reads=1,
+                    init_state=None, seed=None):
+        """sampling from higher order unconstrainted binary optimization
+        Args:
+            interactions (list of dict): ordered by degree of interaction. [linear, quadratic, ...]
+            var_type (str, openjij.VarType): "SPIN" or "BINARY"
+            beta_min (float, optional): Minimum beta (initial inverse temperature). Defaults to None.
+            beta_max (float, optional): Maximum beta (final inverse temperature). Defaults to None.
+            schedule (list, optional): [description]. Defaults to None.
+            num_sweeps (int, optional): [description]. Defaults to 100.
+            num_reads (int, optional): [description]. Defaults to 1.
+            init_state (list, optional): initial state. Defaults to None.
+            seed (int, optional): [description]. Defaults to None.
+
+        Returns:
+            [type]: [description]
+        """
+
+        self._setting_overwrite(
+            beta_min=beta_min, beta_max=beta_max,
+            num_sweeps=num_sweeps, num_reads=num_reads
+        )
+
+        bhom = BinaryHigherOrderModel(interactions)
+
+        if schedule or self.schedule:
+            self._schedule = self._convert_validation_schedule(
+                schedule if schedule else self.schedule
+            )
+            self.schedule_info = {'schedule': 'custom schedule'}
+        else:
+            schedule = default_schedule(
+                bhom,
+                beta_min=self._schedule_setting['beta_min'],
+                beta_max=self._schedule_setting['beta_max'],
+                num_sweeps=self._schedule_setting['num_sweeps'])
+            self.schedule_info = {
+                'beta_max': schedule[-1][0],
+                'beta_min': schedule[0][0],
+                'num_sweeps': self._schedule_setting['num_sweeps']
+            }
+
+        init_state = init_state if init_state else np.random.choice(
+            [1, -1], len(bhom.indices))
+        response = openjij.Response(
+            var_type=var_type, indices=bhom.indices
+        )
+        execution_time = []
+        @measure_time
+        def exec_sampling():
+            for _ in range(num_reads):
+                _exec_time, state = measure_time(
+                    hubo_simulated_annealing)(bhom, init_state, schedule,
+                                              var_type=var_type)
+                execution_time.append(_exec_time)
+                response.states.append(state)
+                response.energies.append(bhom.calc_energy(state))
+
+        sampling_time, _ = exec_sampling()
+
+        response.info['sampling_time'] = sampling_time * 10**6  # micro sec
+        response.info['execution_time'] = np.mean(
+            execution_time) * 10**6  # micro sec
+        response.info['list_exec_times'] = np.array(
+            execution_time) * 10**6  # micro sec
+
+        response.update_ising_states_energies(
+            response.states, response.energies)
+
+        response.info['schedule'] = self.schedule_info
+        return response
+
 
 def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
                                   beta_max=None, beta_min=None,
@@ -229,3 +306,15 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
     )
 
     return schedule, [beta_max, beta_min]
+
+
+def measure_time(func):
+    def wrapper(*args, **kargs):
+        start_time = time.perf_counter()
+
+        result = func(*args, **kargs)
+
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
+        return execution_time, result
+    return wrapper
