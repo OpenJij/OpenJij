@@ -19,6 +19,7 @@
 #include <random>
 #include <algorithm>
 #include <cmath>
+#include <cassert>
 #include <unordered_map>
 
 #include <graph/all.hpp>
@@ -59,14 +60,13 @@ namespace openjij {
                     auto& timeline = system.spin_config[i];
                     auto cuts = generate_poisson_points(0.5*system.gamma*(1.0-parameter.s), parameter.beta, random_number_engine);
                     // assuming transverse field s is positive
-            
+
                     timeline = create_timeline(timeline, cuts);
+                    assert(timeline.size() > 0);
+
                     index_helper.push_back(index_helper.back()+timeline.size());
                 }
 
-                const auto first_lt = [](CutPoint x, CutPoint y) { return x.first < y.first; };
-                // function to compare time point (lt; less than)
-                
                 /* 2. place spacial bonds */
                 utility::UnionFind union_find_tree(index_helper.back());
                 for(graph::Index i = 0;i < num_spin; i++) {
@@ -75,35 +75,13 @@ namespace openjij {
                             continue; // ignore duplicated interaction
                                       // if adj_nodes are sorted, this "continue" can be replaced by "break"
                         }
-                        
+
                         const auto bonds = generate_poisson_points(std::abs(0.5*system.interaction.J(i, j)*parameter.s),
                                                                    parameter.beta, random_number_engine);
                         for(const auto bond : bonds) {
-                            const auto dummy_bond = CutPoint(bond, 0); // dummy variable for binary search
-                            
-                            /* find time point at ith site just before the bond */
-                            auto ki = std::distance(system.spin_config[i].begin(),
-                                                    std::lower_bound(system.spin_config[i].begin(),
-                                                                     system.spin_config[i].end(),
-                                                                     dummy_bond,
-                                                                     first_lt));
-                            if(ki == 0) { // if the bond lies before any time points
-                                ki = system.spin_config[i].size() - 1; // periodic boundary condition
-                            } else if(ki == system.spin_config[i].size()) { // if the bond lies after any time points
-                                ki--;
-                            }
-
-                            /* find time point at jth site just before the bond */
-                            auto kj = std::distance(system.spin_config[j].begin(),
-                                                    std::lower_bound(system.spin_config[j].begin(),
-                                                                     system.spin_config[j].end(),
-                                                                     dummy_bond,
-                                                                     first_lt));
-                            if(kj == 0) {
-                                kj = system.spin_config[j].size() - 1;
-                            } else if(kj == system.spin_config[j].size()) {
-                                kj--;
-                            }
+                            /* get time point indices just before the bond */
+                            auto ki = system.get_temporal_spin_index(i, bond);
+                            auto kj = system.get_temporal_spin_index(j, bond);
 
                             if(system.spin_config[i][ki].second * system.spin_config[j][kj].second * system.interaction.J(i, j) < 0) {
                                 union_find_tree.unite_sets(index_helper[i]+ki, index_helper[j]+kj);
@@ -115,7 +93,7 @@ namespace openjij {
                 /* 3. make clusters */
                 std::unordered_map<utility::UnionFind::Node, std::vector<utility::UnionFind::Node>> cluster_map;
                 // root-index to {contained nodes} map
-                
+
                 for(graph::Index i = 0;i < num_spin;i++) {
                     for(size_t k = 0;k < system.spin_config[i].size();k++) {
                         auto index = index_helper[i] + k;
@@ -147,53 +125,112 @@ namespace openjij {
                 }
             }
 
-        private:
             /**
              * @brief create new timeline; place kinks by ignoring old cuts and place new cuts
-             * 
+             *
              */
             static std::vector<CutPoint> create_timeline(const std::vector<CutPoint>& old_timeline,
                                                          const std::vector<TimeType>& cuts) {
-                std::vector<CutPoint> new_timeline;
-                new_timeline.reserve(old_timeline.size()); // not actual size, but decrease reallocation frequency
-                size_t old_time_index = 0;
-                size_t cut_index = 0;
-
-                while(true) {
-                    const auto prev_time_index = (old_time_index - 1 + old_timeline.size()) % old_timeline.size();
-
-                    /* add earlier of kink or cut to new timeline */
-                    if(cuts[cut_index] < old_timeline[old_time_index].first) {
-                        new_timeline.push_back(CutPoint{cuts[cut_index], old_timeline[prev_time_index].second});
-                        cut_index++;
-                    } else {
-                        /* if spin direction is different from previous one, place cut (kink) */
-                        if(old_timeline[old_time_index].second != old_timeline[prev_time_index].second) {
-                            new_timeline.push_back(old_timeline[old_time_index]);
-                        }
-                        old_time_index++;
+                /* remove redundant cuts*/
+                std::vector<CutPoint> concatenated_timeline;
+                auto current_spin = old_timeline.back().second;
+                for(auto cut_point : old_timeline) {
+                    if(cut_point.second != current_spin) {
+                        concatenated_timeline.push_back(cut_point);
                     }
+                    current_spin = cut_point.second;
+                }
 
-                    /* when all cuts have been placed, add remaining old kinks and break loop */
-                    if(cut_index >= cuts.size()) {
-                        for(;old_time_index < old_timeline.size();old_time_index++) {
-                            /* if spin direction is different from previous one, place cut (kink) */
-                            const auto prev_time_index = (old_time_index - 1 + old_timeline.size()) % old_timeline.size();
-                            if(old_timeline[old_time_index].second != old_timeline[prev_time_index].second) {
-                                new_timeline.push_back(old_timeline[old_time_index]);
-                            }
+                /*if entire timeline is occupied by single spin state */
+                std::vector<CutPoint> new_timeline;
+                if(concatenated_timeline.empty()) {
+                    if(cuts.empty()) {
+                        new_timeline.push_back(old_timeline[0]);
+                    } else {
+                        for(auto cut : cuts) {
+                            new_timeline.push_back(CutPoint(cut, current_spin));
                         }
+                    }
+                    return new_timeline;
+                }
+
+                current_spin = concatenated_timeline.back().second;
+                auto timeline_itr = concatenated_timeline.begin();
+                auto cuts_itr = cuts.begin();
+                while(true) {
+                    /* when all cuts have been placed, add remaining old kinks and break loop */
+                    if(cuts_itr == cuts.end()) {
+                        std::for_each(timeline_itr, concatenated_timeline.end(), [&](CutPoint it) {
+                                new_timeline.push_back(it);
+                            });
                         break;
                     }
 
                     /* when all spin kinks have been placed, add remaining cuts and break loop */
-                    if(old_time_index >= old_timeline.size()) {
-                        const auto final_spin = old_timeline[old_timeline.size()-1].second;
-                        for(;cut_index < cuts.size();cut_index++) {
-                            new_timeline.push_back(CutPoint{cuts[cut_index], final_spin});
-                        }
+                    if(timeline_itr == concatenated_timeline.end()) {
+                        std::for_each(cuts_itr, cuts.end(), [&](TimeType it) {
+                                new_timeline.push_back(CutPoint(it, current_spin));
+                            });
                         break;
                     }
+
+                    /* add earlier of kink or cut to new timeline */
+                    if(*cuts_itr < timeline_itr->first) {
+                        new_timeline.push_back(CutPoint(*cuts_itr, current_spin));
+                        cuts_itr++;
+                    } else {
+                        /* if spin direction is different from previous one, place cut (kink) */
+                        new_timeline.push_back(*timeline_itr);
+                        current_spin = timeline_itr->second;
+                        timeline_itr++;
+                    }
+                }
+
+                return new_timeline;
+            }
+
+            /**
+             * @brief easy but inefficient version of create_timeline()
+             *
+             */
+            static std::vector<CutPoint> create_timeline_easy(const std::vector<CutPoint>& old_timeline,
+                                                              const std::vector<TimeType>& cuts) {
+                /* remove redundant cuts*/
+                std::vector<CutPoint> new_timeline;
+                auto current_spin = old_timeline.back().second;
+                for(auto cut_point : old_timeline) {
+                    if(cut_point.second != current_spin) {
+                        new_timeline.push_back(cut_point);
+                    }
+                    current_spin = cut_point.second;
+                }
+
+                /* if entire timeline is occupied by single spin state */
+                if(new_timeline.empty()) {
+                    if(cuts.empty()) {
+                        new_timeline.push_back(old_timeline[0]);
+                    } else {
+                        for(auto cut : cuts) {
+                            new_timeline.push_back(CutPoint(cut, current_spin));
+                        }
+                    }
+                    return new_timeline;
+                }
+
+                static const auto first_lt = [](CutPoint x, CutPoint y) { return x.first < y.first; };
+                for(auto cut : cuts) {
+                    const auto dummy_cut = CutPoint(cut, 0); // dummy cut for binary search
+                    auto itr = std::upper_bound(new_timeline.begin(),
+                                                new_timeline.end(),
+                                                dummy_cut,
+                                                first_lt);
+                    std::vector<CutPoint>::iterator prev_itr;
+                    if(itr == new_timeline.begin()) {
+                        prev_itr = new_timeline.end() - 1;
+                    } else {
+                        prev_itr = itr - 1;
+                    }
+                    new_timeline.insert(itr, CutPoint(cut, prev_itr->second));
                 }
 
                 return new_timeline;

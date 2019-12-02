@@ -78,7 +78,7 @@ namespace openjij {
              * @param gamma
              */
             ContinuousTimeIsing(const graph::Spins& init_spin,
-                                const graph::Spin init_auxiriary_spin,
+                                const graph::Spin init_auxiliary_spin,
                                 const GraphType& init_interaction,
                                 const FloatType gamma)
                 : spin_config(), num_spins(init_spin.size()+1), interaction(init_interaction.get_num_spins()+1), gamma(gamma) {
@@ -102,9 +102,11 @@ namespace openjij {
                 for(auto spin : init_spin) {
                     spin_config.push_back(std::vector<CutPoint>{ CutPoint(TimeType(), spin) }); // TimeType() is zero value of the type
                 }
-                spin_config.push_back(std::vector<CutPoint>{ CutPoint(TimeType(), init_auxiriary_spin) });
+                spin_config.push_back(std::vector<CutPoint>{ CutPoint(TimeType(), init_auxiliary_spin) });
             }
-            
+
+
+            /* member functions*/
 
             /**
              * @brief reset spins with given spin configuration
@@ -128,9 +130,63 @@ namespace openjij {
                 }
             }
 
-            
+            /**
+             * @brief return time-direction index which exists just before time_point at "site_index"th site.
+             * The periodic boundary condition for time direction is taken into account.
+             *
+             * @param site_index spacial index of site
+             * @param time_point time-direction point
+             */
+            size_t get_temporal_spin_index(graph::Index site_index, TimeType time_point) const {
+                static const auto first_lt = [](CutPoint x, CutPoint y) { return x.first < y.first; };
+                // function to compare two time points (lt; less than)
+
+                const auto& timeline = this->spin_config[site_index];
+                const auto dummy_cut = CutPoint(time_point, 0); // dummy variable for binary search
+                auto found_itr = std::upper_bound(timeline.begin(),
+                                                  timeline.end(),
+                                                  dummy_cut,
+                                                  first_lt);
+
+                if(found_itr == timeline.begin()) { // if the time_point lies before any time points
+                    found_itr = timeline.end() - 1; // periodic boundary condition
+                } else {
+                    found_itr--;
+                }
+
+                return std::distance(timeline.begin(), found_itr);
+            }
+
+            /*
+             * @brief return spin configuration at given temporal slice, not containing auxiliary spin
+             *
+             * @param slice_time
+             */
+            graph::Spins get_slice_at(TimeType slice_time) const {
+                graph::Spins slice;
+
+                for(graph::Index i = 0;i < this->spin_config.size()-1;i++) {
+                    auto temporal_index = get_temporal_spin_index(i, slice_time);
+                    slice.push_back(this->spin_config[i][temporal_index].second);
+                }
+
+                return slice;
+            }
+
+            /*
+             * @brief return auxiliary spin state at given temporal slice
+             *
+             * @param slice_time
+             */
+            graph::Spin get_auxiliary_spin(TimeType slice_time) const {
+                auto last_index = this->spin_config.size()-1;
+                auto temporal_index = get_temporal_spin_index(last_index, slice_time);
+                return this->spin_config[last_index][temporal_index].second;
+            }
+
+
             /* Member variables */
-            
+
             /**
              * @brief spin configuration
              */
@@ -158,7 +214,7 @@ namespace openjij {
          * @tparam eigen_impl
          * @tparam GraphType
          * @param init_spins
-         * @param init_auxiriary_spin
+         * @param init_auxiliary_spin
          * @param interaction
          * @param gamma
          *
@@ -166,11 +222,11 @@ namespace openjij {
          */
         template<bool eigen_impl=false,typename GraphType>
         ContinuousTimeIsing<GraphType, eigen_impl> make_continuous_time_ising(const graph::Spins& init_spins,
-                                                                              const graph::Spin& init_auxiriary_spin,
+                                                                              const graph::Spin& init_auxiliary_spin,
                                                                               const GraphType& init_interaction,
                                                                               double gamma) {
             return ContinuousTimeIsing<GraphType, eigen_impl>(init_spins,
-                                                              init_auxiriary_spin,
+                                                              init_auxiliary_spin,
                                                               init_interaction,
                                                               static_cast<typename GraphType::value_type>(gamma));
         }
