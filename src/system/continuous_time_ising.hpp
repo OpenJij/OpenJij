@@ -23,19 +23,19 @@
 
 namespace openjij {
     namespace system {
-        using TimeType = double;
-        using CutPoint = std::pair<TimeType, graph::Spin>;
-        /**
-         * @brief spin configuration in real and continuous time space
-         * spin_config[i][j] -> at i th site, j th pair of imaginary time point and spin value after the point
-         */
-        using SpinConfiguration = std::vector<std::vector<CutPoint>>;
-        
         template<typename GraphType, bool eigen_impl=false>
         struct ContinuousTimeIsing {
             using system_type = transverse_field_system;
             using FloatType = typename GraphType::value_type;
-            
+            using TimeType = FloatType;
+            using CutPoint = std::pair<TimeType, graph::Spin>;
+
+            /**
+             * @brief spin configuration in real and continuous time space
+             * spin_config[i][j] -> at i th site, j th pair of imaginary time point and spin value after the point
+             */
+            using SpinConfiguration = std::vector<std::vector<CutPoint>>;
+
             /**
              * @brief ContinuousTimeIsing constructor
              *
@@ -48,17 +48,20 @@ namespace openjij {
                                 const std::vector<CutPoint>& init_auxiliary_spin_timeline,
                                 const GraphType& init_interaction,
                                 const FloatType gamma)
-                : spin_config(init_spin_config), num_spins(init_spin_config.size()+1), interaction(init_interaction.get_num_spins()+1), gamma(gamma) {
+                : spin_config(init_spin_config),
+                  num_spins(init_spin_config.size()+1),
+                  interaction(init_interaction.get_num_spins()+1),
+                  gamma(gamma) {
+
                 assert(init_spin_config.size() == init_interaction.get_num_spins());
 
                 for(graph::Index i = 0;i < init_interaction.get_num_spins();i++) {
-                    for(auto j : init_interaction.adj_nodes(i)) {
+                    for(auto&& j : init_interaction.adj_nodes(i)) {
                         if(i < j) {
                             continue;
                         }
 
-                        // add actual interactions
-                        this->interaction.J(i, j) = init_interaction.J(i, j);
+                        this->interaction.J(i, j) = init_interaction.J(i, j); // add actual interactions
                     }
 
                     this->interaction.J(i, this->num_spins-1) = init_interaction.h(i);
@@ -68,45 +71,47 @@ namespace openjij {
                 spin_config.push_back(init_auxiliary_spin_timeline);
             }
 
-
             /**
-             * @brief ContinuousTimeIsing constructor, initializing each site to have only one cut at time zero with given spin
+             * @brief ContinuousTimeIsing constructor
              *
-             * @param init_spin
+             * @details create timeline which has only one cut at time zero with given spin state for each site
+             *
+             * @param init_spins
              * @param init_auxiliary_spin
              * @param init_interaction
              * @param gamma
              */
-            ContinuousTimeIsing(const graph::Spins& init_spin,
+            ContinuousTimeIsing(const graph::Spins& init_spins,
                                 const graph::Spin init_auxiliary_spin,
                                 const GraphType& init_interaction,
-                                const FloatType gamma)
-                : spin_config(), num_spins(init_spin.size()+1), interaction(init_interaction.get_num_spins()+1), gamma(gamma) {
-                assert(init_spin.size() == init_interaction.get_num_spins());
+                                const FloatType gamma) :
+                ContinuousTimeIsing(convert_to_spin_config(init_spins),
+                                    std::vector<CutPoint> { CutPoint(TimeType(), init_auxiliary_spin) },
+                                    init_interaction,
+                                    gamma) {} // constructor delegation
 
-                for(graph::Index i = 0;i < init_interaction.get_num_spins();i++) {
-                    for(auto j : init_interaction.adj_nodes(i)) {
-                        if(i < j) {
-                            continue;
-                        }
+            /* initialization helper functions */
+        private:
 
-                        // add actual interactions
-                        this->interaction.J(i, j) = init_interaction.J(i, j);
-                    }
-
-                    this->interaction.J(i, this->num_spins-1) = init_interaction.h(i);
-                    // add longitudinal magnetic field as interaction between ith spin and auxiliary spin
-                }
+            /**
+             * @brief convert classical spins to spin configuration; each site has only one cut with given spin state at time zero
+             *
+             * @param spins
+             */
+            static SpinConfiguration convert_to_spin_config(const graph::Spins& spins) {
+                SpinConfiguration spin_config;
+                spin_config.reserve(spins.size());
 
                 /* set spin configuration for each site, which has only one cut at time zero */
-                for(auto spin : init_spin) {
+                for(auto spin : spins) {
                     spin_config.push_back(std::vector<CutPoint>{ CutPoint(TimeType(), spin) }); // TimeType() is zero value of the type
                 }
-                spin_config.push_back(std::vector<CutPoint>{ CutPoint(TimeType(), init_auxiliary_spin) });
+
+                return spin_config;
             }
 
-
             /* member functions*/
+        public:
 
             /**
              * @brief reset spins with given spin configuration
@@ -122,12 +127,14 @@ namespace openjij {
              *
              * @param classical_spins
              */
-            void reset_spins(const graph::Spins& classical_spins) {
-                for(int i = 0;i < num_spins;i++) {
+            void reset_spins(const graph::Spins& classical_spins, graph::Spin auxiliary_spin) {
+                assert(classical_spins.size() == this->num_spins-1);
+                for(size_t i = 0;i < this->num_spins - 1;i++) {
                     this->spin_config[i] = std::vector<CutPoint> {
                         CutPoint(TimeType(), classical_spins[i]) // TimeType() is zero value of the type
                     };
                 }
+                this->spin_config[this->num_spins-1] = std::vector<CutPoint> { CutPoint(TimeType(), auxiliary_spin) };
             }
 
             /**
@@ -196,12 +203,12 @@ namespace openjij {
              * @brief number of spins, including auxiliary spin for longitudinal magnetic field
              */
             const std::size_t num_spins;
-            
+
             /**
              * @brief interaction
              */
             GraphType interaction;
-            
+
             /**
              * @brief coefficient of transverse field term, actual field would be gamma * s, where s = [0:1]
              */
@@ -220,7 +227,7 @@ namespace openjij {
          *
          * @return generated object
          */
-        template<bool eigen_impl=false,typename GraphType>
+        template<bool eigen_impl=false, typename GraphType>
         ContinuousTimeIsing<GraphType, eigen_impl> make_continuous_time_ising(const graph::Spins& init_spins,
                                                                               const graph::Spin& init_auxiliary_spin,
                                                                               const GraphType& init_interaction,

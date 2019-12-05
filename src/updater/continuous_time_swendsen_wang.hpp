@@ -31,13 +31,13 @@ namespace openjij {
     namespace updater {
         template<typename System>
         struct ContinuousTimeSwendsenWang;
-        
+
         template<typename GraphType>
         struct ContinuousTimeSwendsenWang<system::ContinuousTimeIsing<GraphType, false>> {
-            using CutPoint = system::CutPoint;
-            using TimeType = system::TimeType;
-            using FloatType = typename GraphType::value_type;
-            
+            using CutPoint = typename system::ContinuousTimeIsing<GraphType, false>::CutPoint;
+            using TimeType = typename system::ContinuousTimeIsing<GraphType, false>::TimeType;
+            using FloatType = typename system::ContinuousTimeIsing<GraphType, false>::FloatType;
+
             /**
              * @brief continuous time Swendsen-Wang updater for transverse ising model (no Eigen implementation)
              *
@@ -56,10 +56,10 @@ namespace openjij {
                  */
 
                 /* 1. remove old cuts and place new cuts for every site */
-                for(graph::Index i = 0;i < num_spin; i++) {
+                for(graph::Index i = 0;i < num_spin;i++) {
                     auto& timeline = system.spin_config[i];
                     auto cuts = generate_poisson_points(0.5*system.gamma*(1.0-parameter.s), parameter.beta, random_number_engine);
-                    // assuming transverse field s is positive
+                    // assuming transverse field gamma is positive
 
                     timeline = create_timeline(timeline, cuts);
                     assert(timeline.size() > 0);
@@ -69,7 +69,7 @@ namespace openjij {
 
                 /* 2. place spacial bonds */
                 utility::UnionFind union_find_tree(index_helper.back());
-                for(graph::Index i = 0;i < num_spin; i++) {
+                for(graph::Index i = 0;i < num_spin;i++) {
                     for(auto&& j : system.interaction.adj_nodes(i)) {
                         if (i < j) {
                             continue; // ignore duplicated interaction
@@ -117,7 +117,6 @@ namespace openjij {
                         for(auto node : cluster.second) {
                             auto i = std::distance(index_helper.begin(),
                                                    std::upper_bound(index_helper.begin(), index_helper.end(), node)) - 1;
-                            // TODO: check carefully the case which node == index_helper element
                             auto k = node - index_helper[i];
                             system.spin_config[i][k].second *= -1;
                         }
@@ -141,7 +140,7 @@ namespace openjij {
                     current_spin = cut_point.second;
                 }
 
-                /*if entire timeline is occupied by single spin state */
+                /* if entire timeline is occupied by single spin state */
                 std::vector<CutPoint> new_timeline;
                 if(concatenated_timeline.empty()) {
                     if(cuts.empty()) {
@@ -158,7 +157,7 @@ namespace openjij {
                 auto timeline_itr = concatenated_timeline.begin();
                 auto cuts_itr = cuts.begin();
                 while(true) {
-                    /* when all cuts have been placed, add remaining old kinks and break loop */
+                    /* if all cuts have been placed, add remaining old kinks and break loop */
                     if(cuts_itr == cuts.end()) {
                         std::for_each(timeline_itr, concatenated_timeline.end(), [&](CutPoint it) {
                                 new_timeline.push_back(it);
@@ -166,7 +165,7 @@ namespace openjij {
                         break;
                     }
 
-                    /* when all spin kinks have been placed, add remaining cuts and break loop */
+                    /* if all spin kinks have been placed, add remaining cuts and break loop */
                     if(timeline_itr == concatenated_timeline.end()) {
                         std::for_each(cuts_itr, cuts.end(), [&](TimeType it) {
                                 new_timeline.push_back(CutPoint(it, current_spin));
@@ -179,7 +178,6 @@ namespace openjij {
                         new_timeline.push_back(CutPoint(*cuts_itr, current_spin));
                         cuts_itr++;
                     } else {
-                        /* if spin direction is different from previous one, place cut (kink) */
                         new_timeline.push_back(*timeline_itr);
                         current_spin = timeline_itr->second;
                         timeline_itr++;
@@ -224,12 +222,8 @@ namespace openjij {
                                                 new_timeline.end(),
                                                 dummy_cut,
                                                 first_lt);
-                    std::vector<CutPoint>::iterator prev_itr;
-                    if(itr == new_timeline.begin()) {
-                        prev_itr = new_timeline.end() - 1;
-                    } else {
-                        prev_itr = itr - 1;
-                    }
+                    auto prev_itr = (itr == new_timeline.begin()) ? new_timeline.end() - 1 : itr - 1;
+
                     new_timeline.insert(itr, CutPoint(cut, prev_itr->second));
                 }
 
@@ -252,7 +246,7 @@ namespace openjij {
                 TimeType d = std::exp(-coef);
                 TimeType p = d;
                 TimeType xi = rand(random_number_engine);
-  
+
                 while(p < xi) {
                     n += 1;
                     d *= coef/n;

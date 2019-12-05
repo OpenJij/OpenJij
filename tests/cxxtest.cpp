@@ -473,8 +473,10 @@ TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Sparse_WithEigenImpl) {
 /* Continuous time Swendsen-Wang test */
 TEST(ContinuousTimeSwendsenWang, Place_Cuts) {
     using namespace openjij;
+    using TimeType = typename system::ContinuousTimeIsing<graph::Dense<double>, false>::TimeType;
+    using CutPoint = typename system::ContinuousTimeIsing<graph::Dense<double>, false>::CutPoint;
 
-    std::vector<system::CutPoint> timeline;
+    std::vector<CutPoint> timeline;
     timeline.emplace_back(1.0, 1);
     timeline.emplace_back(2.0, 2);
     timeline.emplace_back(3.0, 2);
@@ -483,10 +485,10 @@ TEST(ContinuousTimeSwendsenWang, Place_Cuts) {
     timeline.emplace_back(6.0, 4);
     timeline.emplace_back(7.0, 4);
 
-    std::vector<system::TimeType> cuts { 0.5, 1.5, 3.5, 4.5, 5.5, 7.5, 8.5 };
+    std::vector<TimeType> cuts { 0.5, 1.5, 3.5, 4.5, 5.5, 7.5, 8.5 };
     timeline = updater::ContinuousTimeSwendsenWang<system::ContinuousTimeIsing<graph::Dense<double>, false>>::create_timeline(timeline, cuts);
 
-    std::vector<system::CutPoint> correct_timeline;
+    std::vector<CutPoint> correct_timeline;
     correct_timeline.emplace_back(0.5, 4);
     correct_timeline.emplace_back(1.0, 1);
     correct_timeline.emplace_back(1.5, 1);
@@ -504,13 +506,14 @@ TEST(ContinuousTimeSwendsenWang, Place_Cuts) {
 
 TEST(ContinuousTimeSwendsenWang, Place_Cuts_Special_Case) {
     using namespace openjij;
-    using system::CutPoint;
+    using TimeType = typename system::ContinuousTimeIsing<graph::Dense<double>, false>::TimeType;
+    using CutPoint = typename system::ContinuousTimeIsing<graph::Dense<double>, false>::CutPoint;
 
-    std::vector<system::CutPoint> timeline { {1.0, 1}, {2.0, 1} };
+    std::vector<CutPoint> timeline { {1.0, 1}, {2.0, 1} };
 
-    std::vector<system::TimeType> cuts { };
+    std::vector<TimeType> cuts { };
     timeline = updater::ContinuousTimeSwendsenWang<system::ContinuousTimeIsing<graph::Dense<double>, false>>::create_timeline(timeline, cuts);
-    std::vector<system::CutPoint> correct_timeline { {1.0, 1} };
+    std::vector<CutPoint> correct_timeline { {1.0, 1} };
 
     EXPECT_EQ(timeline, correct_timeline);
 }
@@ -555,13 +558,9 @@ TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ContinuousTimeIsing_Dense_N
     auto ising = system::make_continuous_time_ising(spins, 1, interaction, 1.0);
 
     auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list = utility::make_transverse_field_schedule_list(10, 100, 100);
+    const auto schedule_list = utility::make_transverse_field_schedule_list(10, 100, 3000);
 
     algorithm::Algorithm<updater::ContinuousTimeSwendsenWang>::run(ising, random_numder_engine, schedule_list);
-
-    for(auto timeline : ising.spin_config) {
-        std::cout << timeline[0].first << std::endl;
-    }
 
     EXPECT_EQ(get_true_groundstate(), result::get_solution(ising));
 }
