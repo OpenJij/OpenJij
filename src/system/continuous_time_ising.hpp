@@ -40,12 +40,10 @@ namespace openjij {
              * @brief ContinuousTimeIsing constructor
              *
              * @param init_spin_config
-             * @param init_auxiliary_spin_timeline,
              * @param init_interaction
              * @param gamma
              */
             ContinuousTimeIsing(const SpinConfiguration& init_spin_config,
-                                const std::vector<CutPoint>& init_auxiliary_spin_timeline,
                                 const GraphType& init_interaction,
                                 const FloatType gamma)
                 : spin_config(init_spin_config),
@@ -68,7 +66,8 @@ namespace openjij {
                     // add longitudinal magnetic field as interaction between ith spin and auxiliary spin
                 }
 
-                spin_config.push_back(init_auxiliary_spin_timeline);
+                spin_config.push_back(std::vector<CutPoint> { CutPoint(0.0, 1) });
+                // initialize auxiliary spin with 1 along entire timeline
             }
 
             /**
@@ -77,16 +76,13 @@ namespace openjij {
              * @details create timeline which has only one cut at time zero with given spin state for each site
              *
              * @param init_spins
-             * @param init_auxiliary_spin
              * @param init_interaction
              * @param gamma
              */
             ContinuousTimeIsing(const graph::Spins& init_spins,
-                                const graph::Spin init_auxiliary_spin,
                                 const GraphType& init_interaction,
                                 const FloatType gamma) :
                 ContinuousTimeIsing(convert_to_spin_config(init_spins),
-                                    std::vector<CutPoint> { CutPoint(TimeType(), init_auxiliary_spin) },
                                     init_interaction,
                                     gamma) {} // constructor delegation
 
@@ -116,10 +112,14 @@ namespace openjij {
             /**
              * @brief reset spins with given spin configuration
              *
-             * @param init_spin_config
+             * @param init_spin_config spin configuration to be set, which must NOT contain auxiliary one
              */
             void reset_spins(const SpinConfiguration& init_spin_config) {
+                assert(init_spin_config.size() == this->num_spins-1);
+
                 this->spin_config = init_spin_config;
+                this->spin_config.push_back(std::vector<CutPoint> { CutPoint(TimeType(), 1) });
+                // add auxiliary timeline
             }
 
             /**
@@ -127,14 +127,15 @@ namespace openjij {
              *
              * @param classical_spins
              */
-            void reset_spins(const graph::Spins& classical_spins, graph::Spin auxiliary_spin) {
+            void reset_spins(const graph::Spins& classical_spins) {
                 assert(classical_spins.size() == this->num_spins-1);
+
                 for(size_t i = 0;i < this->num_spins - 1;i++) {
                     this->spin_config[i] = std::vector<CutPoint> {
                         CutPoint(TimeType(), classical_spins[i]) // TimeType() is zero value of the type
                     };
                 }
-                this->spin_config[this->num_spins-1] = std::vector<CutPoint> { CutPoint(TimeType(), auxiliary_spin) };
+                this->spin_config[this->num_spins-1] = std::vector<CutPoint> { CutPoint(TimeType(), 1) };
             }
 
             /**
@@ -221,7 +222,6 @@ namespace openjij {
          * @tparam eigen_impl
          * @tparam GraphType
          * @param init_spins
-         * @param init_auxiliary_spin
          * @param interaction
          * @param gamma
          *
@@ -229,13 +229,11 @@ namespace openjij {
          */
         template<bool eigen_impl=false, typename GraphType>
         ContinuousTimeIsing<GraphType, eigen_impl> make_continuous_time_ising(const graph::Spins& init_spins,
-                                                                              const graph::Spin& init_auxiliary_spin,
                                                                               const GraphType& init_interaction,
-                                                                              double gamma) {
+                                                                              typename GraphType::value_type gamma) {
             return ContinuousTimeIsing<GraphType, eigen_impl>(init_spins,
-                                                              init_auxiliary_spin,
                                                               init_interaction,
-                                                              static_cast<typename GraphType::value_type>(gamma));
+                                                              gamma);
         }
     } // namespace system
 } // namespace openjij

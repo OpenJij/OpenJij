@@ -537,7 +537,7 @@ TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ContinuousTimeIsing_Dense_O
     auto engine_for_spin = std::mt19937(1);
     const auto spins = interaction.gen_spin(engine_for_spin);
 
-    auto ising = system::make_continuous_time_ising(spins, 1, interaction, 1.0);
+    auto ising = system::make_continuous_time_ising(spins, interaction, 1.0);
 
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list = utility::make_transverse_field_schedule_list(10, 100, 100);
@@ -555,7 +555,7 @@ TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ContinuousTimeIsing_Dense_N
 
     const auto spins = interaction.gen_spin(engine_for_spin);
 
-    auto ising = system::make_continuous_time_ising(spins, 1, interaction, 1.0);
+    auto ising = system::make_continuous_time_ising(spins, interaction, 1.0);
 
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list = utility::make_transverse_field_schedule_list(10, 100, 3000);
