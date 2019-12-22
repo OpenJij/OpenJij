@@ -216,8 +216,21 @@ class SamplerOptimizeTest(unittest.TestCase):
         J = {(0, 1): -1}
         K = {(0, 1, 2): 1}
         response = sampler.sample_hubo([h, J, K], var_type='SPIN')
-        print(response.info)
         self.assertListEqual([1, 1, -1], list(response.states[0]))
+
+    def test_long_sweep_sampler(self):
+        # the Ising sampler
+        h, J = {0: -1}, {(0, 1): -1, (1, 2): 1}
+        sampler = oj.SASampler()
+        res = sampler.sample_ising(h, J, num_sweeps=2000)
+        self.assertListEqual([1, 1, -1], list(res.states[0]))
+
+        res = sampler.sample_hubo([h, J], num_sweeps=2000, var_type='SPIN')
+        self.assertListEqual([1, 1, -1], list(res.states[0]))
+
+        sampler = oj.SQASampler()
+        res = sampler.sample_ising(h, J, num_sweeps=2000)
+        self.assertListEqual([1, 1, -1], list(res.states[0]))
 
     # def test_gpu_sqa(self):
     #     gpu_sampler = oj.GPUSQASampler()

@@ -1,7 +1,8 @@
+import time
 import numpy as np
 from openjij.model import BinaryHigherOrderModel
-from openjij import SPIN, BINARY
-from dimod import as_vartype
+from openjij import SPIN, BINARY, cast_var_type
+import openjij
 
 
 def default_schedule(bhom, beta_min, beta_max, num_sweeps):
@@ -11,7 +12,7 @@ def default_schedule(bhom, beta_min, beta_max, num_sweeps):
     beta_max = beta_max if beta_max else _beta_max
     beta_min = beta_min if beta_min else _beta_min
 
-    num_sweeps_per_beta = max(1, num_sweeps // 1000.0)
+    num_sweeps_per_beta = max(1, num_sweeps // 1000)
     r = (beta_max/beta_min)**(1/num_sweeps)
 
     return [[beta_min * r ** n, num_sweeps_per_beta] for n in range(num_sweeps)]
@@ -43,7 +44,7 @@ def hubo_simulated_annealing(bhom: BinaryHigherOrderModel, state: list,
     adj_dict = bhom.adj_dict()
     state = np.array(state)
 
-    if SPIN == as_vartype(var_type):
+    if SPIN == cast_var_type(var_type):
         for beta, mc_steps in schedule:
             for _ in range(mc_steps):
                 for i in bhom.indices:
@@ -53,7 +54,7 @@ def hubo_simulated_annealing(bhom: BinaryHigherOrderModel, state: list,
                     if de < 0 or np.random.uniform(0, 1) < np.exp(-beta*de):
                         state[i] *= -1
         return state
-    elif BINARY == as_vartype(var_type):
+    elif BINARY == cast_var_type(var_type):
         for beta, mc_steps in schedule:
             for _ in range(mc_steps):
                 for i in bhom.indices:
@@ -65,3 +66,53 @@ def hubo_simulated_annealing(bhom: BinaryHigherOrderModel, state: list,
         return state
     else:
         raise ValueError("var_type should be SPIN or BINARY")
+
+
+def measure_time(func):
+    def wrapper(*args, **kargs):
+        start_time = time.perf_counter()
+
+        result = func(*args, **kargs)
+
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
+        return execution_time, result
+    return wrapper
+
+
+def hubo_sa_sampling(bhom, var_type,
+                     schedule, schedule_info,
+                     num_sweeps=100, num_reads=1,
+                     init_state=None, seed=None):
+
+    init_state = init_state if init_state else np.random.choice(
+        [1, -1], len(bhom.indices))
+
+    response = openjij.Response(
+        var_type=var_type, indices=bhom.indices
+    )
+
+    execution_time = []
+    @measure_time
+    def exec_sampling():
+        for _ in range(num_reads):
+            _exec_time, state = measure_time(
+                hubo_simulated_annealing)(bhom, init_state, schedule,
+                                          var_type=var_type)
+            execution_time.append(_exec_time)
+            response.states.append(state)
+            response.energies.append(bhom.calc_energy(state))
+
+    sampling_time, _ = exec_sampling()
+
+    response.info['sampling_time'] = sampling_time * 10**6  # micro sec
+    response.info['execution_time'] = np.mean(
+        execution_time) * 10**6  # micro sec
+    response.info['list_exec_times'] = np.array(
+        execution_time) * 10**6  # micro sec
+
+    response.update_ising_states_energies(
+        response.states, response.energies)
+
+    response.info['schedule'] = schedule_info
+    return response

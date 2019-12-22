@@ -180,7 +180,7 @@ class SQASampler(BaseSampler):
 
         response = self._sampling(
             bqm, init_generator,
-            algorithm, sqa_system, initial_state,
+            algorithm, sqa_system,
             reinitialize_state, seed, **kwargs
         )
 
