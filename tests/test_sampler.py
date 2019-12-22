@@ -215,7 +215,9 @@ class SamplerOptimizeTest(unittest.TestCase):
         h = {0: -1}
         J = {(0, 1): -1}
         K = {(0, 1, 2): 1}
-        response = sampler.sample_hubo([h, J, K], var_type='SPIN')
+        response = sampler.sample_hubo(
+            [h, J, K], var_type='SPIN', num_sweeps=100)
+        print(response.info)
         self.assertListEqual([1, 1, -1], list(response.states[0]))
 
     def test_long_sweep_sampler(self):
