@@ -77,8 +77,6 @@ class GPUSASampler(SASampler, dimod.Structured):
         ValueError: [description]
         ValueError: [description]
 
-    Returns:
-        [type]: [description]
     """
 
     def __init__(self,
