@@ -20,6 +20,7 @@
 
 #include <system/classical_ising.hpp>
 #include <system/transverse_ising.hpp>
+#include <system/continuous_time_ising.hpp>
 
 #ifdef USE_CUDA
 #include <system/gpu/chimera_gpu_transverse.hpp>

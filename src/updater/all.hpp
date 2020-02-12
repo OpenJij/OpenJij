@@ -20,6 +20,7 @@
 
 #include <updater/single_spin_flip.hpp>
 #include <updater/swendsen_wang.hpp>
+#include <updater/continuous_time_swendsen_wang.hpp>
 
 #ifdef USE_CUDA
 #include <updater/gpu.hpp>
