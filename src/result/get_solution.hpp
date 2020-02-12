@@ -116,6 +116,29 @@ namespace openjij {
             return ret_spins;
         }
 
+
+     	/**
+         * @brief get solution of continuous time Ising system
+         *
+         * @tparam GraphType
+         * @param system
+         *
+         * @return solution
+         */
+        template<typename GraphType>
+        graph::Spins get_solution(const system::ContinuousTimeIsing<GraphType, false>& system) {
+            auto spins = system.get_slice_at(0.0);
+
+            if(system.get_auxiliary_spin(0.0) < 0) {
+                /*if auxiliary spin is negative, flip all spins*/
+                for(auto& spin : spins) {
+                    spin *= -1;
+                }
+            }
+
+            return spins;
+        }
+
 #ifdef USE_CUDA
         
         /**
