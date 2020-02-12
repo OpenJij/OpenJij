@@ -79,11 +79,6 @@ class SQASampler(BaseSampler):
             'num_reads': num_reads,
         }
 
-    def _setting_overwrite(self, **kwargs):
-        for key, value in kwargs.items():
-            if value:
-                self._schedule_setting[key] = value
-
     def _convert_validation_schedule(self, schedule, beta):
         if not isinstance(schedule, (list, np.array)):
             raise ValueError("schedule should be list or numpy.array")
@@ -120,72 +115,64 @@ class SQASampler(BaseSampler):
                 'var_type should be openjij.SPIN or openjij.BINARY')
         return bqm
 
-    def _post_save(self, result_state, system, model, response):
-        # trotter_spins is transposed because it is stored as [Spin ​​space][Trotter].
-        # [-1] is excluded because it is a tentative spin of s = 1 for convenience in SQA.
+    def _get_result(self, system, model):
+        state, info = super()._get_result(system, model)
+
         q_state = system.trotter_spins[:-1].T.astype(np.int)
-        # calculate classical energy at each trotter slices
         c_energies = [model.calc_energy(
             state, need_to_convert_from_spin=True) for state in q_state]
+        info['trotter_state'] = q_state
+        info['trotter_energies'] = c_energies
 
-        response.q_states.append(q_state)
-        response.q_energies.append(c_energies)
+        return state, info
 
-    def sample(self, bqm,
-               beta=None, gamma=None,
-               num_sweeps=None, schedule=None,
-               num_reads=1,
-               initial_state=None, updater='single spin flip',
-               reinitialize_state=True, seed=None, **kwargs):
+    def sample_ising(self, h, J,
+                     beta=None, gamma=None,
+                     num_sweeps=None, schedule=None,
+                     num_reads=1,
+                     initial_state=None, updater='single spin flip',
+                     reinitialize_state=True, seed=None, **kwargs):
 
         bqm = openjij.BinaryQuadraticModel(
-            linear=bqm.linear, quadratic=bqm.quadratic,
-            offset=bqm.offset, var_type=bqm.vartype
+            linear=h, quadratic=J, var_type='SPIN'
         )
+
+        ising_graph = bqm.get_cxxjij_ising_graph()
 
         self._setting_overwrite(
             beta=beta, gamma=gamma,
             num_sweeps=num_sweeps, num_reads=num_reads
         )
-
-        ising_graph = bqm.get_cxxjij_ising_graph()
-
         self._annealing_schedule_setting(
             bqm, beta, gamma, num_sweeps, schedule)
 
+        # make init state generator --------------------------------
         if initial_state is None:
             def init_generator(): return [ising_graph.gen_spin()
                                           for _ in range(self.trotter)]
         else:
-            if bqm.var_type == openjij.SPIN:
-                trotter_init_state = [np.array(initial_state)
-                                      for _ in range(self.trotter)]
-            else:  # BINARY
-                trotter_init_state = [
-                    (2*np.array(initial_state)-1).astype(int)
-                    for _ in range(self.trotter)]
+            trotter_init_state = [np.array(initial_state)
+                                  for _ in range(self.trotter)]
 
-                def init_generator(): return trotter_init_state
+            def init_generator(): return trotter_init_state
+        # -------------------------------- make init state generator
 
+        # choose updater -------------------------------------------
         sqa_system = cxxjij.system.make_transverse_ising_Eigen(
             init_generator(), ising_graph, self.gamma
         )
-
-        # choose updater
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         if _updater_name == 'singlespinflip':
             algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
         else:
             raise ValueError('updater is one of "single spin flip"')
+        # ------------------------------------------- choose updater
 
-        response = self._sampling(
+        response = self._cxxjij_sampling(
             bqm, init_generator,
             algorithm, sqa_system,
             reinitialize_state, seed, **kwargs
         )
-
-        response.update_trotter_ising_states_energies(
-            response.q_states, response.q_energies)
 
         response.info['schedule'] = self.schedule_info
 
@@ -223,46 +210,3 @@ def linear_ising_schedule(model, beta, gamma, num_sweeps):
         beta=beta, one_mc_step=1, num_call_updater=num_sweeps
     )
     return schedule, [beta, gamma]
-
-    # def sampling(self, model,
-    #              initial_state=None, updater='single spin flip',
-    #              reinitialize_state=True, seed=None,
-    #              **kwargs):
-
-    #     ising_graph = model.get_cxxjij_ising_graph()
-
-    #     if initial_state is None:
-    #         def init_generator(): return [ising_graph.gen_spin()
-    #                                       for _ in range(self.trotter)]
-    #     else:
-    #         if model.var_type == openjij.SPIN:
-    #             trotter_init_state = [np.array(initial_state)
-    #                                   for _ in range(self.trotter)]
-    #         else:  # BINARY
-    #             trotter_init_state = [
-    #                 (2*np.array(initial_state)-1).astype(int)
-    #                 for _ in range(self.trotter)]
-
-    #         def init_generator(): return trotter_init_state
-
-    #     sqa_system = cxxjij.system.make_transverse_ising_Eigen(
-    #         init_generator(), ising_graph, self.gamma
-    #     )
-
-    #     # choose updater
-    #     _updater_name = updater.lower().replace('_', '').replace(' ', '')
-    #     if _updater_name == 'singlespinflip':
-    #         algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
-    #     else:
-    #         raise ValueError('updater is one of "single spin flip"')
-
-    #     response = self._sampling(
-    #         model, init_generator,
-    #         algorithm, sqa_system, initial_state,
-    #         reinitialize_state, seed, **kwargs
-    #     )
-
-    #     response.update_trotter_ising_states_energies(
-    #         response.q_states, response.q_energies)
-
-    #     return response

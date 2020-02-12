@@ -13,7 +13,6 @@
 
 import numpy as np
 import openjij
-from openjij.sampler import measure_time
 from openjij.sampler import BaseSampler
 from openjij.utils.decorator import deprecated_alias
 from openjij.model import BinaryHigherOrderModel
@@ -87,11 +86,6 @@ class SASampler(BaseSampler):
             'num_reads': num_reads,
         }
 
-    def _setting_overwrite(self, **kwargs):
-        for key, value in kwargs.items():
-            if value:
-                self._schedule_setting[key] = value
-
     def _convert_validation_schedule(self, schedule):
         if not isinstance(schedule, (list, np.array)):
             raise ValueError("schedule should be list or numpy.array")
@@ -117,26 +111,20 @@ class SASampler(BaseSampler):
             cxxjij_schedule.append(_schedule)
         return cxxjij_schedule
 
-    @deprecated_alias(iteration='num_reads')
-    def sample(self, model, beta_min=None, beta_max=None,
-               num_sweeps=None, num_reads=1, schedule=None,
-               initial_state=None, updater='single spin flip',
-               reinitialize_state=True, seed=None,
-               **kwargs):
-
-        model = openjij.BinaryQuadraticModel(
-            linear=model.linear, quadratic=model.quadratic,
-            offset=model.offset, var_type=model.vartype
-        )
-
+    def sample_ising(self, h, J, beta_min=None, beta_max=None,
+                     num_sweeps=None, num_reads=1, schedule=None,
+                     initial_state=None, updater='single spin flip',
+                     reinitialize_state=True, seed=None,
+                     **kwargs):
         self._setting_overwrite(
             beta_min=beta_min, beta_max=beta_max,
             num_sweeps=num_sweeps, num_reads=num_reads
         )
 
+        model = openjij.BinaryQuadraticModel(
+            linear=h, quadratic=J, var_type='SPIN'
+        )
         ising_graph = model.get_cxxjij_ising_graph()
-
-        self.num_reads = num_reads if num_reads > 1 else self.num_reads
 
         # set annealing schedule -------------------------------
         if schedule or self.schedule:
@@ -158,7 +146,7 @@ class SASampler(BaseSampler):
             }
         # ------------------------------- set annealing schedule
 
-        # make init state generator
+        # make init state generator --------------------------------
         if initial_state is None:
             def _generate_init_state(): return ising_graph.gen_spin()
         else:
@@ -167,14 +155,11 @@ class SASampler(BaseSampler):
                 raise ValueError(
                     "the size of the initial state should be {}"
                     .format(ising_graph.size()))
-            if model.var_type == openjij.SPIN:
-                _init_state = np.array(initial_state)
-            else:  # BINARY
-                _init_state = (2*np.array(initial_state)-1).astype(np.int)
-
+            _init_state = np.array(initial_state)
             def _generate_init_state(): return np.array(_init_state)
+        # -------------------------------- make init state generator
 
-        # choose updater
+        # choose updater -------------------------------------------
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         if _updater_name == 'singlespinflip':
             algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
@@ -188,25 +173,17 @@ class SASampler(BaseSampler):
         else:
             raise ValueError(
                 'updater is one of "single spin flip or swendsen wang"')
+        # ------------------------------------------- choose updater
 
-        response = self._sampling(
+        response = self._cxxjij_sampling(
             model, _generate_init_state,
             algorithm, sa_system,
             reinitialize_state, seed, **kwargs
         )
 
-        response.update_ising_states_energies(
-            response.states, response.energies)
-
         response.info['schedule'] = self.schedule_info
 
         return response
-
-    def _post_save(self, result_state, system, model, response):
-        response.states.append(result_state)
-        response.energies.append(model.calc_energy(
-            result_state,
-            need_to_convert_from_spin=True))
 
     def sample_hubo(self, interactions: list, var_type,
                     beta_min=None, beta_max=None, schedule=None,
