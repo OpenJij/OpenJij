@@ -187,6 +187,33 @@ inline void declare_TransverseIsing(py::module &m, const std::string& gtype_str,
             }, "classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a);
 }
 
+//Continuous Time Transverse Ising
+template<typename GraphType, bool eigen_impl>
+inline void declare_ContinuousTimeIsing(py::module &m, const std::string& gtype_str, const std::string& eigen_str){
+    //TransverseIsing
+    using TransverseIsing = system::ContinuousTimeIsing<GraphType, eigen_impl>;
+    using FloatType = typename GraphType::value_type;
+    using SpinConfiguration = typename TransverseIsing::SpinConfiguration;
+
+    auto str = std::string("ContinuousTimeIsing")+gtype_str+eigen_str;
+    py::class_<TransverseIsing>(m, str.c_str())
+        .def(py::init<const SpinConfiguration&, const GraphType&, FloatType>(), "init_spin_config"_a, "init_interaction"_a, "gamma"_a)
+        .def(py::init<const graph::Spins&, const GraphType&, FloatType>(), "init_spins"_a, "init_interaction"_a, "gamma"_a)
+        .def("reset_spins", [](TransverseIsing& self, const SpinConfiguration& init_spin_config){self.reset_spins(init_spin_config);},"init_spin_config"_a)
+        .def("reset_spins", [](TransverseIsing& self, const graph::Spins& classical_spins){self.reset_spins(classical_spins);},"classical_spins"_a)
+        .def_readwrite("spin_config", &TransverseIsing::spin_config)
+        .def_readonly("interaction", &TransverseIsing::interaction)
+        .def_readonly("num_spins", &TransverseIsing::num_spins)
+        .def_readonly("gamma", &TransverseIsing::gamma);
+
+    //make_continuous_time_ising
+    auto mkci_str = std::string("make_continuous_time_ising")+eigen_str;
+    m.def(mkci_str.c_str(), [](const graph::Spins& classical_spins, const GraphType& init_interaction, double gamma){
+            return system::make_continuous_time_ising<eigen_impl>(classical_spins, init_interaction, gamma);
+            }, "classical_spins"_a, "init_interaction"_a, "gamma"_a);
+
+}
+
 #ifdef USE_CUDA
 
 //ChimeraTransverseGPU

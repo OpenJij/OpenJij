@@ -63,6 +63,9 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_TransverseIsing<graph::Sparse<FloatType>, false>(m_system, "_Sparse", "");
     ::declare_TransverseIsing<graph::Sparse<FloatType>, true>(m_system, "_Sparse", "_Eigen");
 
+    //Continuous Time Transeverse Ising
+    ::declare_ContinuousTimeIsing<graph::Dense<FloatType>, false>(m_system, "_Dense", "");
+
 #ifdef USE_CUDA
     //ChimeraTransverseGPU
     ::declare_ChimeraTranseverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>(m_system);
@@ -91,6 +94,9 @@ PYBIND11_MODULE(cxxjij, m){
 
     //swendsen-wang (with Eigen implementation on a Sparse graph)
     ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Sparse<FloatType>, true>, RandomEngine>(m_algorithm, "SwendsenWang");
+
+    //Continuous time swendsen-wang
+    ::declare_Algorithm_run<updater::ContinuousTimeSwendsenWang, system::ContinuousTimeIsing<graph::Dense<FloatType>, false>, RandomEngine>(m_algorithm, "ContinuousTimeSwendsenWang");
 
 #ifdef USE_CUDA
     //GPU
@@ -146,6 +152,7 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_get_solution<system::TransverseIsing<graph::Dense<FloatType>, true>>(m_result);
     ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>, false>>(m_result);
     ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>, true>>(m_result);
+    ::declare_get_solution<system::ContinuousTimeIsing<graph::Dense<FloatType>, false>>(m_result);
 #ifdef USE_CUDA
     ::declare_get_solution<system::ChimeraTransverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>>(m_result);
     ::declare_get_solution<system::ChimeraClassicalGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL>>(m_result);
