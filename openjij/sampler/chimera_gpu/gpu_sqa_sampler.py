@@ -15,13 +15,12 @@
 import cxxjij
 import openjij
 from openjij.sampler import SQASampler
+from .base_gpu_chimera import BaseGPUChimeraSampler
 from openjij.model import BinaryQuadraticModel, ChimeraModel
 import numpy as np
 
-from .GPUBaseSampler import GPUBaseSampler
 
-
-class GPUSQASampler(SQASampler, GPUBaseSampler):
+class GPUSQASampler(SQASampler, BaseGPUChimeraSampler):
     """Sampler with Simulated Quantum Annealing (SQA) on GPU.
 
     Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
@@ -77,78 +76,69 @@ class GPUSQASampler(SQASampler, GPUBaseSampler):
 
     """
 
-    def __init__(self, beta=5.0, gamma=1.0,
+
+
+    def __init__(self, beta=10.0, gamma=1.0,
                  trotter=4, num_sweeps=100,
                  schedule=None, num_reads=1, unit_num_L=None):
         # GPU Sampler allows only even trotter number
         if trotter % 2 != 0:
             raise ValueError('GPU Sampler allows only even trotter number')
         self.trotter = trotter
-
         self.unit_num_L = unit_num_L
 
-        super().__init__(beta=beta, gamma=gamma, trotter=trotter,
+        super().__init__(beta=beta, gamma=gamma, trotter=trotter, 
                          num_reads=num_reads,
                          num_sweeps=num_sweeps, schedule=schedule)
 
-    def _post_process4state(self, q_state):
-        if self.model.coordinate == 'chimera coordinate':
-            indices = [self.model.to_index(
-                x, y, z, self.model.unit_num_L) for x, y, z in self.indices]
-        else:
-            indices = self.indices
+        self._make_system = cxxjij.system.make_chimera_transverse_gpu
+        self._algorithm = {
+            'singlespinflip': cxxjij.algorithm.Algorithm_GPU_run
+        }
 
-        return [list(np.array(state)[indices]) for state in q_state]
+    def _get_result(self, system, model):
+        result = cxxjij.result.get_solution(system)
+        result = [result[i] for i in model.indices]
+        sys_info = {}
+        return result, sys_info
 
-    def sample(self, model,
-               beta=None, gamma=None,
-               num_sweeps=None, num_reads=1, schedule=None,
-               initial_state=None, reinitialize_state=None,
-               seed=None, **kwargs):
 
-        self._setting_overwrite(
-            beta=beta, gamma=gamma,
-            num_sweeps=num_sweeps, num_reads=num_reads
-        )
+    def sample_ising(self, h, J,
+                     beta=None, gamma=None,
+                     num_sweeps=None, schedule=None,num_reads=1,
+                     unit_num_L=None,
+                     initial_state=None, updater='single spin flip',
+                     reinitialize_state=True, seed=None, **kwargs):
+        """Sampling from the Ising model
 
-        self._annealing_schedule_setting(
-            model, beta, gamma, num_sweeps, schedule)
+        Args:
+            h (dict): Linear term of the target Ising model. 
+            J (dict): Quadratic term of the target Ising model. 
+            beta (float, optional): inverse tempareture.
+            gamma (float, optional): strangth of transverse field. Defaults to None.
+            num_sweeps (int, optional): number of sweeps. Defaults to None.
+            schedule (list[list[float, int]], optional): List of annealing parameter. Defaults to None.
+            num_reads (int, optional): number of sampling. Defaults to 1.
+            initial_state (list[int], optional): Initial state. Defaults to None.
+            updater (str, optional): update method. Defaults to 'single spin flip'.
+            reinitialize_state (bool, optional): Re-initilization at each sampling. Defaults to True.
+            seed (int, optional): Sampling seed. Defaults to None.
 
-        chimera = self._create_chimera_matrix(model, **kwargs)
+        Raises:
+            ValueError: [description]
 
-        if initial_state is None:
-            def init_generator(): return [chimera.gen_spin()
-                                          for _ in range(self.trotter)]
-        else:
-            if model.var_type == openjij.SPIN:
-                trotter_init_state = [np.array(initial_state)
-                                      for _ in range(self.trotter)]
-            else:  # BINARY
-                trotter_init_state = [
-                    (2*np.array(initial_state)-1).astype(int)
-                    for _ in range(self.trotter)]
+        Returns:
+            [type]: [description]
+        """
 
-            def init_generator(): return trotter_init_state
+        self.unit_num_L = unit_num_L if unit_num_L else self.unit_num_L
 
-        algorithm = cxxjij.algorithm.Algorithm_GPU_run
+        bqm = openjij.ChimeraModel(linear=h, quadratic=J, var_type='SPIN', 
+                                   unit_num_L=self.unit_num_L, gpu=True)
 
-        def system_maker(init_state): return cxxjij.system.make_chimera_transverse_gpu(
-            init_state, chimera, self.gamma
-        )
+        return self._sampling(bqm, beta=beta, gamma=gamma,
+                     num_sweeps=num_sweeps, schedule=schedule,
+                     num_reads=num_reads,
+                     initial_state=initial_state, updater=updater,
+                     reinitialize_state=reinitialize_state, seed=seed, **kwargs)
 
-        response = self._gpu_sampling(
-            system_name="quantum",
-            init_generator=init_generator,
-            system_maker=system_maker
-        )
-        return response
-
-    def _post_save(self, result_state, system, model, response):
-
-        if not self._use_all:
-            result_state = np.array(result_state)[model.indices]
-
-        response.states.append(result_state)
-        response.energies.append(model.calc_energy(
-            result_state,
-            need_to_convert_from_spin=True))

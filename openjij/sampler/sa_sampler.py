@@ -67,6 +67,13 @@ class SASampler(BaseSampler):
 
     """
 
+    @property
+    def parameters(self):
+        return {
+            'beta_min': ['parameters'],
+            'beta_max': ['parameters'],
+        }
+
     @deprecated_alias(iteration='num_reads')
     def __init__(self,
                  beta_min=None, beta_max=None,
@@ -84,6 +91,15 @@ class SASampler(BaseSampler):
             'beta_max': beta_max,
             'num_sweeps': num_sweeps,
             'num_reads': num_reads,
+        }
+
+        self._make_system = {
+            'singlespinflip': cxxjij.system.make_classical_ising_Eigen,
+            'swendsenwang': cxxjij.system.make_classical_ising
+        }
+        self._algorithm = {
+            'singlespinflip': cxxjij.algorithm.Algorithm_SingleSpinFlip_run,
+            'swendsenwang': cxxjij.algorithm.Algorithm_SwendsenWang_run
         }
 
     def _convert_validation_schedule(self, schedule):
@@ -155,24 +171,18 @@ class SASampler(BaseSampler):
                 raise ValueError(
                     "the size of the initial state should be {}"
                     .format(ising_graph.size()))
+            if isinstance(initial_state, dict):
+                initial_state = [initial_state[k] for k in model.indices]
             _init_state = np.array(initial_state)
             def _generate_init_state(): return np.array(_init_state)
         # -------------------------------- make init state generator
 
         # choose updater -------------------------------------------
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
-        if _updater_name == 'singlespinflip':
-            algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
-            sa_system = cxxjij.system.make_classical_ising_Eigen(
-                _generate_init_state(), ising_graph)
-        elif _updater_name == 'swendsenwang':
-            # swendsen-wang is not support Eigen system
-            algorithm = cxxjij.algorithm.Algorithm_SwendsenWang_run
-            sa_system = cxxjij.system.make_classical_ising(
-                _generate_init_state(), ising_graph)
-        else:
-            raise ValueError(
-                'updater is one of "single spin flip or swendsen wang"')
+        if _updater_name not in self._make_system:
+            raise ValueError('updater is one of "single spin flip or swendsen wang"')
+        algorithm = self._algorithm[_updater_name]
+        sa_system = self._make_system[_updater_name](_generate_init_state(), ising_graph)
         # ------------------------------------------- choose updater
 
         response = self._cxxjij_sampling(

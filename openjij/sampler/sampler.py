@@ -36,8 +36,8 @@ class BaseSampler(dimod.Sampler):
     """Base sampler class of python wrapper for cxxjij simulator
 
     """
-    parameters = None
-    properties = None
+    parameters = dict()
+    properties = dict()
 
     def _set_model(self, model):
         self.indices = model.indices

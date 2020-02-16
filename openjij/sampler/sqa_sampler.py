@@ -61,6 +61,14 @@ class SQASampler(BaseSampler):
         - schedule range is '0 <= s <= 1'.
 
     """
+    @property
+    def parameters(self):
+        return {
+            'beta': ['parameters'],
+            'gamma': ['parameters'],
+            'trotter': ['parameters'],
+        }
+
     @deprecated_alias(iteration='num_reads')
     def __init__(self,
                  beta=5.0, gamma=1.0,
@@ -80,6 +88,11 @@ class SQASampler(BaseSampler):
             'gamma': gamma,
             'num_sweeps': num_sweeps,
             'num_reads': num_reads,
+        }
+
+        self._make_system = cxxjij.system.make_transverse_ising_Eigen
+        self._algorithm = {
+            'singlespinflip': cxxjij.algorithm.Algorithm_SingleSpinFlip_run
         }
 
     def _convert_validation_schedule(self, schedule, beta):
@@ -173,6 +186,17 @@ class SQASampler(BaseSampler):
         bqm = openjij.BinaryQuadraticModel(
             linear=h, quadratic=J, var_type='SPIN'
         )
+        return self._sampling(bqm, beta=beta, gamma=gamma,
+                     num_sweeps=num_sweeps, schedule=schedule,
+                     num_reads=num_reads,
+                     initial_state=initial_state, updater=updater,
+                     reinitialize_state=reinitialize_state, seed=seed, **kwargs)
+
+    def _sampling(self, bqm, beta=None, gamma=None,
+                     num_sweeps=None, schedule=None,
+                     num_reads=1,
+                     initial_state=None, updater='single spin flip',
+                     reinitialize_state=True, seed=None, **kwargs):
 
         ising_graph = bqm.get_cxxjij_ising_graph()
 
@@ -188,6 +212,8 @@ class SQASampler(BaseSampler):
             def init_generator(): return [ising_graph.gen_spin()
                                           for _ in range(self.trotter)]
         else:
+            if isinstance(initial_state, dict):
+                initial_state = [initial_state[k] for k in bqm.indices]
             trotter_init_state = [np.array(initial_state)
                                   for _ in range(self.trotter)]
 
@@ -195,14 +221,13 @@ class SQASampler(BaseSampler):
         # -------------------------------- make init state generator
 
         # choose updater -------------------------------------------
-        sqa_system = cxxjij.system.make_transverse_ising_Eigen(
+        sqa_system = self._make_system(
             init_generator(), ising_graph, self.gamma
         )
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
-        if _updater_name == 'singlespinflip':
-            algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
-        else:
+        if _updater_name not in self._algorithm:
             raise ValueError('updater is one of "single spin flip"')
+        algorithm = self._algorithm[_updater_name] 
         # ------------------------------------------- choose updater
 
         response = self._cxxjij_sampling(
