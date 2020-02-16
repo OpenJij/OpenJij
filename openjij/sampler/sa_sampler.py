@@ -264,8 +264,6 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
 
     num_sweeps_per_beta = max(1, num_sweeps // 1000)
 
-    print("num sweeps type: {}".format(type(num_sweeps_per_beta)))
-
     schedule = cxxjij.utility.make_classical_schedule_list(
         beta_min=beta_min, beta_max=beta_max,
         one_mc_step=num_sweeps_per_beta,

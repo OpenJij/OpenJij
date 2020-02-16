@@ -20,7 +20,11 @@ import openjij
 class Response(dimod.SampleSet):
     @property
     def states(self):
-        return self.record.sample, list(self.variables)
+        return self.record.sample
+
+    @property
+    def indices(self):
+        return list(self.variables)
 
     @property
     def energies(self):

@@ -49,7 +49,9 @@ class BaseSampler(dimod.Sampler):
         for key, value in kwargs.items():
             if value:
                 self._schedule_setting[key] = value
-        self.num_reads = kwargs.get('num_reads', self.num_reads)
+
+        self.num_reads = kwargs['num_reads'] if kwargs['num_reads'] > 1\
+            else self.num_reads
 
     def _sampling(self, **kwargs):
         pass

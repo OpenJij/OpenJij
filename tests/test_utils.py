@@ -40,9 +40,11 @@ class TestUtils(unittest.TestCase):
 
     def test_str_key_success_prob(self):
         solutions = [{'a': 1, 'b': -1, 'c': -1}]
-        response = oj.Response(indices=['c', 'b', 'a'], var_type=oj.SPIN)
-        response.update_ising_states_energies(
-            states=[[-1, -1, 1], [1, -1, -1], [1, -1, -1]], energies=[0, 0, 0])
+
+        response = oj.Response.from_samples(
+            ([[-1, -1, 1], [1, -1, -1], [1, -1, -1]], ['c', 'b', 'a']),
+            oj.SPIN, [0, 0, 0]
+        )
 
         ps = oj.utils.success_probability(response, solutions)
 

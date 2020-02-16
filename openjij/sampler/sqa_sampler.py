@@ -10,6 +10,9 @@ class SQASampler(BaseSampler):
     """Sampler with Simulated Quantum Annealing (SQA).
 
     Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
+    Hamiltonian
+    $$H(s) = s H_p + (1-s)\sum_i \sigma_i^x$$
+    which $H_p$ is problem Hamiltonian that we want solve.
 
     Args:
         beta (float):
@@ -85,25 +88,38 @@ class SQASampler(BaseSampler):
 
         if isinstance(schedule[0], cxxjij.utility.TransverseFieldSchedule):
             return schedule
-        if len(schedule[0]) != 2:
-            raise ValueError(
-                """schedule is list of tuple or list
-                (annealing parameter s : float, step_length : int)""")
 
         # schedule validation  0 <= s <= 1
         sch = np.array(schedule).T[0]
         if not np.all((0 <= sch) & (sch <= 1)):
             raise ValueError("schedule range is '0 <= s <= 1'.")
 
-        # convert to list of cxxjij.utility.TransverseFieldSchedule
-        cxxjij_schedule = []
-        for s, one_mc_step in schedule:
-            _schedule = cxxjij.utility.TransverseFieldSchedule()
-            _schedule.one_mc_step = one_mc_step
-            _schedule.updater_parameter.beta = beta
-            _schedule.updater_parameter.s = s
-            cxxjij_schedule.append(_schedule)
-        return cxxjij_schedule
+        if len(schedule[0]) == 2:
+            # convert to list of cxxjij.utility.TransverseFieldSchedule
+            cxxjij_schedule = []
+            for s, one_mc_step in schedule:
+                _schedule = cxxjij.utility.TransverseFieldSchedule()
+                _schedule.one_mc_step = one_mc_step
+                _schedule.updater_parameter.beta = beta
+                _schedule.updater_parameter.s = s
+                cxxjij_schedule.append(_schedule)
+            return cxxjij_schedule
+        elif len(schedule[0]) == 3:
+            # convert to list of cxxjij.utility.TransverseFieldSchedule
+            cxxjij_schedule = []
+            for s, _beta, one_mc_step in schedule:
+                _schedule = cxxjij.utility.TransverseFieldSchedule()
+                _schedule.one_mc_step = one_mc_step
+                _schedule.updater_parameter.beta = _beta
+                _schedule.updater_parameter.s = s
+                cxxjij_schedule.append(_schedule)
+            return cxxjij_schedule
+        else:
+            raise ValueError(
+                """schedule is list of tuple or list
+                (annealing parameter s : float, step_length : int) or
+                (annealing parameter s : float, beta: float, step_length : int)
+                """)
 
     def _dict_to_model(self, var_type, h=None, J=None, Q=None, **kwargs):
         if var_type == openjij.SPIN:
@@ -132,6 +148,27 @@ class SQASampler(BaseSampler):
                      num_reads=1,
                      initial_state=None, updater='single spin flip',
                      reinitialize_state=True, seed=None, **kwargs):
+        """Sampling from the Ising model
+
+        Args:
+            h (dict): Linear term of the target Ising model. 
+            J (dict): Quadratic term of the target Ising model. 
+            beta (float, optional): inverse tempareture.
+            gamma (float, optional): strangth of transverse field. Defaults to None.
+            num_sweeps (int, optional): number of sweeps. Defaults to None.
+            schedule (list[list[float, int]], optional): List of annealing parameter. Defaults to None.
+            num_reads (int, optional): number of sampling. Defaults to 1.
+            initial_state (list[int], optional): Initial state. Defaults to None.
+            updater (str, optional): update method. Defaults to 'single spin flip'.
+            reinitialize_state (bool, optional): Re-initilization at each sampling. Defaults to True.
+            seed (int, optional): Sampling seed. Defaults to None.
+
+        Raises:
+            ValueError: [description]
+
+        Returns:
+            [type]: [description]
+        """
 
         bqm = openjij.BinaryQuadraticModel(
             linear=h, quadratic=J, var_type='SPIN'

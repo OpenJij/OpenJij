@@ -142,11 +142,17 @@ def success_probability(response, solutions, ref_energy=0, measure_with_energy=F
             np.array(response.energies) <= ref_energy)/len(response.energies)
     else:
         if isinstance(solutions[0], dict):
-            sampled_states = response.samples
+            sampled_states = response.samples()
+            suc_prob = np.mean([
+                1 if dict(state) in solutions else 0
+                for state in sampled_states
+            ])
         else:
             sampled_states = response.states
-        suc_prob = np.mean(
-            [1 if state in solutions else 0 for state in sampled_states])
+            suc_prob = np.mean([
+                1 if list(state) in solutions else 0
+                for state in sampled_states
+            ])
 
     return suc_prob
 
@@ -167,11 +173,17 @@ def se_success_probability(response, solutions, ref_energy=0, measure_with_energ
             np.array(response.energies) <= ref_energy)/(len(response.energies)-1))
     else:
         if isinstance(solutions[0], dict):
-            sampled_states = response.samples
+            sampled_states = response.samples()
+            se_suc_prob = np.std([
+                1 if dict(state) in solutions else 0
+                for state in sampled_states
+            ])
         else:
             sampled_states = response.states
-        se_suc_prob = sp.std(
-            [1 if state in solutions else 0 for state in sampled_states], ddof=1)
+            se_suc_prob = np.std([
+                1 if list(state) in solutions else 0
+                for state in sampled_states
+            ])
 
     return se_suc_prob
 
