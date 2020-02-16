@@ -34,7 +34,7 @@ class BinaryQuadraticModel(dimod.BinaryQuadraticModel):
                  var_type=openjij.SPIN, **kwargs):
         super().__init__(linear, quadratic, offset, var_type, **kwargs)
 
-        self.var_type = var_type
+        self.var_type = dimod.as_vartype(var_type)
 
         index_set = set(self.linear.keys())
         for v1, v2 in self.quadratic.keys():

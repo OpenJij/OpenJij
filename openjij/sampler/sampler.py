@@ -14,7 +14,6 @@
 
 import numpy as np
 import cxxjij
-from openjij.model import BinaryQuadraticModel
 import openjij
 import dimod
 
@@ -34,8 +33,11 @@ def measure_time(func):
 
 
 class BaseSampler(dimod.Sampler):
-    parameters = None
-    properties = None
+    """Base sampler class of python wrapper for cxxjij simulator
+
+    """
+    parameters = dict()
+    properties = dict()
 
     def _set_model(self, model):
         self.indices = model.indices
@@ -43,38 +45,87 @@ class BaseSampler(dimod.Sampler):
         self.energy_bias = model.energy_bias
         self.var_type = model.var_type
 
-    def _sampling(self, model, init_generator,
-                  algorithm, system,
-                  initial_state=None, reinitialize_state=None,
-                  seed=None, **kwargs):
+    def _setting_overwrite(self, **kwargs):
+        for key, value in kwargs.items():
+            if value:
+                self._schedule_setting[key] = value
+
+        self.num_reads = kwargs['num_reads'] if kwargs['num_reads'] > 1\
+            else self.num_reads
+
+    def _sampling(self, **kwargs):
+        pass
+
+    def _cxxjij_sampling(self, model, init_generator,
+                         algorithm, system,
+                         reinitialize_state=None,
+                         seed=None, **kwargs):
+        """Basic sampling function: for cxxjij sampling
+
+        Args:
+            model (openjij.BinaryQuadraticModel): model has a information of instaunce (h, J, Q)
+            init_generator (callable): return initial state
+            algorithm (callable): system algorithm of cxxjij
+            system (:obj:): [description]
+            reinitialize_state (bool, optional): [description]. Defaults to None.
+            seed (int, optional): seed for algorithm. Defaults to None.
+
+        Returns:
+            [type]: [description]
+        """
+
         self._set_model(model)
+
+        # set algorithm function and set random seed ----
         if seed is None:
-            def sampling_algorithm(system): return algorithm(
-                system, self._schedule)
+            def sampling_algorithm(system):
+                return algorithm(system, self._schedule)
         else:
-            def sampling_algorithm(system): return algorithm(
-                system, seed, self._schedule)
+            def sampling_algorithm(system):
+                return algorithm(system, seed, self._schedule)
+        # ---- set algorithm function and set random seed
 
-        # run algorithm
+        # setting of response class
         execution_time = []
-        response = openjij.Response(
-            var_type=model.var_type, indices=self.indices)
 
+        # define sampling execution function ---------------
+        states, energies = [], []
+        system_info = {'system': []}
         @measure_time
         def exec_sampling():
-            previous_state = init_generator()
             for _ in range(self.num_reads):
+                # Re-initialize at each sampling
+                # In reverse annealing,
+                # user can use previous result (at re-initilize is False)
                 if reinitialize_state:
                     system.reset_spins(init_generator())
-                else:
-                    system.reset_spins(previous_state)
+                # Run sampling algorithm
+                # and measure execution time
                 _exec_time = measure_time(sampling_algorithm)(system)
                 execution_time.append(_exec_time)
-                previous_state = cxxjij.result.get_solution(system)
-                self._post_save(previous_state, system, model, response)
 
+                # get Ising result (state and system information)
+                # ex. _sys_info save trotterized quantum state.
+                result_state, _sys_info = self._get_result(system, model)
+
+                # store result (state and energy)
+                states.append(result_state)
+                energies.append(model.calc_energy(result_state))
+
+                if _sys_info:
+                    system_info['system'].append(_sys_info)
+        # --------------- define sampling execution function
+
+        # Execute sampling function
         sampling_time = exec_sampling()
 
+        # construct response instance
+        response = openjij.Response.from_samples(
+            (states, model.indices), self.var_type, energies,
+            info=system_info
+        )
+
+        # save execution time
         response.info['sampling_time'] = sampling_time * 10**6  # micro sec
         response.info['execution_time'] = np.mean(
             execution_time) * 10**6  # micro sec
@@ -93,83 +144,7 @@ class BaseSampler(dimod.Sampler):
                 'var_type should be openjij.SPIN or openjij.BINARY')
         return bqm
 
-    def _post_save(self, result_state, system, model, response):
-        pass
-
-
-# class BaseSampler:
-
-#     def _set_model(self, model):
-#         self.indices = model.indices
-#         self.size = model.size
-#         self.energy_bias = model.energy_bias
-#         self.var_type = model.var_type
-
-#     def _make_dense_graph(self, h=None, J=None, Q=None, var_type='SPIN'):
-#         if var_type == 'BINARY':
-#             if Q is None:
-#                 raise ValueError('Input QUBO matrix: Q')
-#             model = BinaryQuadraticModel(Q=Q, var_type='BINARY')
-#         elif var_type == 'SPIN':
-#             if h is None or J is None:
-#                 raise ValueError('Input h and J')
-#             model = BinaryQuadraticModel(h=h, J=J, var_type='SPIN')
-#         self.indices = model.indices
-#         self.N = len(model.indices)
-#         self.energy_bias = model.energy_bias
-
-#         self.var_type = model.var_type
-
-#         dense_graph = model.convert_to_dense_graph()
-#         self.model = model
-#         return dense_graph
-
-#     def _sampling_kwargs_setting(self, **kwargs):
-#         if 'iteration' in kwargs:
-#             self.iteration = kwargs['iteration']
-#         elif 'num_reads' in kwargs:
-#             self.iteration = kwargs['num_reads']
-
-#     def _sampling(self, model, init_generator, algorithm, system,
-#                   initial_state=None,
-#                   reinitialize_state=True, seed=None, **kwargs):
-#         self._sampling_kwargs_setting(**kwargs)
-#         self._set_model(model)
-
-#         # seed for MonteCarlo
-#         if seed is None:
-#             def sampling_algorithm(system): return algorithm(
-#                 system, self.schedule)
-#         else:
-#             def sampling_algorithm(system): return algorithm(
-#                 system, seed, self.schedule)
-
-#         # run algorithm
-#         execution_time = []
-#         response = openjij.Response(
-#             var_type=model.var_type, indices=self.indices)
-
-#         @measure_time
-#         def exec_sampling():
-#             previous_state = init_generator()
-#             for _ in range(self.iteration):
-#                 if reinitialize_state:
-#                     system.reset_spins(init_generator())
-#                 else:
-#                     system.reset_spins(previous_state)
-#                 _exec_time = measure_time(sampling_algorithm)(system)
-#                 execution_time.append(_exec_time)
-#                 previous_state = cxxjij.result.get_solution(system)
-#                 self._post_save(previous_state, system, model, response)
-
-#         sampling_time = exec_sampling()
-#         response.info['sampling_time'] = sampling_time * 10**6  # micro sec
-#         response.info['execution_time'] = np.mean(
-#             execution_time) * 10**6  # micro sec
-#         response.info['list_exec_times'] = np.array(
-#             execution_time) * 10**6  # micro sec
-
-#         return response
-
-#     def _post_save(self, result_state, system, model, response):
-#         pass
+    def _get_result(self, system, model):
+        result = cxxjij.result.get_solution(system)
+        sys_info = {}
+        return result, sys_info

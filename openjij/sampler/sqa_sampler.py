@@ -10,6 +10,9 @@ class SQASampler(BaseSampler):
     """Sampler with Simulated Quantum Annealing (SQA).
 
     Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
+    Hamiltonian
+    $$H(s) = s H_p + (1-s)\sum_i \sigma_i^x$$
+    which $H_p$ is problem Hamiltonian that we want solve.
 
     Args:
         beta (float):
@@ -58,6 +61,14 @@ class SQASampler(BaseSampler):
         - schedule range is '0 <= s <= 1'.
 
     """
+    @property
+    def parameters(self):
+        return {
+            'beta': ['parameters'],
+            'gamma': ['parameters'],
+            'trotter': ['parameters'],
+        }
+
     @deprecated_alias(iteration='num_reads')
     def __init__(self,
                  beta=5.0, gamma=1.0,
@@ -79,10 +90,10 @@ class SQASampler(BaseSampler):
             'num_reads': num_reads,
         }
 
-    def _setting_overwrite(self, **kwargs):
-        for key, value in kwargs.items():
-            if value:
-                self._schedule_setting[key] = value
+        self._make_system = cxxjij.system.make_transverse_ising_Eigen
+        self._algorithm = {
+            'singlespinflip': cxxjij.algorithm.Algorithm_SingleSpinFlip_run
+        }
 
     def _convert_validation_schedule(self, schedule, beta):
         if not isinstance(schedule, (list, np.array)):
@@ -90,25 +101,38 @@ class SQASampler(BaseSampler):
 
         if isinstance(schedule[0], cxxjij.utility.TransverseFieldSchedule):
             return schedule
-        if len(schedule[0]) != 2:
-            raise ValueError(
-                """schedule is list of tuple or list
-                (annealing parameter s : float, step_length : int)""")
 
         # schedule validation  0 <= s <= 1
         sch = np.array(schedule).T[0]
         if not np.all((0 <= sch) & (sch <= 1)):
             raise ValueError("schedule range is '0 <= s <= 1'.")
 
-        # convert to list of cxxjij.utility.TransverseFieldSchedule
-        cxxjij_schedule = []
-        for s, one_mc_step in schedule:
-            _schedule = cxxjij.utility.TransverseFieldSchedule()
-            _schedule.one_mc_step = one_mc_step
-            _schedule.updater_parameter.beta = beta
-            _schedule.updater_parameter.s = s
-            cxxjij_schedule.append(_schedule)
-        return cxxjij_schedule
+        if len(schedule[0]) == 2:
+            # convert to list of cxxjij.utility.TransverseFieldSchedule
+            cxxjij_schedule = []
+            for s, one_mc_step in schedule:
+                _schedule = cxxjij.utility.TransverseFieldSchedule()
+                _schedule.one_mc_step = one_mc_step
+                _schedule.updater_parameter.beta = beta
+                _schedule.updater_parameter.s = s
+                cxxjij_schedule.append(_schedule)
+            return cxxjij_schedule
+        elif len(schedule[0]) == 3:
+            # convert to list of cxxjij.utility.TransverseFieldSchedule
+            cxxjij_schedule = []
+            for s, _beta, one_mc_step in schedule:
+                _schedule = cxxjij.utility.TransverseFieldSchedule()
+                _schedule.one_mc_step = one_mc_step
+                _schedule.updater_parameter.beta = _beta
+                _schedule.updater_parameter.s = s
+                cxxjij_schedule.append(_schedule)
+            return cxxjij_schedule
+        else:
+            raise ValueError(
+                """schedule is list of tuple or list
+                (annealing parameter s : float, step_length : int) or
+                (annealing parameter s : float, beta: float, step_length : int)
+                """)
 
     def _dict_to_model(self, var_type, h=None, J=None, Q=None, **kwargs):
         if var_type == openjij.SPIN:
@@ -120,72 +144,97 @@ class SQASampler(BaseSampler):
                 'var_type should be openjij.SPIN or openjij.BINARY')
         return bqm
 
-    def _post_save(self, result_state, system, model, response):
-        # trotter_spins is transposed because it is stored as [Spin ​​space][Trotter].
-        # [-1] is excluded because it is a tentative spin of s = 1 for convenience in SQA.
+    def _get_result(self, system, model):
+        state, info = super()._get_result(system, model)
+
         q_state = system.trotter_spins[:-1].T.astype(np.int)
-        # calculate classical energy at each trotter slices
         c_energies = [model.calc_energy(
             state, need_to_convert_from_spin=True) for state in q_state]
+        info['trotter_state'] = q_state
+        info['trotter_energies'] = c_energies
 
-        response.q_states.append(q_state)
-        response.q_energies.append(c_energies)
+        return state, info
 
-    def sample(self, bqm,
-               beta=None, gamma=None,
-               num_sweeps=None, schedule=None,
-               num_reads=1,
-               initial_state=None, updater='single spin flip',
-               reinitialize_state=True, seed=None, **kwargs):
+    def sample_ising(self, h, J,
+                     beta=None, gamma=None,
+                     num_sweeps=None, schedule=None,
+                     num_reads=1,
+                     initial_state=None, updater='single spin flip',
+                     reinitialize_state=True, seed=None, **kwargs):
+        """Sampling from the Ising model
+
+        Args:
+            h (dict): Linear term of the target Ising model. 
+            J (dict): Quadratic term of the target Ising model. 
+            beta (float, optional): inverse tempareture.
+            gamma (float, optional): strangth of transverse field. Defaults to None.
+            num_sweeps (int, optional): number of sweeps. Defaults to None.
+            schedule (list[list[float, int]], optional): List of annealing parameter. Defaults to None.
+            num_reads (int, optional): number of sampling. Defaults to 1.
+            initial_state (list[int], optional): Initial state. Defaults to None.
+            updater (str, optional): update method. Defaults to 'single spin flip'.
+            reinitialize_state (bool, optional): Re-initilization at each sampling. Defaults to True.
+            seed (int, optional): Sampling seed. Defaults to None.
+
+        Raises:
+            ValueError: [description]
+
+        Returns:
+            [type]: [description]
+        """
 
         bqm = openjij.BinaryQuadraticModel(
-            linear=bqm.linear, quadratic=bqm.quadratic,
-            offset=bqm.offset, var_type=bqm.vartype
+            linear=h, quadratic=J, var_type='SPIN'
         )
+        return self._sampling(bqm, beta=beta, gamma=gamma,
+                     num_sweeps=num_sweeps, schedule=schedule,
+                     num_reads=num_reads,
+                     initial_state=initial_state, updater=updater,
+                     reinitialize_state=reinitialize_state, seed=seed, **kwargs)
+
+    def _sampling(self, bqm, beta=None, gamma=None,
+                     num_sweeps=None, schedule=None,
+                     num_reads=1,
+                     initial_state=None, updater='single spin flip',
+                     reinitialize_state=True, seed=None, **kwargs):
+
+        ising_graph = bqm.get_cxxjij_ising_graph()
 
         self._setting_overwrite(
             beta=beta, gamma=gamma,
             num_sweeps=num_sweeps, num_reads=num_reads
         )
-
-        ising_graph = bqm.get_cxxjij_ising_graph()
-
         self._annealing_schedule_setting(
             bqm, beta, gamma, num_sweeps, schedule)
 
+        # make init state generator --------------------------------
         if initial_state is None:
             def init_generator(): return [ising_graph.gen_spin()
                                           for _ in range(self.trotter)]
         else:
-            if bqm.var_type == openjij.SPIN:
-                trotter_init_state = [np.array(initial_state)
-                                      for _ in range(self.trotter)]
-            else:  # BINARY
-                trotter_init_state = [
-                    (2*np.array(initial_state)-1).astype(int)
-                    for _ in range(self.trotter)]
+            if isinstance(initial_state, dict):
+                initial_state = [initial_state[k] for k in bqm.indices]
+            trotter_init_state = [np.array(initial_state)
+                                  for _ in range(self.trotter)]
 
-                def init_generator(): return trotter_init_state
+            def init_generator(): return trotter_init_state
+        # -------------------------------- make init state generator
 
-        sqa_system = cxxjij.system.make_transverse_ising_Eigen(
+        # choose updater -------------------------------------------
+        sqa_system = self._make_system(
             init_generator(), ising_graph, self.gamma
         )
-
-        # choose updater
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
-        if _updater_name == 'singlespinflip':
-            algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
-        else:
+        if _updater_name not in self._algorithm:
             raise ValueError('updater is one of "single spin flip"')
+        algorithm = self._algorithm[_updater_name] 
+        # ------------------------------------------- choose updater
 
-        response = self._sampling(
+        response = self._cxxjij_sampling(
             bqm, init_generator,
-            algorithm, sqa_system, initial_state,
+            algorithm, sqa_system,
             reinitialize_state, seed, **kwargs
         )
-
-        response.update_trotter_ising_states_energies(
-            response.q_states, response.q_energies)
 
         response.info['schedule'] = self.schedule_info
 
@@ -223,46 +272,3 @@ def linear_ising_schedule(model, beta, gamma, num_sweeps):
         beta=beta, one_mc_step=1, num_call_updater=num_sweeps
     )
     return schedule, [beta, gamma]
-
-    # def sampling(self, model,
-    #              initial_state=None, updater='single spin flip',
-    #              reinitialize_state=True, seed=None,
-    #              **kwargs):
-
-    #     ising_graph = model.get_cxxjij_ising_graph()
-
-    #     if initial_state is None:
-    #         def init_generator(): return [ising_graph.gen_spin()
-    #                                       for _ in range(self.trotter)]
-    #     else:
-    #         if model.var_type == openjij.SPIN:
-    #             trotter_init_state = [np.array(initial_state)
-    #                                   for _ in range(self.trotter)]
-    #         else:  # BINARY
-    #             trotter_init_state = [
-    #                 (2*np.array(initial_state)-1).astype(int)
-    #                 for _ in range(self.trotter)]
-
-    #         def init_generator(): return trotter_init_state
-
-    #     sqa_system = cxxjij.system.make_transverse_ising_Eigen(
-    #         init_generator(), ising_graph, self.gamma
-    #     )
-
-    #     # choose updater
-    #     _updater_name = updater.lower().replace('_', '').replace(' ', '')
-    #     if _updater_name == 'singlespinflip':
-    #         algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
-    #     else:
-    #         raise ValueError('updater is one of "single spin flip"')
-
-    #     response = self._sampling(
-    #         model, init_generator,
-    #         algorithm, sqa_system, initial_state,
-    #         reinitialize_state, seed, **kwargs
-    #     )
-
-    #     response.update_trotter_ising_states_energies(
-    #         response.q_states, response.q_energies)
-
-    #     return response

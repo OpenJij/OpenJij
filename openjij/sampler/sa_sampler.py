@@ -1,11 +1,23 @@
+# Copyright 2019 Jij Inc.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License
+
 import numpy as np
 import openjij
-from openjij.sampler import measure_time
 from openjij.sampler import BaseSampler
 from openjij.utils.decorator import deprecated_alias
 from openjij.model import BinaryHigherOrderModel
-from .hubo_simulated_annealing import hubo_simulated_annealing, default_schedule
-import time
+from .hubo_simulated_annealing import hubo_sa_sampling
+from .hubo_simulated_annealing import default_schedule
 import cxxjij
 
 
@@ -55,6 +67,13 @@ class SASampler(BaseSampler):
 
     """
 
+    @property
+    def parameters(self):
+        return {
+            'beta_min': ['parameters'],
+            'beta_max': ['parameters'],
+        }
+
     @deprecated_alias(iteration='num_reads')
     def __init__(self,
                  beta_min=None, beta_max=None,
@@ -74,10 +93,14 @@ class SASampler(BaseSampler):
             'num_reads': num_reads,
         }
 
-    def _setting_overwrite(self, **kwargs):
-        for key, value in kwargs.items():
-            if value:
-                self._schedule_setting[key] = value
+        self._make_system = {
+            'singlespinflip': cxxjij.system.make_classical_ising_Eigen,
+            'swendsenwang': cxxjij.system.make_classical_ising
+        }
+        self._algorithm = {
+            'singlespinflip': cxxjij.algorithm.Algorithm_SingleSpinFlip_run,
+            'swendsenwang': cxxjij.algorithm.Algorithm_SwendsenWang_run
+        }
 
     def _convert_validation_schedule(self, schedule):
         if not isinstance(schedule, (list, np.array)):
@@ -104,26 +127,20 @@ class SASampler(BaseSampler):
             cxxjij_schedule.append(_schedule)
         return cxxjij_schedule
 
-    @deprecated_alias(iteration='num_reads')
-    def sample(self, model, beta_min=None, beta_max=None,
-               num_sweeps=None, num_reads=1, schedule=None,
-               initial_state=None, updater='single spin flip',
-               reinitialize_state=True, seed=None,
-               **kwargs):
-
-        model = openjij.BinaryQuadraticModel(
-            linear=model.linear, quadratic=model.quadratic,
-            offset=model.offset, var_type=model.vartype
-        )
-
+    def sample_ising(self, h, J, beta_min=None, beta_max=None,
+                     num_sweeps=None, num_reads=1, schedule=None,
+                     initial_state=None, updater='single spin flip',
+                     reinitialize_state=True, seed=None,
+                     **kwargs):
         self._setting_overwrite(
             beta_min=beta_min, beta_max=beta_max,
             num_sweeps=num_sweeps, num_reads=num_reads
         )
 
+        model = openjij.BinaryQuadraticModel(
+            linear=h, quadratic=J, var_type='SPIN'
+        )
         ising_graph = model.get_cxxjij_ising_graph()
-
-        self.num_reads = num_reads if num_reads > 1 else self.num_reads
 
         # set annealing schedule -------------------------------
         if schedule or self.schedule:
@@ -145,12 +162,8 @@ class SASampler(BaseSampler):
             }
         # ------------------------------- set annealing schedule
 
-        # make init state generator
+        # make init state generator --------------------------------
         if initial_state is None:
-            # if not reinitialize_state:
-            #     raise ValueError(
-            #         'You need initial_state if reinitilize_state is False.')
-
             def _generate_init_state(): return ising_graph.gen_spin()
         else:
             # validate initial_state size
@@ -158,46 +171,29 @@ class SASampler(BaseSampler):
                 raise ValueError(
                     "the size of the initial state should be {}"
                     .format(ising_graph.size()))
-            if model.var_type == openjij.SPIN:
-                _init_state = np.array(initial_state)
-            else:  # BINARY
-                _init_state = (2*np.array(initial_state)-1).astype(np.int)
-
+            if isinstance(initial_state, dict):
+                initial_state = [initial_state[k] for k in model.indices]
+            _init_state = np.array(initial_state)
             def _generate_init_state(): return np.array(_init_state)
+        # -------------------------------- make init state generator
 
-        # choose updater
+        # choose updater -------------------------------------------
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
-        if _updater_name == 'singlespinflip':
-            algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
-            sa_system = cxxjij.system.make_classical_ising_Eigen(
-                _generate_init_state(), ising_graph)
-        elif _updater_name == 'swendsenwang':
-            # swendsen-wang is not support Eigen system
-            algorithm = cxxjij.algorithm.Algorithm_SwendsenWang_run
-            sa_system = cxxjij.system.make_classical_ising(
-                _generate_init_state(), ising_graph)
-        else:
-            raise ValueError(
-                'updater is one of "single spin flip or swendsen wang"')
+        if _updater_name not in self._make_system:
+            raise ValueError('updater is one of "single spin flip or swendsen wang"')
+        algorithm = self._algorithm[_updater_name]
+        sa_system = self._make_system[_updater_name](_generate_init_state(), ising_graph)
+        # ------------------------------------------- choose updater
 
-        response = self._sampling(
+        response = self._cxxjij_sampling(
             model, _generate_init_state,
-            algorithm, sa_system, initial_state,
+            algorithm, sa_system,
             reinitialize_state, seed, **kwargs
         )
-
-        response.update_ising_states_energies(
-            response.states, response.energies)
 
         response.info['schedule'] = self.schedule_info
 
         return response
-
-    def _post_save(self, result_state, system, model, response):
-        response.states.append(result_state)
-        response.energies.append(model.calc_energy(
-            result_state,
-            need_to_convert_from_spin=True))
 
     def sample_hubo(self, interactions: list, var_type,
                     beta_min=None, beta_max=None, schedule=None,
@@ -243,34 +239,13 @@ class SASampler(BaseSampler):
                 'num_sweeps': self._schedule_setting['num_sweeps']
             }
 
-        init_state = init_state if init_state else np.random.choice(
-            [1, -1], len(bhom.indices))
-        response = openjij.Response(
-            var_type=var_type, indices=bhom.indices
+        response = hubo_sa_sampling(
+            bhom, var_type,
+            schedule=schedule, schedule_info=self.schedule_info,
+            num_sweeps=self._schedule_setting['num_sweeps'],
+            num_reads=self._schedule_setting['num_reads'],
+            init_state=init_state, seed=seed
         )
-        execution_time = []
-        @measure_time
-        def exec_sampling():
-            for _ in range(num_reads):
-                _exec_time, state = measure_time(
-                    hubo_simulated_annealing)(bhom, init_state, schedule,
-                                              var_type=var_type)
-                execution_time.append(_exec_time)
-                response.states.append(state)
-                response.energies.append(bhom.calc_energy(state))
-
-        sampling_time, _ = exec_sampling()
-
-        response.info['sampling_time'] = sampling_time * 10**6  # micro sec
-        response.info['execution_time'] = np.mean(
-            execution_time) * 10**6  # micro sec
-        response.info['list_exec_times'] = np.array(
-            execution_time) * 10**6  # micro sec
-
-        response.update_ising_states_energies(
-            response.states, response.energies)
-
-        response.info['schedule'] = self.schedule_info
         return response
 
 
@@ -297,7 +272,7 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
     beta_min = np.log(2) / max_delta_energy if beta_min is None else beta_min
     beta_max = np.log(100) / min_delta_energy if beta_max is None else beta_max
 
-    num_sweeps_per_beta = max(1, num_sweeps // 1000.0)
+    num_sweeps_per_beta = max(1, num_sweeps // 1000)
 
     schedule = cxxjij.utility.make_classical_schedule_list(
         beta_min=beta_min, beta_max=beta_max,
@@ -306,15 +281,3 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
     )
 
     return schedule, [beta_max, beta_min]
-
-
-def measure_time(func):
-    def wrapper(*args, **kargs):
-        start_time = time.perf_counter()
-
-        result = func(*args, **kargs)
-
-        end_time = time.perf_counter()
-        execution_time = end_time - start_time
-        return execution_time, result
-    return wrapper
