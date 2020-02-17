@@ -212,6 +212,42 @@ namespace openjij {
                         Iamax(n, x, 1, result);
                     }
 
+                    /**
+                     * @brief wrap function of cublasXdot
+                     *
+                     * @tparam FloatType
+                     * @param n
+                     * @param x
+                     * @param incx
+                     * @param y
+                     * @param incy
+                     * @param result
+                     */
+                    template<typename FloatType>
+                    inline void dot(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, int incx, const utility::cuda::unique_dev_ptr<FloatType[]>& y, int incy, utility::cuda::unique_dev_ptr<FloatType[]>& result){
+                        cublasPointerMode_t mode;
+                        HANDLE_ERROR_CUBLAS(cublasGetPointerMode(_handle, &mode));
+                        HANDLE_ERROR_CUBLAS(cublasSetPointerMode(_handle, CUBLAS_POINTER_MODE_DEVICE));
+                        //set pointermode to device
+                        HANDLE_ERROR_CUBLAS(cublas_dot_impl(_handle, n, x.get(), incx, y.get(), incy, result.get()));
+                        //reset pointermode
+                        HANDLE_ERROR_CUBLAS(cublasSetPointerMode(_handle, mode));
+                    }
+
+                    /**
+                     * @brief return the dot product of x and y
+                     *
+                     * @tparam FloatType
+                     * @param n
+                     * @param x
+                     * @param y
+                     * @param result
+                     */
+                    template<typename FloatType>
+                    inline void dot(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, const utility::cuda::unique_dev_ptr<FloatType[]>& y, utility::cuda::unique_dev_ptr<FloatType[]>& result){
+                        dot(n, x, 1, y, 1, result);
+                    }
+
                 private:
                     cublasHandle_t _handle;
             };
