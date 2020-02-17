@@ -980,6 +980,24 @@ TEST(GPUUtil, CuBLASWrapperTest){
     HANDLE_ERROR_CUDA(cudaMemcpy(&dev_idx, device_idx.get(), 1*sizeof(int), cudaMemcpyDeviceToHost));
     //NOTE: max_val will return 1-indexed value!!
     EXPECT_EQ(host_idx, dev_idx-1);
+
+    //dot product test
+    std::vector<float> host_vec2(SIZE);
+    auto device_vec2 = utility::cuda::make_dev_unique<float[]>(SIZE);
+    urd = std::uniform_real_distribution<float>{0, 1};
+    for(auto&& elem : host_vec2){
+        elem = urd(r);
+    }
+    HANDLE_ERROR_CUDA(cudaMemcpy(device_vec2.get(), host_vec2.data(), SIZE*sizeof(float), cudaMemcpyHostToDevice));
+    float dotprod = 0;
+    float dev_dotprod;
+    auto device_dotprod = utility::cuda::make_dev_unique<float[]>(1);
+    for(std::size_t i=0; i<SIZE; i++){
+        dotprod += host_vec[i]*host_vec2[i];
+    }
+    cublas.dot(SIZE, device_vec, device_vec2, device_dotprod);
+    HANDLE_ERROR_CUDA(cudaMemcpy(&dev_dotprod, device_dotprod.get(), 1*sizeof(float), cudaMemcpyDeviceToHost));
+    EXPECT_NEAR(dev_dotprod/1000.0, dotprod/1000.0, 1e-4);
 }
 
 
