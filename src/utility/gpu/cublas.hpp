@@ -109,6 +109,10 @@ namespace openjij {
                             const float    *beta,
                             utility::cuda::unique_dev_ptr<FloatType>& C,
                             int ldc){
+                        
+                        cublasPointerMode_t mode;
+                        HANDLE_ERROR_CUBLAS(cublasGetPointerMode(_handle, &mode));
+                        HANDLE_ERROR_CUBLAS(cublasSetPointerMode(_handle, CUBLAS_POINTER_MODE_HOST));
                         HANDLE_ERROR_CUBLAS(cublasSgemmEx(
                                     _handle,
                                     transa,
@@ -128,6 +132,7 @@ namespace openjij {
                                     cudaDataType_impl<typename std::remove_extent<FloatType>::type>::type,
                                     ldc)
                                 );
+                        HANDLE_ERROR_CUBLAS(cublasSetPointerMode(_handle, mode));
                     }
 
                     /**
@@ -156,6 +161,9 @@ namespace openjij {
                         typename std::remove_extent<FloatType>::type alpha = 1.0;
                         typename std::remove_extent<FloatType>::type beta = 0;
 
+                        cublasPointerMode_t mode;
+                        HANDLE_ERROR_CUBLAS(cublasGetPointerMode(_handle, &mode));
+                        HANDLE_ERROR_CUBLAS(cublasSetPointerMode(_handle, CUBLAS_POINTER_MODE_HOST));
                         HANDLE_ERROR_CUBLAS(cublasSgemmEx(
                                     _handle,
                                     transa,
@@ -175,6 +183,7 @@ namespace openjij {
                                     cudaDataType_impl<typename std::remove_extent<FloatType>::type>::type,
                                     m)
                                 );
+                        HANDLE_ERROR_CUBLAS(cublasSetPointerMode(_handle, mode));
                     }
 
                     /**
@@ -188,12 +197,12 @@ namespace openjij {
                      * @param result
                      */
                     template<typename FloatType>
-                    inline void Iamax(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, int incx, utility::cuda::unique_dev_ptr<int[]>& result){
+                    inline void Iamax(int n, const FloatType* x, int incx, int* result){
                         cublasPointerMode_t mode;
                         HANDLE_ERROR_CUBLAS(cublasGetPointerMode(_handle, &mode));
                         //set pointermode to device
                         HANDLE_ERROR_CUBLAS(cublasSetPointerMode(_handle, CUBLAS_POINTER_MODE_DEVICE));
-                        HANDLE_ERROR_CUBLAS(cublas_Iamax_impl(_handle, n, x.get(), incx, result.get()));
+                        HANDLE_ERROR_CUBLAS(cublas_Iamax_impl(_handle, n, x, incx, result));
                         //reset pointermode
                         HANDLE_ERROR_CUBLAS(cublasSetPointerMode(_handle, mode));
                     }
@@ -209,7 +218,7 @@ namespace openjij {
                      */
                     template<typename FloatType>
                     inline void absmax_val_index(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, utility::cuda::unique_dev_ptr<int[]>& result){
-                        Iamax(n, x, 1, result);
+                        Iamax(n, x.get(), 1, result.get());
                     }
 
                     /**
@@ -224,12 +233,12 @@ namespace openjij {
                      * @param result
                      */
                     template<typename FloatType>
-                    inline void dot(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, int incx, const utility::cuda::unique_dev_ptr<FloatType[]>& y, int incy, utility::cuda::unique_dev_ptr<FloatType[]>& result){
+                    inline void dot(int n, const FloatType* x, int incx, const FloatType* y, int incy, FloatType* result){
                         cublasPointerMode_t mode;
                         HANDLE_ERROR_CUBLAS(cublasGetPointerMode(_handle, &mode));
                         HANDLE_ERROR_CUBLAS(cublasSetPointerMode(_handle, CUBLAS_POINTER_MODE_DEVICE));
                         //set pointermode to device
-                        HANDLE_ERROR_CUBLAS(cublas_dot_impl(_handle, n, x.get(), incx, y.get(), incy, result.get()));
+                        HANDLE_ERROR_CUBLAS(cublas_dot_impl(_handle, n, x, incx, y, incy, result));
                         //reset pointermode
                         HANDLE_ERROR_CUBLAS(cublasSetPointerMode(_handle, mode));
                     }
@@ -245,7 +254,7 @@ namespace openjij {
                      */
                     template<typename FloatType>
                     inline void dot(int n, const utility::cuda::unique_dev_ptr<FloatType[]>& x, const utility::cuda::unique_dev_ptr<FloatType[]>& y, utility::cuda::unique_dev_ptr<FloatType[]>& result){
-                        dot(n, x, 1, y, 1, result);
+                        dot(n, x.get(), 1, y.get(), 1, result.get());
                     }
 
                 private:
