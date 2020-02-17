@@ -26,6 +26,7 @@ namespace openjij {
     namespace utility {
         namespace cuda {
 
+            //cuda datatype
             template<typename FloatType>
                 struct cudaDataType_impl;
 
@@ -39,6 +40,7 @@ namespace openjij {
                     constexpr static cudaDataType_t type = CUDA_R_64F;
                 };
 
+            //cublas get maximal value
             template<typename FloatType>
                 inline cublasStatus_t cublas_Iamax_impl(cublasHandle_t handle, int n, const FloatType *x, int incx, int *result);
 
@@ -52,6 +54,7 @@ namespace openjij {
                     return cublasIdamax(handle, n, x, incx, result);
                 }
 
+            //cublas dot product
             template<typename FloatType>
                 inline cublasStatus_t cublas_dot_impl(cublasHandle_t handle, int n, const FloatType* x, int incx, const FloatType* y, int incy, FloatType* result);
 
@@ -91,7 +94,6 @@ namespace openjij {
                             HANDLE_ERROR_CUBLAS(cublasDestroy(_handle));
                     }
 
-                    //TODO: fixme: template function 
                     template<typename FloatType>
                     inline void SgemmEx(
                             cublasOperation_t transa,
