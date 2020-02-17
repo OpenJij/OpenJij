@@ -51,6 +51,19 @@ namespace openjij {
                 inline cublasStatus_t cublas_Iamax_impl(cublasHandle_t handle, int n, const double *x, int incx, int *result){
                     return cublasIdamax(handle, n, x, incx, result);
                 }
+
+            template<typename FloatType>
+                inline cublasStatus_t cublas_dot_impl(cublasHandle_t handle, int n, const FloatType* x, int incx, const FloatType* y, int incy, FloatType* result);
+
+            template<>
+                inline cublasStatus_t cublas_dot_impl(cublasHandle_t handle, int n, const float* x, int incx, const float* y, int incy, float* result){
+                    return cublasSdot(handle, n, x, incx, y, incy, result);
+                }
+
+            template<>
+                inline cublasStatus_t cublas_dot_impl(cublasHandle_t handle, int n, const double* x, int incx, const double* y, int incy, double* result){
+                    return cublasDdot(handle, n, x, incx, y, incy, result);
+                }
                 
 
             /**
@@ -78,6 +91,7 @@ namespace openjij {
                             HANDLE_ERROR_CUBLAS(cublasDestroy(_handle));
                     }
 
+                    //TODO: fixme: template function 
                     template<typename FloatType>
                     inline void SgemmEx(
                             cublasOperation_t transa,
