@@ -1,4 +1,5 @@
 import unittest
+import openjij as oj
 
 
 class TestSQA(unittest.TestCase):
@@ -28,6 +29,5 @@ class TestSQA(unittest.TestCase):
         self.ground_q = [1, 1, 0, 0, 0]
         self.e_q = -1-1-1
 
-    def test_sqa(self):
-        sampler = oj.SQASampler()
-        res = sampler.sample_
+    #def test_sqa(self):
+    #    sampler = oj.SQASampler()

@@ -184,13 +184,13 @@ class ModelTest(unittest.TestCase):
     def test_get_chimera_graph(self):
         c_model = oj.ChimeraModel.from_qubo(
             Q={(0, 4): -1, (1, 1): -1, (1, 5): 1}, unit_num_L=2)
-        chimera = c_model.get_chimera_graph()
+        chimera = c_model.get_cxxjij_ising_graph()
         self.assertIsInstance(chimera, cj.graph.Chimera)
 
         c_model = oj.ChimeraModel.from_qubo(
             Q={((0, 0, 1), (0, 0, 4)): -1, ((0, 0, 4), (0, 0, 2)): -1},
             unit_num_L=2)
-        chimera = c_model.get_chimera_graph()
+        chimera = c_model.get_cxxjij_ising_graph()
         self.assertIsInstance(chimera, cj.graph.Chimera)
 
 
