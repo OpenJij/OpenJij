@@ -18,6 +18,8 @@
 #include <cstddef>
 #include <cmath>
 #include <vector>
+#include <utility>
+#include <tuple>
 
 #include <system/system.hpp>
 
@@ -53,6 +55,7 @@ namespace openjij {
         struct UpdaterParameter<system::transverse_field_system> {
             UpdaterParameter() = default;
             UpdaterParameter(double beta, double s) : beta{beta}, s{s} {}
+            UpdaterParameter(const std::pair<double, double> &obj) : UpdaterParameter(obj.first, obj.second){}
 
             /**
              * @brief inverse temperature
@@ -85,8 +88,9 @@ namespace openjij {
         template<typename SystemType>
         struct Schedule {
             Schedule() = default;
-            std::size_t one_mc_step;
+            Schedule(const std::pair<UpdaterParameter<SystemType>, std::size_t>& obj) : updater_parameter(obj.first), one_mc_step(obj.second) {}
             UpdaterParameter<SystemType> updater_parameter;
+            std::size_t one_mc_step;
         };
 
         /**

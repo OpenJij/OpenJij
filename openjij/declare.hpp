@@ -262,18 +262,21 @@ template<typename FloatType,
 //Algorithm
 template<template<typename> class Updater, typename System, typename RandomNumberEngine>
 inline void declare_Algorithm_run(py::module &m, const std::string& updater_str){
-//with seed
+    //with seed
     auto str = std::string("Algorithm_")+updater_str+std::string("_run");
     m.def(str.c_str(), [](System& system, std::size_t seed, const utility::ScheduleList<typename system::get_system_type<System>::type>& schedule_list){
             RandomNumberEngine rng(seed);
             algorithm::Algorithm<Updater>::run(system, rng, schedule_list);
             }, "system"_a, "seed"_a, "schedule_list"_a);
 
-//without seed
+    //without seed
     m.def(str.c_str(), [](System& system, const utility::ScheduleList<typename system::get_system_type<System>::type>& schedule_list){
             RandomNumberEngine rng(std::random_device{}());
             algorithm::Algorithm<Updater>::run(system, rng, schedule_list);
             }, "system"_a, "schedule_list"_a);
+
+    //schedule_list can be tuple of list
+
 }
 
 //utility
@@ -295,6 +298,7 @@ inline void declare_Schedule(py::module &m, const std::string& systemtype_str){
     auto str = systemtype_str + "Schedule";
     py::class_<utility::Schedule<SystemType>>(m, str.c_str())
         .def(py::init<>())
+        .def(py::init<const std::pair<const utility::UpdaterParameter<SystemType>&, std::size_t>&>(), "obj"_a)
         .def_readwrite("one_mc_step", &utility::Schedule<SystemType>::one_mc_step)
         .def_readwrite("updater_parameter", &utility::Schedule<SystemType>::updater_parameter)
         .def("__repr__", [](const utility::Schedule<SystemType>& self){

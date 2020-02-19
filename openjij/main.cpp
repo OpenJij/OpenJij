@@ -121,6 +121,7 @@ PYBIND11_MODULE(cxxjij, m){
     py::class_<utility::TransverseFieldUpdaterParameter>(m_utility, "TransverseFieldUpdaterParameter")
         .def(py::init<>())
         .def(py::init<double, double>(), "beta"_a, "s"_a)
+        .def(py::init<const std::pair<double, double>&>(), "obj"_a)
         .def_readwrite("beta", &utility::TransverseFieldUpdaterParameter::beta)
         .def_readwrite("s", &utility::TransverseFieldUpdaterParameter::s)
         .def("__repr__", [](const utility::TransverseFieldUpdaterParameter& self){

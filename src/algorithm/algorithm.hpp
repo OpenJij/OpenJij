@@ -33,6 +33,12 @@ namespace openjij {
                 }
             }
         };
+
+        //alias (Monte Carlo method)
+        //TODO: Algorithm class will be deprecated someday.
+        template<template<typename> class Updater>
+        using MCMC = Algorithm<Updater>;
+
     } // namespace algorithm
 } // namespace openjij
 
