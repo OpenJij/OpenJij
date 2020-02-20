@@ -23,6 +23,7 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/functional.h>
 #include <pybind11/eigen.h>
 
 namespace py = pybind11;
@@ -262,20 +263,38 @@ template<typename FloatType,
 //Algorithm
 template<template<typename> class Updater, typename System, typename RandomNumberEngine>
 inline void declare_Algorithm_run(py::module &m, const std::string& updater_str){
-    //with seed
     auto str = std::string("Algorithm_")+updater_str+std::string("_run");
-    m.def(str.c_str(), [](System& system, std::size_t seed, const utility::ScheduleList<typename system::get_system_type<System>::type>& schedule_list){
+    using SystemType = typename system::get_system_type<System>::type;
+    //with seed
+    m.def(str.c_str(), [](System& system, std::size_t seed, const utility::ScheduleList<SystemType>& schedule_list,
+                const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
             RandomNumberEngine rng(seed);
             algorithm::Algorithm<Updater>::run(system, rng, schedule_list);
-            }, "system"_a, "seed"_a, "schedule_list"_a);
+            }, "system"_a, "seed"_a, "schedule_list"_a, "callback"_a = nullptr);
 
     //without seed
-    m.def(str.c_str(), [](System& system, const utility::ScheduleList<typename system::get_system_type<System>::type>& schedule_list){
+    m.def(str.c_str(), [](System& system, const utility::ScheduleList<SystemType>& schedule_list,
+                const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
             RandomNumberEngine rng(std::random_device{}());
             algorithm::Algorithm<Updater>::run(system, rng, schedule_list);
-            }, "system"_a, "schedule_list"_a);
+            }, "system"_a, "schedule_list"_a, "callback"_a = nullptr);
 
-    //schedule_list can be tuple of list
+    //schedule_list can be a list of tuples
+    using TupleList = std::vector<std::pair<typename utility::UpdaterParameter<SystemType>::Tuple, std::size_t>>;
+    
+    //with seed
+    m.def(str.c_str(), [](System& system, std::size_t seed, const TupleList& tuplelist,
+                const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            RandomNumberEngine rng(seed);
+            algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist));
+            }, "system"_a, "seed"_a, "tuplelist"_a, "callback"_a = nullptr);
+
+    //without seed
+    m.def(str.c_str(), [](System& system, const TupleList& tuplelist,
+                const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            RandomNumberEngine rng(std::random_device{}());
+            algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist));
+            }, "system"_a, "tuplelist"_a, "callback"_a = nullptr);
 
 }
 
@@ -304,6 +323,10 @@ inline void declare_Schedule(py::module &m, const std::string& systemtype_str){
         .def("__repr__", [](const utility::Schedule<SystemType>& self){
                 return "(" + repr_impl(self.updater_parameter) + " mcs: " + std::to_string(self.one_mc_step) + ")";
                 });
+
+    //define make_schedule_list
+    m.def("make_schedule_list", &utility::make_schedule_list<SystemType>, "tuplelist"_a);
+
 }
 
 //result

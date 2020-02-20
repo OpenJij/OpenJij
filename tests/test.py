@@ -262,8 +262,9 @@ class CXXTest(unittest.TestCase):
         system = S.make_transverse_ising(self.dense.gen_spin(self.seed_for_spin), self.dense, 1.0, 10)
 
         #schedulelist
-        #schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
-        schedule_list = [((0.1,100), 50), ((0.5,100), 50)]
+        schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
+        #schedule_list = [((0.1,100), 50), ((0.5,100), 50)]
+        print(schedule_list)
 
         #anneal
         A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)

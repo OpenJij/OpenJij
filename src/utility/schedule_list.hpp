@@ -39,8 +39,12 @@ namespace openjij {
          */
         template<>
         struct UpdaterParameter<system::classical_system> {
+            using Tuple = double;
             UpdaterParameter() = default;
-            UpdaterParameter(double beta) : beta{beta} {}
+            UpdaterParameter(Tuple beta) : beta{beta} {}
+            inline Tuple get_tuple() const{
+                return beta;
+            }
 
             /**
              * @brief inverse temperature
@@ -53,9 +57,13 @@ namespace openjij {
          */
         template<>
         struct UpdaterParameter<system::transverse_field_system> {
+            using Tuple = std::pair<double, double>;
             UpdaterParameter() = default;
             UpdaterParameter(double beta, double s) : beta{beta}, s{s} {}
-            UpdaterParameter(const std::pair<double, double> &obj) : UpdaterParameter(obj.first, obj.second){}
+            UpdaterParameter(const Tuple &obj) : UpdaterParameter(obj.first, obj.second){}
+            inline Tuple get_tuple() const{
+                return std::make_pair(beta, s);
+            }
 
             /**
              * @brief inverse temperature
@@ -79,6 +87,8 @@ namespace openjij {
          * @brief TransverseFieldUpdaterParameter alias
          */
         using TransverseFieldUpdaterParameter = UpdaterParameter<system::transverse_field_system>;
+
+        //TODO: the above class is only for monte carlo system, add enable_if.
 
         /**
          * @brief schedule struct
@@ -156,6 +166,24 @@ namespace openjij {
             }
 
             return schedule_list;
+        }
+
+        /**
+         * @brief helper function for making schedulelist from list of tuples
+         *
+         * @tparam SystemType
+         * @param tuplelist
+         *
+         * @return 
+         */
+        template<typename SystemType>
+        ScheduleList<SystemType> make_schedule_list(const std::vector<std::pair<typename UpdaterParameter<SystemType>::Tuple, std::size_t>>& tuplelist){
+            ScheduleList<SystemType> return_list;
+            return_list.reserve(tuplelist.size());
+            for(auto& elem : tuplelist){
+                return_list.emplace_back(std::make_pair(elem.first, elem.second));
+            }
+            return return_list;
         }
 
     } // namespace utility
