@@ -235,7 +235,7 @@ namespace openjij {
              * @note might be better to move this function to utility
              *
              */
-            template<typename TimeType, typename RandomNumberEngine>
+            template<typename RandomNumberEngine>
             static std::vector<TimeType> generate_poisson_points(const TimeType lambda, const TimeType beta,
                                                                  RandomNumberEngine& random_number_engine) {
                 std::uniform_real_distribution<> rand(0.0, 1.0);

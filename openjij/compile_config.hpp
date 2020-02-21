@@ -54,7 +54,7 @@ namespace openjij {
      default floating point precision on GPU (default: float)
      **********************************************************/
     using GPUFloatType = float;
-    //using GPUloatType = double;
+    //using GPUFloatType = double;
 
 
 #ifdef USE_CUDA

@@ -48,7 +48,7 @@ class CMakeBuild(build_ext):
         cmake_kwargs = ['-DUSE_TEST=Yes',
                         '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                         # '-DCMAKE_VERBOSE_MAKEFILE=ON',
-                        #'-DCMAKE_CUDA_FLAGS= -arch=sm_60 ',
+                        # '-DCMAKE_CUDA_FLAGS= -arch=sm_60',
                         '-DPYTHON_EXECUTABLE=' + sys.executable]
 
         cfg = 'Debug' if self.debug else 'Release'
