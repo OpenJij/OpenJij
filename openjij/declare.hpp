@@ -207,12 +207,11 @@ inline void declare_ContinuousTimeIsing(py::module &m, const std::string& gtype_
         .def_readonly("num_spins", &TransverseIsing::num_spins)
         .def_readonly("gamma", &TransverseIsing::gamma);
 
-    //make_continuous_time_ising
+    //make_continuous_ising
     auto mkci_str = std::string("make_continuous_time_ising")+eigen_str;
     m.def(mkci_str.c_str(), [](const graph::Spins& classical_spins, const GraphType& init_interaction, double gamma){
             return system::make_continuous_time_ising<eigen_impl>(classical_spins, init_interaction, gamma);
             }, "classical_spins"_a, "init_interaction"_a, "gamma"_a);
-
 }
 
 #ifdef USE_CUDA
@@ -268,15 +267,19 @@ inline void declare_Algorithm_run(py::module &m, const std::string& updater_str)
     //with seed
     m.def(str.c_str(), [](System& system, std::size_t seed, const utility::ScheduleList<SystemType>& schedule_list,
                 const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(seed);
-            algorithm::Algorithm<Updater>::run(system, rng, schedule_list);
+            algorithm::Algorithm<Updater>::run(system, rng, schedule_list,
+                    callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
             }, "system"_a, "seed"_a, "schedule_list"_a, "callback"_a = nullptr);
 
     //without seed
     m.def(str.c_str(), [](System& system, const utility::ScheduleList<SystemType>& schedule_list,
                 const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(std::random_device{}());
-            algorithm::Algorithm<Updater>::run(system, rng, schedule_list);
+            algorithm::Algorithm<Updater>::run(system, rng, schedule_list,
+                    callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
             }, "system"_a, "schedule_list"_a, "callback"_a = nullptr);
 
     //schedule_list can be a list of tuples
@@ -285,15 +288,19 @@ inline void declare_Algorithm_run(py::module &m, const std::string& updater_str)
     //with seed
     m.def(str.c_str(), [](System& system, std::size_t seed, const TupleList& tuplelist,
                 const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(seed);
-            algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist));
+            algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist),
+                    callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
             }, "system"_a, "seed"_a, "tuplelist"_a, "callback"_a = nullptr);
 
     //without seed
     m.def(str.c_str(), [](System& system, const TupleList& tuplelist,
                 const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(std::random_device{}());
-            algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist));
+            algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist),
+                    callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
             }, "system"_a, "tuplelist"_a, "callback"_a = nullptr);
 
 }
