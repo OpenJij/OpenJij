@@ -65,6 +65,7 @@ PYBIND11_MODULE(cxxjij, m){
 
     //Continuous Time Transeverse Ising
     ::declare_ContinuousTimeIsing<graph::Dense<FloatType>, false>(m_system, "_Dense", "");
+    ::declare_ContinuousTimeIsing<graph::Sparse<FloatType>, false>(m_system, "_Sparse", "");
 
 #ifdef USE_CUDA
     //ChimeraTransverseGPU
@@ -97,6 +98,7 @@ PYBIND11_MODULE(cxxjij, m){
 
     //Continuous time swendsen-wang
     ::declare_Algorithm_run<updater::ContinuousTimeSwendsenWang, system::ContinuousTimeIsing<graph::Dense<FloatType>, false>, RandomEngine>(m_algorithm, "ContinuousTimeSwendsenWang");
+    ::declare_Algorithm_run<updater::ContinuousTimeSwendsenWang, system::ContinuousTimeIsing<graph::Sparse<FloatType>, false>, RandomEngine>(m_algorithm, "ContinuousTimeSwendsenWang");
 
 #ifdef USE_CUDA
     //GPU
@@ -121,6 +123,7 @@ PYBIND11_MODULE(cxxjij, m){
     py::class_<utility::TransverseFieldUpdaterParameter>(m_utility, "TransverseFieldUpdaterParameter")
         .def(py::init<>())
         .def(py::init<double, double>(), "beta"_a, "s"_a)
+        .def(py::init<const std::pair<double, double>&>(), "obj"_a)
         .def_readwrite("beta", &utility::TransverseFieldUpdaterParameter::beta)
         .def_readwrite("s", &utility::TransverseFieldUpdaterParameter::s)
         .def("__repr__", [](const utility::TransverseFieldUpdaterParameter& self){
@@ -153,6 +156,7 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>, false>>(m_result);
     ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>, true>>(m_result);
     ::declare_get_solution<system::ContinuousTimeIsing<graph::Dense<FloatType>, false>>(m_result);
+    ::declare_get_solution<system::ContinuousTimeIsing<graph::Sparse<FloatType>, false>>(m_result);
 #ifdef USE_CUDA
     ::declare_get_solution<system::ChimeraTransverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>>(m_result);
     ::declare_get_solution<system::ChimeraClassicalGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL>>(m_result);

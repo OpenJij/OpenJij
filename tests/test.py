@@ -293,7 +293,7 @@ class CXXTest(unittest.TestCase):
     def test_SingleSpinFlip_TransverseIsing_Sparse_NoEigenImpl(self):
 
         #classial ising (sparse)
-        system = S.make_transverse_ising(self.dense.gen_spin(self.seed_for_spin), self.dense, 1.0, 10)
+        system = S.make_transverse_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse, 1.0, 10)
 
         #schedulelist
         schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
@@ -310,7 +310,7 @@ class CXXTest(unittest.TestCase):
     def test_SingleSpinFlip_TransverseIsing_Sparse_WithEigenImpl(self):
 
         #classial ising (sparse)
-        system = S.make_transverse_ising(self.dense.gen_spin(self.seed_for_spin), self.dense, 1.0, 10)
+        system = S.make_transverse_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse, 1.0, 10)
 
         #schedulelist
         schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
@@ -369,6 +369,40 @@ class CXXTest(unittest.TestCase):
 
         #anneal
         A.Algorithm_SwendsenWang_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_ContinuousTimeSwendsenWang_ContinuousTimeIsing_Dense_NoEigenImpl(self):
+
+        #classial ising (sparse)
+        system = S.make_continuous_time_ising(self.dense.gen_spin(self.seed_for_spin), self.dense, 1.0)
+
+        #schedulelist
+        schedule_list = U.make_transverse_field_schedule_list(10, 100, 1000)
+
+        #anneal
+        A.Algorithm_ContinuousTimeSwendsenWang_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_ContinuousTimeSwendsenWang_ContinuousTimeIsing_Sparse_NoEigenImpl(self):
+
+        #classial ising (sparse)
+        system = S.make_continuous_time_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse, 1.0)
+
+        #schedulelist
+        schedule_list = U.make_transverse_field_schedule_list(10, 100, 1000)
+
+        #anneal
+        A.Algorithm_ContinuousTimeSwendsenWang_run(system, self.seed_for_mc, schedule_list)
 
         #result spin
         result_spin = R.get_solution(system)
