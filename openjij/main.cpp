@@ -17,7 +17,9 @@
 
 #include "./compile_config.hpp"
 #include "./declare.hpp"
+#include <pybind11/eval.h>
 #include <utility/random.hpp>
+#include <type_traits>
 
 
 PYBIND11_MODULE(cxxjij, m){
@@ -40,10 +42,16 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_Chimera<FloatType>(m_graph, "");
 
     //GPU version (GPUFloatType)
-    ::declare_Dense<GPUFloatType>(m_graph, "GPU");
-    ::declare_Sparse<GPUFloatType>(m_graph, "GPU");
-    ::declare_Square<GPUFloatType>(m_graph, "GPU");
-    ::declare_Chimera<GPUFloatType>(m_graph, "GPU");
+    if(!std::is_same<FloatType, GPUFloatType>::value){
+        ::declare_Dense<GPUFloatType>(m_graph, "GPU");
+        ::declare_Sparse<GPUFloatType>(m_graph, "GPU");
+        ::declare_Square<GPUFloatType>(m_graph, "GPU");
+        ::declare_Chimera<GPUFloatType>(m_graph, "GPU");
+    }
+    else{
+        //raise warning
+        std::cerr << "Warning: please use classes in Graph module without suffix \"GPU\" or define type aliases." << std::endl;
+    }
 
 
     /**********************************************************

@@ -382,7 +382,7 @@ class CXXTest(unittest.TestCase):
         system = S.make_continuous_time_ising(self.dense.gen_spin(self.seed_for_spin), self.dense, 1.0)
 
         #schedulelist
-        schedule_list = U.make_transverse_field_schedule_list(10, 100, 1000)
+        schedule_list = U.make_transverse_field_schedule_list(10, 100, 3000)
 
         #anneal
         A.Algorithm_ContinuousTimeSwendsenWang_run(system, self.seed_for_mc, schedule_list)
@@ -399,7 +399,7 @@ class CXXTest(unittest.TestCase):
         system = S.make_continuous_time_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse, 1.0)
 
         #schedulelist
-        schedule_list = U.make_transverse_field_schedule_list(10, 100, 1000)
+        schedule_list = U.make_transverse_field_schedule_list(10, 100, 3000)
 
         #anneal
         A.Algorithm_ContinuousTimeSwendsenWang_run(system, self.seed_for_mc, schedule_list)
