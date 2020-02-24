@@ -47,7 +47,7 @@ class BaseSampler(dimod.Sampler):
 
     def _setting_overwrite(self, **kwargs):
         for key, value in kwargs.items():
-            if value:
+            if value is not None:
                 self._schedule_setting[key] = value
 
         self.num_reads = kwargs['num_reads'] if kwargs['num_reads'] > 1\

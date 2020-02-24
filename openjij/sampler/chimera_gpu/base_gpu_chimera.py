@@ -1,3 +1,16 @@
+# Copyright 2020 Jij Inc.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License
+
 
 import cxxjij
 from openjij.model import BinaryQuadraticModel
@@ -31,7 +44,7 @@ class BaseGPUChimeraSampler(dimod.Structured):
             for c in range(self.unit_num_L):
                 for z in range(8):
                     i = chimera_to_ind(r, c, z, self.unit_num_L)
-                    
+
                     if z in [0, 1, 2, 3]:
                         edges += [
                             (i, chimera_to_ind(r, c, _z, self.unit_num_L))
@@ -40,10 +53,9 @@ class BaseGPUChimeraSampler(dimod.Structured):
                         if r < self.unit_num_L-1:
                             edges.append(
                                 (i, chimera_to_ind(r+1, c, z, self.unit_num_L)))
-                            
+
                     elif z in [4, 5, 6, 7]:
                         if c < self.unit_num_L-1:
                             edges.append(
                                 (i, chimera_to_ind(r, c+1, z, self.unit_num_L)))
         return edges
-    
