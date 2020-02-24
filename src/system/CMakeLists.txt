@@ -62,5 +62,7 @@ if(USE_CUDA)
  	target_link_libraries(cxxjij_chimera_gpu_kernel_static cxxjij_header_only)
  	target_link_libraries(cxxjij_chimera_gpu_kernel ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} ${CUDA_LIBRARIES})
  	target_link_libraries(cxxjij_chimera_gpu_kernel cxxjij_header_only)
+   set_property(TARGET cxxjij_chimera_gpu_kernel_static PROPERTY CUDA_STANDARD 11) 
+   set_property(TARGET cxxjij_chimera_gpu_kernel PROPERTY CUDA_STANDARD 11) 
 
 endif()

@@ -23,6 +23,7 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/functional.h>
 #include <pybind11/eigen.h>
 
 namespace py = pybind11;
@@ -187,6 +188,32 @@ inline void declare_TransverseIsing(py::module &m, const std::string& gtype_str,
             }, "classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a);
 }
 
+//Continuous Time Transverse Ising
+template<typename GraphType, bool eigen_impl>
+inline void declare_ContinuousTimeIsing(py::module &m, const std::string& gtype_str, const std::string& eigen_str){
+    //TransverseIsing
+    using TransverseIsing = system::ContinuousTimeIsing<GraphType, eigen_impl>;
+    using FloatType = typename GraphType::value_type;
+    using SpinConfiguration = typename TransverseIsing::SpinConfiguration;
+
+    auto str = std::string("ContinuousTimeIsing")+gtype_str+eigen_str;
+    py::class_<TransverseIsing>(m, str.c_str())
+        .def(py::init<const SpinConfiguration&, const GraphType&, FloatType>(), "init_spin_config"_a, "init_interaction"_a, "gamma"_a)
+        .def(py::init<const graph::Spins&, const GraphType&, FloatType>(), "init_spins"_a, "init_interaction"_a, "gamma"_a)
+        .def("reset_spins", [](TransverseIsing& self, const SpinConfiguration& init_spin_config){self.reset_spins(init_spin_config);},"init_spin_config"_a)
+        .def("reset_spins", [](TransverseIsing& self, const graph::Spins& classical_spins){self.reset_spins(classical_spins);},"classical_spins"_a)
+        .def_readwrite("spin_config", &TransverseIsing::spin_config)
+        .def_readonly("interaction", &TransverseIsing::interaction)
+        .def_readonly("num_spins", &TransverseIsing::num_spins)
+        .def_readonly("gamma", &TransverseIsing::gamma);
+
+    //make_continuous_ising
+    auto mkci_str = std::string("make_continuous_time_ising")+eigen_str;
+    m.def(mkci_str.c_str(), [](const graph::Spins& classical_spins, const GraphType& init_interaction, double gamma){
+            return system::make_continuous_time_ising<eigen_impl>(classical_spins, init_interaction, gamma);
+            }, "classical_spins"_a, "init_interaction"_a, "gamma"_a);
+}
+
 #ifdef USE_CUDA
 
 //ChimeraTransverseGPU
@@ -235,18 +262,47 @@ template<typename FloatType,
 //Algorithm
 template<template<typename> class Updater, typename System, typename RandomNumberEngine>
 inline void declare_Algorithm_run(py::module &m, const std::string& updater_str){
-//with seed
     auto str = std::string("Algorithm_")+updater_str+std::string("_run");
-    m.def(str.c_str(), [](System& system, std::size_t seed, const utility::ScheduleList<typename system::get_system_type<System>::type>& schedule_list){
+    using SystemType = typename system::get_system_type<System>::type;
+    //with seed
+    m.def(str.c_str(), [](System& system, std::size_t seed, const utility::ScheduleList<SystemType>& schedule_list,
+                const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(seed);
-            algorithm::Algorithm<Updater>::run(system, rng, schedule_list);
-            }, "system"_a, "seed"_a, "schedule_list"_a);
+            algorithm::Algorithm<Updater>::run(system, rng, schedule_list,
+                    callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
+            }, "system"_a, "seed"_a, "schedule_list"_a, "callback"_a = nullptr);
 
-//without seed
-    m.def(str.c_str(), [](System& system, const utility::ScheduleList<typename system::get_system_type<System>::type>& schedule_list){
+    //without seed
+    m.def(str.c_str(), [](System& system, const utility::ScheduleList<SystemType>& schedule_list,
+                const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(std::random_device{}());
-            algorithm::Algorithm<Updater>::run(system, rng, schedule_list);
-            }, "system"_a, "schedule_list"_a);
+            algorithm::Algorithm<Updater>::run(system, rng, schedule_list,
+                    callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
+            }, "system"_a, "schedule_list"_a, "callback"_a = nullptr);
+
+    //schedule_list can be a list of tuples
+    using TupleList = std::vector<std::pair<typename utility::UpdaterParameter<SystemType>::Tuple, std::size_t>>;
+    
+    //with seed
+    m.def(str.c_str(), [](System& system, std::size_t seed, const TupleList& tuplelist,
+                const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
+            RandomNumberEngine rng(seed);
+            algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist),
+                    callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
+            }, "system"_a, "seed"_a, "tuplelist"_a, "callback"_a = nullptr);
+
+    //without seed
+    m.def(str.c_str(), [](System& system, const TupleList& tuplelist,
+                const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
+            RandomNumberEngine rng(std::random_device{}());
+            algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist),
+                    callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
+            }, "system"_a, "tuplelist"_a, "callback"_a = nullptr);
+
 }
 
 //utility
@@ -268,11 +324,16 @@ inline void declare_Schedule(py::module &m, const std::string& systemtype_str){
     auto str = systemtype_str + "Schedule";
     py::class_<utility::Schedule<SystemType>>(m, str.c_str())
         .def(py::init<>())
+        .def(py::init<const std::pair<const utility::UpdaterParameter<SystemType>&, std::size_t>&>(), "obj"_a)
         .def_readwrite("one_mc_step", &utility::Schedule<SystemType>::one_mc_step)
         .def_readwrite("updater_parameter", &utility::Schedule<SystemType>::updater_parameter)
         .def("__repr__", [](const utility::Schedule<SystemType>& self){
                 return "(" + repr_impl(self.updater_parameter) + " mcs: " + std::to_string(self.one_mc_step) + ")";
                 });
+
+    //define make_schedule_list
+    m.def("make_schedule_list", &utility::make_schedule_list<SystemType>, "tuplelist"_a);
+
 }
 
 //result

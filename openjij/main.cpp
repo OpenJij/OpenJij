@@ -17,7 +17,9 @@
 
 #include "./compile_config.hpp"
 #include "./declare.hpp"
+#include <pybind11/eval.h>
 #include <utility/random.hpp>
+#include <type_traits>
 
 
 PYBIND11_MODULE(cxxjij, m){
@@ -40,10 +42,16 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_Chimera<FloatType>(m_graph, "");
 
     //GPU version (GPUFloatType)
-    ::declare_Dense<GPUFloatType>(m_graph, "GPU");
-    ::declare_Sparse<GPUFloatType>(m_graph, "GPU");
-    ::declare_Square<GPUFloatType>(m_graph, "GPU");
-    ::declare_Chimera<GPUFloatType>(m_graph, "GPU");
+    if(!std::is_same<FloatType, GPUFloatType>::value){
+        ::declare_Dense<GPUFloatType>(m_graph, "GPU");
+        ::declare_Sparse<GPUFloatType>(m_graph, "GPU");
+        ::declare_Square<GPUFloatType>(m_graph, "GPU");
+        ::declare_Chimera<GPUFloatType>(m_graph, "GPU");
+    }
+    else{
+        //raise warning
+        std::cerr << "Warning: please use classes in Graph module without suffix \"GPU\" or define type aliases." << std::endl;
+    }
 
 
     /**********************************************************
@@ -62,6 +70,10 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_TransverseIsing<graph::Dense<FloatType>, true>(m_system, "_Dense", "_Eigen");
     ::declare_TransverseIsing<graph::Sparse<FloatType>, false>(m_system, "_Sparse", "");
     ::declare_TransverseIsing<graph::Sparse<FloatType>, true>(m_system, "_Sparse", "_Eigen");
+
+    //Continuous Time Transeverse Ising
+    ::declare_ContinuousTimeIsing<graph::Dense<FloatType>, false>(m_system, "_Dense", "");
+    ::declare_ContinuousTimeIsing<graph::Sparse<FloatType>, false>(m_system, "_Sparse", "");
 
 #ifdef USE_CUDA
     //ChimeraTransverseGPU
@@ -92,6 +104,10 @@ PYBIND11_MODULE(cxxjij, m){
     //swendsen-wang (with Eigen implementation on a Sparse graph)
     ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Sparse<FloatType>, true>, RandomEngine>(m_algorithm, "SwendsenWang");
 
+    //Continuous time swendsen-wang
+    ::declare_Algorithm_run<updater::ContinuousTimeSwendsenWang, system::ContinuousTimeIsing<graph::Dense<FloatType>, false>, RandomEngine>(m_algorithm, "ContinuousTimeSwendsenWang");
+    ::declare_Algorithm_run<updater::ContinuousTimeSwendsenWang, system::ContinuousTimeIsing<graph::Sparse<FloatType>, false>, RandomEngine>(m_algorithm, "ContinuousTimeSwendsenWang");
+
 #ifdef USE_CUDA
     //GPU
     ::declare_Algorithm_run<updater::GPU, system::ChimeraTransverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>, utility::cuda::CurandWrapper<GPUFloatType, GPURandomEngine>>(m_algorithm, "GPU");
@@ -115,6 +131,7 @@ PYBIND11_MODULE(cxxjij, m){
     py::class_<utility::TransverseFieldUpdaterParameter>(m_utility, "TransverseFieldUpdaterParameter")
         .def(py::init<>())
         .def(py::init<double, double>(), "beta"_a, "s"_a)
+        .def(py::init<const std::pair<double, double>&>(), "obj"_a)
         .def_readwrite("beta", &utility::TransverseFieldUpdaterParameter::beta)
         .def_readwrite("s", &utility::TransverseFieldUpdaterParameter::s)
         .def("__repr__", [](const utility::TransverseFieldUpdaterParameter& self){
@@ -146,6 +163,8 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_get_solution<system::TransverseIsing<graph::Dense<FloatType>, true>>(m_result);
     ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>, false>>(m_result);
     ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>, true>>(m_result);
+    ::declare_get_solution<system::ContinuousTimeIsing<graph::Dense<FloatType>, false>>(m_result);
+    ::declare_get_solution<system::ContinuousTimeIsing<graph::Sparse<FloatType>, false>>(m_result);
 #ifdef USE_CUDA
     ::declare_get_solution<system::ChimeraTransverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>>(m_result);
     ::declare_get_solution<system::ChimeraClassicalGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL>>(m_result);

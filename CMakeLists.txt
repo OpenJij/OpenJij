@@ -36,8 +36,8 @@ if(NOT DEFINED USE_CUDA)
         set(USE_CUDA ${DEFAULT_USE_CUDA})
 
         #for cuda-memcheck
-        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lineinfo")
-        # set CXX compiler to nvcc host compiler in order to avoid linker error
+        # set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lineinfo")
+        #set CXX compiler to nvcc host compiler in order to avoid linker error
         # set(CUDA_HOST_COMPILER "${CMAKE_CXX_COMPILER}")
     else()
         message(STATUS "No CUDA support")

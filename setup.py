@@ -16,7 +16,7 @@ NAME = 'openjij'
 DESCRIPTION = 'Framework for the Ising model and QUBO'
 EMAIL = 'openjij@j-ij.com'
 AUTHOR = 'Jij Inc.'
-VERSION = '0.0.9'
+VERSION = '0.0.10'
 
 
 class CMakeExtension(Extension):
@@ -48,7 +48,7 @@ class CMakeBuild(build_ext):
         cmake_kwargs = ['-DUSE_TEST=Yes',
                         '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                         # '-DCMAKE_VERBOSE_MAKEFILE=ON',
-                        #'-DCMAKE_CUDA_FLAGS= -arch=sm_60 ',
+                        # '-DCMAKE_CUDA_FLAGS= -arch=sm_60',
                         '-DPYTHON_EXECUTABLE=' + sys.executable]
 
         cfg = 'Debug' if self.debug else 'Release'
@@ -128,7 +128,7 @@ setup(
     description='Framework for the Ising model and QUBO',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    install_requires=['numpy >= 1.15.0', 'dimod', 'requests'],
+    install_requires=['numpy >= 1.16.0', 'dimod==0.8.21', 'requests'],
     ext_modules=[CMakeExtension('cxxjij')],
     cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
                   pytest=PyTestCommand),
