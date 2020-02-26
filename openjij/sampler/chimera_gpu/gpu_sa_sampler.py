@@ -86,16 +86,36 @@ class GPUSASampler(SASampler, BaseGPUChimeraSampler):
                  num_reads=1, unit_num_L=None,
                  **kwargs):
 
+        super().__init__(beta_min=beta_min, beta_max=beta_max, 
+                         num_reads=num_reads, num_sweeps=num_sweeps, 
+                         schedule=schedule, **kwargs)
+
         self.unit_num_L = unit_num_L
 
-        self._make_system = cxxjij.system.make_chimera_classical_gpu
+        self._make_system = {
+            'singlespinflip': cxxjij.system.make_chimera_classical_gpu
+        }
         self._algorithm = {
             'singlespinflip': cxxjij.algorithm.Algorithm_GPU_run
         }
 
-        super().__init__(beta_min=beta_min, beta_max=beta_max, 
-                         num_reads=num_reads, num_sweeps=num_sweeps, 
-                         schedule=schedule, **kwargs)
+    def sample_ising(self, h, J, beta_min=None, beta_max=None,
+                     num_sweeps=None, num_reads=1, schedule=None,
+                     initial_state=None, updater='single spin flip',
+                     reinitialize_state=True, seed=None, unit_num_L=None,
+                     **kwargs):
+        
+
+        self.unit_num_L = unit_num_L if unit_num_L else self.unit_num_L
+
+        model = openjij.ChimeraModel(linear=h, quadratic=J, var_type='SPIN', 
+                                   unit_num_L=self.unit_num_L, gpu=True)
+        return self._sampling(model, beta_min, beta_max,
+                              num_sweeps, num_reads, schedule,
+                              initial_state, updater,
+                              reinitialize_state, seed, **kwargs)
+
+        
 
 
     
