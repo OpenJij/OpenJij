@@ -21,6 +21,7 @@ import dimod
 
 class BaseGPUChimeraSampler(dimod.Structured):
 
+
     @property
     def parameters(self):
         param = super().parameters
