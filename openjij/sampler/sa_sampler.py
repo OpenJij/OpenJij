@@ -102,6 +102,7 @@ class SASampler(BaseSampler):
             'swendsenwang': cxxjij.algorithm.Algorithm_SwendsenWang_run
         }
 
+
     def _convert_validation_schedule(self, schedule):
         if not isinstance(schedule, (list, np.array)):
             raise ValueError("schedule should be list or numpy.array")
@@ -132,15 +133,27 @@ class SASampler(BaseSampler):
                      initial_state=None, updater='single spin flip',
                      reinitialize_state=True, seed=None,
                      **kwargs):
+
+        model = openjij.BinaryQuadraticModel(
+            linear=h, quadratic=J, var_type='SPIN'
+        )
+        return self._sampling(model, beta_min, beta_max,
+                              num_sweeps, num_reads, schedule,
+                              initial_state, updater,
+                              reinitialize_state, seed, **kwargs)
+
+    def _sampling(self, model, beta_min=None, beta_max=None,
+                     num_sweeps=None, num_reads=1, schedule=None,
+                     initial_state=None, updater='single spin flip',
+                     reinitialize_state=True, seed=None,
+                     **kwargs):
+        ising_graph = model.get_cxxjij_ising_graph()
+
         self._setting_overwrite(
             beta_min=beta_min, beta_max=beta_max,
             num_sweeps=num_sweeps, num_reads=num_reads
         )
 
-        model = openjij.BinaryQuadraticModel(
-            linear=h, quadratic=J, var_type='SPIN'
-        )
-        ising_graph = model.get_cxxjij_ising_graph()
 
         # set annealing schedule -------------------------------
         if schedule or self.schedule:
@@ -184,7 +197,6 @@ class SASampler(BaseSampler):
         algorithm = self._algorithm[_updater_name]
         sa_system = self._make_system[_updater_name](_generate_init_state(), ising_graph)
         # ------------------------------------------- choose updater
-
         response = self._cxxjij_sampling(
             model, _generate_init_state,
             algorithm, sa_system,
