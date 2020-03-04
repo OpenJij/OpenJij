@@ -12,21 +12,18 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_ALL_HPP__
-#define OPENJIJ_SYSTEM_ALL_HPP__
+#ifndef OPENJIJ_PRO_SYSTEM_COMPOSITE_CALC_MC_ENERGY_HPP__
+#define OPENJIJ_PRO_SYSTEM_COMPOSITE_CALC_MC_ENERGY_HPP__
 
-//disable eigen -Wdeprecated-copy warning
-#include <utility/disable_eigen_warning.hpp>
+#include <pro/system/composite/composite.hpp>
+#include <system/all.hpp>
 
-#include <system/classical_ising.hpp>
-#include <system/transverse_ising.hpp>
-#include <system/continuous_time_ising.hpp>
+namespace openjij {
+    namespace system {
 
-#include <system/composite/composite.hpp>
+        //TODO: implement calc_mc_energy function for each system
 
-#ifdef USE_CUDA
-#include <system/gpu/chimera_gpu_transverse.hpp>
-#include <system/gpu/chimera_gpu_classical.hpp>
-#endif
+    } // namespace system
+} // namespace openjij
 
 #endif

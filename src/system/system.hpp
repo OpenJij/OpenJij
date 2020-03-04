@@ -36,6 +36,11 @@ namespace openjij {
         struct quantum_system : public mc_system {};
 
         /**
+         * @brief composite monte carlo system
+         */
+        struct composite_mc_system : public mc_system {};
+
+        /**
          * @brief ordinary homogeneous transverse field system (using beta and annealing schedule (s) for annealing parameter)
          */
         struct transverse_field_system : public quantum_system {};
