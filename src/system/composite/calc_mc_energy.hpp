@@ -12,16 +12,40 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_PRO_SYSTEM_COMPOSITE_CALC_MC_ENERGY_HPP__
-#define OPENJIJ_PRO_SYSTEM_COMPOSITE_CALC_MC_ENERGY_HPP__
+#ifndef OPENJIJ_SYSTEM_COMPOSITE_CALC_MC_ENERGY_HPP__
+#define OPENJIJ_SYSTEM_COMPOSITE_CALC_MC_ENERGY_HPP__
 
-#include <pro/system/composite/composite.hpp>
 #include <system/all.hpp>
 
 namespace openjij {
     namespace system {
 
-        //TODO: implement calc_mc_energy function for each system
+        /**
+         * @brief calc mc energy of classical ising system (no Eigen implementation)
+         *
+         * @tparam GraphType graph type
+         * @param system classical ising system without Eigen implementation
+         *
+         * @return value of energy
+         */
+        template<typename GraphType>
+        double calc_mc_energy(const system::ClassicalIsing<GraphType, false>& system, const utility::UpdaterParameter<system::classical_system>& p){
+            return p.beta*system.interaction.calc_energy(system.spin);
+        }
+
+        /**
+         * @brief calc mc energy of classical ising system (with Eigen implementation)
+         *
+         * @tparam GraphType graph type
+         * @param system classical ising system with Eigen implementation
+         *
+         * @return value of energy
+         */
+        template<typename GraphType>
+        double calc_mc_energy(const system::ClassicalIsing<GraphType, true>& system, const utility::UpdaterParameter<system::classical_system>& p){
+            //matrix calculation
+            return p.beta*(1.0/2)*system.spin.dot(system.interaction*system.spin);
+        }
 
     } // namespace system
 } // namespace openjij

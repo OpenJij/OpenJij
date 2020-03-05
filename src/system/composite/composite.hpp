@@ -16,10 +16,12 @@
 #define OPENJIJ_SYSTEM_COMPOSITE_HPP__
 
 #include <system/all.hpp>
+#include <system/composite/calc_mc_energy.hpp>
 #include <utility/schedule_list.hpp>
 #include <system/system.hpp>
 #include <set>
 #include <utility>
+#include <functional>
 
 namespace openjij {
     namespace system {
@@ -33,12 +35,43 @@ namespace openjij {
         template<typename System>
         struct Composite{
             using system_type = system::composite_mc_system;
+            using inside_system = System;
 
             /**
              * @brief Monte Carlo Unit: system (as a reference) with sampling parameters
              */
             using MCUnit = std::pair<utility::UpdaterParameter<typename System::system_type>, std::reference_wrapper<System>>;
 
+            /**
+             * @brief constructor for composite class
+             *
+             * @tparam Args arguments
+             * @param schedule_list
+             * @param args arguments for constructor of each system
+             */
+            template<typename... Args>
+            Composite(const utility::ScheduleList<typename System::system_type>& schedule_list, Args&&... args){
+                //emplace_back
+                for(auto&& _ : schedule_list){
+                    _system_list.emplace_back(std::forward<Args>(args)...);
+                }
+                //add mcunits_list and connect with systems
+                for(std::size_t i=0; i<schedule_list.size(); i++){
+                    mcunits_list.emplace_back(schedule_list[i], std::ref(_system_list[i]));
+                }
+            }
+
+            /**
+             * @brief list of Monte Carlo Units
+             */
+            std::vector<MCUnit> mcunits_list;
+
+            private:
+
+            /**
+             * @brief list of systems
+             */
+            std::vector<System> _system_list;
         };
 
     } // namespace system
