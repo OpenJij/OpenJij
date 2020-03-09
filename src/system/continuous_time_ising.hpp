@@ -45,7 +45,7 @@ namespace openjij {
              */
             ContinuousTimeIsing(const SpinConfiguration& init_spin_config,
                                 const GraphType& init_interaction,
-                                const FloatType gamma)
+                                const double gamma)
                 : spin_config(init_spin_config),
                   num_spins(init_spin_config.size()+1),
                   interaction(init_interaction.get_num_spins()+1),
@@ -81,7 +81,7 @@ namespace openjij {
              */
             ContinuousTimeIsing(const graph::Spins& init_spins,
                                 const GraphType& init_interaction,
-                                const FloatType gamma) :
+                                const double gamma) :
                 ContinuousTimeIsing(convert_to_spin_config(init_spins),
                                     init_interaction,
                                     gamma) {} // constructor delegation
@@ -230,7 +230,7 @@ namespace openjij {
         template<bool eigen_impl=false, typename GraphType>
         ContinuousTimeIsing<GraphType, eigen_impl> make_continuous_time_ising(const graph::Spins& init_spins,
                                                                               const GraphType& init_interaction,
-                                                                              typename GraphType::value_type gamma) {
+                                                                              const double gamma) {
             return ContinuousTimeIsing<GraphType, eigen_impl>(init_spins,
                                                               init_interaction,
                                                               gamma);

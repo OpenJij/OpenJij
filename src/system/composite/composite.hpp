@@ -35,7 +35,7 @@ namespace openjij {
         template<typename System>
         struct Composite{
             using system_type = system::composite_mc_system;
-            using inside_system = System;
+            using elem_system = System;
 
             /**
              * @brief Monte Carlo Unit: system (as a reference) with sampling parameters

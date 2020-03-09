@@ -26,6 +26,16 @@
 namespace openjij {
     namespace utility {
 
+        /* TODO: refactor code (UpdaterParameter should be derived from std::tuple)
+         * 
+         * template<>
+         * strcut UpdaterParameter<system::classical_system> : std::Tuple<double>{
+         *    double& beta = std::get<0>(*this); 
+         *    ...
+         * }
+         *
+         */
+
         /**
          * @brief updater parameter for monte carlo simulation
          *

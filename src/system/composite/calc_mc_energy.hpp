@@ -16,6 +16,7 @@
 #define OPENJIJ_SYSTEM_COMPOSITE_CALC_MC_ENERGY_HPP__
 
 #include <system/all.hpp>
+#include <utility/schedule_list.hpp>
 
 namespace openjij {
     namespace system {

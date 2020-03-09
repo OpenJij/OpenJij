@@ -78,7 +78,7 @@ namespace openjij {
                      * @param gamma
                      * @param device_num
                      */
-                    ChimeraTransverseGPU(const TrotterSpins& init_trotter_spins, const graph::Chimera<FloatType>& init_interaction, FloatType gamma, int device_num=0)
+                    ChimeraTransverseGPU(const TrotterSpins& init_trotter_spins, const graph::Chimera<FloatType>& init_interaction, double gamma, int device_num=0)
                         :gamma(gamma), 
                         info({init_interaction.get_num_row(), init_interaction.get_num_column(), init_trotter_spins.size()}),
                         interaction(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize),
@@ -104,7 +104,7 @@ namespace openjij {
                      * @param num_trotter_slices
                      * @param device_num
                      */
-                    ChimeraTransverseGPU(const graph::Spins& classical_spins, const graph::Chimera<FloatType>& init_interaction, FloatType gamma, size_t num_trotter_slices, int device_num=0)
+                    ChimeraTransverseGPU(const graph::Spins& classical_spins, const graph::Chimera<FloatType>& init_interaction, double gamma, size_t num_trotter_slices, int device_num=0)
                         :gamma(gamma), 
                         info({init_interaction.get_num_row(), init_interaction.get_num_column(), num_trotter_slices}),
                         interaction(init_interaction.get_num_row()*init_interaction.get_num_column()*info.chimera_unitsize),

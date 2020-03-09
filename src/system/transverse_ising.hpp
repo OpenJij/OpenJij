@@ -48,7 +48,7 @@ namespace openjij {
                  * @param init_trotter_spins
                  * @param init_interaction
                  */
-                TransverseIsing(const TrotterSpins& init_trotter_spins, const GraphType& init_interaction, FloatType gamma)
+                TransverseIsing(const TrotterSpins& init_trotter_spins, const GraphType& init_interaction, double gamma)
                 : trotter_spins(init_trotter_spins), interaction(init_interaction), num_classical_spins(init_trotter_spins[0].size()), gamma(gamma){
                     //assert(trotter_spins.size() >= 2);
                     if(!(trotter_spins.size() >= 2)){
@@ -63,7 +63,7 @@ namespace openjij {
                  * @param init_interaction
                  * @param num_trotter_slices
                  */
-                TransverseIsing(const graph::Spins& classical_spins, const GraphType& init_interaction, FloatType gamma, size_t num_trotter_slices)
+                TransverseIsing(const graph::Spins& classical_spins, const GraphType& init_interaction, double gamma, size_t num_trotter_slices)
                 : trotter_spins(num_trotter_slices), interaction(init_interaction), num_classical_spins(classical_spins.size()), gamma(gamma){
                     //initialize trotter_spins with classical_spins
                     if(!(trotter_spins.size() >= 2)){
@@ -138,7 +138,7 @@ namespace openjij {
                  * @param init_trotter_spins
                  * @param init_interaction
                  */
-                TransverseIsing(const TrotterSpins& init_trotter_spins, const graph::Dense<FloatType>& init_interaction, FloatType gamma)
+                TransverseIsing(const TrotterSpins& init_trotter_spins, const graph::Dense<FloatType>& init_interaction, double gamma)
                 : trotter_spins(utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins)),
                 interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)),
                 num_classical_spins(init_trotter_spins[0].size()), gamma(gamma){
@@ -154,7 +154,7 @@ namespace openjij {
                  * @param init_interaction
                  * @param num_trotter_slices
                  */
-                TransverseIsing(const graph::Spins& init_classical_spins, const graph::Dense<FloatType>& init_interaction, FloatType gamma, size_t num_trotter_slices)
+                TransverseIsing(const graph::Spins& init_classical_spins, const graph::Dense<FloatType>& init_interaction, double gamma, size_t num_trotter_slices)
                 :interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)),
                  num_classical_spins(init_classical_spins.size()), gamma(gamma){
                     //initialize trotter_spins with classical_spins
@@ -238,7 +238,7 @@ namespace openjij {
                  * @param init_trotter_spins
                  * @param init_interaction
                  */
-                TransverseIsing(const TrotterSpins& init_trotter_spins, const graph::Sparse<FloatType>& init_interaction, FloatType gamma)
+                TransverseIsing(const TrotterSpins& init_trotter_spins, const graph::Sparse<FloatType>& init_interaction, double gamma)
                 :trotter_spins(utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins)),
                 interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)),
                 num_classical_spins(init_trotter_spins[0].size()), gamma(gamma){
@@ -254,7 +254,7 @@ namespace openjij {
                  * @param init_interaction
                  * @param num_trotter_slices
                  */
-                TransverseIsing(const graph::Spins& init_classical_spins, const graph::Sparse<FloatType>& init_interaction, FloatType gamma, size_t num_trotter_slices)
+                TransverseIsing(const graph::Spins& init_classical_spins, const graph::Sparse<FloatType>& init_interaction, double gamma, size_t num_trotter_slices)
                 :interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)),
                 num_classical_spins(init_classical_spins.size()), gamma(gamma){
                     //initialize trotter_spins with classical_spins
