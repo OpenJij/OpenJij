@@ -16,6 +16,8 @@
 #define SYSTEM_ALGORITHM_PARALLEL_TEMPERING_HPP__
 
 #include <functional>
+#include <type_traits>
+#include <algorithm>
 #include <system/composite/composite.hpp>
 #include <system/system.hpp>
 #include <utility/schedule_list.hpp>
@@ -25,22 +27,27 @@ namespace openjij {
         template<template<typename> class Updater>
         struct ParallelTempering {
             //TODO: add callback
-            template<typename System, typename RandomNumberEngine>
-            static void run(System& comp_system,
+            template<typename CompSystem, typename RandomNumberEngine,
+                std::enable_if_t<std::is_same<typename CompSystem::elem_system::system_type, typename system::classical_system>::value> = nullptr>
+            static void run(CompSystem& comp_system,
                             RandomNumberEngine& random_number_engine,
                             std::size_t num_pt_freq,
-                            const std::function<void(const System&, const utility::UpdaterParameter<typename system::get_system_type<System>::type>&)>& callback = nullptr) {
+                            std::size_t num_mc) {
                 // update for each system
-                for(auto& elem : comp_system.mcunits_list){
-                    Updater<typename System::inside_system>::update(elem.second, random_number_engine);
+                for(std::size_t rep=0; rep < num_mc; rep++){
+                    //TODO: OpenMP or MPI?
+                    for(auto& elem : comp_system.mcunits_list){
+                        Updater<typename CompSystem::elem_system>::update(elem.second, random_number_engine);
+                    }
+                    if(rep%num_pt_freq == 0){
+                        //do parallel tempering
+                        //the composite system is guaranteed to be a classical system
+                        //sort by parameters
+                        std::sort(comp_system.mcunits_list.begin(), comp_system.mcunits_list.end(), );
+                    }
                 }
             }
         };
-
-        //type alias (Monte Carlo method)
-        //TODO: Algorithm class will be deprecated shortly.
-        template<template<typename> class Updater>
-        using MCMC = Algorithm<Updater>;
 
     } // namespace algorithm
 } // namespace openjij

@@ -16,7 +16,6 @@
 #define OPENJIJ_SYSTEM_COMPOSITE_HPP__
 
 #include <system/all.hpp>
-#include <system/composite/calc_mc_energy.hpp>
 #include <utility/schedule_list.hpp>
 #include <system/system.hpp>
 #include <set>
@@ -55,7 +54,7 @@ namespace openjij {
                 for(auto&& _ : schedule_list){
                     _system_list.emplace_back(std::forward<Args>(args)...);
                 }
-                //add mcunits_list and connect with systems
+                //add mcunits_list and register references of systems
                 for(std::size_t i=0; i<schedule_list.size(); i++){
                     mcunits_list.emplace_back(schedule_list[i], std::ref(_system_list[i]));
                 }
