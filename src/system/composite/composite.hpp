@@ -87,7 +87,7 @@ namespace openjij {
          * @return Composite object
          */
         template<typename ScheduleList, typename Func, typename... Args>
-            auto make_composite(const ScheduleList& schedule_list, Func helper_func, Args&&... args){
+            auto make_composite(const ScheduleList& schedule_list, const Func& helper_func, Args&&... args){
                 return Composite<decltype(helper_func(std::forward<Args>(args)...))>(schedule_list, std::forward<Args>(args)...);
             }
 
