@@ -84,11 +84,11 @@ namespace openjij {
          * @param helper_func helper function (such as make_classical_ising)
          * @param args arguments of helper_func
          *
-         * @return Composite object
+         * @return 
          */
         template<typename ScheduleList, typename Func, typename... Args>
             auto make_composite(const ScheduleList& schedule_list, Func helper_func, Args&&... args){
-                return Composite<decltype(helper_func(std::forward<Args>(args)...))>(schedule_list, std::forward<Args>(args)...);
+                return Composite<decltype(func(std::forward<Args>(args)...))>(schedule_list, std::forward<Args>(args)...);
             }
 
     } // namespace system
