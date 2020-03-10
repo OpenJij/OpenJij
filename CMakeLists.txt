@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.12.2)
 project(openjij)
 
 ##### Check GCC version #####
-if(${CMAKE_C_COMPILER_VERSION} VERSION_LESS 7.0.0)
-	message(FATAL_ERROR, "gcc >= 7.0.0 is required.")
+if(${CMAKE_C_COMPILER_VERSION} VERSION_LESS 5.0.0)
+	message(FATAL_ERROR, "gcc >= 5.0.0 is required.")
 endif()
-if(${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 7.0.0)
-	message(FATAL_ERROR, "g++ >= 7.0.0 is required.")
+if(${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.0.0)
+	message(FATAL_ERROR, "g++ >= 5.0.0 is required.")
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
