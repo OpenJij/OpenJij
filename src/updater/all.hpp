@@ -22,6 +22,8 @@
 #include <updater/swendsen_wang.hpp>
 #include <updater/continuous_time_swendsen_wang.hpp>
 
+#include <updater/parallel_tempering.hpp>
+
 #ifdef USE_CUDA
 #include <updater/gpu.hpp>
 #endif

@@ -30,7 +30,7 @@ namespace openjij {
          * @return value of energy
          */
         template<typename GraphType>
-        double calc_mc_energy(const system::ClassicalIsing<GraphType, false>& system, const utility::UpdaterParameter<system::classical_system>& p){
+        inline double calc_mc_energy(const system::ClassicalIsing<GraphType, false>& system, const utility::UpdaterParameter<system::classical_system>& p){
             return p.beta*system.interaction.calc_energy(system.spin);
         }
 
@@ -43,7 +43,7 @@ namespace openjij {
          * @return value of energy
          */
         template<typename GraphType>
-        double calc_mc_energy(const system::ClassicalIsing<GraphType, true>& system, const utility::UpdaterParameter<system::classical_system>& p){
+        inline double calc_mc_energy(const system::ClassicalIsing<GraphType, true>& system, const utility::UpdaterParameter<system::classical_system>& p){
             //matrix calculation
             return p.beta*(1.0/2)*system.spin.dot(system.interaction*system.spin);
         }
