@@ -48,6 +48,8 @@ namespace openjij {
             return p.beta*(1.0/2)*system.spin.dot(system.interaction*system.spin);
         }
 
+        //TODO: calc_mc_energy for other systems
+
     } // namespace system
 } // namespace openjij
 
