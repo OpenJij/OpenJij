@@ -159,6 +159,9 @@ dmypy.json
 
 .vscode/
 
+# tutorial
+project_template/tutorial
+
 # visual studio
 *.iobj
 *.ipdb
