@@ -4,7 +4,7 @@ INCLUDES=-I../src
 #Eigen directory
 EIGEN_DIR=-I../build/_deps/eigen-src
 
-#add your path to cuda if you use cuda
+#add your path to cuda include files if you use cuda
 #CUDA_DIR=-I/opt/cuda/include
 
 # add GPU static library path here if needed
