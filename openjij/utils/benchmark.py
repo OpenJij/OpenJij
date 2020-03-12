@@ -123,7 +123,7 @@ def se_residual_energy(response, ref_energy):
     Returns:
         float: redisual energy's standard error from measure energy
     """
-    return sp.std(response.energies, ddof=1)
+    return np.std(response.energies, ddof=1)
 
 
 def success_probability(response, solutions, ref_energy=0, measure_with_energy=False):
@@ -169,7 +169,7 @@ def se_success_probability(response, solutions, ref_energy=0, measure_with_energ
     """
 
     if measure_with_energy:
-        se_suc_prob = sp.sqrt(np.count_nonzero(
+        se_suc_prob = np.sqrt(np.count_nonzero(
             np.array(response.energies) <= ref_energy)/(len(response.energies)-1))
     else:
         if isinstance(solutions[0], dict):
