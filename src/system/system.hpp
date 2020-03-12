@@ -92,6 +92,11 @@ namespace openjij {
             using type = typename utility::get_base_class<typename System::system_type, mc_system, single_command_system, realtime_dynamics_system>::type;
         };
 
+        /**
+         * @brief USE_EIGEN flag
+         */
+        constexpr static bool USE_EIGEN = true;
+
     } // namespace system
 } // namespace openjij
 
