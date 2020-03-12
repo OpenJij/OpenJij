@@ -68,7 +68,7 @@ $ source ./build_gcc.sh
 $ cd ./project_template
 $ make
 $ ./tutorial
-# The result spins are [1 1 1 1 1 ]
+The result spins are [1 1 1 1 1 ]
 ```
 
 ## Community
