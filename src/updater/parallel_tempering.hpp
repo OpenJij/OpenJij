@@ -80,6 +80,20 @@ namespace openjij {
                 }
 
             }
+            /**
+             * @brief operate parallel tempering (transverse system)
+             *
+             * @param system object of a classical ising system
+             * @param random_number_engine random number gengine
+             *
+             * @return energy difference \f\Delta E\f
+             */
+          template<typename RandomNumberEngine,
+              std::enable_if_t<std::is_same<typename Comp::elem_system::system_type, typename system::transverse_field_system>::value> = nullptr>
+            inline static void update(Comp& system, RandomNumberEngine& random_number_engine) {
+                //TODO: transvese field parallel tempering code
+            }
+
         };
         
 
