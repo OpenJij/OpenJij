@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['declare_2ehpp_497',['declare.hpp',['../declare_8hpp.html',1,'']]],
-  ['dense_2ehpp_498',['dense.hpp',['../dense_8hpp.html',1,'']]]
+  ['get_5fsolution_2ehpp_384',['get_solution.hpp',['../get__solution_8hpp.html',1,'']]],
+  ['gpu_2ehpp_385',['gpu.hpp',['../gpu_8hpp.html',1,'']]],
+  ['graph_2ehpp_386',['graph.hpp',['../graph_8hpp.html',1,'']]]
 ];

@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['main_2ecpp_509',['main.cpp',['../main_8cpp.html',1,'']]],
-  ['memory_2ehpp_510',['memory.hpp',['../gpu_2memory_8hpp.html',1,'(Global Namespace)'],['../memory_8hpp.html',1,'(Global Namespace)']]],
-  ['model_2epy_511',['model.py',['../model_8py.html',1,'']]]
+  ['random_2ehpp_393',['random.hpp',['../random_8hpp.html',1,'']]],
+  ['readme_2emd_394',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]]
 ];

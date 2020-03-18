@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['rows_729',['rows',['../structopenjij_1_1system_1_1_chimera_info.html#a52545ace4e844b0f1b0a76b09cdd39be',1,'openjij::system::ChimeraInfo']]]
+  ['x_557',['x',['../classopenjij_1_1utility_1_1_xorshift.html#a3b6838356978d68e8b789969d4548ad1',1,'openjij::utility::Xorshift']]]
 ];

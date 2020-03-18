@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['absmax_5fval_5findex_547',['absmax_val_index',['../classopenjij_1_1utility_1_1cuda_1_1_cu_b_l_a_s_wrapper.html#aca275e839c0f3199a75f9aa9a586e200',1,'openjij::utility::cuda::CuBLASWrapper']]],
-  ['adj_5fnodes_548',['adj_nodes',['../classopenjij_1_1graph_1_1_dense.html#a0fbe2396672df0ed546a99a3a4f51494',1,'openjij::graph::Dense::adj_nodes()'],['../classopenjij_1_1graph_1_1_sparse.html#ac59fe2e6a920dbb898925ad1044abd50',1,'openjij::graph::Sparse::adj_nodes()']]]
+  ['bkidx_406',['bkIdx',['../namespaceopenjij_1_1system_1_1chimera__cuda.html#ad1022bfaf11e5d2e3d2de7767c566807',1,'openjij::system::chimera_cuda']]],
+  ['bkidx_5fext_407',['bkIdx_ext',['../namespaceopenjij_1_1system_1_1chimera__cuda.html#a28923c2a5d08a38ce58210bd1f6fbfe2',1,'openjij::system::chimera_cuda']]]
 ];

@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['gamma_701',['gamma',['../structopenjij_1_1system_1_1_chimera_transverse_g_p_u.html#a22124d4fa6467908f12873c396a2b502',1,'openjij::system::ChimeraTransverseGPU::gamma()'],['../structopenjij_1_1system_1_1_transverse_ising.html#a14ee676bae3a5c51dc3e6b624ae7f50e',1,'openjij::system::TransverseIsing::gamma()'],['../structopenjij_1_1system_1_1_transverse_ising_3_01graph_1_1_dense_3_01_float_type_01_4_00_01true_01_4.html#a28087fe588ce022b0607df282bddfa59',1,'openjij::system::TransverseIsing&lt; graph::Dense&lt; FloatType &gt;, true &gt;::gamma()'],['../structopenjij_1_1system_1_1_transverse_ising_3_01graph_1_1_sparse_3_01_float_type_01_4_00_01true_01_4.html#a97f26b448437997d90d045e8494f882b',1,'openjij::system::TransverseIsing&lt; graph::Sparse&lt; FloatType &gt;, true &gt;::gamma()'],['../classopenjij_1_1sampler_1_1sqa__sampler_1_1_s_q_a_sampler.html#acc55b1ba380492e9bfcd9b8b50c3df2d',1,'openjij.sampler.sqa_sampler.SQASampler.gamma()']]],
-  ['gpu_702',['gpu',['../classopenjij_1_1model_1_1chimera__model_1_1_chimera_model.html#a9cd829caa8ce0b6d630df7689f37fb90',1,'openjij::model::chimera_model::ChimeraModel']]],
-  ['gpurandomengine_703',['GPURandomEngine',['../namespaceopenjij.html#a824bcb173fe1f82c4e85dafc0d08309f',1,'openjij']]],
-  ['grid_704',['grid',['../structopenjij_1_1system_1_1_chimera_transverse_g_p_u.html#a271991745c5e5a43f2983647c9d34fd7',1,'openjij::system::ChimeraTransverseGPU']]]
+  ['h_536',['h',['../structopenjij_1_1system_1_1_chimera_interactions.html#a31bbb7d9bd2fba33cbdbb61fc2894ecf',1,'openjij::system::ChimeraInteractions']]]
 ];
