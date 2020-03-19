@@ -1,5 +1,0 @@
-# Samplers
-
-## Simulated annealing
-
-- SASampler 

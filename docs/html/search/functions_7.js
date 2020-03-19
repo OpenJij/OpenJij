@@ -1,4 +1,9 @@
 var searchData=
 [
-  ['h_602',['h',['../classopenjij_1_1graph_1_1_chimera.html#ac27953e3fb8c593ace65f543a06e9385',1,'openjij::graph::Chimera::h(std::size_t r, std::size_t c, std::size_t i)'],['../classopenjij_1_1graph_1_1_chimera.html#a70ba929a173cddf47fe1c51aa867bb13',1,'openjij::graph::Chimera::h(std::size_t r, std::size_t c, std::size_t i) const'],['../classopenjij_1_1graph_1_1_dense.html#a61cecf6e86b3d06d6ce9f0e6789d409d',1,'openjij::graph::Dense::h(Index i)'],['../classopenjij_1_1graph_1_1_dense.html#a9607aa4b8ffee8a917c449f3517eae53',1,'openjij::graph::Dense::h(Index i) const'],['../classopenjij_1_1graph_1_1_sparse.html#a6c742b9b2fad5a5a8be230becf27ff11',1,'openjij::graph::Sparse::h(Index i)'],['../classopenjij_1_1graph_1_1_sparse.html#a7a8d04b7b5bc3ac92fbca935063f3116',1,'openjij::graph::Sparse::h(Index i) const'],['../classopenjij_1_1graph_1_1_square.html#aed586eee9ca88f5ed9b6e5fffbc86e4e',1,'openjij::graph::Square::h(std::size_t r, std::size_t c)'],['../classopenjij_1_1graph_1_1_square.html#a03665597cdbc05a668e6f3d538ab8669',1,'openjij::graph::Square::h(std::size_t r, std::size_t c) const']]]
+  ['iamax_464',['Iamax',['../classopenjij_1_1utility_1_1cuda_1_1_cu_b_l_a_s_wrapper.html#ad842ccb37f59de5b68c6886117e0ad07',1,'openjij::utility::cuda::CuBLASWrapper']]],
+  ['idx_5fc_465',['idx_c',['../namespaceopenjij_1_1system_1_1chimera__cuda.html#aefd02782f417028d18aa11cc2a89e0a2',1,'openjij::system::chimera_cuda']]],
+  ['idx_5fi_466',['idx_i',['../namespaceopenjij_1_1system_1_1chimera__cuda.html#a3dac2c77d1a2036958a3f566e401127c',1,'openjij::system::chimera_cuda']]],
+  ['idx_5fr_467',['idx_r',['../namespaceopenjij_1_1system_1_1chimera__cuda.html#a5a4adab0479dc78c206a44e4ab54bbb6',1,'openjij::system::chimera_cuda']]],
+  ['idx_5ft_468',['idx_t',['../namespaceopenjij_1_1system_1_1chimera__cuda.html#ad626487079e4e110cc859ac951d57e98',1,'openjij::system::chimera_cuda']]],
+  ['initialize_5fgpu_469',['initialize_gpu',['../structopenjij_1_1system_1_1_chimera_transverse_g_p_u.html#ac3d37be00fbded7f150d2471a7931a0d',1,'openjij::system::ChimeraTransverseGPU']]]
 ];
