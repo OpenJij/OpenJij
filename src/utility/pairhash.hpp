@@ -36,10 +36,11 @@ namespace openjij {
              *
              * @return generated hash
              */
-            inline size_t operator()(const std::pair<graph::Index, graph::Index> & p) const{
-                const auto h1 = std::hash<graph::Index>()(p.first);
-                const auto h2 = std::hash<graph::Index>()(p.second);
-                return h1 ^ (h2 << 1);
+            template<class T1, class T2>
+            inline size_t operator()(const std::pair<T1, T2> & p) const{
+                unsigned int lhs = std::hash<T1>()(p.first);
+                unsigned int rhs = std::hash<T2>()(p.second);
+                return lhs^(rhs+0x9e3779b9+(lhs<<6)+(lhs>>2));
             }
         };
     } // namespace utility
