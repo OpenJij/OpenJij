@@ -22,6 +22,7 @@
 #include <type_traits>
 #include <algorithm>
 
+#include <graph/json/parse.hpp>
 #include <graph/graph.hpp>
 
 namespace openjij {
@@ -109,6 +110,21 @@ namespace openjij {
                                 elem.reserve(num_spins);
                             }
                         }
+
+                    /**
+                     * @brief Dense constructor (from nlohmann::json)
+                     *
+                     * @param j JSON object
+                     */
+                    Dense(const json& j){
+                        std::vector<FloatType> l_bias;
+                        std::vector<FloatType> q_bias;
+                        std::vector<size_t> q_head;
+                        std::vector<size_t> q_tail;
+                        std::tie(l_bias, q_bias, q_head, q_tail, std::ignore) = json_parse<FloatType>(j);
+
+                        std::size_t num_spins = l_bias.size();
+                    }
 
 
                     /**

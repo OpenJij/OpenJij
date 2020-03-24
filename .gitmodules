@@ -1,0 +1,3 @@
+[submodule "src/graph/cimod"]
+	path = src/graph/cimod
+	url = https://github.com/OpenJij/cimod
