@@ -67,6 +67,8 @@ else()
 endif()
 include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
 include(${CMAKE_SOURCE_DIR}/external/eigen.cmake)
+include(${CMAKE_SOURCE_DIR}/external/json.cmake)
+include(${CMAKE_SOURCE_DIR}/external/pybind11-json.cmake)
 
 add_subdirectory(src)
 add_subdirectory(openjij)

@@ -23,6 +23,7 @@ endif()
 target_link_libraries(cxxjij_test PRIVATE
     cxxjij_header_only
     eigen_lib
+    nlohmann_json::nlohmann_json
     gmock_main
     gmock
     gtest_main

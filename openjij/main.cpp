@@ -20,6 +20,7 @@
 #include <pybind11/eval.h>
 #include <utility/random.hpp>
 #include <type_traits>
+#include <pybind11_json/pybind11_json.hpp>
 
 
 PYBIND11_MODULE(cxxjij, m){
