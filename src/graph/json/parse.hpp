@@ -20,6 +20,7 @@
 #include <nlohmann/json.hpp>
 #include <exception>
 #include <graph/cimod/src/binary_quadratic_model.hpp>
+#include <numeric>
 
 namespace openjij {
     namespace graph {
@@ -37,7 +38,7 @@ namespace openjij {
          * 
          */
         template<typename FloatType>
-        inline std::tuple<std::vector<FloatType>, std::vector<FloatType>, std::vector<size_t>, std::vector<size_t>, FloatType> json_parse(const json& obj){
+        inline auto json_parse(const json& obj){
 
             using namespace cimod;
 
@@ -58,11 +59,12 @@ namespace openjij {
                 json temp = obj;
                 std::size_t num_variables = temp["num_variables"];
                 std::vector<size_t> variables(num_variables);
-                for(size_t i=0; i<num_variables; i++){
-                    variables[i] = i;
-                }
+                //generate sequence numbers
+                std::iota(variables.begin(), variables.end(), 0);
                 temp["variable_labels"] = variables;
                 //make cimod object and apply to_serializable function
+                auto bqm = BinaryQuadraticModel<size_t, double>::from_serializable(obj);
+                bqm.change_vartype();
             }
             std::vector<FloatType> l_bias = obj["linear_biases"];
             std::vector<FloatType> q_bias = obj["quadratic_biases"];
