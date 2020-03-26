@@ -53,25 +53,17 @@ namespace openjij {
                 throw std::runtime_error("bqm_schema must be 3.0.0.\n");
             }
 
-            //if vartype is BINARY, convert to ISING
-            if(obj["variable_type"] == "BINARY"){
-                //convert variable_labels
-                json temp = obj;
-                std::size_t num_variables = temp["num_variables"];
-                std::vector<size_t> variables(num_variables);
-                //generate sequence numbers
-                std::iota(variables.begin(), variables.end(), 0);
-                temp["variable_labels"] = variables;
-                //make cimod object and apply to_serializable function
-                auto bqm = BinaryQuadraticModel<size_t, double>::from_serializable(obj);
-                bqm.change_vartype();
-            }
-            std::vector<FloatType> l_bias = obj["linear_biases"];
-            std::vector<FloatType> q_bias = obj["quadratic_biases"];
-            std::vector<size_t> q_head = obj["quadratic_head"];
-            std::vector<size_t> q_tail = obj["quadratic_tail"];
-            FloatType offset = obj["offset"];
-            return std::make_tuple(l_bias, q_bias, q_head, q_tail, offset);
+            //convert variable_labels
+            json temp = obj;
+            std::size_t num_variables = temp["num_variables"];
+            std::vector<size_t> variables(num_variables);
+            //generate sequence numbers
+            std::iota(variables.begin(), variables.end(), 0);
+            temp["variable_labels"] = variables;
+            //make cimod object and apply to_serializable function
+            auto bqm = BinaryQuadraticModel<size_t, double>::from_serializable(obj);
+            bqm.change_vartype(Vartype::SPIN);
+            return bqm;
         }
     } // namespace graph
 } // namespace openjij
