@@ -130,7 +130,7 @@ namespace openjij {
                      * @param j JSON object
                      * @param num_edges number of edges
                      */
-                    Sparse(const json& j, std::size_t num_edges) : Sparse(j["num_variables"], num_edges){
+                    Sparse(const json& j, std::size_t num_edges) : Sparse(static_cast<std::size_t>(j["num_variables"]), num_edges){
                         //define bqm with ising variables
                         auto bqm = json_parse<FloatType>(j);
                         //interactions

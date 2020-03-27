@@ -115,7 +115,7 @@ namespace openjij {
                      *
                      * @param j JSON object
                      */
-                    Dense(const json& j) : Dense(j["num_variables"]){
+                    Dense(const json& j) : Dense(static_cast<size_t>(j["num_variables"])){
                         //define bqm with ising variables
                         auto bqm = json_parse<FloatType>(j);
                         //interactions

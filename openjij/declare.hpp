@@ -25,6 +25,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 #include <pybind11/eigen.h>
+#include <pybind11_json/pybind11_json.hpp>
 
 namespace py = pybind11;
 
@@ -49,10 +50,14 @@ inline void declare_Graph(py::module& m){
 //dense
 template<typename FloatType>
 inline void declare_Dense(py::module& m, const std::string& suffix){
+
+    using namespace nlohmann::detail;
+
     auto str = std::string("Dense") + suffix;
     py::class_<graph::Dense<FloatType>, graph::Graph>(m, str.c_str())
         .def(py::init<std::size_t>(), "num_spins"_a)
         .def(py::init<const graph::Dense<FloatType>&>(), "other"_a)
+        .def(py::init([](const py::object& obj){return std::unique_ptr<graph::Dense<FloatType>>(new graph::Dense<FloatType>(to_json_impl(obj)));}), "obj"_a)
         .def("adj_nodes", &graph::Dense<FloatType>::adj_nodes)
         .def("calc_energy", &graph::Dense<FloatType>::calc_energy, "spins"_a)
         .def("__setitem__", [](graph::Dense<FloatType>& self, const std::pair<std::size_t, std::size_t>& key, FloatType val){self.J(key.first, key.second) = val;}, "key"_a, "val"_a)

@@ -233,6 +233,9 @@ TEST(Graph, JSONTest){
     std::cout << bqm_k4.to_serializable() << std::endl;
     auto s = graph::Chimera<double>(bqm_k4.to_serializable(), 1, 2);
     EXPECT_NEAR(s.J(0,1,3,graph::ChimeraDir::IN_0or4), 24, 1e-5);
+    EXPECT_NEAR(s.J(0,0,0,graph::ChimeraDir::PLUS_C), 13, 1e-5);
+    EXPECT_NEAR(s.J(0,1,2,graph::ChimeraDir::MINUS_C), 14, 1e-5);
+    EXPECT_NEAR(s.J(0,0,4,graph::ChimeraDir::IN_3or7), 23, 1e-5);
 }
 
 //ClassicalIsing tests
