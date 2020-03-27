@@ -8,6 +8,7 @@ FetchContent_Declare(
     )
 
 FetchContent_GetProperties(eigen)
+
 if(NOT eigen_POPULATED)
     message(STATUS "Fetch eigen")
     FetchContent_Populate(eigen)
