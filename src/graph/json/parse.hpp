@@ -33,26 +33,13 @@ namespace openjij {
          * @tparam FloatType
          * @param obj
          *
-         * @return tuple of (linear_biases, quadratic_biases, quadratic_head, quadratic_tail) with schema_version = 3.0.0.
-         * vartype should be Ising.
+         * @return BinaryQuadraticModel with IndexType=size_t
          * 
          */
         template<typename FloatType>
         inline auto json_parse(const json& obj){
 
             using namespace cimod;
-
-            std::string type = obj["type"];
-            if(type != "BinaryQuadraticModel"){
-                throw std::runtime_error("Type must be \"BinaryQuadraticModel\".");
-            }
-
-            std::string version = obj["version"]["bqm_schema"];
-            if(version != "3.0.0")
-            {
-                throw std::runtime_error("bqm_schema must be 3.0.0.\n");
-            }
-
             //convert variable_labels
             json temp = obj;
             std::size_t num_variables = temp["num_variables"];
@@ -61,8 +48,9 @@ namespace openjij {
             std::iota(variables.begin(), variables.end(), 0);
             temp["variable_labels"] = variables;
             //make cimod object and apply to_serializable function
-            auto bqm = BinaryQuadraticModel<size_t, double>::from_serializable(obj);
+            auto bqm = BinaryQuadraticModel<size_t, FloatType>::from_serializable(temp);
             bqm.change_vartype(Vartype::SPIN);
+            bqm.print();
             return bqm;
         }
     } // namespace graph

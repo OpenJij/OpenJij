@@ -87,6 +87,7 @@ namespace openjij {
             IN_3or7, 
         };
 
+
         /**
          * @brief chimera lattice graph
          *
@@ -142,7 +143,30 @@ namespace openjij {
                     return (a+_num_column)%_num_column;
                 }
 
+                /**
+                 * @brief check if the pair has a valid connection
+                 *
+                 * @param idx1 index1
+                 * @param idx2 index2
+                 *
+                 */
+                inline void _checkpair(Index idx1, Index idx2) const{
+                    std::int64_t r1,c1,i1,r2,c2,i2;
+                    std::tie(r1,c1,i1) = to_rci(idx1);
+                    std::tie(r2,c2,i2) = to_rci(idx2);
+                    if(
+                            !((r1 == r2 && std::abs(c1 - c2) == 1 && i1 == i2) ||
+                              (c1 == c2 && std::abs(r1 - r2) == 1 && i1 == i2) ||
+                              (r1 == r2 && c1 == c2 && i1 < 4 && 4 <= i2)  ||
+                              (r1 == r2 && c1 == c2 && i2 < 4 && 4 <= i1)  ||
+                              (r1 == r2 && c1 == c2 && i1 == i2))
+                            ){
+                        throw std::runtime_error("invalid index pair "+std::to_string(idx1)+" "+std::to_string(idx2)+" inserted in Chimera");
+                    }
+                }
+
             public:
+
 
                 /**
                  * @brief convert from (row x column x in-chimera) index to global index
@@ -156,9 +180,17 @@ namespace openjij {
                 Index to_ind(std::int64_t r, std::int64_t c, std::int64_t i) const{
                     //row-major matrix
 
-                    assert(-1 <= r && r <= static_cast<std::int64_t>(_num_row));
-                    assert(-1 <= c && c <= static_cast<std::int64_t>(_num_column));
-                    assert(0 <= i && i < static_cast<std::int64_t>(_num_in_chimera));
+                    if(!(-1 <= r && r <= static_cast<std::int64_t>(_num_row))){
+                        throw std::runtime_error("invalid value r="+std::to_string(r)+" inserted in Chimera");
+                    }
+
+                    if(!(-1 <= c && c <= static_cast<std::int64_t>(_num_column))){
+                        throw std::runtime_error("invalid value c="+std::to_string(c)+" inserted in Chimera");
+                    }
+
+                    if(!(0 <= i && i < static_cast<std::int64_t>(_num_in_chimera))){
+                        throw std::runtime_error("invalid value i="+std::to_string(i)+" inserted in Chimera");
+                    }
 
                     return _num_column*_num_in_chimera * mod_r(r) + _num_in_chimera * mod_c(c) + i;
                 }
@@ -171,7 +203,9 @@ namespace openjij {
                  * @return 
                  */
                 ChimeraIndex to_rci(Index ind) const{
-                    assert(ind < this->get_num_spins());
+                    if(!(ind < this->get_num_spins())){
+                        throw std::runtime_error("invalid value index="+std::to_string(ind)+" inserted in Chimera");
+                    }
 
                     std::int64_t r = ind/(_num_column*_num_in_chimera);
                     ind -= (_num_column*_num_in_chimera)*r;
@@ -228,6 +262,35 @@ namespace openjij {
                             }
                         }
                     }
+
+                /**
+                 * @brief Square constructor (from nlohmann::json)
+                 *
+                 * @param j JSON object
+                 * @param num_row number of rows
+                 * @param num_column number of columns
+                 * @param init_val initial value set to interaction (default: 0)
+                 */
+                Chimera(const json& j, std::size_t num_row, std::size_t num_column, FloatType init_val=0) : Chimera<FloatType>(num_row, num_column, init_val){
+                    if(!(j["num_variables"] <= num_row*num_column*_num_in_chimera)){
+                        throw std::runtime_error("number of system size does not match");
+                    }
+                    //define bqm with ising variables
+                    auto bqm = json_parse<FloatType>(j);
+                    //interactions
+                    for(auto&& elem : bqm.get_quadratic()){
+                        const auto& key = elem.first;
+                        const auto& val = elem.second;
+                        _checkpair(key.first, key.second);
+                        this->Sparse<FloatType>::J(key.first, key.second) += val;
+                    }
+                    //local field
+                    for(auto&& elem : bqm.get_linear()){
+                        const auto& key = elem.first;
+                        const auto& val = elem.second;
+                        this->Sparse<FloatType>::h(key) += val;
+                    }
+                }
 
                 /**
                  * @brief chimera lattice graph copy constructor
