@@ -21,11 +21,12 @@
 #include <algorithm/all.hpp>
 #include <result/all.hpp>
 
-#include <pybind11/pybind11.h>
+#include <pybind11_json/pybind11_json.hpp>
+#include <nlohmann/json.hpp>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 #include <pybind11/eigen.h>
-#include <pybind11_json/pybind11_json.hpp>
+#include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 
@@ -51,13 +52,13 @@ inline void declare_Graph(py::module& m){
 template<typename FloatType>
 inline void declare_Dense(py::module& m, const std::string& suffix){
 
-    using namespace nlohmann::detail;
+    using json = nlohmann::json;
 
     auto str = std::string("Dense") + suffix;
     py::class_<graph::Dense<FloatType>, graph::Graph>(m, str.c_str())
         .def(py::init<std::size_t>(), "num_spins"_a)
+        .def(py::init([](py::object obj){return std::unique_ptr<graph::Dense<FloatType>>(new graph::Dense<FloatType>(static_cast<json>(obj)));}), "obj"_a)
         .def(py::init<const graph::Dense<FloatType>&>(), "other"_a)
-        .def(py::init([](const py::object& obj){return std::unique_ptr<graph::Dense<FloatType>>(new graph::Dense<FloatType>(to_json_impl(obj)));}), "obj"_a)
         .def("adj_nodes", &graph::Dense<FloatType>::adj_nodes)
         .def("calc_energy", &graph::Dense<FloatType>::calc_energy, "spins"_a)
         .def("__setitem__", [](graph::Dense<FloatType>& self, const std::pair<std::size_t, std::size_t>& key, FloatType val){self.J(key.first, key.second) = val;}, "key"_a, "val"_a)
@@ -69,10 +70,15 @@ inline void declare_Dense(py::module& m, const std::string& suffix){
 //sparse
 template<typename FloatType>
 inline void declare_Sparse(py::module& m, const std::string& suffix){
+
+    using json = nlohmann::json;
+
     auto str = std::string("Sparse") + suffix;
     py::class_<graph::Sparse<FloatType>, graph::Graph>(m, str.c_str())
         .def(py::init<std::size_t, std::size_t>(), "num_spins"_a, "num_edges"_a)
         .def(py::init<std::size_t>(),  "num_spins"_a)
+        .def(py::init([](py::object obj, std::size_t num_edges){return std::unique_ptr<graph::Sparse<FloatType>>(new graph::Sparse<FloatType>(static_cast<json>(obj), num_edges));}), "obj"_a, "num_edges"_a)
+        .def(py::init([](py::object obj){return std::unique_ptr<graph::Sparse<FloatType>>(new graph::Sparse<FloatType>(static_cast<json>(obj)));}), "obj"_a)
         .def(py::init<const graph::Sparse<FloatType>&>(), "other"_a)
         .def("adj_nodes", &graph::Sparse<FloatType>::adj_nodes)
         .def("get_num_edges", &graph::Sparse<FloatType>::get_num_edges)
@@ -95,10 +101,14 @@ inline void declare_Dir(py::module& m){
 //square
 template<typename FloatType>
 inline void declare_Square(py::module& m, const std::string& suffix){
+
+    using json = nlohmann::json;
+
     auto str = std::string("Square") + suffix;
     py::class_<graph::Square<FloatType>, graph::Sparse<FloatType>>(m, str.c_str())
         .def(py::init<std::size_t, std::size_t, FloatType>(), "num_row"_a, "num_column"_a, "init_val"_a=0)
         .def(py::init<const graph::Square<FloatType>&>(), "other"_a)
+        .def(py::init([](py::object obj, std::size_t num_row, std::size_t num_column, FloatType init_val){return std::unique_ptr<graph::Square<FloatType>>(new graph::Square<FloatType>(static_cast<json>(obj), num_row, num_column, init_val));}), "obj"_a, "num_row"_a, "num_column"_a, "init_val"_a = 0)
         .def("to_ind", &graph::Square<FloatType>::to_ind)
         .def("to_rc", &graph::Square<FloatType>::to_rc)
         .def("get_num_row", &graph::Square<FloatType>::get_num_row)
@@ -125,10 +135,14 @@ inline void declare_ChimeraDir(py::module& m){
 //chimera
 template<typename FloatType>
 inline void declare_Chimera(py::module& m, const std::string& suffix){
+
+    using json = nlohmann::json;
+
     auto str = std::string("Chimera") + suffix;
     py::class_<graph::Chimera<FloatType>, graph::Sparse<FloatType>>(m, str.c_str())
         .def(py::init<std::size_t, std::size_t, FloatType>(), "num_row"_a, "num_column"_a, "init_val"_a=0)
         .def(py::init<const graph::Chimera<FloatType>&>(), "other"_a)
+        .def(py::init([](py::object obj, std::size_t num_row, std::size_t num_column, FloatType init_val){return std::unique_ptr<graph::Chimera<FloatType>>(new graph::Chimera<FloatType>(static_cast<json>(obj), num_row, num_column, init_val));}), "obj"_a, "num_row"_a, "num_column"_a, "init_val"_a = 0)
         .def("to_ind", &graph::Chimera<FloatType>::to_ind)
         .def("to_rci", &graph::Chimera<FloatType>::to_rci)
         .def("get_num_row", &graph::Chimera<FloatType>::get_num_row)

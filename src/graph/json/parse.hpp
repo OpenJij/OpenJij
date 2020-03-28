@@ -50,7 +50,6 @@ namespace openjij {
             //make cimod object and apply to_serializable function
             auto bqm = BinaryQuadraticModel<size_t, FloatType>::from_serializable(temp);
             bqm.change_vartype(Vartype::SPIN);
-            bqm.print();
             return bqm;
         }
     } // namespace graph
