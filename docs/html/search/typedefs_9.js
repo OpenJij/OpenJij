@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['randomengine_577',['RandomEngine',['../namespaceopenjij.html#a9b84c8344541d98d61d0a932634d4267',1,'openjij']]],
-  ['rank_578',['Rank',['../structopenjij_1_1utility_1_1_union_find.html#a2bc429c1deec33caf1be82429517dbd4',1,'openjij::utility::UnionFind']]],
-  ['result_5ftype_579',['result_type',['../classopenjij_1_1utility_1_1_xorshift.html#a9b227f8d3bb8247ed73c2ccc2e7b01e4',1,'openjij::utility::Xorshift']]],
-  ['rowcolumn_580',['RowColumn',['../namespaceopenjij_1_1graph.html#a867f7848204eeab089a3b890c111c03a',1,'openjij::graph']]]
+  ['qising_588',['QIsing',['../structopenjij_1_1updater_1_1_g_p_u_3_01system_1_1_chimera_transverse_g_p_u_3_01_float_type_00_01b19d630807b301686e9b8e0e0cbea249.html#af1793781d398d415b0c5039f8b4dd6dd',1,'openjij::updater::GPU&lt; system::ChimeraTransverseGPU&lt; FloatType, rows_per_block, cols_per_block, trotters_per_block &gt; &gt;::QIsing()'],['../structopenjij_1_1updater_1_1_single_spin_flip_3_01system_1_1_transverse_ising_3_01_graph_type_00_01false_01_4_01_4.html#a01c87c198a23420f9bc18c7952bcd3fa',1,'openjij::updater::SingleSpinFlip&lt; system::TransverseIsing&lt; GraphType, false &gt; &gt;::QIsing()'],['../structopenjij_1_1updater_1_1_single_spin_flip_3_01system_1_1_transverse_ising_3_01_graph_type_00_01true_01_4_01_4.html#a2cc7eebb10a40b180f653676c6e9518c',1,'openjij::updater::SingleSpinFlip&lt; system::TransverseIsing&lt; GraphType, true &gt; &gt;::QIsing()']]]
 ];

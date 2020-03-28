@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['absmax_5fval_5findex_404',['absmax_val_index',['../classopenjij_1_1utility_1_1cuda_1_1_cu_b_l_a_s_wrapper.html#aca275e839c0f3199a75f9aa9a586e200',1,'openjij::utility::cuda::CuBLASWrapper']]],
-  ['adj_5fnodes_405',['adj_nodes',['../classopenjij_1_1graph_1_1_dense.html#a0fbe2396672df0ed546a99a3a4f51494',1,'openjij::graph::Dense::adj_nodes()'],['../classopenjij_1_1graph_1_1_sparse.html#ac59fe2e6a920dbb898925ad1044abd50',1,'openjij::graph::Sparse::adj_nodes()']]]
+  ['_5fcheckpair_412',['_checkpair',['../classopenjij_1_1graph_1_1_chimera.html#a7ca02297cb84a6dd646fca8e318fe3cd',1,'openjij::graph::Chimera::_checkpair()'],['../classopenjij_1_1graph_1_1_square.html#a19c163ece6a11dd7bfddce267e2b8d4b',1,'openjij::graph::Square::_checkpair()']]]
 ];

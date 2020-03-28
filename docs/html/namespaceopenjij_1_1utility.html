@@ -149,6 +149,10 @@ Functions</h2></td></tr>
 <tr class="memitem:aea35097d2bc48182a91d7f396cd6da29"><td class="memTemplParams" colspan="2">template&lt;typename ForwardIterator , typename T &gt; </td></tr>
 <tr class="memitem:aea35097d2bc48182a91d7f396cd6da29"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1utility.html#aea35097d2bc48182a91d7f396cd6da29">make_geometric_progression</a> (ForwardIterator first, ForwardIterator last, T value, T ratio)</td></tr>
 <tr class="separator:aea35097d2bc48182a91d7f396cd6da29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9710b67fd16a8c4a4c4403a330adb051"><td class="memTemplParams" colspan="2">template&lt;class C_key , class C_value , class Hash &gt; </td></tr>
+<tr class="memitem:a9710b67fd16a8c4a4c4403a330adb051"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1utility.html#a9710b67fd16a8c4a4c4403a330adb051">insert_or_assign</a> (std::unordered_map&lt; C_key, C_value, Hash &gt; &amp;um, const C_key &amp;key, const C_value &amp;val)</td></tr>
+<tr class="memdesc:a9710b67fd16a8c4a4c4403a330adb051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert or assign a element of unordered_map (for C++14 or C++11)  <a href="namespaceopenjij_1_1utility.html#a9710b67fd16a8c4a4c4403a330adb051">More...</a><br /></td></tr>
+<tr class="separator:a9710b67fd16a8c4a4c4403a330adb051"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26797b74a87f8be9d62d0b7e57de92e7"><td class="memTemplParams" colspan="2">template&lt;typename T , typename ... Args&gt; </td></tr>
 <tr class="memitem:a26797b74a87f8be9d62d0b7e57de92e7"><td class="memTemplItemLeft" align="right" valign="top">std::unique_ptr&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1utility.html#a26797b74a87f8be9d62d0b7e57de92e7">make_unique</a> (Args &amp;&amp;...args)</td></tr>
 <tr class="memdesc:a26797b74a87f8be9d62d0b7e57de92e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">make_unique function  <a href="namespaceopenjij_1_1utility.html#a26797b74a87f8be9d62d0b7e57de92e7">More...</a><br /></td></tr>
@@ -254,6 +258,68 @@ template&lt;typename SystemType &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a9710b67fd16a8c4a4c4403a330adb051"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9710b67fd16a8c4a4c4403a330adb051">&#9670;&nbsp;</a></span>insert_or_assign()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class C_key , class C_value , class Hash &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::utility::insert_or_assign </td>
+          <td>(</td>
+          <td class="paramtype">std::unordered_map&lt; C_key, C_value, Hash &gt; &amp;&#160;</td>
+          <td class="paramname"><em>um</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C_key &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C_value &amp;&#160;</td>
+          <td class="paramname"><em>val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Insert or assign a element of unordered_map (for C++14 or C++11) </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">C_key</td><td></td></tr>
+    <tr><td class="paramname">C_value</td><td></td></tr>
+    <tr><td class="paramname">Hash</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">um</td><td></td></tr>
+    <tr><td class="paramname">key</td><td></td></tr>
+    <tr><td class="paramname">val</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a39b02ffdcd5820740b292fccbad9d0b5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a39b02ffdcd5820740b292fccbad9d0b5">&#9670;&nbsp;</a></span>make_classical_schedule_list()</h2>
 
