@@ -49,8 +49,7 @@ namespace openjij {
             temp["variable_labels"] = variables;
             //make cimod object and apply to_serializable function
             auto bqm = BinaryQuadraticModel<size_t, FloatType>::from_serializable(temp);
-            bqm.change_vartype(Vartype::SPIN);
-            return bqm;
+            return bqm.change_vartype(Vartype::SPIN);
         }
     } // namespace graph
 } // namespace openjij
