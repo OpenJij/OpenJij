@@ -226,9 +226,8 @@ TEST(Graph, JSONTest){
             {std::make_pair(6, 14), 34.0}
     };
     double offset = 0.0;
-    Vartype vartype = Vartype::BINARY;
+    Vartype vartype = Vartype::SPIN;
     BinaryQuadraticModel<uint32_t, double> bqm_k4(linear, quadratic, offset, vartype);
-    bqm_k4.change_vartype(Vartype::SPIN);
     bqm_k4.print();
     std::cout << bqm_k4.to_serializable() << std::endl;
     auto s = graph::Chimera<double>(bqm_k4.to_serializable(), 1, 2);
