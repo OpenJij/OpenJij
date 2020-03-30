@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/OpenJij/OpenJij.svg?branch=master)](https://travis-ci.org/OpenJij/OpenJij)
 
+gcc >= 7.0.0 (or another C++ compiler that supports C++17)
 cmake >= 3.12.2
 
 - [Documents](https://openjij.github.io/OpenJij/main.html)
