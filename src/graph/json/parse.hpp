@@ -31,22 +31,27 @@ namespace openjij {
          * @brief parse json object from bqm.to_serializable
          *
          * @tparam FloatType
-         * @param obj
+         * @param obj JSON object
+         * @param relabel re-label variable_labels. Disable the option if the model has specified topology (such as square lattice or chimera model). if the option is disabled, IndexType of JSON must be an integer.
          *
          * @return BinaryQuadraticModel with IndexType=size_t
          * 
          */
         template<typename FloatType>
-        inline auto json_parse(const json& obj){
+        inline auto json_parse(const json& obj, bool relabel=true){
 
             using namespace cimod;
             //convert variable_labels
             json temp = obj;
-            std::size_t num_variables = temp["num_variables"];
-            std::vector<size_t> variables(num_variables);
-            //generate sequence numbers
-            std::iota(variables.begin(), variables.end(), 0);
-            temp["variable_labels"] = variables;
+            temp["type"] = "BinaryQuadraticModel";
+            if(relabel){
+                //re-labeling
+                std::size_t num_variables = temp["num_variables"];
+                std::vector<size_t> variables(num_variables);
+                //generate sequence numbers
+                std::iota(variables.begin(), variables.end(), 0);
+                temp["variable_labels"] = variables;
+            }
             //make cimod object and apply to_serializable function
             auto bqm = BinaryQuadraticModel<size_t, FloatType>::from_serializable(temp);
             return bqm.change_vartype(Vartype::SPIN);
