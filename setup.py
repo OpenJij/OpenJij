@@ -70,6 +70,9 @@ class CMakeBuild(build_ext):
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
 
+        # git submodule update
+        subprocess.check_call(['git', 'submodule', 'update', '-i'], cwd=ext.sourcedir)
+
         subprocess.check_call(['cmake', ext.sourcedir] +
                               cmake_kwargs, cwd=self.build_temp, env=env)
         subprocess.check_call(
