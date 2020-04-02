@@ -65,6 +65,7 @@ response = sampler.sample_ising(h={'a': -1}, J={('a','b'): 1})
 ### C++ example
 
 ```
+$ git submodule update -i
 $ source ./build_gcc.sh
 $ cd ./project_template
 $ make
