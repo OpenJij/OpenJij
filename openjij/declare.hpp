@@ -334,6 +334,11 @@ inline std::string repr_impl(const utility::UpdaterParameter<system::classical_s
 }
 
 template<>
+inline std::string repr_impl(const utility::UpdaterParameter<system::classical_constraint_system>& obj){
+    return "(beta: " + std::to_string(obj.beta) + ", lambda: " + std::to_string(obj.lambda) + ")";
+}
+
+template<>
 inline std::string repr_impl(const utility::UpdaterParameter<system::transverse_field_system>& obj){
     return "(beta: " + std::to_string(obj.beta) + ", s: " + std::to_string(obj.s) + ")";
 }
