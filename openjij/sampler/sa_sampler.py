@@ -74,12 +74,10 @@ class SASampler(BaseSampler):
             'beta_max': ['parameters'],
         }
 
-    @deprecated_alias(iteration='num_reads')
     def __init__(self,
                  beta_min=None, beta_max=None,
                  num_sweeps=1000, schedule=None,
-                 num_reads=1,
-                 **kwargs):
+                 num_reads=1):
 
         self.beta_min = beta_min
         self.beta_max = beta_max
