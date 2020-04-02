@@ -129,6 +129,16 @@ PYBIND11_MODULE(cxxjij, m){
                 return repr_impl(self);
                 });
 
+    py::class_<utility::ClassicalConstraintUpdaterParameter>(m_utility, "ClassicalConstraintUpdaterParameter")
+        .def(py::init<>())
+        .def(py::init<double, double>(), "beta"_a, "lambda"_a)
+        .def(py::init<const std::pair<double, double>&>(), "obj"_a)
+        .def_readwrite("beta", &utility::ClassicalConstraintUpdaterParameter::beta)
+        .def_readwrite("lambda", &utility::ClassicalConstraintUpdaterParameter::lambda)
+        .def("__repr__", [](const utility::ClassicalConstraintUpdaterParameter& self){
+                return repr_impl(self);
+                });
+
     py::class_<utility::TransverseFieldUpdaterParameter>(m_utility, "TransverseFieldUpdaterParameter")
         .def(py::init<>())
         .def(py::init<double, double>(), "beta"_a, "s"_a)
