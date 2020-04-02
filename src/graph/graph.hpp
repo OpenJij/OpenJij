@@ -18,6 +18,7 @@
 #include <vector>
 #include <cstddef>
 #include <random>
+#include <nlohmann/json.hpp>
 
 namespace openjij {
     namespace graph {

@@ -3,6 +3,11 @@ INCLUDES=-I../src
 
 #Eigen directory
 EIGEN_DIR=-I../build/_deps/eigen-src
+#nlohmann_json directory
+JSON_DIR=-I../build/_deps/nlohmann_json-src/single_include
+
+# add GPU static library path here if needed
+#LIBPATH=-L../build/src/system -lcxxjij_chimera_gpu_kernel_static
 
 #add your path to cuda include files if you use cuda
 #CUDA_DIR=-I/opt/cuda/include
@@ -25,6 +30,6 @@ PROG=tutorial
 all: $(PROG) 
 	@echo Make Complete!
 $(PROG): template.cpp
-	$(CXX) template.cpp $(INCLUDES) $(EIGEN_DIR) $(CUDA_DIR) $(CXXFLAGS) $(CPPFLAGS) $(LIBPATH) -o $(PROG)
+	$(CXX) template.cpp $(INCLUDES) $(EIGEN_DIR) $(JSON_DIR) $(CUDA_DIR) $(CXXFLAGS) $(CPPFLAGS) $(LIBPATH) -o $(PROG)
 clean:
 	$(RM) $(PROG)

@@ -69,7 +69,8 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">openjij::graph Namespace Reference</div>  </div>
 </div><!--header-->
@@ -106,6 +107,8 @@ Typedefs</h2></td></tr>
 <tr class="separator:afa7c9a5b1b2f2ba4b79da795eceae690"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e7f78b6c411e8367ff996672e8efeae"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1graph.html#a6e7f78b6c411e8367ff996672e8efeae">Nodes</a> = std::vector&lt; <a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a> &gt;</td></tr>
 <tr class="separator:a6e7f78b6c411e8367ff996672e8efeae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae65b9b4c14411a68425cf1f5bdb18186"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1graph.html#ae65b9b4c14411a68425cf1f5bdb18186">json</a> = nlohmann::json</td></tr>
+<tr class="separator:ae65b9b4c14411a68425cf1f5bdb18186"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a867f7848204eeab089a3b890c111c03a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1graph.html#a867f7848204eeab089a3b890c111c03a">RowColumn</a> = std::pair&lt; std::size_t, std::size_t &gt;</td></tr>
 <tr class="memdesc:a867f7848204eeab089a3b890c111c03a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Row x Column type.  <a href="namespaceopenjij_1_1graph.html#a867f7848204eeab089a3b890c111c03a">More...</a><br /></td></tr>
 <tr class="separator:a867f7848204eeab089a3b890c111c03a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -133,6 +136,13 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:adfb6c50d54400635b2768417ac912907"><td class="mdescLeft">&#160;</td><td class="mdescRight">direction enum class  <a href="namespaceopenjij_1_1graph.html#adfb6c50d54400635b2768417ac912907">More...</a><br /></td></tr>
 <tr class="separator:adfb6c50d54400635b2768417ac912907"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a3e59bde75c8b25242571726e8f899fbd"><td class="memTemplParams" colspan="2">template&lt;typename FloatType &gt; </td></tr>
+<tr class="memitem:a3e59bde75c8b25242571726e8f899fbd"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1graph.html#a3e59bde75c8b25242571726e8f899fbd">json_parse</a> (const <a class="el" href="namespaceopenjij_1_1graph.html#ae65b9b4c14411a68425cf1f5bdb18186">json</a> &amp;obj, bool relabel=true)</td></tr>
+<tr class="memdesc:a3e59bde75c8b25242571726e8f899fbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">parse json object from bqm.to_serializable  <a href="namespaceopenjij_1_1graph.html#a3e59bde75c8b25242571726e8f899fbd">More...</a><br /></td></tr>
+<tr class="separator:a3e59bde75c8b25242571726e8f899fbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="ab3ab5083636f31f19ad0927540b5ff89"></a>
@@ -166,6 +176,20 @@ Enumerations</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">using <a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">openjij::graph::Index</a> = typedef std::size_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae65b9b4c14411a68425cf1f5bdb18186"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae65b9b4c14411a68425cf1f5bdb18186">&#9670;&nbsp;</a></span>json</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceopenjij_1_1graph.html#ae65b9b4c14411a68425cf1f5bdb18186">openjij::graph::json</a> = typedef nlohmann::json</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -304,6 +328,61 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="adfb6c50d54400635b2768417ac912907a218a53b9b0dc336052a412b05d33db37"></a>MINUS_C&#160;</td><td class="fielddoc"><p>minux-column direction: (r, c) -&gt; (r, c-1) </p>
 </td></tr>
 </table>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a3e59bde75c8b25242571726e8f899fbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e59bde75c8b25242571726e8f899fbd">&#9670;&nbsp;</a></span>json_parse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FloatType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto openjij::graph::json_parse </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceopenjij_1_1graph.html#ae65b9b4c14411a68425cf1f5bdb18186">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>relabel</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>parse json object from bqm.to_serializable </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">FloatType</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">obj</td><td>JSON object </td></tr>
+    <tr><td class="paramname">relabel</td><td>re-label variable_labels. Disable the option if the model has specified topology (such as square lattice or chimera model). if the option is disabled, IndexType of JSON must be an integer.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>BinaryQuadraticModel with IndexType=size_t </dd></dl>
 
 </div>
 </div>

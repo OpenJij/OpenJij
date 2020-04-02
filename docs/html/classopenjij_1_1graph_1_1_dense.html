@@ -105,6 +105,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad9142d79b6dbce42b751cfb743ba799e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#ad9142d79b6dbce42b751cfb743ba799e">Dense</a> (std::size_t num_spins)</td></tr>
 <tr class="memdesc:ad9142d79b6dbce42b751cfb743ba799e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classopenjij_1_1graph_1_1_dense.html" title="two-body all-to-all interactions">Dense</a> constructor.  <a href="classopenjij_1_1graph_1_1_dense.html#ad9142d79b6dbce42b751cfb743ba799e">More...</a><br /></td></tr>
 <tr class="separator:ad9142d79b6dbce42b751cfb743ba799e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b18054fda8c8feb8da7cd678afb0d52"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a4b18054fda8c8feb8da7cd678afb0d52">Dense</a> (const <a class="el" href="namespaceopenjij_1_1graph.html#ae65b9b4c14411a68425cf1f5bdb18186">json</a> &amp;j)</td></tr>
+<tr class="memdesc:a4b18054fda8c8feb8da7cd678afb0d52"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classopenjij_1_1graph_1_1_dense.html" title="two-body all-to-all interactions">Dense</a> constructor (from nlohmann::json)  <a href="classopenjij_1_1graph_1_1_dense.html#a4b18054fda8c8feb8da7cd678afb0d52">More...</a><br /></td></tr>
+<tr class="separator:a4b18054fda8c8feb8da7cd678afb0d52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfa399ae6620266bfccc86c4b030e663"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#adfa399ae6620266bfccc86c4b030e663">Dense</a> (const <a class="el" href="classopenjij_1_1graph_1_1_dense.html">Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt; &amp;)=default</td></tr>
 <tr class="memdesc:adfa399ae6620266bfccc86c4b030e663"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classopenjij_1_1graph_1_1_dense.html" title="two-body all-to-all interactions">Dense</a> copy constructor.  <a href="classopenjij_1_1graph_1_1_dense.html#adfa399ae6620266bfccc86c4b030e663">More...</a><br /></td></tr>
 <tr class="separator:adfa399ae6620266bfccc86c4b030e663"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -212,7 +215,7 @@ template&lt;typename FloatType &gt; </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad9142d79b6dbce42b751cfb743ba799e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad9142d79b6dbce42b751cfb743ba799e">&#9670;&nbsp;</a></span>Dense() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9142d79b6dbce42b751cfb743ba799e">&#9670;&nbsp;</a></span>Dense() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -247,8 +250,44 @@ template&lt;typename FloatType &gt; </div>
 
 </div>
 </div>
+<a id="a4b18054fda8c8feb8da7cd678afb0d52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b18054fda8c8feb8da7cd678afb0d52">&#9670;&nbsp;</a></span>Dense() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FloatType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classopenjij_1_1graph_1_1_dense.html">openjij::graph::Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;::<a class="el" href="classopenjij_1_1graph_1_1_dense.html">Dense</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceopenjij_1_1graph.html#ae65b9b4c14411a68425cf1f5bdb18186">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>j</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classopenjij_1_1graph_1_1_dense.html" title="two-body all-to-all interactions">Dense</a> constructor (from nlohmann::json) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">j</td><td>JSON object </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="adfa399ae6620266bfccc86c4b030e663"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adfa399ae6620266bfccc86c4b030e663">&#9670;&nbsp;</a></span>Dense() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adfa399ae6620266bfccc86c4b030e663">&#9670;&nbsp;</a></span>Dense() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -278,7 +317,7 @@ template&lt;typename FloatType &gt; </div>
 </div>
 </div>
 <a id="adc4f23bf556722e556a9b41619336e31"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc4f23bf556722e556a9b41619336e31">&#9670;&nbsp;</a></span>Dense() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adc4f23bf556722e556a9b41619336e31">&#9670;&nbsp;</a></span>Dense() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

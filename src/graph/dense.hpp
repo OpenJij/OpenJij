@@ -22,6 +22,7 @@
 #include <type_traits>
 #include <algorithm>
 
+#include <graph/json/parse.hpp>
 #include <graph/graph.hpp>
 
 namespace openjij {
@@ -101,14 +102,35 @@ namespace openjij {
                      * @param num_spins the number of spins
                      */
                     explicit Dense(std::size_t num_spins)
-                        : Graph(num_spins), _J(num_spins*(num_spins+1)/2), _list_adj_nodes(num_spins){
-
+                        : Graph(num_spins), _J(num_spins*(num_spins+1)/2, 0), _list_adj_nodes(num_spins){
 
                             //initialize list_adj_nodes
                             for(auto& elem : _list_adj_nodes){
                                 elem.reserve(num_spins);
                             }
                         }
+
+                    /**
+                     * @brief Dense constructor (from nlohmann::json)
+                     *
+                     * @param j JSON object
+                     */
+                    Dense(const json& j) : Dense(static_cast<size_t>(j["num_variables"])){
+                        //define bqm with ising variables
+                        auto bqm = json_parse<FloatType>(j);
+                        //interactions
+                        for(auto&& elem : bqm.get_quadratic()){
+                            const auto& key = elem.first;
+                            const auto& val = elem.second;
+                            J(key.first, key.second) += val;
+                        }
+                        //local field
+                        for(auto&& elem : bqm.get_linear()){
+                            const auto& key = elem.first;
+                            const auto& val = elem.second;
+                            h(key) += val;
+                        }
+                    }
 
 
                     /**
@@ -143,7 +165,9 @@ namespace openjij {
                      * @return corresponding energy
                      */
                     FloatType calc_energy(const Spins& spins) const{
-                        assert(spins.size() == get_num_spins());
+                        if(!(spins.size() == get_num_spins())){
+                            throw std::runtime_error("invalid length of spins in Dense");
+                        }
                         FloatType ret = 0;
                         for(std::size_t ind=0; ind<this->get_num_spins(); ind++){
                             for(auto& adj_ind : _list_adj_nodes[ind]){

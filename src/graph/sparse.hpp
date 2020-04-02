@@ -22,6 +22,7 @@
 #include <utility>
 #include <unordered_map>
 
+#include <graph/json/parse.hpp>
 #include <graph/graph.hpp>
 #include <utility/pairhash.hpp>
 
@@ -124,6 +125,36 @@ namespace openjij {
                     explicit Sparse(std::size_t num_spins) : Sparse(num_spins, num_spins){}
 
                     /**
+                     * @brief Sparse constructor (from nlohmann::json)
+                     *
+                     * @param j JSON object
+                     * @param num_edges number of edges
+                     */
+                    Sparse(const json& j, std::size_t num_edges) : Sparse(static_cast<std::size_t>(j["num_variables"]), num_edges){
+                        //define bqm with ising variables
+                        auto bqm = json_parse<FloatType>(j);
+                        //interactions
+                        for(auto&& elem : bqm.get_quadratic()){
+                            const auto& key = elem.first;
+                            const auto& val = elem.second;
+                            J(key.first, key.second) += val;
+                        }
+                        //local field
+                        for(auto&& elem : bqm.get_linear()){
+                            const auto& key = elem.first;
+                            const auto& val = elem.second;
+                            h(key) += val;
+                        }
+                    }
+
+                    /**
+                     * @brief Sparse constructor (from nlohmann::json)
+                     *
+                     * @param j JSON object
+                     */
+                    Sparse(const json& j) : Sparse(j, j["num_variables"]){}
+
+                    /**
                      * @brief Sparse copy constructor
                      *
                      */
@@ -163,7 +194,9 @@ namespace openjij {
                      * @return corresponding energy
                      */
                     FloatType calc_energy(const Spins& spins) const{
-                        assert(spins.size() == get_num_spins());
+                        if(!(spins.size() == get_num_spins())){
+                            throw std::runtime_error("invalid length of spins in Sparse");
+                        }
                         FloatType ret = 0;
                         for(std::size_t ind=0; ind<this->get_num_spins(); ind++){
                             for(auto& adj_ind : _list_adj_nodes[ind]){

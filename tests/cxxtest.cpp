@@ -213,6 +213,31 @@ TEST(Graph, EnergyCheck){
     EXPECT_EQ(c_d.calc_energy(spins_r), c.calc_energy(spins_r));
 }
 
+//json tests
+TEST(Graph, JSONTest){
+    using namespace cimod;
+    using namespace openjij;
+
+    Linear<uint32_t, double> linear{ {0, 1.0}, {11, 3.0}};
+    Quadratic<uint32_t, double> quadratic
+    {
+        {std::make_pair(0, 4), 12.0}, {std::make_pair(0, 8), 13.0}, {std::make_pair(2, 10), 14.0},
+            {std::make_pair(3, 4), 23.0}, {std::make_pair(11, 12), 24.0},
+            {std::make_pair(5, 13), 34.0}
+    };
+    double offset = 0.0;
+    Vartype vartype = Vartype::SPIN;
+    BinaryQuadraticModel<uint32_t, double> bqm_k4(linear, quadratic, offset, vartype);
+    auto s = graph::Chimera<double>(bqm_k4.to_serializable(), 1, 2);
+    EXPECT_NEAR(s.J(0,1,3,graph::ChimeraDir::IN_0or4), 24, 1e-5);
+    EXPECT_NEAR(s.J(0,0,0,graph::ChimeraDir::PLUS_C), 13, 1e-5);
+    EXPECT_NEAR(s.J(0,1,2,graph::ChimeraDir::MINUS_C), 14, 1e-5);
+    EXPECT_NEAR(s.J(0,0,4,graph::ChimeraDir::IN_3or7), 23, 1e-5);
+    EXPECT_NEAR(s.J(0,0,3,graph::ChimeraDir::IN_0or4), 23, 1e-5);
+    EXPECT_NEAR(s.J(0,1,5,graph::ChimeraDir::MINUS_C), 34, 1e-5);
+    EXPECT_NEAR(s.h(0,1,3), 3, 1e-5);
+}
+
 //ClassicalIsing tests
 
 TEST(ClassicalIsing, GenerateTheSameEigenObject){
