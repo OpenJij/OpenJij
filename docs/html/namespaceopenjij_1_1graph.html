@@ -139,10 +139,10 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad061d78b1be3a95f5413c6b26a8a373c"><td class="memTemplParams" colspan="2">template&lt;typename FloatType &gt; </td></tr>
-<tr class="memitem:ad061d78b1be3a95f5413c6b26a8a373c"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1graph.html#ad061d78b1be3a95f5413c6b26a8a373c">json_parse</a> (const <a class="el" href="namespaceopenjij_1_1graph.html#ae65b9b4c14411a68425cf1f5bdb18186">json</a> &amp;obj)</td></tr>
-<tr class="memdesc:ad061d78b1be3a95f5413c6b26a8a373c"><td class="mdescLeft">&#160;</td><td class="mdescRight">parse json object from bqm.to_serializable  <a href="namespaceopenjij_1_1graph.html#ad061d78b1be3a95f5413c6b26a8a373c">More...</a><br /></td></tr>
-<tr class="separator:ad061d78b1be3a95f5413c6b26a8a373c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e59bde75c8b25242571726e8f899fbd"><td class="memTemplParams" colspan="2">template&lt;typename FloatType &gt; </td></tr>
+<tr class="memitem:a3e59bde75c8b25242571726e8f899fbd"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1graph.html#a3e59bde75c8b25242571726e8f899fbd">json_parse</a> (const <a class="el" href="namespaceopenjij_1_1graph.html#ae65b9b4c14411a68425cf1f5bdb18186">json</a> &amp;obj, bool relabel=true)</td></tr>
+<tr class="memdesc:a3e59bde75c8b25242571726e8f899fbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">parse json object from bqm.to_serializable  <a href="namespaceopenjij_1_1graph.html#a3e59bde75c8b25242571726e8f899fbd">More...</a><br /></td></tr>
+<tr class="separator:a3e59bde75c8b25242571726e8f899fbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="ab3ab5083636f31f19ad0927540b5ff89"></a>
@@ -332,8 +332,8 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ad061d78b1be3a95f5413c6b26a8a373c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad061d78b1be3a95f5413c6b26a8a373c">&#9670;&nbsp;</a></span>json_parse()</h2>
+<a id="a3e59bde75c8b25242571726e8f899fbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e59bde75c8b25242571726e8f899fbd">&#9670;&nbsp;</a></span>json_parse()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -347,8 +347,18 @@ template&lt;typename FloatType &gt; </div>
           <td class="memname">auto openjij::graph::json_parse </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespaceopenjij_1_1graph.html#ae65b9b4c14411a68425cf1f5bdb18186">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>relabel</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -367,7 +377,8 @@ template&lt;typename FloatType &gt; </div>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">obj</td><td></td></tr>
+    <tr><td class="paramname">obj</td><td>JSON object </td></tr>
+    <tr><td class="paramname">relabel</td><td>re-label variable_labels. Disable the option if the model has specified topology (such as square lattice or chimera model). if the option is disabled, IndexType of JSON must be an integer.</td></tr>
   </table>
   </dd>
 </dl>

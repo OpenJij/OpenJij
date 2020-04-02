@@ -204,7 +204,7 @@ $(function() {
 <div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;                        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;number of system size does not match&quot;</span>);</div>
 <div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;                    }</div>
 <div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;                    <span class="comment">//define bqm with ising variables</span></div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;                    <span class="keyword">auto</span> bqm = json_parse&lt;FloatType&gt;(j);</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;                    <span class="keyword">auto</span> bqm = json_parse&lt;FloatType&gt;(j, <span class="keyword">false</span>);</div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;                    <span class="comment">//interactions</span></div>
 <div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;                    <span class="keywordflow">for</span>(<span class="keyword">auto</span>&amp;&amp; elem : bqm.get_quadratic()){</div>
 <div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;                        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; key = elem.first;</div>
