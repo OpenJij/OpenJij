@@ -155,11 +155,11 @@ namespace openjij {
                     std::tie(r1,c1,i1) = to_rci(idx1);
                     std::tie(r2,c2,i2) = to_rci(idx2);
                     if(
-                            !((r1 == r2 && std::abs(c1 - c2) == 1 && i1 == i2) ||
-                              (c1 == c2 && std::abs(r1 - r2) == 1 && i1 == i2) ||
-                              (r1 == r2 && c1 == c2 && i1 < 4 && 4 <= i2)  ||
-                              (r1 == r2 && c1 == c2 && i2 < 4 && 4 <= i1)  ||
-                              (r1 == r2 && c1 == c2 && i1 == i2))
+                            !((r1 == r2 && std::abs(c1 - c2) == 1 && i1 == i2 && i1 >= 4) || //horizontal connect
+                              (c1 == c2 && std::abs(r1 - r2) == 1 && i1 == i2 && 4  < i1) || //vertical connect
+                              (r1 == r2 && c1 == c2 && i1 < 4 && 4 <= i2)  ||         //in-site connect
+                              (r1 == r2 && c1 == c2 && i2 < 4 && 4 <= i1)  ||         //in-site connect
+                              (r1 == r2 && c1 == c2 && i1 == i2))                     //local field
                             ){
                         throw std::runtime_error("invalid index pair "+std::to_string(idx1)+" "+std::to_string(idx2)+" inserted in Chimera");
                     }
