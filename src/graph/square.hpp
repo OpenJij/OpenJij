@@ -117,9 +117,9 @@ namespace openjij {
                     std::tie(r1,c1) = to_rc(idx1);
                     std::tie(r2,c2) = to_rc(idx2);
                     if(
-                            !((r1 == r2 && std::abs(c1 - c2) == 1) ||
-                              (c1 == c2 && std::abs(r1 - r2) == 1) ||
-                              (r1 == r2 && c1 == c2))
+                            !((r1 == r2 && std::abs(c1 - c2) == 1) || //horizontal connect
+                              (c1 == c2 && std::abs(r1 - r2) == 1) || //vertical connect
+                              (r1 == r2 && c1 == c2)) //local field
                             ){
                         throw std::runtime_error("invalid index pair "+std::to_string(idx1)+" "+std::to_string(idx2)+" inserted in Square");
                     }
