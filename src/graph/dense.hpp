@@ -22,6 +22,8 @@
 #include <type_traits>
 #include <algorithm>
 
+#include <Eigen/Dense>
+
 #include <graph/json/parse.hpp>
 #include <graph/graph.hpp>
 
@@ -39,9 +41,9 @@ namespace openjij {
                 public:
 
                     /**
-                     * @brief interaction type
+                     * @brief interaction type (Eigen)
                      */
-                    using Interactions = std::vector<FloatType>;
+                    using Interactions = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
                     /**
                      * @brief float type
@@ -51,49 +53,10 @@ namespace openjij {
                 private:
 
                     /**
-                     * @brief interactions (the number of intereactions is num_spins*(num_spins+1)/2) 
+                     * @brief interactions 
                      */
                     Interactions _J;
 
-
-                    /**
-                     * @brief convert index from pair (i,j) to unique value
-                     *
-                     * @param i Index i
-                     * @param j Index j
-                     *
-                     * @return converted index
-                     */
-                    inline std::size_t convert_index(Index i, Index j) const{
-                        assert(i<=j);
-                        return get_num_spins()*i-i*(i-1)/2+j-i;
-                    }
-
-                    /**
-                     * @brief the list of the indices of adjacent nodes
-                     */
-                    std::vector<Nodes> _list_adj_nodes;
-
-                    /**
-                     * @brief add adjacent node from "from" Index to "to" Index
-                     *
-                     * @param from "from" Index
-                     * @param to "to" Index
-                     */
-                    inline void set_adj_node(Index from, Index to){
-                        assert(from < this->get_num_spins());
-                        assert(to < this->get_num_spins());
-
-                        //get adjacent nodes of node "from"
-                        Nodes& nodes = _list_adj_nodes[from];
-                        //check if the node "to" exists in the nodes 
-                        if(std::find(nodes.begin(), nodes.end(), to)==nodes.end()){
-                            //add node
-                            nodes.push_back(to);
-                            //add node from "to" to "from"
-                            set_adj_node(to, from);
-                        }
-                    }
                 public:
 
                     /**
@@ -102,12 +65,8 @@ namespace openjij {
                      * @param num_spins the number of spins
                      */
                     explicit Dense(std::size_t num_spins)
-                        : Graph(num_spins), _J(num_spins*(num_spins+1)/2, 0), _list_adj_nodes(num_spins){
-
-                            //initialize list_adj_nodes
-                            for(auto& elem : _list_adj_nodes){
-                                elem.reserve(num_spins);
-                            }
+                        : Graph(num_spins), _J(num_spins+1, num_spins+1){
+                            _J(num_spins, num_spins) = 1;
                         }
 
                     /**
@@ -144,20 +103,6 @@ namespace openjij {
                     Dense(Dense<FloatType>&&) = default;
 
                     /**
-                     * @brief returns list of adjacent nodes 
-                     *
-                     * @param ind Node index
-                     *
-                     * @return list of adjacent nodes
-                     */
-                    const Nodes& adj_nodes(Index ind) const{
-                        return _list_adj_nodes[ind];
-                    }
-
-                    //DEPRECATED
-                    //TODO: calc_energy should not be the member function.
-
-                    /**
                      * @brief calculate total energy 
                      *
                      * @param spins
@@ -165,20 +110,15 @@ namespace openjij {
                      * @return corresponding energy
                      */
                     FloatType calc_energy(const Spins& spins) const{
-                        if(!(spins.size() == get_num_spins())){
-                            throw std::runtime_error("invalid length of spins in Dense");
+                        Interactions J = _J.selfadjointView<Eigen::Upper>();
+                        using Vec = Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>;
+                        Vec s(get_num_spins()+1);
+                        for(size_t i=0; i<spins.size(); i++){
+                            s(i) = spins[i];
                         }
-                        FloatType ret = 0;
-                        for(std::size_t ind=0; ind<this->get_num_spins(); ind++){
-                            for(auto& adj_ind : _list_adj_nodes[ind]){
-                                if(ind != adj_ind)
-                                    ret += (1./2) * this->J(ind, adj_ind) * spins[ind] * spins[adj_ind];
-                                else
-                                    ret += this->h(ind) * spins[ind];
-                            }
-                        }
+                        s(get_num_spins()) = 1;
 
-                        return ret;
+                        return (s.transpose()*(J*s))(0,0);
                     }
 
                     /**
@@ -193,8 +133,10 @@ namespace openjij {
                         assert(i < get_num_spins());
                         assert(j < get_num_spins());
 
-                        set_adj_node(i, j);
-                        return _J[convert_index(std::min(i, j), std::max(i, j))];
+                        if(i != j)
+                            return _J(std::min(i, j), std::max(i, j));
+                        else
+                            return _J(std::min(i, j), num_spins);
                     }
 
                     /**
@@ -209,7 +151,10 @@ namespace openjij {
                         assert(i < get_num_spins());
                         assert(j < get_num_spins());
 
-                        return _J[convert_index(std::min(i, j), std::max(i, j))];
+                        if(i != j)
+                            return _J(std::min(i, j), std::max(i, j));
+                        else
+                            return _J(std::min(i, j), num_spins);
                     }
 
                     /**
@@ -221,9 +166,7 @@ namespace openjij {
                      */
                     FloatType& h(Index i){
                         assert(i < get_num_spins());
-                        //add node if it does not exist
-                        set_adj_node(i, i);
-                        return _J[convert_index(i, i)];
+                        return _J(i, i);
                     }
 
                     /**
@@ -235,7 +178,7 @@ namespace openjij {
                      */
                     const FloatType& h(Index i) const{
                         assert(i < get_num_spins());
-                        return _J[convert_index(i, i)];
+                        return _J(i, i);
                     }
 
             };
