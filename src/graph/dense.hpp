@@ -22,6 +22,7 @@
 #include <type_traits>
 #include <algorithm>
 
+#include <utility/disable_eigen_warning.hpp>
 #include <Eigen/Dense>
 
 #include <graph/json/parse.hpp>
