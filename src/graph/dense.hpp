@@ -110,7 +110,6 @@ namespace openjij {
                      * @return corresponding energy
                      */
                     FloatType calc_energy(const Spins& spins) const{
-                        Interactions J = _J.selfadjointView<Eigen::Upper>();
                         using Vec = Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>;
                         Vec s(get_num_spins()+1);
                         for(size_t i=0; i<spins.size(); i++){
@@ -118,7 +117,7 @@ namespace openjij {
                         }
                         s(get_num_spins()) = 1;
 
-                        return (s.transpose()*(J*s))(0,0);
+                        return (s.transpose()*(_J*s))(0,0)-1;
                     }
 
                     /**
@@ -136,7 +135,7 @@ namespace openjij {
                         if(i != j)
                             return _J(std::min(i, j), std::max(i, j));
                         else
-                            return _J(std::min(i, j), num_spins);
+                            return _J(std::min(i, j), get_num_spins());
                     }
 
                     /**
@@ -154,7 +153,7 @@ namespace openjij {
                         if(i != j)
                             return _J(std::min(i, j), std::max(i, j));
                         else
-                            return _J(std::min(i, j), num_spins);
+                            return _J(std::min(i, j), get_num_spins());
                     }
 
                     /**
@@ -179,6 +178,15 @@ namespace openjij {
                     const FloatType& h(Index i) const{
                         assert(i < get_num_spins());
                         return _J(i, i);
+                    }
+
+                    /**
+                     * @brief get interactions (Eigen Matrix)
+                     *
+                     * @return Eigen Matrix
+                     */
+                    const Interactions get_interactions() const{
+                        return this->_J.template selfadjointView<Eigen::Upper>();
                     }
 
             };

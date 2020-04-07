@@ -23,10 +23,26 @@
 
 namespace openjij {
     namespace system {
-        template<typename GraphType, bool eigen_impl=false>
-        struct ContinuousTimeIsing {
+        
+        /**
+         * @brief Continuous Time Quantum Ising system
+         *
+         * @tparam GraphType
+         */
+
+        template<typename GraphType>
+        struct ContinuousTimeIsing;
+
+
+        /**
+         * @brief Continuous Time Quantum Ising system (for Sparse graph)
+         *
+         * @tparam FloatType
+         */
+        template<typename FloatType>
+        struct ContinuousTimeIsing<graph::Sparse<FloatType>> {
+            using GraphType = graph::Sparse<FloatType>;
             using system_type = transverse_field_system;
-            using FloatType = typename GraphType::value_type;
             using TimeType = FloatType;
             using CutPoint = std::pair<TimeType, graph::Spin>;
 
@@ -45,7 +61,7 @@ namespace openjij {
              */
             ContinuousTimeIsing(const SpinConfiguration& init_spin_config,
                                 const GraphType& init_interaction,
-                                const FloatType gamma)
+                                const double gamma)
                 : spin_config(init_spin_config),
                   num_spins(init_spin_config.size()+1),
                   interaction(init_interaction.get_num_spins()+1),
@@ -81,7 +97,7 @@ namespace openjij {
              */
             ContinuousTimeIsing(const graph::Spins& init_spins,
                                 const GraphType& init_interaction,
-                                const FloatType gamma) :
+                                const double gamma) :
                 ContinuousTimeIsing(convert_to_spin_config(init_spins),
                                     init_interaction,
                                     gamma) {} // constructor delegation
@@ -219,7 +235,6 @@ namespace openjij {
         /**
          * @brief helper function for ContinuousTimeIsing constructor
          *
-         * @tparam eigen_impl
          * @tparam GraphType
          * @param init_spins
          * @param interaction
@@ -227,13 +242,13 @@ namespace openjij {
          *
          * @return generated object
          */
-        template<bool eigen_impl=false, typename GraphType>
-        ContinuousTimeIsing<GraphType, eigen_impl> make_continuous_time_ising(const graph::Spins& init_spins,
-                                                                              const GraphType& init_interaction,
-                                                                              typename GraphType::value_type gamma) {
-            return ContinuousTimeIsing<GraphType, eigen_impl>(init_spins,
-                                                              init_interaction,
-                                                              gamma);
+        template<typename GraphType>
+        ContinuousTimeIsing<GraphType> make_continuous_time_ising(const graph::Spins& init_spins,
+                                                                  const GraphType& init_interaction,
+                                                                  double gamma) {
+            return ContinuousTimeIsing<GraphType>(init_spins,
+                                                  init_interaction,
+                                                  gamma);
         }
     } // namespace system
 } // namespace openjij

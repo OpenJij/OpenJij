@@ -29,21 +29,32 @@
 
 namespace openjij {
     namespace updater {
+
+        /**
+         * @brief Continuous Time Swendsen Wang updater
+         *
+         * @tparam System
+         */
         template<typename System>
         struct ContinuousTimeSwendsenWang;
 
-        template<typename GraphType>
-        struct ContinuousTimeSwendsenWang<system::ContinuousTimeIsing<GraphType, false>> {
-            using CutPoint = typename system::ContinuousTimeIsing<GraphType, false>::CutPoint;
-            using TimeType = typename system::ContinuousTimeIsing<GraphType, false>::TimeType;
-            using FloatType = typename system::ContinuousTimeIsing<GraphType, false>::FloatType;
+        /**
+         * @brief Continuous Time Swendsen Wang updater for CTQIsystem
+         *
+         * @tparam FloatType
+         */
+        template<typename FloatType>
+        struct ContinuousTimeSwendsenWang<system::ContinuousTimeIsing<graph::Sparse<FloatType>>> {
+            using GraphType = typename graph::Sparse<FloatType>;
+            using CutPoint = typename system::ContinuousTimeIsing<GraphType>::CutPoint;
+            using TimeType = typename system::ContinuousTimeIsing<GraphType>::TimeType;
 
             /**
-             * @brief continuous time Swendsen-Wang updater for transverse ising model (no Eigen implementation)
+             * @brief continuous time Swendsen-Wang updater for transverse ising model
              *
              */
             template <typename RandomNumberEngine>
-            static void update(system::ContinuousTimeIsing<GraphType, false>& system,
+            static void update(system::ContinuousTimeIsing<GraphType>& system,
                                RandomNumberEngine& random_number_engine,
                                const utility::TransverseFieldUpdaterParameter& parameter) {
 

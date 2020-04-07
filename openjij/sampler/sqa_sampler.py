@@ -90,7 +90,7 @@ class SQASampler(BaseSampler):
             'num_reads': num_reads,
         }
 
-        self._make_system = cxxjij.system.make_transverse_ising_Eigen
+        self._make_system = cxxjij.system.make_transverse_ising
         self._algorithm = {
             'singlespinflip': cxxjij.algorithm.Algorithm_SingleSpinFlip_run
         }

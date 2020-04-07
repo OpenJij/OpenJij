@@ -92,7 +92,7 @@ class SASampler(BaseSampler):
         }
 
         self._make_system = {
-            'singlespinflip': cxxjij.system.make_classical_ising_Eigen,
+            'singlespinflip': cxxjij.system.make_classical_ising,
             'swendsenwang': cxxjij.system.make_classical_ising
         }
         self._algorithm = {
