@@ -288,9 +288,6 @@ class CXXTest(unittest.TestCase):
         result_spin = R.get_solution(system)
 
         #compare
-        print(system.interaction)
-        print(self.true_groundstate)
-        print(result_spin)
         self.assertTrue(self.true_groundstate == result_spin)
 
 # GPU Test is currently disabled.

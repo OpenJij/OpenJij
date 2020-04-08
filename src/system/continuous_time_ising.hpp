@@ -76,6 +76,16 @@ namespace openjij {
 
                 assert(init_spin_config.size() == init_interaction.get_num_spins());
 
+                // insert numbers to diagnonal elements in the interaction
+                for(typename SparseMatrixXx::InnerIterator it(interaction, init_interaction.get_num_spins()); it; ++it) {
+                    std::size_t j = it.index();
+                    FloatType v = it.value();
+                    if(j != init_interaction.get_num_spins())
+                        interaction.insert(j,j) = v;
+                }
+
+                interaction.coeffRef(init_interaction.get_num_spins(), init_interaction.get_num_spins()) = 0;
+
                 spin_config.push_back(std::vector<CutPoint> { CutPoint(0.0, 1) });
                 // initialize auxiliary spin with 1 along entire timeline
             }
@@ -218,7 +228,7 @@ namespace openjij {
             /**
              * @brief interaction
              */
-            const SparseMatrixXx interaction;
+            SparseMatrixXx interaction;
 
             /**
              * @brief coefficient of transverse field term, actual field would be gamma * s, where s = [0:1]
