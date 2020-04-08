@@ -66,7 +66,7 @@ namespace openjij {
                      * @param num_spins the number of spins
                      */
                     explicit Dense(std::size_t num_spins)
-                        : Graph(num_spins), _J(num_spins+1, num_spins+1){
+                        : Graph(num_spins), _J(Interactions::Zero(num_spins+1, num_spins+1)){
                             _J(num_spins, num_spins) = 1;
                         }
 
@@ -166,7 +166,7 @@ namespace openjij {
                      */
                     FloatType& h(Index i){
                         assert(i < get_num_spins());
-                        return _J(i, i);
+                        return J(i, i);
                     }
 
                     /**
@@ -178,7 +178,7 @@ namespace openjij {
                      */
                     const FloatType& h(Index i) const{
                         assert(i < get_num_spins());
-                        return _J(i, i);
+                        return J(i, i);
                     }
 
                     /**

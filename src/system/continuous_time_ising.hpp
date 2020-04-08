@@ -21,6 +21,8 @@
 #include <vector>
 #include <utility>
 
+#include <utility/eigen.hpp>
+
 namespace openjij {
     namespace system {
         
@@ -47,6 +49,11 @@ namespace openjij {
             using CutPoint = std::pair<TimeType, graph::Spin>;
 
             /**
+             * @brief Interaction type (Eigen sparse matrix)
+             */
+            using SparseMatrixXx = Eigen::SparseMatrix<FloatType, Eigen::RowMajor>;
+
+            /**
              * @brief spin configuration in real and continuous time space
              * spin_config[i][j] -> at i th site, j th pair of imaginary time point and spin value after the point
              */
@@ -64,23 +71,10 @@ namespace openjij {
                                 const double gamma)
                 : spin_config(init_spin_config),
                   num_spins(init_spin_config.size()+1),
-                  interaction(init_interaction.get_num_spins()+1),
+                  interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)),
                   gamma(gamma) {
 
                 assert(init_spin_config.size() == init_interaction.get_num_spins());
-
-                for(graph::Index i = 0;i < init_interaction.get_num_spins();i++) {
-                    for(auto&& j : init_interaction.adj_nodes(i)) {
-                        if(i < j) {
-                            continue;
-                        }
-
-                        this->interaction.J(i, j) = init_interaction.J(i, j); // add actual interactions
-                    }
-
-                    this->interaction.J(i, this->num_spins-1) = init_interaction.h(i);
-                    // add longitudinal magnetic field as interaction between ith spin and auxiliary spin
-                }
 
                 spin_config.push_back(std::vector<CutPoint> { CutPoint(0.0, 1) });
                 // initialize auxiliary spin with 1 along entire timeline
@@ -224,7 +218,7 @@ namespace openjij {
             /**
              * @brief interaction
              */
-            GraphType interaction;
+            const SparseMatrixXx interaction;
 
             /**
              * @brief coefficient of transverse field term, actual field would be gamma * s, where s = [0:1]

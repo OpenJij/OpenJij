@@ -45,6 +45,7 @@ namespace openjij {
          */
         template<typename FloatType>
         struct ContinuousTimeSwendsenWang<system::ContinuousTimeIsing<graph::Sparse<FloatType>>> {
+            using CTIsing = system::ContinuousTimeIsing<graph::Sparse<FloatType>>;
             using GraphType = typename graph::Sparse<FloatType>;
             using CutPoint = typename system::ContinuousTimeIsing<GraphType>::CutPoint;
             using TimeType = typename system::ContinuousTimeIsing<GraphType>::TimeType;
@@ -81,20 +82,22 @@ namespace openjij {
                 /* 2. place spacial bonds */
                 utility::UnionFind union_find_tree(index_helper.back());
                 for(graph::Index i = 0;i < num_spin;i++) {
-                    for(auto&& j : system.interaction.adj_nodes(i)) {
+                    for(typename CTIsing::SparseMatrixXx::InnerIterator it(system.interaction, i); it; ++it) {
+                        std::size_t j = it.index();
+                        const FloatType& J = it.value();
                         if (i < j) {
                             continue; // ignore duplicated interaction
                                       // if adj_nodes are sorted, this "continue" can be replaced by "break"
                         }
 
-                        const auto bonds = generate_poisson_points(std::abs(0.5*system.interaction.J(i, j)*parameter.s),
+                        const auto bonds = generate_poisson_points(std::abs(0.5*J*parameter.s),
                                                                    parameter.beta, random_number_engine);
                         for(const auto bond : bonds) {
                             /* get time point indices just before the bond */
                             auto ki = system.get_temporal_spin_index(i, bond);
                             auto kj = system.get_temporal_spin_index(j, bond);
 
-                            if(system.spin_config[i][ki].second * system.spin_config[j][kj].second * system.interaction.J(i, j) < 0) {
+                            if(system.spin_config[i][ki].second * system.spin_config[j][kj].second * J < 0) {
                                 union_find_tree.unite_sets(index_helper[i]+ki, index_helper[j]+kj);
                             }
                         }
