@@ -69,7 +69,6 @@ $(function() {
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classopenjij_1_1graph_1_1_dense-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -93,9 +92,9 @@ Inheritance diagram for openjij::graph::Dense&lt; FloatType &gt;:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a28eac8a62bae61cb632ee191013e4b77"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a28eac8a62bae61cb632ee191013e4b77">Interactions</a> = std::vector&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;</td></tr>
-<tr class="memdesc:a28eac8a62bae61cb632ee191013e4b77"><td class="mdescLeft">&#160;</td><td class="mdescRight">interaction type  <a href="classopenjij_1_1graph_1_1_dense.html#a28eac8a62bae61cb632ee191013e4b77">More...</a><br /></td></tr>
-<tr class="separator:a28eac8a62bae61cb632ee191013e4b77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0f487e2e61a9e434abede83092b170d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#aa0f487e2e61a9e434abede83092b170d">Interactions</a> = Eigen::Matrix&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor &gt;</td></tr>
+<tr class="memdesc:aa0f487e2e61a9e434abede83092b170d"><td class="mdescLeft">&#160;</td><td class="mdescRight">interaction type (Eigen)  <a href="classopenjij_1_1graph_1_1_dense.html#aa0f487e2e61a9e434abede83092b170d">More...</a><br /></td></tr>
+<tr class="separator:aa0f487e2e61a9e434abede83092b170d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5aaf6a2c629d505bf6b492bf2c3e171e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a5aaf6a2c629d505bf6b492bf2c3e171e">value_type</a> = <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a></td></tr>
 <tr class="memdesc:a5aaf6a2c629d505bf6b492bf2c3e171e"><td class="mdescLeft">&#160;</td><td class="mdescRight">float type  <a href="classopenjij_1_1graph_1_1_dense.html#a5aaf6a2c629d505bf6b492bf2c3e171e">More...</a><br /></td></tr>
 <tr class="separator:a5aaf6a2c629d505bf6b492bf2c3e171e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -114,9 +113,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adc4f23bf556722e556a9b41619336e31"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#adc4f23bf556722e556a9b41619336e31">Dense</a> (<a class="el" href="classopenjij_1_1graph_1_1_dense.html">Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt; &amp;&amp;)=default</td></tr>
 <tr class="memdesc:adc4f23bf556722e556a9b41619336e31"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classopenjij_1_1graph_1_1_dense.html" title="two-body all-to-all interactions">Dense</a> move constructor.  <a href="classopenjij_1_1graph_1_1_dense.html#adc4f23bf556722e556a9b41619336e31">More...</a><br /></td></tr>
 <tr class="separator:adc4f23bf556722e556a9b41619336e31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fbe2396672df0ed546a99a3a4f51494"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceopenjij_1_1graph.html#a6e7f78b6c411e8367ff996672e8efeae">Nodes</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a0fbe2396672df0ed546a99a3a4f51494">adj_nodes</a> (<a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a> ind) const</td></tr>
-<tr class="memdesc:a0fbe2396672df0ed546a99a3a4f51494"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns list of adjacent nodes  <a href="classopenjij_1_1graph_1_1_dense.html#a0fbe2396672df0ed546a99a3a4f51494">More...</a><br /></td></tr>
-<tr class="separator:a0fbe2396672df0ed546a99a3a4f51494"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c0d5e22b44fa0c0f9cc78eb7035abf6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a8c0d5e22b44fa0c0f9cc78eb7035abf6">calc_energy</a> (const <a class="el" href="namespaceopenjij_1_1graph.html#ace188933d1719b22664ab431b0c1c85c">Spins</a> &amp;spins) const</td></tr>
 <tr class="memdesc:a8c0d5e22b44fa0c0f9cc78eb7035abf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">calculate total energy  <a href="classopenjij_1_1graph_1_1_dense.html#a8c0d5e22b44fa0c0f9cc78eb7035abf6">More...</a><br /></td></tr>
 <tr class="separator:a8c0d5e22b44fa0c0f9cc78eb7035abf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -132,6 +128,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9607aa4b8ffee8a917c449f3517eae53"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a9607aa4b8ffee8a917c449f3517eae53">h</a> (<a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a> i) const</td></tr>
 <tr class="memdesc:a9607aa4b8ffee8a917c449f3517eae53"><td class="mdescLeft">&#160;</td><td class="mdescRight">access h_{i} (local field)  <a href="classopenjij_1_1graph_1_1_dense.html#a9607aa4b8ffee8a917c449f3517eae53">More...</a><br /></td></tr>
 <tr class="separator:a9607aa4b8ffee8a917c449f3517eae53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1da86645b3f8a7c99998e62441779e1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classopenjij_1_1graph_1_1_dense.html#aa0f487e2e61a9e434abede83092b170d">Interactions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#ad1da86645b3f8a7c99998e62441779e1">get_interactions</a> () const</td></tr>
+<tr class="memdesc:ad1da86645b3f8a7c99998e62441779e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">get interactions (Eigen Matrix)  <a href="classopenjij_1_1graph_1_1_dense.html#ad1da86645b3f8a7c99998e62441779e1">More...</a><br /></td></tr>
+<tr class="separator:ad1da86645b3f8a7c99998e62441779e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classopenjij_1_1graph_1_1_graph"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classopenjij_1_1graph_1_1_graph')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classopenjij_1_1graph_1_1_graph.html">openjij::graph::Graph</a></td></tr>
 <tr class="memitem:a1c08b369a388fad86df1915762b82597 inherit pub_methods_classopenjij_1_1graph_1_1_graph"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_graph.html#a1c08b369a388fad86df1915762b82597">Graph</a> (std::size_t num_spins)</td></tr>
 <tr class="memdesc:a1c08b369a388fad86df1915762b82597 inherit pub_methods_classopenjij_1_1graph_1_1_graph"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classopenjij_1_1graph_1_1_graph.html" title="Abstract graph class.">Graph</a> constructor.  <a href="classopenjij_1_1graph_1_1_graph.html#a1c08b369a388fad86df1915762b82597">More...</a><br /></td></tr>
@@ -147,23 +146,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac97da6970bf1ff93a0bc1f1b3db14ea1 inherit pub_methods_classopenjij_1_1graph_1_1_graph"><td class="mdescLeft">&#160;</td><td class="mdescRight">get number of spins  <a href="classopenjij_1_1graph_1_1_graph.html#ac97da6970bf1ff93a0bc1f1b3db14ea1">More...</a><br /></td></tr>
 <tr class="separator:ac97da6970bf1ff93a0bc1f1b3db14ea1 inherit pub_methods_classopenjij_1_1graph_1_1_graph"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
-Private Member Functions</h2></td></tr>
-<tr class="memitem:a83b99b447c2e3b324cff25690207d125"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a83b99b447c2e3b324cff25690207d125">convert_index</a> (<a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a> i, <a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a> j) const</td></tr>
-<tr class="memdesc:a83b99b447c2e3b324cff25690207d125"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert index from pair (i,j) to unique value  <a href="classopenjij_1_1graph_1_1_dense.html#a83b99b447c2e3b324cff25690207d125">More...</a><br /></td></tr>
-<tr class="separator:a83b99b447c2e3b324cff25690207d125"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91776a5f5d51a5205873afeed0d5981b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a91776a5f5d51a5205873afeed0d5981b">set_adj_node</a> (<a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a> from, <a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a> to)</td></tr>
-<tr class="memdesc:a91776a5f5d51a5205873afeed0d5981b"><td class="mdescLeft">&#160;</td><td class="mdescRight">add adjacent node from "from" Index to "to" Index  <a href="classopenjij_1_1graph_1_1_dense.html#a91776a5f5d51a5205873afeed0d5981b">More...</a><br /></td></tr>
-<tr class="separator:a91776a5f5d51a5205873afeed0d5981b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a6aeec173203c1742f1d940c3393d6116"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a28eac8a62bae61cb632ee191013e4b77">Interactions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a6aeec173203c1742f1d940c3393d6116">_J</a></td></tr>
-<tr class="memdesc:a6aeec173203c1742f1d940c3393d6116"><td class="mdescLeft">&#160;</td><td class="mdescRight">interactions (the number of intereactions is num_spins*(num_spins+1)/2)  <a href="classopenjij_1_1graph_1_1_dense.html#a6aeec173203c1742f1d940c3393d6116">More...</a><br /></td></tr>
+<tr class="memitem:a6aeec173203c1742f1d940c3393d6116"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#aa0f487e2e61a9e434abede83092b170d">Interactions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a6aeec173203c1742f1d940c3393d6116">_J</a></td></tr>
+<tr class="memdesc:a6aeec173203c1742f1d940c3393d6116"><td class="mdescLeft">&#160;</td><td class="mdescRight">interactions  <a href="classopenjij_1_1graph_1_1_dense.html#a6aeec173203c1742f1d940c3393d6116">More...</a><br /></td></tr>
 <tr class="separator:a6aeec173203c1742f1d940c3393d6116"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfe7bf79e8ed6a336e3c5fd5dbdbbd84"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceopenjij_1_1graph.html#a6e7f78b6c411e8367ff996672e8efeae">Nodes</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#acfe7bf79e8ed6a336e3c5fd5dbdbbd84">_list_adj_nodes</a></td></tr>
-<tr class="memdesc:acfe7bf79e8ed6a336e3c5fd5dbdbbd84"><td class="mdescLeft">&#160;</td><td class="mdescRight">the list of the indices of adjacent nodes  <a href="classopenjij_1_1graph_1_1_dense.html#acfe7bf79e8ed6a336e3c5fd5dbdbbd84">More...</a><br /></td></tr>
-<tr class="separator:acfe7bf79e8ed6a336e3c5fd5dbdbbd84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename FloatType&gt;<br />
@@ -177,8 +164,8 @@ class openjij::graph::Dense&lt; FloatType &gt;</h3>
   </dd>
 </dl>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a28eac8a62bae61cb632ee191013e4b77"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a28eac8a62bae61cb632ee191013e4b77">&#9670;&nbsp;</a></span>Interactions</h2>
+<a id="aa0f487e2e61a9e434abede83092b170d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0f487e2e61a9e434abede83092b170d">&#9670;&nbsp;</a></span>Interactions</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -186,12 +173,12 @@ class openjij::graph::Dense&lt; FloatType &gt;</h3>
 template&lt;typename FloatType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classopenjij_1_1graph_1_1_dense.html">openjij::graph::Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;::<a class="el" href="classopenjij_1_1graph_1_1_dense.html#a28eac8a62bae61cb632ee191013e4b77">Interactions</a> =  std::vector&lt;<a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>&gt;</td>
+          <td class="memname">using <a class="el" href="classopenjij_1_1graph_1_1_dense.html">openjij::graph::Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;::<a class="el" href="classopenjij_1_1graph_1_1_dense.html#aa0f487e2e61a9e434abede83092b170d">Interactions</a> =  Eigen::Matrix&lt;<a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>interaction type </p>
+<p>interaction type (Eigen) </p>
 
 </div>
 </div>
@@ -347,43 +334,6 @@ template&lt;typename FloatType &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a0fbe2396672df0ed546a99a3a4f51494"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0fbe2396672df0ed546a99a3a4f51494">&#9670;&nbsp;</a></span>adj_nodes()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename FloatType &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="namespaceopenjij_1_1graph.html#a6e7f78b6c411e8367ff996672e8efeae">Nodes</a>&amp; <a class="el" href="classopenjij_1_1graph_1_1_dense.html">openjij::graph::Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;::adj_nodes </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a>&#160;</td>
-          <td class="paramname"><em>ind</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>returns list of adjacent nodes </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ind</td><td>Node index</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>list of adjacent nodes </dd></dl>
-
-</div>
-</div>
 <a id="a8c0d5e22b44fa0c0f9cc78eb7035abf6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8c0d5e22b44fa0c0f9cc78eb7035abf6">&#9670;&nbsp;</a></span>calc_energy()</h2>
 
@@ -421,8 +371,8 @@ template&lt;typename FloatType &gt; </div>
 
 </div>
 </div>
-<a id="a83b99b447c2e3b324cff25690207d125"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a83b99b447c2e3b324cff25690207d125">&#9670;&nbsp;</a></span>convert_index()</h2>
+<a id="ad1da86645b3f8a7c99998e62441779e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1da86645b3f8a7c99998e62441779e1">&#9670;&nbsp;</a></span>get_interactions()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -433,39 +383,21 @@ template&lt;typename FloatType &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::size_t <a class="el" href="classopenjij_1_1graph_1_1_dense.html">openjij::graph::Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;::convert_index </td>
+          <td class="memname">const <a class="el" href="classopenjij_1_1graph_1_1_dense.html#aa0f487e2e61a9e434abede83092b170d">Interactions</a> <a class="el" href="classopenjij_1_1graph_1_1_dense.html">openjij::graph::Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;::get_interactions </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a>&#160;</td>
-          <td class="paramname"><em>i</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a>&#160;</td>
-          <td class="paramname"><em>j</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>convert index from pair (i,j) to unique value </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">i</td><td>Index i </td></tr>
-    <tr><td class="paramname">j</td><td>Index j</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>converted index </dd></dl>
+<p>get interactions (Eigen Matrix) </p>
+<dl class="section return"><dt>Returns</dt><dd>Eigen Matrix </dd></dl>
 
 </div>
 </div>
@@ -639,53 +571,6 @@ template&lt;typename FloatType &gt; </div>
 
 </div>
 </div>
-<a id="a91776a5f5d51a5205873afeed0d5981b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a91776a5f5d51a5205873afeed0d5981b">&#9670;&nbsp;</a></span>set_adj_node()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename FloatType &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classopenjij_1_1graph_1_1_dense.html">openjij::graph::Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;::set_adj_node </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a>&#160;</td>
-          <td class="paramname"><em>from</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a>&#160;</td>
-          <td class="paramname"><em>to</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>add adjacent node from "from" Index to "to" Index </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">from</td><td>"from" Index </td></tr>
-    <tr><td class="paramname">to</td><td>"to" Index </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a6aeec173203c1742f1d940c3393d6116"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6aeec173203c1742f1d940c3393d6116">&#9670;&nbsp;</a></span>_J</h2>
@@ -699,7 +584,7 @@ template&lt;typename FloatType &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a28eac8a62bae61cb632ee191013e4b77">Interactions</a> <a class="el" href="classopenjij_1_1graph_1_1_dense.html">openjij::graph::Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;::_J</td>
+          <td class="memname"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#aa0f487e2e61a9e434abede83092b170d">Interactions</a> <a class="el" href="classopenjij_1_1graph_1_1_dense.html">openjij::graph::Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;::_J</td>
         </tr>
       </table>
   </td>
@@ -709,33 +594,7 @@ template&lt;typename FloatType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>interactions (the number of intereactions is num_spins*(num_spins+1)/2) </p>
-
-</div>
-</div>
-<a id="acfe7bf79e8ed6a336e3c5fd5dbdbbd84"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acfe7bf79e8ed6a336e3c5fd5dbdbbd84">&#9670;&nbsp;</a></span>_list_adj_nodes</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename FloatType &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="namespaceopenjij_1_1graph.html#a6e7f78b6c411e8367ff996672e8efeae">Nodes</a>&gt; <a class="el" href="classopenjij_1_1graph_1_1_dense.html">openjij::graph::Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;::_list_adj_nodes</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>the list of the indices of adjacent nodes </p>
+<p>interactions </p>
 
 </div>
 </div>

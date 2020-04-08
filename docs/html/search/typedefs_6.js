@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['matrixxx_583',['MatrixXx',['../structopenjij_1_1system_1_1_classical_ising_3_01graph_1_1_dense_3_01_float_type_01_4_00_01true_01_4.html#a7099da4454ebbb552d2d771b4fb6d00a',1,'openjij::system::ClassicalIsing&lt; graph::Dense&lt; FloatType &gt;, true &gt;::MatrixXx()'],['../structopenjij_1_1system_1_1_transverse_ising_3_01graph_1_1_dense_3_01_float_type_01_4_00_01true_01_4.html#a09d68ba46c2bd0c89e6d1d6f266023e1',1,'openjij::system::TransverseIsing&lt; graph::Dense&lt; FloatType &gt;, true &gt;::MatrixXx()']]],
-  ['mcmc_584',['MCMC',['../namespaceopenjij_1_1algorithm.html#a92d447fd09fbe02915144cf03d1691e0',1,'openjij::algorithm']]]
+  ['matrixxx_591',['MatrixXx',['../structopenjij_1_1system_1_1_classical_ising_3_01graph_1_1_dense_3_01_float_type_01_4_01_4.html#a1e4508b5895573e343e22ab240af29dc',1,'openjij::system::ClassicalIsing&lt; graph::Dense&lt; FloatType &gt; &gt;::MatrixXx()'],['../structopenjij_1_1system_1_1_transverse_ising_3_01graph_1_1_dense_3_01_float_type_01_4_01_4.html#ac4bee838cfc1bba3e304c84f1326debe',1,'openjij::system::TransverseIsing&lt; graph::Dense&lt; FloatType &gt; &gt;::MatrixXx()']]],
+  ['mcmc_592',['MCMC',['../namespaceopenjij_1_1algorithm.html#a92d447fd09fbe02915144cf03d1691e0',1,'openjij::algorithm']]]
 ];
