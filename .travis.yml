@@ -16,6 +16,7 @@ addons:
       - gcc-8
       - g++-8
 env:
+  - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
   - CMAKE_DIR="${HOME}/cmake" PATH="${CMAKE_DIR}/:${CMAKE_DIR}/bin:$PATH"
 
 before_install:
