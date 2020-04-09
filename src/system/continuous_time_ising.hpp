@@ -81,7 +81,7 @@ namespace openjij {
                     std::size_t j = it.index();
                     FloatType v = it.value();
                     if(j != init_interaction.get_num_spins())
-                        interaction.insert(j,j) = v;
+                        interaction.coeffRef(j,j) = v;
                 }
 
                 interaction.coeffRef(init_interaction.get_num_spins(), init_interaction.get_num_spins()) = 0;

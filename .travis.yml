@@ -24,7 +24,7 @@ before_install:
   - mv cmake-3.13.3-Linux-x86_64 "${CMAKE_DIR}"
 
 install:
-  - python setup.py install
+  - python setup.py build --debug install
 
 script:
   - pip install numpy 
