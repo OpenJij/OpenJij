@@ -32,99 +32,20 @@ namespace openjij {
         using TrotterSpins = std::vector<graph::Spins>;
 
         /**
-         * @brief naive TransverseIsing structure with discrete-time trotter spins (no Eigen implementation)
+         * @brief TransverseIsing structure with discrete-time trotter spins
          *
          * @tparam GraphType
-         * @tparam eigen_impl specify that Eigen implementation is enabled.
          */
-        template<typename GraphType, bool eigen_impl=false>
-            struct TransverseIsing {
-                using system_type = transverse_field_system;
-                using FloatType = typename GraphType::value_type;
-
-                /**
-                 * @brief TransverseIsing Constructor
-                 *
-                 * @param init_trotter_spins
-                 * @param init_interaction
-                 */
-                TransverseIsing(const TrotterSpins& init_trotter_spins, const GraphType& init_interaction, FloatType gamma)
-                : trotter_spins(init_trotter_spins), interaction(init_interaction), num_classical_spins(init_trotter_spins[0].size()), gamma(gamma){
-                    //assert(trotter_spins.size() >= 2);
-                    if(!(trotter_spins.size() >= 2)){
-                        throw std::invalid_argument("trotter slices must be equal or larger than 2.");
-                    }
-                }
-
-                /**
-                 * @brief TransverseIsing Constuctor with initial classical spins
-                 *
-                 * @param classical_spins initial classical spins
-                 * @param init_interaction
-                 * @param num_trotter_slices
-                 */
-                TransverseIsing(const graph::Spins& classical_spins, const GraphType& init_interaction, FloatType gamma, size_t num_trotter_slices)
-                : trotter_spins(num_trotter_slices), interaction(init_interaction), num_classical_spins(classical_spins.size()), gamma(gamma){
-                    //initialize trotter_spins with classical_spins
-                    if(!(trotter_spins.size() >= 2)){
-                        throw std::invalid_argument("trotter slices must be equal or larger than 2.");
-                    }
-
-                    for(auto& spins : trotter_spins){
-                        spins = classical_spins;
-                    }
-                }
-
-                /**
-                 * @brief reset spins with trotter spins
-                 *
-                 * @param init_trotter_spins
-                 */
-                void reset_spins(const TrotterSpins& init_trotter_spins){
-                    this->trotter_spins = init_trotter_spins;
-                }
-                
-                /**
-                 * @brief reset spins with trotter spins
-                 *
-                 * @param classical_spins
-                 */
-                void reset_spins(const graph::Spins& classical_spins){
-                    for(auto& spins : this->trotter_spins){
-                        spins = classical_spins;
-                    }
-                }
-
-                /**
-                 * @brief trotterlized spins
-                 */
-                TrotterSpins trotter_spins;
-
-                /**
-                 * @brief interaction 
-                 */
-                const GraphType interaction;
-
-                /**
-                 * @brief number of real classical spins (dummy spin excluded)
-                 */
-                std::size_t num_classical_spins; //trotter_spins[0].size()-1
-
-                /**
-                 * @brief coefficient of transverse field term
-                 */
-                FloatType gamma;
-            };
-
-        //TODO: unify Dense and Sparse Eigen-implemented TransverselIsing struct
+        template<typename GraphType>
+            struct TransverseIsing;
 
         /**
          * @brief naive Dense TransverseIsing structure with discrete-time trotter spins (with Eigen implementation)
          *
-         * @tparam FloatTypeType
+         * @tparam FloatType
          */
         template<typename FloatType>
-            struct TransverseIsing<graph::Dense<FloatType>, true> {
+            struct TransverseIsing<graph::Dense<FloatType>> {
                 using system_type = transverse_field_system;
 
                 //matrix (row major)
@@ -138,9 +59,9 @@ namespace openjij {
                  * @param init_trotter_spins
                  * @param init_interaction
                  */
-                TransverseIsing(const TrotterSpins& init_trotter_spins, const graph::Dense<FloatType>& init_interaction, FloatType gamma)
+                TransverseIsing(const TrotterSpins& init_trotter_spins, const graph::Dense<FloatType>& init_interaction, double gamma)
                 : trotter_spins(utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins)),
-                interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)),
+                interaction(init_interaction.get_interactions()),
                 num_classical_spins(init_trotter_spins[0].size()), gamma(gamma){
                     if(!(init_trotter_spins.size() >= 2)){
                         throw std::invalid_argument("trotter slices must be equal or larger than 2.");
@@ -154,8 +75,8 @@ namespace openjij {
                  * @param init_interaction
                  * @param num_trotter_slices
                  */
-                TransverseIsing(const graph::Spins& init_classical_spins, const graph::Dense<FloatType>& init_interaction, FloatType gamma, size_t num_trotter_slices)
-                :interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)),
+                TransverseIsing(const graph::Spins& init_classical_spins, const graph::Dense<FloatType>& init_interaction, double gamma, size_t num_trotter_slices)
+                :interaction(init_interaction.get_interactions()),
                  num_classical_spins(init_classical_spins.size()), gamma(gamma){
                     //initialize trotter_spins with classical_spins
 
@@ -221,10 +142,10 @@ namespace openjij {
         /**
          * @brief naive Sparse TransverseIsing structure with discrete-time trotter spins (with Eigen implementation)
          *
-         * @tparam FloatTypeType
+         * @tparam FloatType
          */
         template<typename FloatType>
-            struct TransverseIsing<graph::Sparse<FloatType>, true> {
+            struct TransverseIsing<graph::Sparse<FloatType>> {
                 using system_type = transverse_field_system;
 
                 //matrix (row major)
@@ -238,7 +159,7 @@ namespace openjij {
                  * @param init_trotter_spins
                  * @param init_interaction
                  */
-                TransverseIsing(const TrotterSpins& init_trotter_spins, const graph::Sparse<FloatType>& init_interaction, FloatType gamma)
+                TransverseIsing(const TrotterSpins& init_trotter_spins, const graph::Sparse<FloatType>& init_interaction, double gamma)
                 :trotter_spins(utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins)),
                 interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)),
                 num_classical_spins(init_trotter_spins[0].size()), gamma(gamma){
@@ -254,7 +175,7 @@ namespace openjij {
                  * @param init_interaction
                  * @param num_trotter_slices
                  */
-                TransverseIsing(const graph::Spins& init_classical_spins, const graph::Sparse<FloatType>& init_interaction, FloatType gamma, size_t num_trotter_slices)
+                TransverseIsing(const graph::Spins& init_classical_spins, const graph::Sparse<FloatType>& init_interaction, double gamma, size_t num_trotter_slices)
                 :interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)),
                 num_classical_spins(init_classical_spins.size()), gamma(gamma){
                     //initialize trotter_spins with classical_spins
@@ -321,7 +242,6 @@ namespace openjij {
         /**
          * @brief helper function for TransverseIsing constructor
          *
-         * @tparam eigen_impl
          * @tparam GraphType
          * @param init_trotter_spins
          * @param init_interaction
@@ -329,15 +249,14 @@ namespace openjij {
          *
          * @return generated object
          */
-        template<bool eigen_impl=false,typename GraphType>
-            TransverseIsing<GraphType, eigen_impl> make_transverse_ising(const TrotterSpins& init_trotter_spins, const GraphType& init_interaction, double gamma){
-                return TransverseIsing<GraphType, eigen_impl>(init_trotter_spins, init_interaction, static_cast<typename GraphType::value_type>(gamma));
+        template<typename GraphType>
+            auto make_transverse_ising(const TrotterSpins& init_trotter_spins, const GraphType& init_interaction, double gamma){
+                return TransverseIsing<GraphType>(init_trotter_spins, init_interaction, gamma);
             }
 
         /**
          * @brief helper function for TransverseIsing constructor
          *
-         * @tparam eigen_impl
          * @tparam GraphType
          * @param classical_spins
          * @param init_interaction
@@ -346,9 +265,9 @@ namespace openjij {
          *
          * @return generated object
          */
-        template<bool eigen_impl=false,typename GraphType>
-            TransverseIsing<GraphType, eigen_impl> make_transverse_ising(const graph::Spins& classical_spins, const GraphType& init_interaction, double gamma, std::size_t num_trotter_slices){
-                return TransverseIsing<GraphType, eigen_impl>(classical_spins, init_interaction, static_cast<typename GraphType::value_type>(gamma), num_trotter_slices);
+        template<typename GraphType>
+            auto make_transverse_ising(const graph::Spins& classical_spins, const GraphType& init_interaction, double gamma, std::size_t num_trotter_slices){
+                return TransverseIsing<GraphType>(classical_spins, init_interaction, gamma, num_trotter_slices);
             }
     } // namespace system
 } // namespace openjij

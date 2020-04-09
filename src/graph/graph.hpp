@@ -34,7 +34,7 @@ namespace openjij {
          */
         class Graph{
             private:
-                std::size_t _num_spins; /**< total number of spins */
+                const std::size_t _num_spins; /**< total number of spins */
             public:
 
                 /**

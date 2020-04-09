@@ -37,80 +37,14 @@ namespace openjij {
         struct SwendsenWang;
 
         /**
-         * @brief swendsen wang updater for classical ising model (no Eigen implementation)
-         *
-         * @tparam GraphType type of graph (assume Dense, Sparse or derived class of them)
-         */
-        template<typename GraphType>
-        struct SwendsenWang<system::ClassicalIsing<GraphType, false>> {
-
-            using ClIsing = system::ClassicalIsing<GraphType, false>;
-            using FloatType = typename GraphType::value_type;
-
-            template<typename RandomNumberEngine>
-            inline static void update(ClIsing& system,
-                                 RandomNumberEngine& random_number_engine,
-                                 const utility::ClassicalUpdaterParameter& parameter) {
-                auto urd = std::uniform_real_distribution<>(0, 1.0);
-                const auto num_spin = system.spin.size();
-
-                // 1. update bonds
-                auto union_find_tree = utility::UnionFind(num_spin);
-                for (std::size_t node = 0; node < num_spin; ++node) {
-                    for (auto&& adj_node : system.interaction.adj_nodes(node)) {
-                        if (node >= adj_node) continue;
-                        //check if bond can be connected
-                        if (system.interaction.J(node, adj_node) * system.spin[node] * system.spin[adj_node] > 0) continue;
-                        const auto unite_rate = std::max(static_cast<FloatType>(0.0), static_cast<FloatType>(1.0 - std::exp( - 2.0 * parameter.beta * std::abs(system.interaction.J(node, adj_node)))));
-                        if (urd(random_number_engine) < unite_rate)
-                            union_find_tree.unite_sets(node, adj_node);
-                    }
-                }
-
-                // 2. make clusters
-                const auto cluster_map = [num_spin, &union_find_tree](){
-                    auto cluster_map = std::unordered_multimap<utility::UnionFind::Node, utility::UnionFind::Node>();
-                    for (std::size_t node = 0; node < num_spin; ++node) {
-                        cluster_map.insert({union_find_tree.find_set(node), node});
-                    }
-                    return cluster_map;
-                }();
-
-                // 3. update spin states in each cluster
-                for (auto&& c : union_find_tree.get_roots()) {
-                    const auto range = cluster_map.equal_range(c);
-
-                    // 3.1. calculate energy \sum_{i \in C} h_i
-                    double energy_magnetic = 0.0;
-                    for (auto itr = range.first, last = range.second; itr != last; ++itr) {
-                        const auto idx = itr->second;
-                        energy_magnetic += system.interaction.h(idx)*system.spin[idx];
-                    }
-
-                    // 3.2. decide spin state
-                    const FloatType probability = 1.0 / ( std::exp(-2 * parameter.beta * energy_magnetic) + 1.0 );
-                    if(urd(random_number_engine) < probability){
-                        // 3.3. update spin states
-                        for (auto itr = range.first, last = range.second; itr != last; ++itr) {
-                            const auto idx = itr->second;
-                            system.spin[idx] *= -1;
-                        }
-                    }
-                }
-
-                return;
-            }
-        };
-
-        /**
-         * @brief swendsen wang updater for classical ising model (with Eigen implementation on Sparse graph)
+         * @brief swendsen wang updater for classical ising model (on Sparse graph)
          *
          * @tparam FloatType
          */
         template<typename FloatType>
-        struct SwendsenWang<system::ClassicalIsing<graph::Sparse<FloatType>, true>> {
+        struct SwendsenWang<system::ClassicalIsing<graph::Sparse<FloatType>>> {
 
-            using ClIsing = system::ClassicalIsing<graph::Sparse<FloatType>, true>;
+            using ClIsing = system::ClassicalIsing<graph::Sparse<FloatType>>;
 
             template<typename RandomNumberEngine>
             inline static void update(ClIsing& system,

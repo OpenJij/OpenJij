@@ -59,12 +59,12 @@ inline void declare_Dense(py::module& m, const std::string& suffix){
         .def(py::init<std::size_t>(), "num_spins"_a)
         .def(py::init([](py::object obj){return std::unique_ptr<graph::Dense<FloatType>>(new graph::Dense<FloatType>(static_cast<json>(obj)));}), "obj"_a)
         .def(py::init<const graph::Dense<FloatType>&>(), "other"_a)
-        .def("adj_nodes", &graph::Dense<FloatType>::adj_nodes)
         .def("calc_energy", &graph::Dense<FloatType>::calc_energy, "spins"_a)
         .def("__setitem__", [](graph::Dense<FloatType>& self, const std::pair<std::size_t, std::size_t>& key, FloatType val){self.J(key.first, key.second) = val;}, "key"_a, "val"_a)
         .def("__getitem__", [](const graph::Dense<FloatType>& self, const std::pair<std::size_t, std::size_t>& key){return self.J(key.first, key.second);}, "key"_a)
         .def("__setitem__", [](graph::Dense<FloatType>& self, std::size_t key, FloatType val){self.h(key) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Dense<FloatType>& self, std::size_t key){return self.h(key);}, "key"_a);
+        .def("__getitem__", [](const graph::Dense<FloatType>& self, std::size_t key){return self.h(key);}, "key"_a)
+        .def("get_interactions", &graph::Dense<FloatType>::get_interactions);
 }
 
 //sparse
@@ -157,12 +157,12 @@ inline void declare_Chimera(py::module& m, const std::string& suffix){
 //system
 
 //ClassicalIsing
-template<typename GraphType, bool eigen_impl>
-inline void declare_ClassicalIsing(py::module &m, const std::string& gtype_str, const std::string& eigen_str){
+template<typename GraphType>
+inline void declare_ClassicalIsing(py::module &m, const std::string& gtype_str){
     //ClassicalIsing
-    using ClassicalIsing = system::ClassicalIsing<GraphType, eigen_impl>;
+    using ClassicalIsing = system::ClassicalIsing<GraphType>;
 
-    auto str = std::string("ClassicalIsing")+gtype_str+eigen_str;
+    auto str = std::string("ClassicalIsing")+gtype_str;
     py::class_<ClassicalIsing>(m, str.c_str())
         .def(py::init<const graph::Spins&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
         .def("reset_spins", [](ClassicalIsing& self, const graph::Spins& init_spin){self.reset_spins(init_spin);},"init_spin"_a)
@@ -171,21 +171,21 @@ inline void declare_ClassicalIsing(py::module &m, const std::string& gtype_str, 
         .def_readonly("num_spins", &ClassicalIsing::num_spins);
 
     //make_classical_ising
-    auto mkci_str = std::string("make_classical_ising")+eigen_str;
+    auto mkci_str = std::string("make_classical_ising");
     m.def(mkci_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction){
-            return system::make_classical_ising<eigen_impl>(init_spin, init_interaction);
+            return system::make_classical_ising(init_spin, init_interaction);
             }, "init_spin"_a, "init_interaction"_a);
 }
 
 
 //TransverseIsing
-template<typename GraphType, bool eigen_impl>
-inline void declare_TransverseIsing(py::module &m, const std::string& gtype_str, const std::string& eigen_str){
+template<typename GraphType>
+inline void declare_TransverseIsing(py::module &m, const std::string& gtype_str){
     //TransverseIsing
-    using TransverseIsing = system::TransverseIsing<GraphType, eigen_impl>;
+    using TransverseIsing = system::TransverseIsing<GraphType>;
     using FloatType = typename GraphType::value_type;
 
-    auto str = std::string("TransverseIsing")+gtype_str+eigen_str;
+    auto str = std::string("TransverseIsing")+gtype_str;
     py::class_<TransverseIsing>(m, str.c_str())
         .def(py::init<const system::TrotterSpins&, const GraphType&, FloatType>(), "init_spin"_a, "init_interaction"_a, "gamma"_a)
         .def(py::init<const graph::Spins&, const GraphType&, FloatType, size_t>(), "init_classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a)
@@ -197,25 +197,25 @@ inline void declare_TransverseIsing(py::module &m, const std::string& gtype_str,
         .def_readwrite("gamma", &TransverseIsing::gamma);
 
     //make_transverse_ising
-    auto mkci_str = std::string("make_transverse_ising")+eigen_str;
+    auto mkci_str = std::string("make_transverse_ising");
     m.def(mkci_str.c_str(), [](const system::TrotterSpins& init_trotter_spins, const GraphType& init_interaction, double gamma){
-            return system::make_transverse_ising<eigen_impl>(init_trotter_spins, init_interaction, gamma);
+            return system::make_transverse_ising(init_trotter_spins, init_interaction, gamma);
             }, "init_trotter_spins"_a, "init_interaction"_a, "gamma"_a);
 
     m.def(mkci_str.c_str(), [](const graph::Spins& classical_spins, const GraphType& init_interaction, double gamma, std::size_t num_trotter_slices){
-            return system::make_transverse_ising<eigen_impl>(classical_spins, init_interaction, gamma, num_trotter_slices);
+            return system::make_transverse_ising(classical_spins, init_interaction, gamma, num_trotter_slices);
             }, "classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a);
 }
 
 //Continuous Time Transverse Ising
-template<typename GraphType, bool eigen_impl>
-inline void declare_ContinuousTimeIsing(py::module &m, const std::string& gtype_str, const std::string& eigen_str){
+template<typename GraphType>
+inline void declare_ContinuousTimeIsing(py::module &m, const std::string& gtype_str){
     //TransverseIsing
-    using TransverseIsing = system::ContinuousTimeIsing<GraphType, eigen_impl>;
+    using TransverseIsing = system::ContinuousTimeIsing<GraphType>;
     using FloatType = typename GraphType::value_type;
     using SpinConfiguration = typename TransverseIsing::SpinConfiguration;
 
-    auto str = std::string("ContinuousTimeIsing")+gtype_str+eigen_str;
+    auto str = std::string("ContinuousTimeIsing")+gtype_str;
     py::class_<TransverseIsing>(m, str.c_str())
         .def(py::init<const SpinConfiguration&, const GraphType&, FloatType>(), "init_spin_config"_a, "init_interaction"_a, "gamma"_a)
         .def(py::init<const graph::Spins&, const GraphType&, FloatType>(), "init_spins"_a, "init_interaction"_a, "gamma"_a)
@@ -227,9 +227,9 @@ inline void declare_ContinuousTimeIsing(py::module &m, const std::string& gtype_
         .def_readonly("gamma", &TransverseIsing::gamma);
 
     //make_continuous_ising
-    auto mkci_str = std::string("make_continuous_time_ising")+eigen_str;
+    auto mkci_str = std::string("make_continuous_time_ising");
     m.def(mkci_str.c_str(), [](const graph::Spins& classical_spins, const GraphType& init_interaction, double gamma){
-            return system::make_continuous_time_ising<eigen_impl>(classical_spins, init_interaction, gamma);
+            return system::make_continuous_time_ising(classical_spins, init_interaction, gamma);
             }, "classical_spins"_a, "init_interaction"_a, "gamma"_a);
 }
 

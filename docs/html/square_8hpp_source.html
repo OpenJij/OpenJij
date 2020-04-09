@@ -136,9 +136,9 @@ $(function() {
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                    std::tie(r1,c1) = <a class="code" href="classopenjij_1_1graph_1_1_square.html#aa5fd733d248cb0e71c234926b8854015">to_rc</a>(idx1);</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;                    std::tie(r2,c2) = <a class="code" href="classopenjij_1_1graph_1_1_square.html#aa5fd733d248cb0e71c234926b8854015">to_rc</a>(idx2);</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;                    <span class="keywordflow">if</span>(</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;                            !((r1 == r2 &amp;&amp; std::abs(c1 - c2) == 1) ||</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;                              (c1 == c2 &amp;&amp; std::abs(r1 - r2) == 1) ||</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;                              (r1 == r2 &amp;&amp; c1 == c2))</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;                            !((r1 == r2 &amp;&amp; std::abs(c1 - c2) == 1) || <span class="comment">//horizontal connect</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;                              (c1 == c2 &amp;&amp; std::abs(r1 - r2) == 1) || <span class="comment">//vertical connect</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;                              (r1 == r2 &amp;&amp; c1 == c2)) <span class="comment">//local field</span></div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                            ){</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;                        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;invalid index pair &quot;</span>+std::to_string(idx1)+<span class="stringliteral">&quot; &quot;</span>+std::to_string(idx2)+<span class="stringliteral">&quot; inserted in Square&quot;</span>);</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;                    }</div>

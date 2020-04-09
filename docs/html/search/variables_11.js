@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['z_570',['z',['../classopenjij_1_1utility_1_1_xorshift.html#af9ae17b886b8a70559b34088259ecb1a',1,'openjij::utility::Xorshift']]]
+  ['y_574',['y',['../classopenjij_1_1utility_1_1_xorshift.html#ae02940d28365afd579a33a3309c8e796',1,'openjij::utility::Xorshift']]]
 ];

@@ -60,21 +60,16 @@ PYBIND11_MODULE(cxxjij, m){
      **********************************************************/
     py::module m_system = m.def_submodule("system", "cxxjij module for system");
 
-    //ClassicalIsing (Dense, NoEigenImpl)
-    ::declare_ClassicalIsing<graph::Dense<FloatType>, false>(m_system, "_Dense", "");
-    ::declare_ClassicalIsing<graph::Dense<FloatType>, true>(m_system, "_Dense", "_Eigen");
-    ::declare_ClassicalIsing<graph::Sparse<FloatType>, false>(m_system, "_Sparse", "");
-    ::declare_ClassicalIsing<graph::Sparse<FloatType>, true>(m_system, "_Sparse", "_Eigen");
+    //ClassicalIsing
+    ::declare_ClassicalIsing<graph::Dense<FloatType>>(m_system, "_Dense");
+    ::declare_ClassicalIsing<graph::Sparse<FloatType>>(m_system, "_Sparse");
 
     //TransverselIsing
-    ::declare_TransverseIsing<graph::Dense<FloatType>, false>(m_system, "_Dense", "");
-    ::declare_TransverseIsing<graph::Dense<FloatType>, true>(m_system, "_Dense", "_Eigen");
-    ::declare_TransverseIsing<graph::Sparse<FloatType>, false>(m_system, "_Sparse", "");
-    ::declare_TransverseIsing<graph::Sparse<FloatType>, true>(m_system, "_Sparse", "_Eigen");
+    ::declare_TransverseIsing<graph::Dense<FloatType>>(m_system, "_Dense");
+    ::declare_TransverseIsing<graph::Sparse<FloatType>>(m_system, "_Sparse");
 
     //Continuous Time Transeverse Ising
-    ::declare_ContinuousTimeIsing<graph::Dense<FloatType>, false>(m_system, "_Dense", "");
-    ::declare_ContinuousTimeIsing<graph::Sparse<FloatType>, false>(m_system, "_Sparse", "");
+    ::declare_ContinuousTimeIsing<graph::Sparse<FloatType>>(m_system, "_Sparse");
 
 #ifdef USE_CUDA
     //ChimeraTransverseGPU
@@ -89,25 +84,16 @@ PYBIND11_MODULE(cxxjij, m){
     py::module m_algorithm = m.def_submodule("algorithm", "cxxjij module for algorithm");
 
     //singlespinflip
-    ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Dense<FloatType>, false>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
-    ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Dense<FloatType>, true>,    RandomEngine>(m_algorithm, "SingleSpinFlip");
-    ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Sparse<FloatType>, false>,  RandomEngine>(m_algorithm, "SingleSpinFlip");
-    ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Sparse<FloatType>, true>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
-    ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Dense<FloatType>, false>,  RandomEngine>(m_algorithm, "SingleSpinFlip");
-    ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Dense<FloatType>, true>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
-    ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Sparse<FloatType>, false>, RandomEngine>(m_algorithm, "SingleSpinFlip");
-    ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Sparse<FloatType>, true>,  RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Dense<FloatType>>,    RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Sparse<FloatType>>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Dense<FloatType>>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Sparse<FloatType>>,  RandomEngine>(m_algorithm, "SingleSpinFlip");
 
     //swendsen-wang
-    ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Dense<FloatType>, false>,  RandomEngine>(m_algorithm, "SwendsenWang");
-    ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Sparse<FloatType>, false>, RandomEngine>(m_algorithm, "SwendsenWang");
-
-    //swendsen-wang (with Eigen implementation on a Sparse graph)
-    ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Sparse<FloatType>, true>, RandomEngine>(m_algorithm, "SwendsenWang");
+    ::declare_Algorithm_run<updater::SwendsenWang, system::ClassicalIsing<graph::Sparse<FloatType>>, RandomEngine>(m_algorithm, "SwendsenWang");
 
     //Continuous time swendsen-wang
-    ::declare_Algorithm_run<updater::ContinuousTimeSwendsenWang, system::ContinuousTimeIsing<graph::Dense<FloatType>, false>, RandomEngine>(m_algorithm, "ContinuousTimeSwendsenWang");
-    ::declare_Algorithm_run<updater::ContinuousTimeSwendsenWang, system::ContinuousTimeIsing<graph::Sparse<FloatType>, false>, RandomEngine>(m_algorithm, "ContinuousTimeSwendsenWang");
+    ::declare_Algorithm_run<updater::ContinuousTimeSwendsenWang, system::ContinuousTimeIsing<graph::Sparse<FloatType>>, RandomEngine>(m_algorithm, "ContinuousTimeSwendsenWang");
 
 #ifdef USE_CUDA
     //GPU
@@ -166,16 +152,11 @@ PYBIND11_MODULE(cxxjij, m){
      **********************************************************/
     py::module m_result = m.def_submodule("result", "cxxjij module for result");
 
-    ::declare_get_solution<system::ClassicalIsing<graph::Dense<FloatType>, false>>(m_result);
-    ::declare_get_solution<system::ClassicalIsing<graph::Dense<FloatType>, true>>(m_result);
-    ::declare_get_solution<system::ClassicalIsing<graph::Sparse<FloatType>, false>>(m_result);
-    ::declare_get_solution<system::ClassicalIsing<graph::Sparse<FloatType>, true>>(m_result);
-    ::declare_get_solution<system::TransverseIsing<graph::Dense<FloatType>, false>>(m_result);
-    ::declare_get_solution<system::TransverseIsing<graph::Dense<FloatType>, true>>(m_result);
-    ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>, false>>(m_result);
-    ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>, true>>(m_result);
-    ::declare_get_solution<system::ContinuousTimeIsing<graph::Dense<FloatType>, false>>(m_result);
-    ::declare_get_solution<system::ContinuousTimeIsing<graph::Sparse<FloatType>, false>>(m_result);
+    ::declare_get_solution<system::ClassicalIsing<graph::Dense<FloatType>>>(m_result);
+    ::declare_get_solution<system::ClassicalIsing<graph::Sparse<FloatType>>>(m_result);
+    ::declare_get_solution<system::TransverseIsing<graph::Dense<FloatType>>>(m_result);
+    ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>>>(m_result);
+    ::declare_get_solution<system::ContinuousTimeIsing<graph::Sparse<FloatType>>>(m_result);
 #ifdef USE_CUDA
     ::declare_get_solution<system::ChimeraTransverseGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>>(m_result);
     ::declare_get_solution<system::ChimeraClassicalGPU<GPUFloatType, BLOCK_ROW, BLOCK_COL>>(m_result);

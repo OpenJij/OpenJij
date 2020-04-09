@@ -29,20 +29,7 @@ namespace openjij {
     namespace result {
 
         /**
-         * @brief get solution of classical ising system (no Eigen implementation)
-         *
-         * @tparam GraphType graph type
-         * @param system classical ising system without Eigen implementation
-         *
-         * @return solution
-         */
-        template<typename GraphType>
-        const graph::Spins get_solution(const system::ClassicalIsing<GraphType, false>& system){
-            return system.spin;
-        }
-
-        /**
-         * @brief get solution of classical ising system (with Eigen implementation)
+         * @brief get solution of classical ising system
          *
          * @tparam GraphType graph type
          * @param system classical ising system with Eigen implementation
@@ -50,7 +37,7 @@ namespace openjij {
          * @return solution
          */
         template<typename GraphType>
-        const graph::Spins get_solution(const system::ClassicalIsing<GraphType, true>& system){
+        const graph::Spins get_solution(const system::ClassicalIsing<GraphType>& system){
             //convert from Eigen::Vector to std::vector
             graph::Spins ret_spins(system.num_spins);
             for(std::size_t i=0; i<system.num_spins; i++){
@@ -60,7 +47,7 @@ namespace openjij {
         }
 
         /**
-         * @brief get solution of transverse ising system (no Eigen implementation)
+         * @brief get solution of transverse ising system
          *
          * @tparam GraphType
          * @param system
@@ -68,30 +55,7 @@ namespace openjij {
          * @return solution
          */
         template<typename GraphType>
-        const graph::Spins get_solution(const system::TransverseIsing<GraphType, false>& system){
-            std::size_t mininum_trotter = 0;
-            double energy = 0.0;
-            double min_energy = std::numeric_limits<double>::max();
-            for (std::size_t t=0; t<system.trotter_spins.size(); t++){
-                energy = system.interaction.calc_energy(system.trotter_spins[t]);
-                if(energy < min_energy){
-                    mininum_trotter = t;
-                    min_energy = energy;
-                }
-            }
-           return system.trotter_spins[mininum_trotter];
-        }
-
-        /**
-         * @brief get solution of transverse ising system (with Eigen implementation)
-         *
-         * @tparam GraphType
-         * @param system
-         *
-         * @return solution
-         */
-        template<typename GraphType>
-        const graph::Spins get_solution(const system::TransverseIsing<GraphType, true>& system){
+        const graph::Spins get_solution(const system::TransverseIsing<GraphType>& system){
             std::size_t minimum_trotter = 0;
             //aliases
             auto& spins = system.trotter_spins;
@@ -126,7 +90,7 @@ namespace openjij {
          * @return solution
          */
         template<typename GraphType>
-        graph::Spins get_solution(const system::ContinuousTimeIsing<GraphType, false>& system) {
+        graph::Spins get_solution(const system::ContinuousTimeIsing<GraphType>& system) {
             auto spins = system.get_slice_at(0.0);
 
             if(system.get_auxiliary_spin(0.0) < 0) {
