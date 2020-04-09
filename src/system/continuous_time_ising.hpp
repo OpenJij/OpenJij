@@ -77,12 +77,17 @@ namespace openjij {
                 assert(init_spin_config.size() == init_interaction.get_num_spins());
 
                 // insert numbers to diagnonal elements in the interaction
+                std::cout << interaction.rows() << std::endl;
+                std::cout << interaction.cols() << std::endl;
                 for(typename SparseMatrixXx::InnerIterator it(interaction, init_interaction.get_num_spins()); it; ++it) {
                     std::size_t j = it.index();
                     FloatType v = it.value();
-                    if(j != init_interaction.get_num_spins())
+                    if(j != init_interaction.get_num_spins()){
+                        std::cout << "insert: j " << j << std::endl;
                         interaction.coeffRef(j,j) = v;
+                    }
                 }
+                std::cout << "insert last: " << init_interaction.get_num_spins() << std::endl;
 
                 interaction.coeffRef(init_interaction.get_num_spins(), init_interaction.get_num_spins()) = 0;
 
