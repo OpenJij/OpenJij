@@ -278,17 +278,17 @@ class CXXTest(unittest.TestCase):
         #classial ising (sparse)
         system = S.make_continuous_time_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse, 1.0)
 
-    #     #schedulelist
-    #     schedule_list = U.make_transverse_field_schedule_list(10, 100, 3000)
+        #schedulelist
+        schedule_list = U.make_transverse_field_schedule_list(10, 100, 3000)
 
-    #     #anneal
-    #     A.Algorithm_ContinuousTimeSwendsenWang_run(system, self.seed_for_mc, schedule_list)
+        #anneal
+        A.Algorithm_ContinuousTimeSwendsenWang_run(system, self.seed_for_mc, schedule_list)
 
-    #     #result spin
-    #     result_spin = R.get_solution(system)
+        #result spin
+        result_spin = R.get_solution(system)
 
-    #     #compare
-    #     self.assertTrue(self.true_groundstate == result_spin)
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
 
 # GPU Test is currently disabled.
 

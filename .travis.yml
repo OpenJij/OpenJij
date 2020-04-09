@@ -24,12 +24,12 @@ before_install:
   - mv cmake-3.13.3-Linux-x86_64 "${CMAKE_DIR}"
 
 install:
-  - python setup.py install
+  - python setup.py build --debug install
 
 script:
   - pip install numpy 
   - pip install scipy 
-  - python tests/test.py
+  - catchsegv python tests/test.py
   - python tests/test_model.py
   - python tests/test_sampler.py
   - python tests/test_utils.py
