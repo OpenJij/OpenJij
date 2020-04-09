@@ -76,33 +76,22 @@ namespace openjij {
 
                 assert(init_spin_config.size() == init_interaction.get_num_spins());
 
-                std::cout << "generated sparse matrix" << std::endl;
-                std::cout << this->interaction << std::endl;
-
-                std::cout << "init_interaction" << std::endl;
-                std::cout << "size: " << init_interaction.get_num_spins() << std::endl;
-                for(size_t i = 0; i<init_interaction.get_num_spins(); i++){
-                    std::cout << "adj: " << i << std::endl;
-                    for(auto&& elem : init_interaction.adj_nodes(i)){
-                        std::cout << elem << " " << init_interaction.J(i,elem) << std::endl;
-                    }
-                    std::cout << std::endl;
-                }
-
                 // insert numbers to diagnonal elements in the interaction
-                std::cout << interaction.rows() << std::endl;
-                std::cout << interaction.cols() << std::endl;
+                SparseMatrixXx diag(init_interaction.get_num_spins()+1, init_interaction.get_num_spins()+1);
+
                 for(typename SparseMatrixXx::InnerIterator it(interaction, init_interaction.get_num_spins()); it; ++it) {
                     std::size_t j = it.index();
                     FloatType v = it.value();
                     if(j != init_interaction.get_num_spins()){
-                        std::cout << "insert: j " << j << std::endl;
-                        interaction.coeffRef(j,j) = v;
+                        diag.insert(j,j) = v;
+                    }
+                    else{
+                        diag.insert(j,j) = -1;
                     }
                 }
-                std::cout << "insert last: " << init_interaction.get_num_spins() << std::endl;
 
-                interaction.coeffRef(init_interaction.get_num_spins(), init_interaction.get_num_spins()) = 0;
+
+                interaction += diag;
 
                 spin_config.push_back(std::vector<CutPoint> { CutPoint(0.0, 1) });
                 // initialize auxiliary spin with 1 along entire timeline
