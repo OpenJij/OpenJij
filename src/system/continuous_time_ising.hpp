@@ -76,6 +76,19 @@ namespace openjij {
 
                 assert(init_spin_config.size() == init_interaction.get_num_spins());
 
+                std::cout << "generated sparse matrix" << std::endl;
+                std::cout << this->interaction << std::endl;
+
+                std::cout << "init_interaction" << std::endl;
+                std::cout << "size: " << init_interaction.get_num_spins() << std::endl;
+                for(size_t i = 0; i<init_interaction.get_num_spins(); i++){
+                    std::cout << "adj: " << i << std::endl;
+                    for(auto&& elem : init_interaction.adj_nodes(i)){
+                        std::cout << elem << " " << init_interaction.J(i,elem) << std::endl;
+                    }
+                    std::cout << std::endl;
+                }
+
                 // insert numbers to diagnonal elements in the interaction
                 std::cout << interaction.rows() << std::endl;
                 std::cout << interaction.cols() << std::endl;
