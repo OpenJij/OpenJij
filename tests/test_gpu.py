@@ -88,12 +88,12 @@
 #        self._test_response_num(res, num_reads)
 #
 #    def test_sa(self):
-#        sampler = oj.GPUSASampler(unit_num_L=2)
+#        sampler = oj.GPUChimeraSASampler(unit_num_L=2)
 #        self.samplers(sampler)
 #        self._test_num_reads(oj.SASampler)
 #
 #    def test_sqa(self):
-#        sampler = oj.GPUSQASampler(unit_num_L=2)
+#        sampler = oj.GPUChimeraSQASampler(unit_num_L=2)
 #        self.samplers(sampler)
 #        self._test_num_reads(oj.SQASampler)
 #
