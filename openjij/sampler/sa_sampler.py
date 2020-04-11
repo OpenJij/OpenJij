@@ -145,7 +145,10 @@ class SASampler(BaseSampler):
                      initial_state=None, updater='single spin flip',
                      reinitialize_state=True, seed=None,
                      **kwargs):
-        ising_graph = model.get_cxxjij_ising_graph()
+        _updater_name = updater.lower().replace('_', '').replace(' ', '')
+        # swendsen wang algorithm runs only on sparse ising graphs.
+        sparse = True if _updater_name == 'swendsenwang' else False
+        ising_graph = model.get_cxxjij_ising_graph(sparse)
 
         self._setting_overwrite(
             beta_min=beta_min, beta_max=beta_max,
