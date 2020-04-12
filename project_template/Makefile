@@ -4,7 +4,7 @@ INCLUDES=-I../src
 #Eigen directory
 EIGEN_DIR=-I../build/_deps/eigen-src
 #nlohmann_json directory
-JSON_DIR=-I../build/_deps/nlohmann_json-src/single_include
+JSON_DIR=-I../external/nlohmann_json
 
 # add GPU static library path here if needed
 #LIBPATH=-L../build/src/system -lcxxjij_chimera_gpu_kernel_static

@@ -21,6 +21,7 @@
 #include <cstddef>
 #include <type_traits>
 #include <algorithm>
+#include <exception>
 
 #include <utility/disable_eigen_warning.hpp>
 #include <Eigen/Dense>
@@ -111,6 +112,10 @@ namespace openjij {
                      * @return corresponding energy
                      */
                     FloatType calc_energy(const Spins& spins) const{
+                        if(spins.size() != this->get_num_spins()){
+                            std::out_of_range("Out of range in calc_energy in Dense graph.");
+                        }
+
                         using Vec = Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>;
                         Vec s(get_num_spins()+1);
                         for(size_t i=0; i<spins.size(); i++){
