@@ -194,9 +194,10 @@ namespace openjij {
                      * @return corresponding energy
                      */
                     FloatType calc_energy(const Spins& spins) const{
-                        if(!(spins.size() == get_num_spins())){
-                            throw std::runtime_error("invalid length of spins in Sparse");
+                        if(!(spins.size() == this->get_num_spins())){
+                            std::out_of_range("Out of range in calc_energy in Sparse graph.");
                         }
+
                         FloatType ret = 0;
                         for(std::size_t ind=0; ind<this->get_num_spins(); ind++){
                             for(auto& adj_ind : _list_adj_nodes[ind]){

@@ -46,7 +46,7 @@ int main(void){
     auto rand_engine = std::mt19937(0x1234);
 
     //create classical Ising system
-    auto system = system::make_classical_ising<system::USE_EIGEN>(dense.gen_spin(rand_engine), dense);
+    auto system = system::make_classical_ising(dense.gen_spin(rand_engine), dense);
 
     //generate schedule list
     //from beta=0.1 to beta=100, 10 samples, 10 Monte Carlo step for each tempearature
