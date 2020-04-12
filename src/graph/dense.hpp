@@ -126,6 +126,15 @@ namespace openjij {
                         return (s.transpose()*(_J*s))(0,0)-1;
                     }
 
+                    FloatType calc_energy(const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins) const{
+                        graph::Spins temp_spins(get_num_spins());
+                        for(size_t i=0; i<temp_spins.size(); i++){
+                            temp_spins[i] = spins(i);
+                        }
+                        return calc_energy(temp_spins);
+
+                    }
+
                     /**
                      * @brief access J_{ij}
                      *

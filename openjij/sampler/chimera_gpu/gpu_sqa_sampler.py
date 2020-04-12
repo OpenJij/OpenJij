@@ -20,7 +20,7 @@ from openjij.model import BinaryQuadraticModel, ChimeraModel
 import numpy as np
 
 
-class GPUSQASampler(SQASampler, BaseGPUChimeraSampler):
+class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
     """Sampler with Simulated Quantum Annealing (SQA) on GPU.
 
     Inherits from :class:`openjij.sampler.sampler.BaseSampler`.

@@ -22,7 +22,7 @@ import numpy as np
 import dimod
 
 
-class GPUSASampler(SASampler, BaseGPUChimeraSampler):
+class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
     """Sampler with Simulated Annealing (SA) on GPU.
 
     Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
