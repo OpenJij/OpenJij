@@ -44,7 +44,9 @@ class CSQASampler(SQASampler):
             linear=h, quadratic=J, var_type='SPIN'
         )
 
-        ising_graph = bqm.get_cxxjij_ising_graph()
+        #Continuous time ising system only supports sparse ising graph
+
+        ising_graph = bqm.get_cxxjij_ising_graph(sparse=True)
 
         self._setting_overwrite(
             beta=beta, gamma=gamma,
@@ -56,21 +58,14 @@ class CSQASampler(SQASampler):
         # make init state generator --------------------------------
         if initial_state is None:
             def init_generator():
-                n = len(bqm.indices)
-                init_num_cut = 10
-                c_spins = ising_graph.gen_spin()
-                _cut = np.random.uniform(0, 1, (n, init_num_cut))
-                spin_config = [[
-                    (t, s**(_ti+1))
-                    for _ti, t in enumerate(np.sort(_cut[i]))]
-                    for i, s in enumerate(c_spins)]
-                return spin_config
+                spin_config = np.random.choice([1,-1], len(bqm.indices))
+                return list(spin_config)
         else:
             def init_generator(): return initial_state
         # -------------------------------- make init state generator
 
         # choose updater -------------------------------------------
-        sqa_system = cxxjij.system.ContinuousTimeIsing_Dense(
+        sqa_system = cxxjij.system.make_continuous_time_ising(
             init_generator(), ising_graph, self.gamma
         )
         _updater_name = updater.lower().replace('_', '').replace(' ', '')

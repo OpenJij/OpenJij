@@ -98,11 +98,11 @@ class TestSamplers(unittest.TestCase):
             )
         self._test_num_reads(oj.SQASampler)
 
-    #TODO: bugcheck
-    #def test_csqa(self):
-    #    init_state = [[(0, 1)] for _ in range(len(self.ground_state))]
-    #    sampler = oj.CSQASampler(gamma=0.1)
-    #    self.samplers(sampler, init_state)
+    def test_csqa(self):
+        sampler = oj.CSQASampler(gamma=0.5)
+        self.samplers(sampler,
+                init_state=[1 for _ in range(len(self.ground_state))],
+                init_q_state=[1 for _ in range(len(self.ground_state))])
 
 
 if __name__ == '__main__':
