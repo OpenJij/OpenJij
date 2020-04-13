@@ -146,7 +146,7 @@ class ChimeraModel(BinaryQuadraticModel):
         r_i = (i - 8*c_i - z_i) / (8 * unit_num_L)
         return int(r_i), int(c_i), int(z_i)
 
-    def get_cxxjij_ising_graph(self,sparse):
+    def get_cxxjij_ising_graph(self):
         chimera_L = self.unit_num_L
 
         if not self.validate_chimera():
