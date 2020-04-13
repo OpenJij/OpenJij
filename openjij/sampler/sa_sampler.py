@@ -147,8 +147,11 @@ class SASampler(BaseSampler):
                      **kwargs):
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         # swendsen wang algorithm runs only on sparse ising graphs.
-        sparse = True if _updater_name == 'swendsenwang' else False
-        ising_graph = model.get_cxxjij_ising_graph(sparse)
+        if _updater_name == 'swendsenwang':
+            ising_graph = model.get_cxxjij_ising_graph(sparse=True)
+        else:
+            ising_graph = model.get_cxxjij_ising_graph(sparse=False)
+
 
         self._setting_overwrite(
             beta_min=beta_min, beta_max=beta_max,
