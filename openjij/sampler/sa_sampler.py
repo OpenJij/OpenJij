@@ -150,7 +150,7 @@ class SASampler(BaseSampler):
         if _updater_name == 'swendsenwang':
             ising_graph = model.get_cxxjij_ising_graph(sparse=True)
         else:
-            ising_graph = model.get_cxxjij_ising_graph(sparse=False)
+            ising_graph = model.get_cxxjij_ising_graph()
 
 
         self._setting_overwrite(
