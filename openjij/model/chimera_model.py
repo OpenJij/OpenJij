@@ -151,7 +151,7 @@ class ChimeraModel(BinaryQuadraticModel):
 
         if not self.validate_chimera():
             raise ValueError("Problem graph incompatible with chimera graph.")
-        _h, _J = self.ising_dictionary()
+        _h, _J, _offset = self.to_ising()
 
         self.energy_bias = self.energy_bias
 
