@@ -12,18 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import cimod
 import dimod
 
-SPIN = dimod.SPIN
-BINARY = dimod.BINARY
-
-VariableType = dimod.Vartype
+SPIN = cimod.SPIN
+BINARY = cimod.BINARY
 
 def cast_var_type(var_type):
-    if isinstance(var_type, dimod.Vartype):
-        return var_type
-    elif isinstance(var_type, str):
-        if var_type.upper() == 'SPIN':
-            return SPIN
-        elif var_type.upper() == 'BINARY':
-            return BINARY
+    var_type = dimod.as_vartype(var_type)
+
+    if var_type == dimod.SPIN:
+        return cimod.SPIN
+
+    elif var_type == dimod.BINARY:
+        return cimod.BINARY
+
