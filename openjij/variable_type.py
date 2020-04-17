@@ -18,6 +18,8 @@ import dimod
 SPIN = cimod.SPIN
 BINARY = cimod.BINARY
 
+VariableType = cimod.Vartype
+
 def cast_var_type(var_type):
     var_type = dimod.as_vartype(var_type)
 

@@ -20,7 +20,7 @@ import warnings
 
 
 class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
-    """Represents Binary quadratic model. Note that the indices are converted to integers internally. The dictionaries between indices and integers are in self.ind_to_num (indices -> integers) and self.num_to_ind (integers -> indices).
+    """Represents Binary quadratic model. Note that the indices are converted to the integers internally. The dictionaries between indices and integers are self.ind_to_num (indices -> integers) and self.num_to_ind (integers -> indices). Indices are listed in self.indices
     Attributes:
         var_type (openjij.VariableType): variable type SPIN or BINARY
         linear (dict): represents linear term
@@ -38,19 +38,19 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
         # set index array
         index_set = set(linear.keys())
 
-        for v1, v2 in self.quadratic.keys():
+        for v1, v2 in quadratic.keys():
             index_set.add(v1)
             index_set.add(v2)
 
         self.indices = list(index_set)
 
         # generate conversion map index <-> integer
-        self.ind_to_num = {k:val for k,val in enumerate(self.indices)}
-        self.num_to_ind = {val:k for k,val in enumerate(self.indices)}
+        self.num_to_ind = {k:val for k,val in enumerate(self.indices)}
+        self.ind_to_num = {val:k for k,val in enumerate(self.indices)}
 
         # convert indices to integers and call super constructor
         linear = self._conv_linear(linear, self.ind_to_num)
-        quadratic = self._conv_quadratic(linear, self.ind_to_num)
+        quadratic = self._conv_quadratic(quadratic, self.ind_to_num)
         super().__init__(linear, quadratic, offset, var_type)
 
 
@@ -70,76 +70,94 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
 
         return GraphClass(self.to_serializable())
 
-    def contains(self, v):
-        return super().contains(self._ind_to_num[v])
-
-    def get_linear(convert=True):
+    def get_linear(self, original_ind=True):
         """
         get linear
         Args:
-            convert (bool): if true returns linear with index converted to original one
+            original_ind (bool): if true returns linear with index converted to original one
         Returns:
             linear (dict)
         """
         linear = super().get_linear()
 
-        if convert:
-            return self._conv_linear(linear, self._num_to_ind)
-        else:
-            return linear
+        if original_ind:
+            linear = self._conv_linear(linear, self.num_to_ind)
 
-    def get_quadratic(self, convert=True):
+        return linear
+
+    def get_quadratic(self, original_ind=True):
         """
         get quadratic
         Args:
-            convert (bool): if true returns linear with index converted to original one
+            original_ind (bool): if true returns linear with index converted to original one
         Returns:
             quadratic (dict)
         """
         quadratic = super().get_quadratic()
 
-        if convert:
-            return self._conv_quadratic(quadratic, self._num_to_ind)
-        else:
-            return quadratic
+        if original_ind:
+            quadratic = self._conv_quadratic(quadratic, self.num_to_ind)
 
-    def get_adjacency(self, convert=True):
+        return quadratic
+
+    def get_adjacency(self, original_ind=True):
         """
         get adjacency
         Args:
-            convert (bool): if true returns linear with index converted to original one
+            original_ind (bool): if true returns linear with index converted to original one
         Returns:
             adjacency (dict)
         """
         adjacency = super().get_adjacency()
 
-        if convert:
-            return self._conv_adjacency(adjacency, self._num_to_ind)
-        else:
-            return adjacency
+        if original_ind:
+            adjacency = self._conv_adjacency(adjacency, self.num_to_ind)
 
-    def energy(self, sample):
-        sample = {self._ind_to_num[k]:v for k,v in sample.items()}
-        return super().energy(sample)
+        return adjacency
+    
+    def to_qubo(self, original_ind=True):
+        """
+        Convert a binary quadratic model to QUBO format.
+        Args:
+            original_ind (bool): if true returns linear with index converted to original one
+        Returns:
+            Q (dict), offset
+        """
+        Q, offset = super().to_qubo()
 
-    def energies(self, samples_like):
-        samples_like = [{self._ind_to_num[k]:v for k,v in sample.items()} for elem in samples_like]
-        return super().energies(samples_like)
+        if original_ind:
+            Q = self._conv_quadratic(Q, self.num_to_ind)
 
-    def to_qubo(self):
-        Q,offset = super().to_qubo()
-        Q = self._conv_quadratic(Q, self._num_to_ind)
-        return Q,offset
+        return Q, offset
 
-    def to_ising(self):
-        h,J,offset = super().to_ising()
-        h = self._conv_linear(h, self._num_to_ind)
-        J = self._conv_quadratic(J, self._num_to_ind)
-        return Q,offset
+    def to_ising(self, original_ind=True):
+        """
+        Convert a binary quadratic model to Ising format.
+        Args:
+            original_ind (bool): if true returns linear with index converted to original one
+        Returns:
+            h (dict), J (dict), offset
+        """
 
+        h, J, offset = super().to_ising()
 
+        if original_ind:
+            h = self._conv_linear(h, self.num_to_ind)
+            J = self._conv_quadratic(J, self.num_to_ind)
 
+        return h, J, offset
 
+    @staticmethod
+    def from_qubo(linear, quadratic, offset=0.0):
+        linear = self._conv_linear(linear, self.ind_to_num)
+        quadratic = self._conv_quadratic(quadratic, self.ind_to_num)
+        return cimod.BinaryQuadraticModel.from_qubo(linear, quadratic, offset)
+
+    @staticmethod
+    def from_ising(linear, quadratic, offset=0.0):
+        linear = self._conv_linear(linear, self.ind_to_num)
+        quadratic = self._conv_quadratic(quadratic, self.ind_to_num)
+        return cimod.BinaryQuadraticModel.from_ising(linear, quadratic, offset)
 
 
     def _conv_linear(self, dic, conv_dict):
