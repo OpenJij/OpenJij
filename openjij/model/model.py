@@ -49,8 +49,8 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
         self.ind_to_num = {val:k for k,val in enumerate(self.indices)}
 
         # convert indices to integers and call super constructor
-        linear = self._conv_linear(linear, self.ind_to_num)
-        quadratic = self._conv_quadratic(quadratic, self.ind_to_num)
+        linear      = self._conv_linear(linear, self.ind_to_num)
+        quadratic   = self._conv_quadratic(quadratic, self.ind_to_num)
         super().__init__(linear, quadratic, offset, var_type)
 
 
@@ -149,6 +149,13 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
 
     @staticmethod
     def from_qubo(linear, quadratic, offset=0.0):
+        """
+        Create a binary quadratic model from a QUBO model.
+        Args:
+            original_ind (bool): if true returns linear with index converted to original one
+        Returns:
+            h (dict), J (dict), offset
+        """
         linear = self._conv_linear(linear, self.ind_to_num)
         quadratic = self._conv_quadratic(quadratic, self.ind_to_num)
         return cimod.BinaryQuadraticModel.from_qubo(linear, quadratic, offset)
