@@ -20,7 +20,10 @@ import warnings
 
 
 class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
-    """Represents Binary quadratic model. Note that the indices are converted to the integers internally. The dictionaries between indices and integers are self.ind_to_num (indices -> integers) and self.num_to_ind (integers -> indices). Indices are listed in self.indices
+    """Represents Binary quadratic model. 
+       Note that the indices are converted to the integers internally. 
+       The dictionaries between indices and integers are self.ind_to_num (indices -> integers) and self.num_to_ind (integers -> indices).
+       Indices are listed in self.indices.
     Attributes:
         var_type (openjij.VariableType): variable type SPIN or BINARY
         linear (dict): represents linear term
@@ -63,10 +66,10 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
             openjij.graph.Dense openjij.graph.Sparse
         """
 
-        if not sparse:
-            GraphClass = cxxjij.graph.Dense
-        else:
+        if sparse:
             GraphClass = cxxjij.graph.Sparse
+        else:
+            GraphClass = cxxjij.graph.Dense
 
         return GraphClass(self.to_serializable())
 

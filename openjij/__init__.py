@@ -1,7 +1,7 @@
 
 from .__version import __version__
 
-from .variable_type import SPIN, BINARY, cast_var_type, VariableType
+from .variable_type import SPIN, BINARY, cast_var_type
 
 
 from .sampler import Response

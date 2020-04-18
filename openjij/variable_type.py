@@ -18,14 +18,12 @@ import dimod
 SPIN = cimod.SPIN
 BINARY = cimod.BINARY
 
-VariableType = cimod.Vartype
-
 def cast_var_type(var_type):
     var_type = dimod.as_vartype(var_type)
 
-    if var_type == dimod.SPIN:
+    if var_type == dimod.SPIN or var_type == cimod.SPIN:
         return cimod.SPIN
 
-    elif var_type == dimod.BINARY:
+    elif var_type == dimod.BINARY or var_type == cimod.BINARY:
         return cimod.BINARY
 
