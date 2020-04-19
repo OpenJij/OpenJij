@@ -181,10 +181,18 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
                     for j, j_index in enumerate(self.indices[i+1:]):
                         j += i+1
                         jval = 0.0
+
+                        # if the module is derived from dimod.BinaryQuadraticModel, the below should be 
+                        # if (i_index, j_index) in quadratic:
+                        #     jval = quadratic[(i_index, j_index)]
+                        # if (j_index, i_index) in quadratic:
+                        #     jval = quadratic[(j_index, i_index)]
+
                         if (i_index, j_index) in quadratic:
-                            jval = quadratic[(i_index, j_index)]
+                            jval += quadratic[(i_index, j_index)]
                         if (j_index, i_index) in quadratic:
-                            jval = quadratic[(j_index, i_index)]
+                            jval += quadratic[(j_index, i_index)]
+
                         interactions[i, j] = jval
                         interactions[j, i] = jval
 
