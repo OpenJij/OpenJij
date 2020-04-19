@@ -42,6 +42,7 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
         index_set = set(linear.keys())
 
         # set recalculate flag True
+        # Be sure to enable this flag when variables are changed.
         self._re_calculate = True
         # interaction_matrix
         self._interaction_matrix = None
@@ -59,7 +60,7 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
         # convert indices to integers and call super constructor
         linear      = self._conv_linear(linear, self.ind_to_num)
         quadratic   = self._conv_quadratic(quadratic, self.ind_to_num)
-        super().__init__(linear, quadratic, offset, var_type)
+        super().__init__(linear, quadratic, offset, self.var_type)
 
 
     def get_cxxjij_ising_graph(self, sparse=False):
@@ -164,44 +165,83 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
             numpy.ndarray: interactioin matrix H_{ij} or Q_{ij}, energy_bias (float)
         """
 
-        if (self._re_calculate is False) and (self.var_type == vartype):
-            return self._interaction_matrix
+        if self._re_calculate is True:
 
-        else:
-            if self._re_calculate is True:
-                # calculate interaction matrix
-                system_size = len(self.indices)
-                interactions = np.zeros((system_size, system_size))
+            # calculate interaction matrix
+            system_size = len(self.indices)
+            interactions = np.zeros((system_size, system_size))
 
-                linear = self.get_linear(False)
-                quadratic = self.get_quadratic(False)
+            # variables with converted indices (integers)
+            linear = self.get_linear(False)
+            quadratic = self.get_quadratic(False)
 
-                for i, i_index in enumerate(self.indices):
-                    interactions[i, i] = linear[i_index] if i_index in linear else 0.0
-                    for j, j_index in enumerate(self.indices[i+1:]):
-                        j += i+1
-                        jval = 0.0
+            for i, i_index in enumerate(self.indices):
+                interactions[i, i] = linear[i] if i in linear else 0.0
+                for j, j_index in enumerate(self.indices[i+1:]):
+                    j += i+1
+                    jval = 0.0
 
-                        # if the module is derived from dimod.BinaryQuadraticModel, the below should be 
-                        # if (i_index, j_index) in quadratic:
-                        #     jval = quadratic[(i_index, j_index)]
-                        # if (j_index, i_index) in quadratic:
-                        #     jval = quadratic[(j_index, i_index)]
+                    # if the module is derived from dimod.BinaryQuadraticModel, the below should be 
+                    # if (i, j) in quadratic:
+                    #     jval = quadratic[(i, j)]
+                    # if (j, i) in quadratic:
+                    #     jval = quadratic[(j, i)]
 
-                        if (i_index, j_index) in quadratic:
-                            jval += quadratic[(i_index, j_index)]
-                        if (j_index, i_index) in quadratic:
-                            jval += quadratic[(j_index, i_index)]
+                    if (i, j) in quadratic:
+                        jval += quadratic[(i, j)]
+                    if (j, i) in quadratic:
+                        jval += quadratic[(j, i)]
 
-                        interactions[i, j] = jval
-                        interactions[j, i] = jval
+                    interactions[i, j] = jval
+                    interactions[j, i] = jval
 
-                self._interaction_matrix = interactions
-                self._re_calculate = False
+            self._interaction_matrix = interactions
+            self._re_calculate = False
 
         return self._interaction_matrix
+
+    def energy(self, sample, sparse=False):
+        """Determine the energy of the specified sample of a binary quadratic model.
+        Args:
+            sample (dict): single sample
+            sparse (bool): if true calculate energy by using adjacency matrix
+        Returns:
+            energy (float)
+        """
+
+        if isinstance(sample, dict):
+            sample = self._conv_linear(sample, self.ind_to_num)
+
+        if sparse:
+                return super().energy(sample)
+
+        else:
+            if isinstance(sample, dict):
+                state = [0] * len(sample)
+                for k,v in sample.items():
+                    state[k] = v
+                sample = state
+
+            sample = np.array(sample)
+
+            int_mat = self.interaction_matrix()
+
+            # calculate 
+            if self.get_vartype() == openjij.BINARY:
+                return np.dot(sample, np.dot(np.triu(int_mat), sample)) + self.get_offset()
+            elif self.get_vartype() == openjij.SPIN:
+                linear_term = np.diag(int_mat)
+                energy = (np.dot(sample, np.dot(int_mat, sample)) -
+                      np.sum(linear_term))/2
+                energy += np.dot(linear_term, sample)
+                energy += self.get_offset()
+            return energy 
+
+
+
+
     
-    # deprecated methods
+    # deprecated methods (TODO: implement these)
     def empty(*args, **kwargs):
         pass
     def add_variable(*args, **kwargs):
@@ -238,6 +278,20 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
         pass
     def contract_variables(*args, **kwargs):
         pass
+
+    def change_vartype(self, vartype):
+        """
+        Create a binary quadratic model with the specified vartype
+        Args:
+            var_type (cimod.Vartype): SPIN or BINARY
+        Returns:
+            A new instance of the BinaryQuadraticModel class.
+        """
+        vartype = openjij.cast_var_type(vartype)
+        bqm = super().change_vartype(vartype)
+        linear = self._conv_linear(bqm.get_linear(), self.num_to_ind)
+        quadratic = self._conv_quadratic(bqm.get_quadratic(), self.num_to_ind)
+        return openjij.BinaryQuadraticModel(linear, quadratic, bqm.get_offset(), bqm.get_vartype())
 
 
     @staticmethod
