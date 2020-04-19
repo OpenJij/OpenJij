@@ -25,11 +25,11 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
        The dictionaries between indices and integers are self.ind_to_num (indices -> integers) and self.num_to_ind (integers -> indices).
        Indices are listed in self.indices.
     Attributes:
-        var_type (openjij.VariableType): variable type SPIN or BINARY
+        var_type (cimod.VariableType): variable type SPIN or BINARY
         linear (dict): represents linear term
         quad (dict): represents quadratic term
         indices (list): labels of each variables sorted by results variables
-        energy_bias (float): represents constant energy term when convert to SPIN from BINARY
+        offset (float): represents constant energy term when convert to SPIN from BINARY
         size (int): number of variables
     """
 
@@ -40,6 +40,9 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
 
         # set index array
         index_set = set(linear.keys())
+
+        # set recalculate flag True
+        self._recalculate = True
 
         for v1, v2 in quadratic.keys():
             index_set.add(v1)
@@ -149,6 +152,45 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
             J = self._conv_quadratic(J, self.num_to_ind)
 
         return h, J, offset
+    
+    # deprecated methods
+    def empty(*args, **kwargs):
+        pass
+    def add_variable(*args, **kwargs):
+        pass
+    def add_variables_from(*args, **kwargs):
+        pass
+    def add_interaction(*args, **kwargs):
+        pass
+    def add_interactions_from(*args, **kwargs):
+        pass
+    def remove_variable(*args, **kwargs):
+        pass
+    def remove_variables_from(*args, **kwargs):
+        pass
+    def remove_interaction(*args, **kwargs):
+        pass
+    def remove_interactions_from(*args, **kwargs):
+        pass
+    def add_offset(*args, **kwargs):
+        pass
+    def remove_offset(*args, **kwargs):
+        pass
+    def scale(*args, **kwargs):
+        pass
+    def normalize(*args, **kwargs):
+        pass
+    def fix_variable(*args, **kwargs):
+        pass
+    def fix_variables(*args, **kwargs):
+        pass
+    def flip_variable(*args, **kwargs):
+        pass
+    def update(*args, **kwargs):
+        pass
+    def contract_variables(*args, **kwargs):
+        pass
+
 
     @staticmethod
     def from_qubo(linear, quadratic, offset=0.0):

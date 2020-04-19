@@ -19,11 +19,15 @@ SPIN = cimod.SPIN
 BINARY = cimod.BINARY
 
 def cast_var_type(var_type):
-    var_type = dimod.as_vartype(var_type)
 
-    if var_type == dimod.SPIN or var_type == cimod.SPIN:
+    if not isinstance(var_type, cimod.Vartype):
+        var_type = dimod.as_vartype(var_type)
+    else:
+        return var_type
+
+    if var_type == dimod.SPIN:
         return cimod.SPIN
 
-    elif var_type == dimod.BINARY or var_type == cimod.BINARY:
+    elif var_type == dimod.BINARY:
         return cimod.BINARY
 
