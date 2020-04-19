@@ -36,13 +36,15 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
     def __init__(self, linear, quadratic, offset=0.0,
                  var_type=openjij.SPIN, **kwargs):
 
-        var_type = openjij.cast_var_type(var_type)
+        self.var_type = openjij.cast_var_type(var_type)
 
         # set index array
         index_set = set(linear.keys())
 
         # set recalculate flag True
-        self._recalculate = True
+        self._re_calculate = True
+        # interaction_matrix
+        self._interaction_matrix = None
 
         for v1, v2 in quadratic.keys():
             index_set.add(v1)
@@ -152,6 +154,44 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
             J = self._conv_quadratic(J, self.num_to_ind)
 
         return h, J, offset
+
+    def interaction_matrix(self):
+        """make Dense-type interaction matrix
+        The Ising model: E = ΣJ_ij σiσj + Σhiσi
+            Interaction matrix -> H_ij = J_ij + J_ji, H_ii = hi
+        QUBO: E = Σ1/2Q_ij q_iq_j + ΣQ_ii q_i
+        Returns:
+            numpy.ndarray: interactioin matrix H_{ij} or Q_{ij}, energy_bias (float)
+        """
+
+        if (self._re_calculate is False) and (self.var_type == vartype):
+            return self._interaction_matrix
+
+        else:
+            if self._re_calculate is True:
+                # calculate interaction matrix
+                system_size = len(self.indices)
+                interactions = np.zeros((system_size, system_size))
+
+                linear = self.get_linear(False)
+                quadratic = self.get_quadratic(False)
+
+                for i, i_index in enumerate(self.indices):
+                    interactions[i, i] = linear[i_index] if i_index in linear else 0.0
+                    for j, j_index in enumerate(self.indices[i+1:]):
+                        j += i+1
+                        jval = 0.0
+                        if (i_index, j_index) in quadratic:
+                            jval = quadratic[(i_index, j_index)]
+                        if (j_index, i_index) in quadratic:
+                            jval = quadratic[(j_index, i_index)]
+                        interactions[i, j] = jval
+                        interactions[j, i] = jval
+
+                self._interaction_matrix = interactions
+                self._re_calculate = False
+
+        return self._interaction_matrix
     
     # deprecated methods
     def empty(*args, **kwargs):
