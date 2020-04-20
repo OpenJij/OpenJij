@@ -360,20 +360,26 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
 
 
     @staticmethod
-    def from_qubo(linear, quadratic, offset=0.0):
+    def from_qubo(Q, offset=0.0):
         """
         Create a binary quadratic model from a QUBO model.
         Args:
-            original_ind (bool): if true returns linear with index converted to original one
+            Q (dict), offset
         Returns:
-            h (dict), J (dict), offset
+            A new instance of the BinaryQuadraticModel class.
         """
-        linear = self._conv_linear(linear, self.ind_to_num)
-        quadratic = self._conv_quadratic(quadratic, self.ind_to_num)
-        return cimod.BinaryQuadraticModel.from_qubo(linear, quadratic, offset)
+        Q = self._conv_quadratic(Q, self.ind_to_num)
+        return cimod.BinaryQuadraticModel.from_qubo(Q, offset)
 
     @staticmethod
     def from_ising(linear, quadratic, offset=0.0):
+        """
+        Create a binary quadratic model from a Ising model.
+        Args:
+            linear (dict), quadratic (dict), offset
+        Returns:
+            A new instance of the BinaryQuadraticModel class.
+        """
         linear = self._conv_linear(linear, self.ind_to_num)
         quadratic = self._conv_quadratic(quadratic, self.ind_to_num)
         return cimod.BinaryQuadraticModel.from_ising(linear, quadratic, offset)
