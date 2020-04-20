@@ -238,8 +238,13 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
                 energy += self.get_offset()
             return energy 
 
+    def energies(self, samples_like, sparse=False):
+        en_vec = []
 
+        for elem in samples_like:
+            en_vec.append(self.energy(elem))
 
+        return en_vec
 
     
     # deprecated methods (TODO: implement these)

@@ -137,3 +137,10 @@ class KingGraph(BinaryQuadraticModel):
             if not (self.prange[0] <= p <= self.prange[1]):
                 raise ValueError('Graph is incomplete xi: {}, yi: {}, xj: {}, yj: {}, p: {}'
                                  .format(xi, yi, xj, yj, p))
+
+
+    def energy(self, sample):
+        return super().energy(sample, sparse=True)
+
+    def energies(self, samples_like):
+        return super().energies(sample_like, sparse=True)

@@ -44,6 +44,7 @@ class ChimeraModel(BinaryQuadraticModel):
                 'Input unit_num_L which is the length of the side of the two-dimensional grid where chimera unit cells are arranged.')
         self.unit_num_L = unit_num_L
 
+        # check the type of indices is valid.
         self.coordinate = self._validate_indices(self.indices)
 
         # _chimera_index: 1-D index i,L -> chimera coordinate x,y,z
@@ -56,6 +57,13 @@ class ChimeraModel(BinaryQuadraticModel):
             self._to_index = lambda x, y, z, L: self.to_index(x, y, z, L)
 
     def _validate_indices(self, indices):
+        """
+        Check if the type of indices is valid.
+        Args:
+            indices (list(int) or list(tuple))
+        Return:
+            the type of indices ('chimera coordinate or index')
+        """
         if isinstance(indices[0], int):
             return 'index'
         elif isinstance(indices[0], (tuple, list)):
@@ -65,15 +73,10 @@ class ChimeraModel(BinaryQuadraticModel):
         raise ValueError(
             'In the chimera graph, index should be int or tuple or list.')
 
-    def full_indices(self):
-        if self.coordinate == 'index':
-            return list(range(0, 8 * self.unit_num_L * self.unit_num_L))
-        else:
-            L = self.unit_num_L
-            return [(x, y, i) for y in range(0, L*L) for x in range(0, L*L) for i in range(0, 8)]
-
     def validate_chimera(self):
         """
+        Check if the Chimera connectivity is valid.
+
         Chimera coordinate: r, c, z
         One dimension coordinate: i
         Relation: i = 8Lr + 8c + z
@@ -85,7 +88,7 @@ class ChimeraModel(BinaryQuadraticModel):
         3 - 7
         """
         # check chimera interaction
-        for (i, j) in self.quadratic.keys():
+        for (i, j) in self.get_quadratic().keys():
             r_i, c_i, z_i = self._chimera_index(i, self.unit_num_L)
             # list up indices which can connect i
             adj_list = []
@@ -147,13 +150,18 @@ class ChimeraModel(BinaryQuadraticModel):
         return int(r_i), int(c_i), int(z_i)
 
     def get_cxxjij_ising_graph(self):
+        """Get cxxjij.graph.Chimera type instance
+        Args:
+            i (int): 1-D index 0~L*L*8-1
+            unit_num_L (int): number of chimera grid size
+        Returns:
+            object (cxxjij.graph.Chimera)
+        """
         chimera_L = self.unit_num_L
 
         if not self.validate_chimera():
             raise ValueError("Problem graph incompatible with chimera graph.")
         _h, _J, _offset = self.to_ising()
-
-        self.energy_bias = self.energy_bias
 
         if self.gpu:
             chimera = cj.graph.ChimeraGPU(chimera_L, chimera_L)
@@ -203,7 +211,20 @@ class ChimeraModel(BinaryQuadraticModel):
 
         return chimera
 
+    def energy(self, sample):
+        return super().energy(sample, sparse=True)
+
+    def energies(self, samples_like):
+        return super().energies(sample_like, sparse=True)
+
+
     def _validate(self, rcz1, rcz2, L):
+        """ Check if the connectivity is valid.
+        Args:
+            rcz1 (int), rcz2(int), L(int)
+        Returns:
+            result (bool)
+        """
         r1, c1, z1 = rcz1
         r2, c2, z2 = rcz2
         left_side = [0, 1, 2, 3]
@@ -218,6 +239,12 @@ class ChimeraModel(BinaryQuadraticModel):
         return False
 
     def _index_validate(self, i, L):
+        """ Check if the index is valid.
+        Args:
+            i(int), L(int)
+        Returns:
+            result (bool)
+        """
         if isinstance(i, tuple):
             two_d_bool = (i[0] < self.unit_num_L) and (i[1] < self.unit_num_L)
             return two_d_bool and (i[2] < 8)

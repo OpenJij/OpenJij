@@ -35,10 +35,10 @@ class ModelTest(unittest.TestCase):
     def setUp(self):
         self.h = {0: 1, 1: -2}
         self.J = {(0, 1): -1, (1, 2): -3, (2, 3): 0.5}
-        self.spins = [1, -1, 1, 1]
+        self.spins = {0: 1, 1: -1, 2: 1, 3: 1}
 
         self.Q = {(0, 0): 1, (1, 2): -1, (2, 0): -0.2, (1, 3): 3}
-        self.binaries = [0, 1, 1, 0]
+        self.binaries = {0: 0, 1: 1, 2: 1, 3: 0}
 
     def test_bqm_constructor(self):
         # Test BinaryQuadraticModel constructor
