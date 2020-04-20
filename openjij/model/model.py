@@ -17,6 +17,7 @@ import cxxjij
 import openjij
 import cimod
 import warnings
+import sys
 
 
 class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
@@ -243,41 +244,59 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
     
     # deprecated methods (TODO: implement these)
     def empty(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def add_variable(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def add_variables_from(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def add_interaction(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def add_interactions_from(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def remove_variable(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def remove_variables_from(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def remove_interaction(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def remove_interactions_from(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def add_offset(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def remove_offset(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def scale(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def normalize(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def fix_variable(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def fix_variables(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def flip_variable(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def update(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
     def contract_variables(*args, **kwargs):
-        pass
+        print("This function is disabled.", file=sys.stderr)
+
 
     def change_vartype(self, vartype):
         """
