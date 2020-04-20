@@ -39,24 +39,13 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
 
         vartype = openjij.cast_var_type(var_type)
 
-        # set index array
-        index_set = set(linear.keys())
-
         # set recalculate flag True
         # Be sure to enable this flag when variables are changed.
         self._re_calculate = True
         # interaction_matrix
         self._interaction_matrix = None
 
-        for v1, v2 in quadratic.keys():
-            index_set.add(v1)
-            index_set.add(v2)
-
-        self.indices = list(index_set)
-
-        # generate conversion map index <-> integer
-        self.num_to_ind = {k:val for k,val in enumerate(self.indices)}
-        self.ind_to_num = {val:k for k,val in enumerate(self.indices)}
+        self.indices, self.num_to_ind, self.ind_to_num = self._generate_indices_dict(linear, quadratic)
 
         # convert indices to integers and call super constructor
         linear      = self._conv_linear(linear, self.ind_to_num)
@@ -262,6 +251,11 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
 
         return en_vec
 
+    # compatible with previous version
+    def calc_energy(self, sample, sparse=False):
+        return self.energy(sample, sparse)
+
+
     
     # deprecated methods (TODO: implement these)
     def disabled(func):
@@ -359,8 +353,8 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
         return openjij.BinaryQuadraticModel(linear, quadratic, bqm.get_offset(), bqm.get_vartype())
 
 
-    @staticmethod
-    def from_qubo(Q, offset=0.0):
+    @classmethod
+    def from_qubo(cls, Q, offset=0.0):
         """
         Create a binary quadratic model from a QUBO model.
         Args:
@@ -368,10 +362,18 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
         Returns:
             A new instance of the BinaryQuadraticModel class.
         """
-        return cimod.BinaryQuadraticModel.from_qubo(Q, offset)
+        linear = {}
+        quadratic = {}
+        for (u, v), bias in Q.items():
+            if u == v:
+                linear[u] = bias
+            else:
+                quadratic[(u, v)] = bias
 
-    @staticmethod
-    def from_ising(linear, quadratic, offset=0.0):
+        return cls(linear, quadratic, offset, var_type=openjij.BINARY)
+
+    @classmethod
+    def from_ising(cls, linear, quadratic, offset=0.0):
         """
         Create a binary quadratic model from a Ising model.
         Args:
@@ -379,7 +381,35 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
         Returns:
             A new instance of the BinaryQuadraticModel class.
         """
-        return cimod.BinaryQuadraticModel.from_ising(linear, quadratic, offset)
+        return cls(linear, quadratic, offset, var_type=openjij.SPIN)
+
+    @staticmethod
+    def _generate_indices_dict(linear=None, quadratic=None):
+        """
+        Generate indices dictionaries.
+        Args:
+            linear (dict), quadratic (dict)
+        Returns:
+            tuple of dictionaries (indices, num_to_ind, ind_to_num)
+        """
+        if linear is not None:
+            index_set = set(linear.keys())
+        else:
+            index_set = set()
+
+
+        if quadratic is not None:
+            for v1, v2 in quadratic.keys():
+                index_set.add(v1)
+                index_set.add(v2)
+
+        indices = list(index_set)
+
+        # generate conversion map index <-> integer
+        num_to_ind = {k:val for k,val in enumerate(indices)}
+        ind_to_num = {val:k for k,val in enumerate(indices)}
+
+        return indices, num_to_ind, ind_to_num
 
 
     def _conv_linear(self, dic, conv_dict):
