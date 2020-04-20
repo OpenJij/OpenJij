@@ -368,7 +368,6 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
         Returns:
             A new instance of the BinaryQuadraticModel class.
         """
-        Q = self._conv_quadratic(Q, self.ind_to_num)
         return cimod.BinaryQuadraticModel.from_qubo(Q, offset)
 
     @staticmethod
@@ -380,8 +379,6 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
         Returns:
             A new instance of the BinaryQuadraticModel class.
         """
-        linear = self._conv_linear(linear, self.ind_to_num)
-        quadratic = self._conv_quadratic(quadratic, self.ind_to_num)
         return cimod.BinaryQuadraticModel.from_ising(linear, quadratic, offset)
 
 
