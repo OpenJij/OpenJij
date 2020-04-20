@@ -16,6 +16,7 @@ import numpy as np
 import cxxjij
 import openjij
 import dimod
+import cimod
 
 import time
 
@@ -42,7 +43,7 @@ class BaseSampler(dimod.Sampler):
     def _set_model(self, model):
         self.indices = model.indices
         self.size = model.size
-        self.energy_bias = model.energy_bias
+        self.offset = model.get_offset()
         self.var_type = model.var_type
 
     def _setting_overwrite(self, **kwargs):

@@ -37,7 +37,7 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
     def __init__(self, linear, quadratic, offset=0.0,
                  var_type=openjij.SPIN, **kwargs):
 
-        self.var_type = openjij.cast_var_type(var_type)
+        vartype = openjij.cast_var_type(var_type)
 
         # set index array
         index_set = set(linear.keys())
@@ -61,7 +61,7 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
         # convert indices to integers and call super constructor
         linear      = self._conv_linear(linear, self.ind_to_num)
         quadratic   = self._conv_quadratic(quadratic, self.ind_to_num)
-        super().__init__(linear, quadratic, offset, self.var_type)
+        super().__init__(linear, quadratic, offset, vartype)
 
 
     def get_cxxjij_ising_graph(self, sparse=False):
@@ -124,6 +124,22 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
             adjacency = self._conv_adjacency(adjacency, self.num_to_ind)
 
         return adjacency
+
+    @property
+    def linear(self):
+        return self.get_linear()
+
+    @property
+    def quadratic(self):
+        return self.get_quadratic()
+
+    @property
+    def vartype(self):
+        return self.get_vartype()
+
+    @property
+    def offset(self):
+        return self.get_offset()
     
     def to_qubo(self, original_ind=True):
         """
@@ -248,59 +264,84 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
 
     
     # deprecated methods (TODO: implement these)
+    def disabled(func):
+        def wrapper(*args, **kwargs):
+            raise NotImplementedError("The function {} is disabled.".format(func.__name__))
+
+        return wrapper
+
+
+    @disabled
     def empty(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def add_variable(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def add_variables_from(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def add_interaction(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def add_interactions_from(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def remove_variable(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def remove_variables_from(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def remove_interaction(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def remove_interactions_from(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def add_offset(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def remove_offset(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def scale(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def normalize(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def fix_variable(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def fix_variables(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def flip_variable(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def update(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
+    @disabled
     def contract_variables(*args, **kwargs):
-        print("This function is disabled.", file=sys.stderr)
+        pass
 
 
     def change_vartype(self, vartype):
