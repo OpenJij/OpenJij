@@ -43,15 +43,15 @@ class ModelTest(unittest.TestCase):
     def test_bqm_constructor(self):
         # Test BinaryQuadraticModel constructor
         bqm = oj.BinaryQuadraticModel(self.h, self.J)
-        self.assertEqual(type(bqm.ising_interactions()), np.ndarray)
+        self.assertEqual(type(bqm.interaction_matrix()), np.ndarray)
 
-        self.assertEqual(bqm.var_type, oj.SPIN)
+        self.assertEqual(bqm.vartype, oj.SPIN)
 
         dense_graph = bqm.get_cxxjij_ising_graph(sparse=False)
         self.assertTrue(isinstance(dense_graph, cj.graph.Dense))
 
-        bqm_qubo = oj.BinaryQuadraticModel.from_qubo(self.Q)
-        self.assertEqual(bqm_qubo.var_type, oj.BINARY)
+        bqm_qubo = oj.BinaryQuadraticModel.from_qubo(Q=self.Q)
+        self.assertEqual(bqm_qubo.vartype, oj.BINARY)
 
     def test_interaction_matrix(self):
         bqm = oj.BinaryQuadraticModel(self.h, self.J)
@@ -62,7 +62,7 @@ class ModelTest(unittest.TestCase):
             [0, 0, 0.5, 0]
         ])
         np.testing.assert_array_equal(
-            bqm.ising_interactions(), ising_matrix
+            bqm.interaction_matrix(), ising_matrix
         )
 
         # check Hij = Jij + Jji
@@ -71,7 +71,7 @@ class ModelTest(unittest.TestCase):
         J[1, 0] = J[0, 1] * 2
         bqm = oj.BinaryQuadraticModel(self.h, J)
         np.testing.assert_array_equal(
-            bqm.ising_interactions(), ising_matrix
+            bqm.interaction_matrix(), ising_matrix
         )
 
     def test_bqm_calc_energy(self):
@@ -79,19 +79,19 @@ class ModelTest(unittest.TestCase):
 
         # Test Ising energy
         bqm = oj.BinaryQuadraticModel(self.h, self.J)
-        ising_energy_bqm = bqm.calc_energy(self.spins)
+        ising_energy_bqm = bqm.energy(self.spins)
         true_ising_e = calculate_ising_energy(self.h, self.J, self.spins)
         self.assertEqual(ising_energy_bqm, true_ising_e)
 
         # Test QUBO energy
         bqm = oj.BinaryQuadraticModel.from_qubo(Q=self.Q)
-        qubo_energy_bqm = bqm.calc_energy(self.binaries)
+        qubo_energy_bqm = bqm.energy(self.binaries)
         true_qubo_e = calculate_qubo_energy(self.Q, self.binaries)
         self.assertEqual(qubo_energy_bqm, true_qubo_e)
 
         # QUBO == Ising
-        spins = [1, 1, -1, 1]
-        binary = [1, 1, 0, 1]
+        spins = {0: 1, 1: 1, 2: -1, 3: 1}
+        binary = {0: 1, 1: 1, 2: 0, 3: 1}
         qubo_bqm = oj.BinaryQuadraticModel.from_qubo(Q=self.Q)
         # ising_mat = qubo_bqm.ising_interactions()
         # h, J = {}, {}
@@ -102,22 +102,21 @@ class ModelTest(unittest.TestCase):
         #         else:
         #             J[(i, j)] = ising_mat[i][j]
 
-        qubo_energy = qubo_bqm.calc_energy(binary)
+        qubo_energy = qubo_bqm.energy(binary)
 
-        self.assertEqual(qubo_energy, qubo_bqm.calc_energy(
-            spins, need_to_convert_from_spin=True))
+        self.assertEqual(qubo_energy, qubo_bqm.energy(spins, oj.SPIN))
 
     def test_bqm(self):
         h = {}
         J = {(0, 1): -1.0, (1, 2): -3.0}
         bqm = oj.BinaryQuadraticModel(h, J)
+        
+        self.assertEqual(J, bqm.get_quadratic)
 
-        self.assertEqual(J, bqm.quadratic)
-
-        self.assertEqual(type(bqm.ising_interactions()), np.ndarray)
+        self.assertEqual(type(bqm.interaction_matrix()), np.ndarray)
         correct_mat = np.array([[0, -1, 0, ], [-1, 0, -3], [0, -3, 0]])
         np.testing.assert_array_equal(
-            bqm.ising_interactions(), correct_mat.astype(np.float))
+            bqm.interaction_matrix(), correct_mat.astype(np.float))
 
     def test_chimera_converter(self):
         h = {}
@@ -165,7 +164,7 @@ class ModelTest(unittest.TestCase):
         king_graph = oj.KingGraph(machine_type="ASIC", linear=h, quadratic=J)
         correct_mat = np.array([[0, -1, 0, ], [-1, 0, -3], [0, -3, 0]])
         np.testing.assert_array_equal(
-            king_graph.ising_interactions(), correct_mat.astype(np.float))
+            king_graph.interaction_matrix(), correct_mat.astype(np.float))
         np.testing.assert_array_equal(
             king_interaction, king_graph._ising_king_graph)
 
