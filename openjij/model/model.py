@@ -233,7 +233,7 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
 
         if sparse:
            # convert sample to dict
-           if isinstance(sample, list) or isinstance(sample, np.array):
+           if isinstance(sample, list) or isinstance(sample, np.ndarray):
                sample = {i:elem for i,elem in enumerate(sample)}
            return super().energy(sample)
 
