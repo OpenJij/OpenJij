@@ -82,7 +82,6 @@ class SQASampler(BaseSampler):
         self.num_reads = num_reads
         self.num_sweeps = num_sweeps
         self.schedule = schedule
-        self.energy_bias = 0.0
         self._schedule_setting = {
             'beta': beta,
             'gamma': gamma,
@@ -90,7 +89,9 @@ class SQASampler(BaseSampler):
             'num_reads': num_reads,
         }
 
-        self._make_system = cxxjij.system.make_transverse_ising
+        self._make_system = {
+            'singlespinflip': cxxjij.system.make_transverse_ising
+        }
         self._algorithm = {
             'singlespinflip': cxxjij.algorithm.Algorithm_SingleSpinFlip_run
         }
@@ -108,6 +109,7 @@ class SQASampler(BaseSampler):
             raise ValueError("schedule range is '0 <= s <= 1'.")
 
         if len(schedule[0]) == 2:
+            # schedule element: (s, one_mc_step) with beta fixed
             # convert to list of cxxjij.utility.TransverseFieldSchedule
             cxxjij_schedule = []
             for s, one_mc_step in schedule:
@@ -118,6 +120,7 @@ class SQASampler(BaseSampler):
                 cxxjij_schedule.append(_schedule)
             return cxxjij_schedule
         elif len(schedule[0]) == 3:
+            # schedule element: (s, beta, one_mc_step)
             # convert to list of cxxjij.utility.TransverseFieldSchedule
             cxxjij_schedule = []
             for s, _beta, one_mc_step in schedule:
@@ -133,16 +136,6 @@ class SQASampler(BaseSampler):
                 (annealing parameter s : float, step_length : int) or
                 (annealing parameter s : float, beta: float, step_length : int)
                 """)
-
-    def _dict_to_model(self, var_type, h=None, J=None, Q=None, **kwargs):
-        if var_type == openjij.SPIN:
-            bqm = openjij.BinaryQuadraticModel(h, J, 0.0, var_type)
-        elif var_type == openjij.BINARY:
-            bqm = openjij.BinaryQuadraticModel.from_qubo(Q)
-        else:
-            raise ValueError(
-                'var_type should be openjij.SPIN or openjij.BINARY')
-        return bqm
 
     def _get_result(self, system, model):
         state, info = super()._get_result(system, model)
@@ -221,7 +214,7 @@ class SQASampler(BaseSampler):
         # -------------------------------- make init state generator
 
         # choose updater -------------------------------------------
-        sqa_system = self._make_system(
+        sqa_system = self._make_system[_updater_name](
             init_generator(), ising_graph, self.gamma
         )
         _updater_name = updater.lower().replace('_', '').replace(' ', '')

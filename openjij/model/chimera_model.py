@@ -211,11 +211,11 @@ class ChimeraModel(BinaryQuadraticModel):
 
         return chimera
 
-    def energy(self, sample):
-        return super().energy(sample, sparse=True)
+    def energy(self, sample, convert_sample=False):
+        return super().energy(sample, sparse=True, convert_sample)
 
-    def energies(self, samples_like):
-        return super().energies(sample_like, sparse=True)
+    def energies(self, samples_like, convert_sample=False):
+        return super().energies(sample_like, sparse=True, convert_sample)
 
 
     def _validate(self, rcz1, rcz2, L):

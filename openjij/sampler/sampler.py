@@ -16,10 +16,10 @@ import numpy as np
 import cxxjij
 import openjij
 import dimod
+from dimod.core.sampler import samplemixinmethod
 import cimod
 
 import time
-
 
 def measure_time(func):
     def wrapper(*args, **kargs):
@@ -47,7 +47,7 @@ class BaseSampler(dimod.Sampler):
             seed (int, optional): seed for algorithm. Defaults to None.
 
         Returns:
-            [type]: [description]
+            : [description]
         """
         for key, value in kwargs.items():
             if value is not None:
@@ -139,3 +139,34 @@ class BaseSampler(dimod.Sampler):
         result = cxxjij.result.get_solution(system)
         sys_info = {}
         return result, sys_info
+
+    
+
+    @samplemixinmethod
+    def sample_ising(self, h, J, **parameters):
+        """Sample from an Ising model using the implemented sample method.
+
+        Args:
+            h (dict): Linear biases
+            J (dict): Quadratic biases
+
+        Returns:
+            :obj: `.Sampleset`
+        """
+        bqm = openjij.BinaryQuadraticModel.from_ising(h, J)
+        return self.sample(bqm, **parameters)
+
+
+    @samplemixinmethod
+    def sample_qubo(self, Q, **parameters):
+        """Sample from a QUBO model using the implemented sample method.
+
+        Args:
+            Q (dict): Coefficients of a quadratic unconstrained binary optimization
+
+        Returns:
+            :obj: `.Sampleset`
+        """
+        bqm = openjij.BinaryQuadraticModel.from_qubo(Q)
+        return self.sample(bqm, **parameters)
+
