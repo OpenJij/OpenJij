@@ -15,6 +15,7 @@
 import numpy as np
 import cxxjij
 import openjij
+from openjij.utils.decorator import disabled
 import cimod
 import warnings
 import sys
@@ -192,6 +193,8 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
                     #     jval = quadratic[(i, j)]
                     # if (j, i) in quadratic:
                     #     jval = quadratic[(j, i)]
+                    # 
+                    # since dimod.BinaryQuadraticModel internally sums up two tuples of indices with different order (such as (a,b) and (b,a)).
 
                     if (i, j) in quadratic:
                         jval += quadratic[(i, j)]
@@ -206,20 +209,33 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
 
         return self._interaction_matrix
 
-    def energy(self, sample, sparse=False):
+    def energy(self, sample, sparse=False, convert_sample=False):
         """Determine the energy of the specified sample of a binary quadratic model.
         Args:
-            sample (dict): single sample
+            sample (dict): single sample. 
             sparse (bool): if true calculate energy by using adjacency matrix
+            convert_sample (bool): if true the sample is automatically converted to self.vartype type.
         Returns:
             energy (float)
         """
 
         if isinstance(sample, dict):
+            # convert int to num
             sample = self._conv_linear(sample, self.ind_to_num)
 
+        # convert samples to SPIN or BINARY
+        if convert_sample:
+            for i in range(len(sample)):
+                if sample[i] == -1 and self.vartype == openjij.BINARY:
+                    sample[i] = 0
+                if sample[i] == 0  and self.vartype == openjij.SPIN:
+                    sample[i] = -1
+
         if sparse:
-                return super().energy(sample)
+           # convert sample to dict
+           if isinstance(sample, list) or isinstance(sample, np.ndarray):
+               sample = {i:elem for i,elem in enumerate(sample)}
+           return super().energy(sample)
 
         else:
             if isinstance(sample, dict):
@@ -243,28 +259,20 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
                 energy += self.get_offset()
             return energy 
 
-    def energies(self, samples_like, sparse=False):
+    def energies(self, samples_like, sparse=False, convert_sample=False):
         en_vec = []
 
         for elem in samples_like:
-            en_vec.append(self.energy(elem))
+            en_vec.append(self.energy(elem, sparse, convert_sample))
 
         return en_vec
 
-    # compatible with previous version
-    def calc_energy(self, sample, sparse=False):
-        return self.energy(sample, sparse)
+    # compatible with the previous version
+    def calc_energy(self, sample, sparse=False, convert_sample=False):
+        return self.energy(sample, sparse, convert_sample)
 
 
-    
-    # deprecated methods (TODO: implement these)
-    def disabled(func):
-        def wrapper(*args, **kwargs):
-            raise NotImplementedError("The function {} is disabled.".format(func.__name__))
-
-        return wrapper
-
-
+    # disabled methods (TODO: implement these)
     @disabled
     def empty(*args, **kwargs):
         pass
@@ -354,7 +362,7 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
 
 
     @classmethod
-    def from_qubo(cls, Q, offset=0.0):
+    def from_qubo(cls, Q, offset=0.0, **kwargs):
         """
         Create a binary quadratic model from a QUBO model.
         Args:
@@ -370,10 +378,10 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
             else:
                 quadratic[(u, v)] = bias
 
-        return cls(linear, quadratic, offset, var_type=openjij.BINARY)
+        return cls(linear, quadratic, offset, var_type=openjij.BINARY, **kwargs)
 
     @classmethod
-    def from_ising(cls, linear, quadratic, offset=0.0):
+    def from_ising(cls, linear, quadratic, offset=0.0, **kwargs):
         """
         Create a binary quadratic model from a Ising model.
         Args:
@@ -381,7 +389,7 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
         Returns:
             A new instance of the BinaryQuadraticModel class.
         """
-        return cls(linear, quadratic, offset, var_type=openjij.SPIN)
+        return cls(linear, quadratic, offset, var_type=openjij.SPIN, **kwargs)
 
     @staticmethod
     def _generate_indices_dict(linear=None, quadratic=None):

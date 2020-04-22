@@ -102,6 +102,8 @@ class SASampler(BaseSampler):
 
 
     def _convert_validation_schedule(self, schedule):
+        """Checks if the schedule is valid and returns cxxjij schedule
+        """
         if not isinstance(schedule, (list, np.array)):
             raise ValueError("schedule should be list or numpy.array")
 
@@ -124,6 +126,7 @@ class SASampler(BaseSampler):
             _schedule.one_mc_step = step_length
             _schedule.updater_parameter.beta = beta
             cxxjij_schedule.append(_schedule)
+
         return cxxjij_schedule
 
     def sample_ising(self, h, J, beta_min=None, beta_max=None,
@@ -285,11 +288,14 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
         min_delta_energy = np.min(ising_interaction[ising_interaction > 0])
         max_delta_energy = np.max(abs_bias[abs_bias > 0])
 
+    # TODO: More optimal schedule ?
+
     beta_min = np.log(2) / max_delta_energy if beta_min is None else beta_min
     beta_max = np.log(100) / min_delta_energy if beta_max is None else beta_max
 
     num_sweeps_per_beta = max(1, num_sweeps // 1000)
 
+    # set schedule to cxxjij
     schedule = cxxjij.utility.make_classical_schedule_list(
         beta_min=beta_min, beta_max=beta_max,
         one_mc_step=num_sweeps_per_beta,
