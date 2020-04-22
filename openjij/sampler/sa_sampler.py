@@ -282,7 +282,16 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
         list of cxxjij.utility.ClassicalSchedule, list of beta range [max, min]
     """
     if beta_min is None or beta_max is None:
-        ising_interaction = np.abs(model.ising_interactions())
+        # generate Ising matrix
+        ising_interaction = model.interaction_matrix()
+        if (model.vartype == openjij.BINARY):
+            # convert to ising matrix
+            ising_interaction /= 4
+            for i in range(len(ising_interaction)):
+                ising_interaction[i, i] += np.sum(ising_interaction[i, :])
+
+        #automatical setting of min, max delta energy
+
         abs_bias = np.sum(ising_interaction, axis=1)
 
         min_delta_energy = np.min(ising_interaction[ising_interaction > 0])

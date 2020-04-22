@@ -141,8 +141,8 @@ class SQASampler(BaseSampler):
         state, info = super()._get_result(system, model)
 
         q_state = system.trotter_spins[:-1].T.astype(np.int)
-        c_energies = [model.calc_energy(
-            state, need_to_convert_from_spin=True) for state in q_state]
+        c_energies = [model.energy(
+            state, convert_sample=True) for state in q_state]
         info['trotter_state'] = q_state
         info['trotter_energies'] = c_energies
 
@@ -265,3 +265,6 @@ def linear_ising_schedule(model, beta, gamma, num_sweeps):
         beta=beta, one_mc_step=1, num_call_updater=num_sweeps
     )
     return schedule, [beta, gamma]
+
+#TODO: more optimal schedule?
+
