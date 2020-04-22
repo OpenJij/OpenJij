@@ -172,23 +172,20 @@ class ModelTest(unittest.TestCase):
             machine_type="ASIC", king_graph=king_interaction)
         np.testing.assert_array_equal(
             king_interaction, king_graph._ising_king_graph)
-
-        king_graph = oj.KingGraph.from_qubo(machine_type="ASIC", Q={
-            (0, 1): -1})
+        # kg = oj.KingGraph(machine_type='ASIC')
+        king_graph = oj.KingGraph.from_qubo(Q={(0, 1): -1}, machine_type='ASIC')
         king_interaction = [[0, 0, 0, 0, -0.25],
                             [0, 0, 1, 0, -0.25], [1, 0, 1, 0, -0.25]]
         np.testing.assert_array_equal(
             king_interaction, king_graph._ising_king_graph)
 
     def test_get_chimera_graph(self):
-        c_model = oj.ChimeraModel.from_qubo(
-            Q={(0, 4): -1, (1, 1): -1, (1, 5): 1}, unit_num_L=2)
+        c_model = oj.ChimeraModel.from_qubo(Q={(0, 4): -1, (1, 1): -1, (1, 5): 1}, unit_num_L=2)
         chimera = c_model.get_cxxjij_ising_graph()
         self.assertIsInstance(chimera, cj.graph.Chimera)
 
-        c_model = oj.ChimeraModel.from_qubo(
-            Q={((0, 0, 1), (0, 0, 4)): -1, ((0, 0, 4), (0, 0, 2)): -1},
-            unit_num_L=2)
+        c_model = oj.ChimeraModel.from_qubo(Q={((0, 0, 1), (0, 0, 4)): -1, ((0, 0, 4), (0, 0, 2)): -1}, 
+                                            unit_num_L=2)
         chimera = c_model.get_cxxjij_ising_graph()
         self.assertIsInstance(chimera, cj.graph.Chimera)
 
