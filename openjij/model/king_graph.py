@@ -72,29 +72,20 @@ class KingGraph(BinaryQuadraticModel):
         # reformat to ising king graph (which is Web API format)
         if king_graph is not None and var_type == openjij.SPIN:
             self._ising_king_graph = king_graph
-        elif var_type == openjij.SPIN:
+
+        else:
+            # generate Ising h and J and create ising_king_graph format
+            lin, quad = self.to_ising()
             self._ising_king_graph = []
-            for index, h in self.linear.items():
+            for index, h in lin.items():
                 if h != 0:
                     x, y = self._convert_to_xy(index)
                     self._ising_king_graph.append([x, y, x, y, h])
-            for (i, j), J in self.quadratic.items():
+            for (i, j), J in quad.items():
                 if J != 0:
                     x1, y1 = self._convert_to_xy(i)
                     x2, y2 = self._convert_to_xy(j)
                     self._ising_king_graph.append([x1, y1, x2, y2, J])
-        else:
-            ising_int = self.ising_interactions()
-            sys_size = len(ising_int)
-            self._ising_king_graph = []
-            for i in range(sys_size):
-                for j in range(i, sys_size):
-                    if ising_int[i][j] == 0:
-                        continue
-                    x1, y1 = self._convert_to_xy(self.indices[i])
-                    x2, y2 = self._convert_to_xy(self.indices[j])
-                    self._ising_king_graph.append(
-                        [x1, y1, x2, y2, ising_int[i][j]])
 
         self._validation_ising_king_graph()
 
