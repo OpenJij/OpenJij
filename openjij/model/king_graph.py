@@ -75,7 +75,7 @@ class KingGraph(BinaryQuadraticModel):
 
         else:
             # generate Ising h and J and create ising_king_graph format
-            lin, quad = self.to_ising()
+            lin, quad, _ = self.to_ising()
             self._ising_king_graph = []
             for index, h in lin.items():
                 if h != 0:
