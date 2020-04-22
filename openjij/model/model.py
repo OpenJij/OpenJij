@@ -362,7 +362,7 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
 
 
     @classmethod
-    def from_qubo(cls, Q, offset=0.0):
+    def from_qubo(cls, Q, offset=0.0, **kwargs):
         """
         Create a binary quadratic model from a QUBO model.
         Args:
@@ -378,10 +378,10 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
             else:
                 quadratic[(u, v)] = bias
 
-        return cls(linear, quadratic, offset, var_type=openjij.BINARY)
+        return cls(linear, quadratic, offset, var_type=openjij.BINARY, **kwargs)
 
     @classmethod
-    def from_ising(cls, linear, quadratic, offset=0.0):
+    def from_ising(cls, linear, quadratic, offset=0.0, **kwargs):
         """
         Create a binary quadratic model from a Ising model.
         Args:
@@ -389,7 +389,7 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
         Returns:
             A new instance of the BinaryQuadraticModel class.
         """
-        return cls(linear, quadratic, offset, var_type=openjij.SPIN)
+        return cls(linear, quadratic, offset, var_type=openjij.SPIN, **kwargs)
 
     @staticmethod
     def _generate_indices_dict(linear=None, quadratic=None):
