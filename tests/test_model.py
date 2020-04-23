@@ -111,7 +111,7 @@ class ModelTest(unittest.TestCase):
         J = {(0, 1): -1.0, (1, 2): -3.0}
         bqm = oj.BinaryQuadraticModel(h, J)
         
-        self.assertEqual(J, bqm.get_quadratic)
+        self.assertEqual(J, bqm.get_quadratic())
 
         self.assertEqual(type(bqm.interaction_matrix()), np.ndarray)
         correct_mat = np.array([[0, -1, 0, ], [-1, 0, -3], [0, -3, 0]])
@@ -165,20 +165,20 @@ class ModelTest(unittest.TestCase):
         correct_mat = np.array([[0, -1, 0, ], [-1, 0, -3], [0, -3, 0]])
         np.testing.assert_array_equal(
             king_graph.interaction_matrix(), correct_mat.astype(np.float))
+
+        self.assertCountEqual(king_interaction, king_graph._ising_king_graph)
+    
+        king_graph = oj.KingGraph(
+            machine_type="ASIC", king_graph=king_interaction)
+        
         np.testing.assert_array_equal(
             king_interaction, king_graph._ising_king_graph)
 
-        king_graph = oj.KingGraph(
-            machine_type="ASIC", king_graph=king_interaction)
-        np.testing.assert_array_equal(
-            king_interaction, king_graph._ising_king_graph)
-        # kg = oj.KingGraph(machine_type='ASIC')
         king_graph = oj.KingGraph.from_qubo(Q={(0, 1): -1}, machine_type='ASIC')
         king_interaction = [[0, 0, 0, 0, -0.25],
                             [0, 0, 1, 0, -0.25], [1, 0, 1, 0, -0.25]]
-        np.testing.assert_array_equal(
-            king_interaction, king_graph._ising_king_graph)
-
+        self.assertCountEqual(king_interaction, king_graph._ising_king_graph)
+    
     def test_get_chimera_graph(self):
         c_model = oj.ChimeraModel.from_qubo(Q={(0, 4): -1, (1, 1): -1, (1, 5): 1}, unit_num_L=2)
         chimera = c_model.get_cxxjij_ising_graph()
