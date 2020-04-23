@@ -15,6 +15,7 @@
 import numpy as np
 import dimod
 import openjij
+from openjij.variable_type import cast_to_dimod
 
 
 class Response(dimod.SampleSet):
@@ -39,3 +40,16 @@ class Response(dimod.SampleSet):
 
     def update_ising_states_energies(self, states, energies):
         pass
+
+    @classmethod
+    def from_samples(cls, samples_like, vartype, energy, **kwargs):
+        return super().from_samples(samples_like, cast_to_dimod(vartype), energy, **kwargs)
+
+    @classmethod
+    def from_samples_bqm(cls, samples_like, bqm, **kwargs):
+        linear = bqm.linear
+        quadratic = bqm.quadratic
+        vartype = cast_to_dimod(bqm.vartype)
+        offset = bqm.offset
+        return super().from_samples_bqm(samples_like, 
+                openjij.BinaryQuadraticModel(linear, quadratic, offset, vartype), **kwargs)

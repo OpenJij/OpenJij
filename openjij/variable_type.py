@@ -32,3 +32,12 @@ def cast_var_type(var_type):
         elif var_type == dimod.BINARY:
             return cimod.BINARY
 
+def cast_to_dimod(var_type):
+    var_type = cast_var_type(var_type)
+
+    if var_type == cimod.SPIN:
+        return dimod.SPIN
+
+    elif var_type == cimod.BINARY:
+        return dimod.BINARY
+

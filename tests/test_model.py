@@ -104,7 +104,7 @@ class ModelTest(unittest.TestCase):
 
         qubo_energy = qubo_bqm.energy(binary)
 
-        self.assertEqual(qubo_energy, qubo_bqm.energy(spins, oj.SPIN))
+        self.assertEqual(qubo_energy, qubo_bqm.energy(spins, convert_sample=True))
 
     def test_bqm(self):
         h = {}

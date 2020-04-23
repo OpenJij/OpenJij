@@ -1,14 +1,20 @@
 import openjij as oj
 import numpy as np
 import dimod
+import cimod
 import unittest
 
 
 class TestUtils(unittest.TestCase):
 
     def test_var_type(self):
-        self.assertTrue(dimod.BINARY == oj.BINARY)
-        self.assertTrue(dimod.SPIN == oj.SPIN)
+        #self.assertTrue(dimod.BINARY == oj.BINARY)
+        #self.assertTrue(dimod.SPIN == oj.SPIN)
+
+        # latest version of OpenJij replaces dimod.xxx with cimod.xxx
+
+        self.assertTrue(cimod.BINARY == oj.BINARY)
+        self.assertTrue(cimod.SPIN == oj.SPIN)
 
     def test_benchmark(self):
         h = {0: 1}

@@ -214,12 +214,12 @@ class SQASampler(BaseSampler):
         # -------------------------------- make init state generator
 
         # choose updater -------------------------------------------
-        sqa_system = self._make_system[_updater_name](
-            init_generator(), ising_graph, self.gamma
-        )
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         if _updater_name not in self._algorithm:
             raise ValueError('updater is one of "single spin flip"')
+        sqa_system = self._make_system[_updater_name](
+            init_generator(), ising_graph, self.gamma
+        )
         algorithm = self._algorithm[_updater_name] 
         # ------------------------------------------- choose updater
 

@@ -18,6 +18,7 @@ import openjij
 import dimod
 from dimod.core.sampler import samplemixinmethod
 import cimod
+from openjij.variable_type import cast_to_dimod
 
 import time
 
@@ -122,7 +123,7 @@ class BaseSampler(dimod.Sampler):
 
         # construct response instance
         response = openjij.Response.from_samples(
-            (states, model.indices), self.vartype, energies,
+            (states, model.indices), cast_to_dimod(model.vartype), energies,
             info=system_info
         )
 
@@ -139,6 +140,46 @@ class BaseSampler(dimod.Sampler):
         result = cxxjij.result.get_solution(system)
         sys_info = {}
         return result, sys_info
+
+    
+    @samplemixinmethod
+    def sample(self, bqm, **parameters):
+        """Sample from a binary quadratic model.
+        Args:
+            bqm (openjij.BinaryQuadraticModel):
+                Binary Qudratic Model
+            **kwargs:
+                See the implemented sampling for additional keyword definitions.
+
+        Returns:
+            :obj:`.SampleSet`
+        """
+        if bqm.vartype == openjij.SPIN:
+            if not getattr(self.sample_ising, '__issamplemixin__', False):
+                # sample_ising is implemented
+                h, J, offset = bqm.to_ising()
+                sampleset = self.sample_ising(h, J, **parameters)
+                sampleset.record.energy += offset
+                return sampleset
+            else:
+                Q, offset = bqm.to_qubo()
+                sampleset = self.sample_qubo(Q, **parameters)
+                sampleset.change_vartype(dimod.SPIN, energy_offset=offset)
+                return sampleset
+        elif bqm.vartype == openjij.BINARY:
+            if not getattr(self.sample_qubo, '__issamplemixin__', False):
+                # sample_qubo is implemented
+                Q, offset = bqm.to_qubo()
+                sampleset = self.sample_qubo(Q, **parameters)
+                sampleset.record.energy += offset
+                return sampleset
+            else:
+                h, J, offset = bqm.to_ising()
+                sampleset = self.sample_ising(h, J, **parameters)
+                sampleset.change_vartype(dimod.BINARY, energy_offset=offset)
+                return sampleset
+        else:
+            raise RuntimeError("binary quadratic model has an unknown vartype")
 
     
 
