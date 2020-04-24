@@ -88,7 +88,7 @@ class ChimeraModel(BinaryQuadraticModel):
         3 - 7
         """
         # check chimera interaction
-        for (i, j) in self.get_quadratic().keys():
+        for (i, j) in self.quadratic.keys():
             r_i, c_i, z_i = self._chimera_index(i, self.unit_num_L)
             # list up indices which can connect i
             adj_list = []
