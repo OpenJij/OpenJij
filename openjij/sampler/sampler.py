@@ -45,10 +45,7 @@ class BaseSampler(dimod.Sampler):
         """Overwrite the settings
 
         Args:
-            seed (int, optional): seed for algorithm. Defaults to None.
-
-        Returns:
-            : [description]
+            **kwargs: options
         """
         for key, value in kwargs.items():
             if value is not None:
@@ -63,16 +60,17 @@ class BaseSampler(dimod.Sampler):
     def _cxxjij_sampling(self, model, init_generator,
                          algorithm, system,
                          reinitialize_state=None,
-                         seed=None, **kwargs):
+                         seed=None, structure=None, **kwargs):
         """Basic sampling function: for cxxjij sampling
 
         Args:
             model (openjij.BinaryQuadraticModel): model has a information of instaunce (h, J, Q)
-            init_generator (callable): return initial state
+            init_generator (callable): return initial state, must have argument structure
             algorithm (callable): system algorithm of cxxjij
             system (:obj:): [description]
             reinitialize_state (bool, optional): [description]. Defaults to None.
             seed (int, optional): seed for algorithm. Defaults to None.
+            structure (dict): structure dictionary. 
 
         Returns:
             [type]: [description]
@@ -98,9 +96,9 @@ class BaseSampler(dimod.Sampler):
             for _ in range(self.num_reads):
                 # Re-initialize at each sampling
                 # In reverse annealing,
-                # user can use previous result (at re-initilize is False)
+                # user can use previous result (if re-initilize is set to False)
                 if reinitialize_state:
-                    system.reset_spins(init_generator())
+                    system.reset_spins(init_generator(structure))
                 # Run sampling algorithm
                 # and measure execution time
                 _exec_time = measure_time(sampling_algorithm)(system)
@@ -109,6 +107,14 @@ class BaseSampler(dimod.Sampler):
                 # get Ising result (state and system information)
                 # ex. _sys_info save trotterized quantum state.
                 result_state, _sys_info = self._get_result(system, model)
+
+                # resize result_state if structure is not None.
+                if structure is not None:
+                    temp_list = {}
+                    for ind in model.indices:
+                        temp_list[ind] = result_state[structure['dict'][ind]]
+
+                    result_state = temp_list
 
                 # store result (state and energy)
                 states.append(result_state)

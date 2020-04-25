@@ -146,7 +146,7 @@ class SASampler(BaseSampler):
     def _sampling(self, model, beta_min=None, beta_max=None,
                      num_sweeps=None, num_reads=1, schedule=None,
                      initial_state=None, updater='single spin flip',
-                     reinitialize_state=True, seed=None,
+                     reinitialize_state=True, seed=None, structure=None
                      **kwargs):
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         # swendsen wang algorithm runs only on sparse ising graphs.
