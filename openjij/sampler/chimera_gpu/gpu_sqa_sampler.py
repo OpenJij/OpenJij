@@ -91,9 +91,8 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
                          num_reads=num_reads,
                          num_sweeps=num_sweeps, schedule=schedule)
 
-        self._make_system = 
-        {
-                cxxjij.system.make_chimera_transverse_gpu
+        self._make_system = {
+            'singlespinflip': cxxjij.system.make_chimera_transverse_gpu
         }
         self._algorithm = {
             'singlespinflip': cxxjij.algorithm.Algorithm_GPU_run
@@ -136,10 +135,23 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
 
         self.unit_num_L = unit_num_L if unit_num_L else self.unit_num_L
 
-        bqm = openjij.ChimeraModel(linear=h, quadratic=J, var_type='SPIN', 
+        model = openjij.ChimeraModel(linear=h, quadratic=J, var_type='SPIN', 
                                    unit_num_L=self.unit_num_L, gpu=True)
 
-        return self._sampling(bqm, beta=beta, gamma=gamma,
+        # define Chimera structure
+        structure = {}
+        structure['size'] = 8 * self.unit_num_L * self.unit_num_L
+        structure['dict'] = {}
+        if isinstance(model.indices[0], int):
+            # identity dict
+            for ind in model.indices:
+                structure['dict'][ind] = ind
+        elif isinstance(model.indices[0], tuple):
+            # map chimera coordinate to index
+            for ind in model.indices:
+                structure['dict'][ind] = model.to_index(*ind, self.unit_num_L)
+
+        return self._sampling(model, beta=beta, gamma=gamma,
                      num_sweeps=num_sweeps, schedule=schedule,
                      num_reads=num_reads,
                      initial_state=initial_state, updater=updater,
