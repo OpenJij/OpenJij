@@ -146,7 +146,7 @@ class SASampler(BaseSampler):
     def _sampling(self, model, beta_min=None, beta_max=None,
                      num_sweeps=None, num_reads=1, schedule=None,
                      initial_state=None, updater='single spin flip',
-                     reinitialize_state=True, seed=None, structure=None
+                     reinitialize_state=True, seed=None, structure=None, 
                      **kwargs):
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         # swendsen wang algorithm runs only on sparse ising graphs.
@@ -186,14 +186,24 @@ class SASampler(BaseSampler):
         if initial_state is None:
             def _generate_init_state(): return ising_graph.gen_spin()
         else:
-            # validate initial_state size
-            if len(initial_state) != ising_graph.size():
-                raise ValueError(
-                    "the size of the initial state should be {}"
-                    .format(ising_graph.size()))
             if isinstance(initial_state, dict):
                 initial_state = [initial_state[k] for k in model.indices]
             _init_state = np.array(initial_state)
+
+            if structure == None:
+                # validate initial_state size
+                if len(initial_state) != ising_graph.size():
+                    raise ValueError(
+                        "the size of the initial state should be {}"
+                        .format(ising_graph.size()))
+            else:
+                # resize _initial_state
+                temp_state = [1]*int(structure['size'])
+                for k,ind in enumerate(model.indices):
+                    temp_state[structure['dict'][ind]] = _init_state[k]
+                _init_state = temp_state
+
+
             def _generate_init_state(): return np.array(_init_state)
         # -------------------------------- make init state generator
 
@@ -207,7 +217,7 @@ class SASampler(BaseSampler):
         response = self._cxxjij_sampling(
             model, _generate_init_state,
             algorithm, sa_system,
-            reinitialize_state, seed, **kwargs
+            reinitialize_state, seed, structure, **kwargs
         )
 
         response.info['schedule'] = self.schedule_info

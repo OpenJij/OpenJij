@@ -70,7 +70,7 @@ class BaseSampler(dimod.Sampler):
             system (:obj:): [description]
             reinitialize_state (bool, optional): [description]. Defaults to None.
             seed (int, optional): seed for algorithm. Defaults to None.
-            structure (dict): structure dictionary. 
+            structure (dict): structure dictionary that must have keys "size" and "dict"
 
         Returns:
             [type]: [description]
@@ -98,7 +98,7 @@ class BaseSampler(dimod.Sampler):
                 # In reverse annealing,
                 # user can use previous result (if re-initilize is set to False)
                 if reinitialize_state:
-                    system.reset_spins(init_generator(structure))
+                    system.reset_spins(init_generator())
                 # Run sampling algorithm
                 # and measure execution time
                 _exec_time = measure_time(sampling_algorithm)(system)
@@ -110,11 +110,11 @@ class BaseSampler(dimod.Sampler):
 
                 # resize result_state if structure is not None.
                 if structure is not None:
-                    temp_list = {}
+                    temp_state = {}
                     for ind in model.indices:
-                        temp_list[ind] = result_state[structure['dict'][ind]]
+                        temp_state[ind] = result_state[structure['dict'][ind]]
 
-                    result_state = temp_list
+                    result_state = temp_state
 
                 # store result (state and energy)
                 states.append(result_state)

@@ -91,7 +91,10 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
                          num_reads=num_reads,
                          num_sweeps=num_sweeps, schedule=schedule)
 
-        self._make_system = cxxjij.system.make_chimera_transverse_gpu
+        self._make_system = 
+        {
+                cxxjij.system.make_chimera_transverse_gpu
+        }
         self._algorithm = {
             'singlespinflip': cxxjij.algorithm.Algorithm_GPU_run
         }
