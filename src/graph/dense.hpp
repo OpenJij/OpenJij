@@ -98,7 +98,7 @@ namespace openjij {
                      *
                      * @param interaction Eigen matrix
                      */
-                    Dense(const Interactions& interaction) : Graph(interaction.rows()){
+                    void set_interaction_matrix(const Interactions& interaction){
                         if(interaction.rows() != interaction.cols()){
                             std::runtime_error("interaction.rows() != interaction.cols()");
                         }

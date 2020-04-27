@@ -17,7 +17,7 @@ import dimod
 SPIN = dimod.SPIN
 BINARY = dimod.BINARY
 
-VarType = dimod.Vartype
+Vartype = dimod.Vartype
 
 def cast_var_type(var_type):
     if isinstance(var_type, dimod.Vartype):

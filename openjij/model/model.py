@@ -54,12 +54,12 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
             GraphClass = cxxjij.graph.Sparse
             return GraphClass(self.to_serializable())
         else:
-            GraphClass = cxxjij.graph.Dense
-            # graph type is dense.
             # initialize with interaction matrix.
             mat = self.interaction_matrix()
-            # reshape matrix
             size = mat.shape[0]
+            dense = cxxjij.graph.Dense(size)
+            # graph type is dense.
+            # reshape matrix
             temp = np.zeros((size+1, size+1))
             temp[:size, :size] = mat
             temp[:size, size] = np.diag(mat)
@@ -68,7 +68,9 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
             temp[size, size] = 1
             temp[:size, :size] /= 2.0
 
-            return GraphClass(temp)
+            dense.set_interaction_matrix(temp)
+
+            return dense
 
 
     # compatible with the previous version
