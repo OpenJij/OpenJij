@@ -93,6 +93,34 @@ namespace openjij {
                         }
                     }
 
+                    /**
+                     * @brief Dense constructor (from Eigen Matrix)
+                     *
+                     * @param interaction Eigen matrix
+                     */
+                    Dense(const Interactions& interaction) : Graph(interaction.rows()){
+                        if(interaction.rows() != interaction.cols()){
+                            std::runtime_error("interaction.rows() != interaction.cols()");
+                        }
+
+                        if((size_t)interaction.rows() != get_num_spins() + 1){
+                            std::runtime_error("invalid matrix size.");
+                        }
+
+                        //check if diagonal elements are zero
+                        for(size_t i=0; i<(size_t)(interaction.rows()-1); i++){
+                            if(interaction(i,i) != 0){
+                                std::runtime_error("The diagonal elements of interaction matrix must be zero.");
+                            }
+                        }
+
+                        if(interaction(interaction.rows()-1,interaction.rows()-1) != 1){
+                            std::runtime_error("The right bottom element of interaction matrix must be unity.");
+                        }
+
+                        _J = interaction.template selfadjointView<Eigen::Upper>();
+                    }
+
 
                     /**
                      * @brief Dense copy constructor

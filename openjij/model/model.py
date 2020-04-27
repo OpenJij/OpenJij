@@ -38,19 +38,6 @@ class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
     def __init__(self, linear, quadratic, offset=0.0,
                  var_type=openjij.SPIN, **kwargs):
 
-        vartype = openjij.cast_var_type(var_type)
-
-        # set recalculate flag True
-        # Be sure to enable this flag when variables are changed.
-        self._re_calculate = True
-        # interaction_matrix
-        self._interaction_matrix = None
-
-        self.indices, self.num_to_ind, self.ind_to_num = self._generate_indices_dict(linear, quadratic)
-
-        # convert indices to integers and call super constructor
-        linear      = self._conv_linear(linear, self.ind_to_num)
-        quadratic   = self._conv_quadratic(quadratic, self.ind_to_num)
         super().__init__(linear, quadratic, offset, vartype)
 
 

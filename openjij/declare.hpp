@@ -59,6 +59,7 @@ inline void declare_Dense(py::module& m, const std::string& suffix){
         .def(py::init<std::size_t>(), "num_spins"_a)
         .def(py::init([](py::object obj){return std::unique_ptr<graph::Dense<FloatType>>(new graph::Dense<FloatType>(static_cast<json>(obj)));}), "obj"_a)
         .def(py::init<const graph::Dense<FloatType>&>(), "other"_a)
+        .def(py::init<const Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>&>(), "interaction"_a)
         .def("calc_energy", [](const graph::Dense<FloatType>& self, const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins){return self.calc_energy(spins);}, "spins"_a)
         .def("calc_energy", [](const graph::Dense<FloatType>& self, const graph::Spins& spins){return self.calc_energy(spins);}, "spins"_a)
         .def("__setitem__", [](graph::Dense<FloatType>& self, const std::pair<std::size_t, std::size_t>& key, FloatType val){self.J(key.first, key.second) = val;}, "key"_a, "val"_a)
