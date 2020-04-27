@@ -18,7 +18,6 @@ import openjij
 import dimod
 from dimod.core.sampler import samplemixinmethod
 import cimod
-from openjij.variable_type import cast_to_dimod
 
 import time
 
@@ -129,7 +128,7 @@ class BaseSampler(dimod.Sampler):
 
         # construct response instance
         response = openjij.Response.from_samples(
-            (states, model.indices), cast_to_dimod(model.vartype), energies,
+            (states, model.indices), model.vartype, energies,
             info=system_info
         )
 
