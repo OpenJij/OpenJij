@@ -99,7 +99,7 @@ class TestSamplers(unittest.TestCase):
         self._test_num_reads(oj.SQASampler)
 
     def test_csqa(self):
-        sampler = oj.CSQASampler(gamma=0.5)
+        sampler = oj.CSQASampler(gamma=10)
         self.samplers(sampler,
                 init_state=[1 for _ in range(len(self.ground_state))],
                 init_q_state=[1 for _ in range(len(self.ground_state))])

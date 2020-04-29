@@ -15,66 +15,122 @@
 import numpy as np
 import cxxjij
 import openjij
-from openjij.utils.decorator import disabled
 import cimod
+import dimod
 import warnings
 import sys
 
-
-class BinaryQuadraticModel(cimod.BinaryQuadraticModel):
-    """Represents Binary quadratic model. 
-       Note that the indices are converted to the integers internally. 
-       The dictionaries between indices and integers are self.ind_to_num (indices -> integers) and self.num_to_ind (integers -> indices).
-       Indices are listed in self.indices.
-    Attributes:
-        var_type (cimod.VariableType): variable type SPIN or BINARY
-        linear (dict): represents linear term
-        quad (dict): represents quadratic term
-        indices (list): labels of each variables sorted by results variables
-        offset (float): represents constant energy term when convert to SPIN from BINARY
-        size (int): number of variables
+def make_BinaryQuadraticModel(linear, quadratic):
+    """ BinaryQuadraticModel factory
+    Args:
+        linear (dict): linear biases
+        quadratic (dict): quadratic biases
+    Returns:
+        generated BinaryQuadraticModel class
     """
-
-    def __init__(self, linear, quadratic, offset=0.0,
-                 var_type=openjij.SPIN, **kwargs):
-
-        super().__init__(linear, quadratic, offset, var_type)
-
-
-    def get_cxxjij_ising_graph(self, sparse=False):
+    class BinaryQuadraticModel(cimod.make_BinaryQuadraticModel(linear, quadratic)):
+        """Represents Binary quadratic model. 
+           Indices are listed in self.indices.
+        Attributes:
+            var_type (cimod.VariableType): variable type SPIN or BINARY
+            linear (dict): represents linear term
+            quadratic (dict): represents quadratic term
+            adj (dict): represents adjacency
+            indices (list): labels of each variables sorted by results variables
+            offset (float): represents constant energy term when convert to SPIN from BINARY
         """
-        Convert to cxxjij.graph.Dense or Sparse class from Python dictionary (h, J) or Q
-        Args:
-            sparse (bool): if true returns sparse graph
-        Returns:
-            openjij.graph.Dense openjij.graph.Sparse
-        """
+    
+        def __init__(self, linear, quadratic, offset=0.0,
+                     var_type=openjij.SPIN, gpu=False, **kwargs):
+    
+            super().__init__(linear, quadratic, offset, var_type, **kwargs)
+            self.gpu = gpu
+    
+    
+        def get_cxxjij_ising_graph(self, sparse=False):
+            """
+            Convert to cxxjij.graph.Dense or Sparse class from Python dictionary (h, J) or Q
+            Args:
+                sparse (bool): if true returns sparse graph
+            Returns:
+                openjij.graph.Dense openjij.graph.Sparse
+            """
+    
+            if sparse:
+                GraphClass = cxxjij.graph.Sparse if self.gpu == False else cxxjij.graph.SparseGPU
+                return GraphClass(self.to_serializable())
+            else:
+                GraphClass = cxxjij.graph.Dense if self.gpu == False else cxxjij.graph.DenseGPU
+                # initialize with interaction matrix.
+                mat = self.interaction_matrix()
+                size = mat.shape[0]
+                dense = GraphClass(size)
+                # graph type is dense.
+                # reshape matrix
+                temp = np.zeros((size+1, size+1))
+                temp[:size, :size] = mat
+                temp[:size, size] = np.diag(mat)
+                temp[size, :size] = np.diag(mat)
+                np.fill_diagonal(temp, 0)
+                temp[size, size] = 1
+                temp[:size, :size] /= 2.0
+    
+                dense.set_interaction_matrix(temp)
+    
+                return dense
+    
+    
+        # compatible with the previous version
+        def calc_energy(self, sample, **kwargs):
+            return self.energy(sample, **kwargs)
 
-        if sparse:
-            GraphClass = cxxjij.graph.Sparse
-            return GraphClass(self.to_serializable())
-        else:
-            # initialize with interaction matrix.
-            mat = self.interaction_matrix()
-            size = mat.shape[0]
-            dense = cxxjij.graph.Dense(size)
-            # graph type is dense.
-            # reshape matrix
-            temp = np.zeros((size+1, size+1))
-            temp[:size, :size] = mat
-            temp[:size, size] = np.diag(mat)
-            temp[size, :size] = np.diag(mat)
-            np.fill_diagonal(temp, 0)
-            temp[size, size] = 1
-            temp[:size, :size] /= 2.0
+    return BinaryQuadraticModel
 
-            dense.set_interaction_matrix(temp)
+def make_BinaryQuadraticModel_from_JSON(obj):
+    """ BinaryQuadraticModel factory for JSON
+    Args:
+        obj (dict): JSON object
+    Returns:
+        generated BinaryQuadraticModel class
+    """
+    label = obj['variable_labels'][0]
+    if isinstance(label, list):
+        #convert to tuple
+        label = tuple(label)
 
-            return dense
+    mock_linear = {label:1.0}
+
+    return make_BinaryQuadraticModel(mock_linear, {})
+
+def BinaryQuadraticModel(linear, quadratic, offset=0.0,
+        var_type=dimod.SPIN, **kwargs):
+
+    Model = make_BinaryQuadraticModel(linear, quadratic)
+
+    return Model(linear, quadratic, offset, var_type, **kwargs)
+
+#classmethods
+BinaryQuadraticModel.from_qubo = \
+        lambda Q, offset=0.0, **kwargs: make_BinaryQuadraticModel({}, Q).from_qubo(Q, offset, **kwargs)
+
+BinaryQuadraticModel.from_ising = \
+        lambda linear, quadratic, offset=0.0, **kwargs: make_BinaryQuadraticModel(linear, quadratic).from_ising(linear, quadratic, offset, **kwargs)
+
+BinaryQuadraticModel.from_serializable = \
+        lambda obj: make_BinaryQuadraticModel_from_JSON(obj).from_serializable(obj)
 
 
-    # compatible with the previous version
-    def calc_energy(self, sample, **kwargs):
-        return self.energy(sample, **kwargs)
+
+
+
+
+
+
+
+
+
+
+
+
 
 

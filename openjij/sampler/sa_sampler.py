@@ -148,6 +148,24 @@ class SASampler(BaseSampler):
                      initial_state=None, updater='single spin flip',
                      reinitialize_state=True, seed=None, structure=None, 
                      **kwargs):
+        """sampling by using specified model
+        Args:
+            model (openjij.BinaryQuadraticModel): BinaryQuadraticModel
+            beta_min (float): minimal value of inverse temperature
+            beta_max (float): maximum value of inverse temperature
+            num_sweeps (int): number of sweeps
+            num_reads (int): number of reads
+            schedule (list): list of inverse temperature
+            initial_state (dict): initial state
+            update (str): updater algorithm
+            reinitialize_state (bool): if true reinitialize state for each run
+            seed (int): seed for Monte Carlo algorithm
+            structure (dict): specify the structure. 
+            This argument is necessary if the model has a specific structure (e.g. Chimera graph) and the updater algorithm is structure-dependent.
+            structure must have two types of keys, namely "size" which shows the total size of spins and "dict" which is the map from model index (elements in model.indices) to the number.
+        Returns:
+            [type]: [description]
+        """
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         # swendsen wang algorithm runs only on sparse ising graphs.
         if _updater_name == 'swendsenwang':
