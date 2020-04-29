@@ -58,11 +58,19 @@ def make_BinaryQuadraticModel(linear, quadratic):
     
             if sparse:
                 GraphClass = cxxjij.graph.Sparse if self.gpu == False else cxxjij.graph.SparseGPU
+                print(self.to_serializable())
                 return GraphClass(self.to_serializable())
             else:
                 GraphClass = cxxjij.graph.Dense if self.gpu == False else cxxjij.graph.DenseGPU
                 # initialize with interaction matrix.
                 mat = self.interaction_matrix()
+
+                if (self.vartype == openjij.BINARY):
+                    # convert to ising matrix
+                    mat /= 4
+                    for i in range(len(mat)):
+                        mat[i, i] += np.sum(mat[i, :])
+
                 size = mat.shape[0]
                 dense = GraphClass(size)
                 # graph type is dense.

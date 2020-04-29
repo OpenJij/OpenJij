@@ -75,6 +75,22 @@ class CSQASampler(SQASampler):
             raise ValueError('updater is one of "swendsen wang"')
         # ------------------------------------------- choose updater
 
+        print("linear: {}".format(bqm.linear))
+        print("quadratic: {}".format(bqm.quadratic))
+        print("adj: {}".format(bqm.adj))
+        print("type: {}".format(bqm.vartype))
+        print("offset: {}".format(bqm.offset))
+        print("indices: {}".format(bqm.indices))
+        print("ising_graph: ")
+        for adj in range(ising_graph.size()):
+            print("adj {}".format(adj), end="")
+            for n in ising_graph.adj_nodes(adj):
+                print(" {} [{}] ".format(n, ising_graph[adj,n]), end="")
+
+            print("")
+                
+
+
         response = self._cxxjij_sampling(
             bqm, init_generator,
             algorithm, sqa_system,
