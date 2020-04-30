@@ -88,11 +88,9 @@ def hubo_sa_sampling(bhom, var_type,
     init_state = init_state if init_state else np.random.choice(
         [1, -1], len(bhom.indices))
 
-    response = openjij.Response(
-        var_type=var_type, indices=bhom.indices
-    )
 
     execution_time = []
+    states, energies = [], []
     @measure_time
     def exec_sampling():
         for _ in range(num_reads):
@@ -100,10 +98,15 @@ def hubo_sa_sampling(bhom, var_type,
                 hubo_simulated_annealing)(bhom, init_state, schedule,
                                           var_type=var_type)
             execution_time.append(_exec_time)
-            response.states.append(state)
-            response.energies.append(bhom.calc_energy(state))
+            states.append(state)
+            energies.append(bhom.calc_energy(state))
 
     sampling_time, _ = exec_sampling()
+
+    response = openjij.Response.from_samples(
+        (states, bhom.indices), var_type, energies,
+        info={}
+    )
 
     response.info['sampling_time'] = sampling_time * 10**6  # micro sec
     response.info['execution_time'] = np.mean(
