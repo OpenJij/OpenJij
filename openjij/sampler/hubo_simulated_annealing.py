@@ -85,8 +85,9 @@ def hubo_sa_sampling(bhom, var_type,
                      num_sweeps=100, num_reads=1,
                      init_state=None, seed=None):
 
+    variables = list(cast_var_type(var_type).value)
     init_state = init_state if init_state else np.random.choice(
-        [1, -1], len(bhom.indices))
+        variables, len(bhom.indices))
 
 
     execution_time = []

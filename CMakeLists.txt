@@ -45,6 +45,8 @@ if(NOT DEFINED USE_CUDA)
     endif()
 endif()
 
+set(USE_CUDA No)
+
 if(NOT DEFINED USE_TEST)
     set(USE_TEST ${DEFAULT_USE_TEST})
 endif()
