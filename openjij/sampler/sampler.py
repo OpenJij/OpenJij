@@ -108,7 +108,6 @@ class BaseSampler(dimod.Sampler):
                 result_state, _sys_info = self._get_result(system, model)
 
                 # resize result_state if structure is not None.
-                print("bare result: {}".format(result_state))
                 if structure is not None:
                     temp_state = {}
                     for ind in model.indices:
@@ -125,7 +124,6 @@ class BaseSampler(dimod.Sampler):
                     result_state = temp_state
 
                 # store result (state and energy)
-                print("after result: {}".format(result_state))
                 states.append(result_state)
                 energies.append(model.energy(result_state))
 
@@ -141,7 +139,6 @@ class BaseSampler(dimod.Sampler):
             (states, model.indices), model.vartype, energies,
             info=system_info
         )
-        print(response)
 
         # save execution time
         response.info['sampling_time'] = sampling_time * 10**6  # micro sec

@@ -37,7 +37,7 @@ def make_KingGraph(linear=None, quadratic=None, king_graph=None):
     if mock_linear == {} and mock_quadratic == {}:
         # no elements in linear and quadratic
         # fetch first element of the king_graph
-        label = king_graph[0][0]
+        label = (king_graph[0][0], king_graph[0][0])
         # add to linear
         mock_linear[label] = 1.0
 

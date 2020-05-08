@@ -58,7 +58,6 @@ def make_BinaryQuadraticModel(linear, quadratic):
     
             if sparse:
                 GraphClass = cxxjij.graph.Sparse if self.gpu == False else cxxjij.graph.SparseGPU
-                print(self.to_serializable())
                 return GraphClass(self.to_serializable())
             else:
                 GraphClass = cxxjij.graph.Dense if self.gpu == False else cxxjij.graph.DenseGPU
