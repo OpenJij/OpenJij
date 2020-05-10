@@ -202,7 +202,7 @@ class SASampler(BaseSampler):
 
         # make init state generator --------------------------------
         if initial_state is None:
-            def _generate_init_state(): return ising_graph.gen_spin()
+            def _generate_init_state(): return ising_graph.gen_spin(seed) if seed != None else ising_graph.gen_spin()
         else:
             if isinstance(initial_state, dict):
                 initial_state = [initial_state[k] for k in model.indices]

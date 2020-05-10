@@ -153,7 +153,7 @@ class SQASampler(BaseSampler):
                      num_sweeps=None, schedule=None,
                      num_reads=1,
                      initial_state=None, updater='single spin flip',
-                     reinitialize_state=True, seed=None, **kwargs):
+                     reinitialize_state=True, seed=None, structure=None, **kwargs):
         """Sampling from the Ising model
 
         Args:
@@ -168,6 +168,9 @@ class SQASampler(BaseSampler):
             updater (str, optional): update method. Defaults to 'single spin flip'.
             reinitialize_state (bool, optional): Re-initilization at each sampling. Defaults to True.
             seed (int, optional): Sampling seed. Defaults to None.
+            structure (dict): specify the structure. 
+            This argument is necessary if the model has a specific structure (e.g. Chimera graph) and the updater algorithm is structure-dependent.
+            structure must have two types of keys, namely "size" which shows the total size of spins and "dict" which is the map from model index (elements in model.indices) to the number.
 
         Raises:
             ValueError: [description]
@@ -183,13 +186,13 @@ class SQASampler(BaseSampler):
                      num_sweeps=num_sweeps, schedule=schedule,
                      num_reads=num_reads,
                      initial_state=initial_state, updater=updater,
-                     reinitialize_state=reinitialize_state, seed=seed, **kwargs)
+                     reinitialize_state=reinitialize_state, seed=seed, structure=structure, **kwargs)
 
     def _sampling(self, bqm, beta=None, gamma=None,
                      num_sweeps=None, schedule=None,
                      num_reads=1,
                      initial_state=None, updater='single spin flip',
-                     reinitialize_state=True, seed=None, **kwargs):
+                     reinitialize_state=True, seed=None, structure=None, **kwargs):
 
         ising_graph = bqm.get_cxxjij_ising_graph()
 
@@ -202,12 +205,27 @@ class SQASampler(BaseSampler):
 
         # make init state generator --------------------------------
         if initial_state is None:
-            def init_generator(): return [ising_graph.gen_spin()
+            def init_generator(): return [ising_graph.gen_spin(seed) if seed != None else ising_graph.gen_spin()
                                           for _ in range(self.trotter)]
         else:
             if isinstance(initial_state, dict):
                 initial_state = [initial_state[k] for k in bqm.indices]
-            trotter_init_state = [np.array(initial_state)
+            _init_state = np.array(initial_state)
+
+            if structure == None:
+                # validate initial_state size
+                if len(initial_state) != ising_graph.size():
+                    raise ValueError(
+                        "the size of the initial state should be {}"
+                        .format(ising_graph.size()))
+            else:
+                # resize _initial_state
+                temp_state = [1]*int(structure['size'])
+                for k,ind in enumerate(model.indices):
+                    temp_state[structure['dict'][ind]] = _init_state[k]
+                _init_state = temp_state
+
+            trotter_init_state = [_init_state
                                   for _ in range(self.trotter)]
 
             def init_generator(): return trotter_init_state
@@ -217,16 +235,16 @@ class SQASampler(BaseSampler):
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         if _updater_name not in self._algorithm:
             raise ValueError('updater is one of "single spin flip"')
+        algorithm = self._algorithm[_updater_name] 
         sqa_system = self._make_system[_updater_name](
             init_generator(), ising_graph, self.gamma
         )
-        algorithm = self._algorithm[_updater_name] 
         # ------------------------------------------- choose updater
 
         response = self._cxxjij_sampling(
             bqm, init_generator,
             algorithm, sqa_system,
-            reinitialize_state, seed, **kwargs
+            reinitialize_state, seed, structure, **kwargs
         )
 
         response.info['schedule'] = self.schedule_info

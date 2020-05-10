@@ -44,9 +44,9 @@ def make_ChimeraModel(linear, quadratic):
             self.gpu = gpu
             if model:
                 super().__init__(model.linear, model.quadratic,
-                                 model.offset, model.var_type)
+                                 model.offset, model.var_type, gpu=gpu)
             else:
-                super().__init__(linear, quadratic, offset, var_type)
+                super().__init__(linear, quadratic, offset, var_type, gpu=gpu)
             if not unit_num_L:
                 raise ValueError(
                     'Input unit_num_L which is the length of the side of the two-dimensional grid where chimera unit cells are arranged.')
@@ -170,7 +170,7 @@ def make_ChimeraModel(linear, quadratic):
             if not self.validate_chimera():
                 raise ValueError("Problem graph incompatible with chimera graph.")
             _h, _J, _offset = self.to_ising()
-    
+            
             if self.gpu:
                 chimera = cj.graph.ChimeraGPU(chimera_L, chimera_L)
             else:
