@@ -102,6 +102,8 @@ class SASampler(BaseSampler):
 
 
     def _convert_validation_schedule(self, schedule):
+        """Checks if the schedule is valid and returns cxxjij schedule
+        """
         if not isinstance(schedule, (list, np.array)):
             raise ValueError("schedule should be list or numpy.array")
 
@@ -124,6 +126,7 @@ class SASampler(BaseSampler):
             _schedule.one_mc_step = step_length
             _schedule.updater_parameter.beta = beta
             cxxjij_schedule.append(_schedule)
+
         return cxxjij_schedule
 
     def sample_ising(self, h, J, beta_min=None, beta_max=None,
@@ -143,8 +146,26 @@ class SASampler(BaseSampler):
     def _sampling(self, model, beta_min=None, beta_max=None,
                      num_sweeps=None, num_reads=1, schedule=None,
                      initial_state=None, updater='single spin flip',
-                     reinitialize_state=True, seed=None,
+                     reinitialize_state=True, seed=None, structure=None, 
                      **kwargs):
+        """sampling by using specified model
+        Args:
+            model (openjij.BinaryQuadraticModel): BinaryQuadraticModel
+            beta_min (float): minimal value of inverse temperature
+            beta_max (float): maximum value of inverse temperature
+            num_sweeps (int): number of sweeps
+            num_reads (int): number of reads
+            schedule (list): list of inverse temperature
+            initial_state (dict): initial state
+            update (str): updater algorithm
+            reinitialize_state (bool): if true reinitialize state for each run
+            seed (int): seed for Monte Carlo algorithm
+            structure (dict): specify the structure. 
+            This argument is necessary if the model has a specific structure (e.g. Chimera graph) and the updater algorithm is structure-dependent.
+            structure must have two types of keys, namely "size" which shows the total size of spins and "dict" which is the map from model index (elements in model.indices) to the number.
+        Returns:
+            [type]: [description]
+        """
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         # swendsen wang algorithm runs only on sparse ising graphs.
         if _updater_name == 'swendsenwang':
@@ -181,16 +202,26 @@ class SASampler(BaseSampler):
 
         # make init state generator --------------------------------
         if initial_state is None:
-            def _generate_init_state(): return ising_graph.gen_spin()
+            def _generate_init_state(): return ising_graph.gen_spin(seed) if seed != None else ising_graph.gen_spin()
         else:
-            # validate initial_state size
-            if len(initial_state) != ising_graph.size():
-                raise ValueError(
-                    "the size of the initial state should be {}"
-                    .format(ising_graph.size()))
             if isinstance(initial_state, dict):
                 initial_state = [initial_state[k] for k in model.indices]
             _init_state = np.array(initial_state)
+
+            if structure == None:
+                # validate initial_state size
+                if len(initial_state) != ising_graph.size():
+                    raise ValueError(
+                        "the size of the initial state should be {}"
+                        .format(ising_graph.size()))
+            else:
+                # resize _initial_state
+                temp_state = [1]*int(structure['size'])
+                for k,ind in enumerate(model.indices):
+                    temp_state[structure['dict'][ind]] = _init_state[k]
+                _init_state = temp_state
+
+
             def _generate_init_state(): return np.array(_init_state)
         # -------------------------------- make init state generator
 
@@ -204,7 +235,7 @@ class SASampler(BaseSampler):
         response = self._cxxjij_sampling(
             model, _generate_init_state,
             algorithm, sa_system,
-            reinitialize_state, seed, **kwargs
+            reinitialize_state, seed, structure, **kwargs
         )
 
         response.info['schedule'] = self.schedule_info
@@ -279,17 +310,30 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
         list of cxxjij.utility.ClassicalSchedule, list of beta range [max, min]
     """
     if beta_min is None or beta_max is None:
-        ising_interaction = np.abs(model.ising_interactions())
+        # generate Ising matrix
+        ising_interaction = model.interaction_matrix()
+        if (model.vartype == openjij.BINARY):
+            # convert to ising matrix
+            ising_interaction /= 4
+            for i in range(len(ising_interaction)):
+                ising_interaction[i, i] += np.sum(ising_interaction[i, :])
+
+        ising_interaction = np.abs(ising_interaction)
+
+        #automatical setting of min, max delta energy
         abs_bias = np.sum(ising_interaction, axis=1)
 
-        min_delta_energy = np.min(ising_interaction[ising_interaction > 0])
-        max_delta_energy = np.max(abs_bias[abs_bias > 0])
+        min_delta_energy = np.min(ising_interaction[ising_interaction >= 0])
+        max_delta_energy = np.max(abs_bias[abs_bias >= 0])
+
+    # TODO: More optimal schedule ?
 
     beta_min = np.log(2) / max_delta_energy if beta_min is None else beta_min
     beta_max = np.log(100) / min_delta_energy if beta_max is None else beta_max
 
     num_sweeps_per_beta = max(1, num_sweeps // 1000)
 
+    # set schedule to cxxjij
     schedule = cxxjij.utility.make_classical_schedule_list(
         beta_min=beta_min, beta_max=beta_max,
         one_mc_step=num_sweeps_per_beta,

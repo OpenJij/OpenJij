@@ -70,9 +70,6 @@ class CMakeBuild(build_ext):
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
 
-        # git submodule update
-        subprocess.check_call(['git', 'submodule', 'update', '-i'], cwd=ext.sourcedir)
-
         subprocess.check_call(['cmake', ext.sourcedir] +
                               cmake_kwargs, cwd=self.build_temp, env=env)
         subprocess.check_call(
@@ -131,7 +128,7 @@ setup(
     description='Framework for the Ising model and QUBO',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    install_requires=['numpy >= 1.16.0', 'dimod==0.8.21', 'requests'],
+    install_requires=['dimod >= 0.9.1', 'numpy >= 1.18.4', 'requests', 'jij-cimod >= 1.0.3'],
     ext_modules=[CMakeExtension('cxxjij')],
     cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
                   pytest=PyTestCommand),

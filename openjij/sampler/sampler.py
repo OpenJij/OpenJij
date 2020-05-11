@@ -16,9 +16,10 @@ import numpy as np
 import cxxjij
 import openjij
 import dimod
+from dimod.core.sampler import samplemixinmethod
+import cimod
 
 import time
-
 
 def measure_time(func):
     def wrapper(*args, **kargs):
@@ -39,13 +40,12 @@ class BaseSampler(dimod.Sampler):
     parameters = dict()
     properties = dict()
 
-    def _set_model(self, model):
-        self.indices = model.indices
-        self.size = model.size
-        self.energy_bias = model.energy_bias
-        self.var_type = model.var_type
-
     def _setting_overwrite(self, **kwargs):
+        """Overwrite the settings
+
+        Args:
+            **kwargs: options
+        """
         for key, value in kwargs.items():
             if value is not None:
                 self._schedule_setting[key] = value
@@ -59,22 +59,21 @@ class BaseSampler(dimod.Sampler):
     def _cxxjij_sampling(self, model, init_generator,
                          algorithm, system,
                          reinitialize_state=None,
-                         seed=None, **kwargs):
+                         seed=None, structure=None, **kwargs):
         """Basic sampling function: for cxxjij sampling
 
         Args:
             model (openjij.BinaryQuadraticModel): model has a information of instaunce (h, J, Q)
-            init_generator (callable): return initial state
+            init_generator (callable): return initial state, must have argument structure
             algorithm (callable): system algorithm of cxxjij
             system (:obj:): [description]
             reinitialize_state (bool, optional): [description]. Defaults to None.
             seed (int, optional): seed for algorithm. Defaults to None.
+            structure (dict): structure dictionary that must have keys "size" and "dict"
 
         Returns:
             [type]: [description]
         """
-
-        self._set_model(model)
 
         # set algorithm function and set random seed ----
         if seed is None:
@@ -96,7 +95,7 @@ class BaseSampler(dimod.Sampler):
             for _ in range(self.num_reads):
                 # Re-initialize at each sampling
                 # In reverse annealing,
-                # user can use previous result (at re-initilize is False)
+                # user can use previous result (if re-initilize is set to False)
                 if reinitialize_state:
                     system.reset_spins(init_generator())
                 # Run sampling algorithm
@@ -108,9 +107,25 @@ class BaseSampler(dimod.Sampler):
                 # ex. _sys_info save trotterized quantum state.
                 result_state, _sys_info = self._get_result(system, model)
 
+                # resize result_state if structure is not None.
+                if structure is not None:
+                    temp_state = {}
+                    for ind in model.indices:
+                        temp_state[ind] = result_state[structure['dict'][ind]]
+
+                    result_state = temp_state
+
+                else:
+                    # no structure
+                    # replace indices
+                    temp_state = {}
+                    for num in range(len(model.indices)):
+                        temp_state[model.indices[num]] = result_state[num]
+                    result_state = temp_state
+
                 # store result (state and energy)
                 states.append(result_state)
-                energies.append(model.calc_energy(result_state))
+                energies.append(model.energy(result_state))
 
                 if _sys_info:
                     system_info['system'].append(_sys_info)
@@ -121,7 +136,7 @@ class BaseSampler(dimod.Sampler):
 
         # construct response instance
         response = openjij.Response.from_samples(
-            (states, model.indices), self.var_type, energies,
+            (states, model.indices), model.vartype, energies,
             info=system_info
         )
 
@@ -134,17 +149,78 @@ class BaseSampler(dimod.Sampler):
 
         return response
 
-    def _dict_to_model(self, var_type, h=None, J=None, Q=None, **kwargs):
-        if var_type == openjij.SPIN:
-            bqm = openjij.BinaryQuadraticModel(h, J, 0.0, var_type)
-        elif var_type == openjij.BINARY:
-            bqm = openjij.BinaryQuadraticModel.from_qubo(Q)
-        else:
-            raise ValueError(
-                'var_type should be openjij.SPIN or openjij.BINARY')
-        return bqm
-
     def _get_result(self, system, model):
         result = cxxjij.result.get_solution(system)
         sys_info = {}
         return result, sys_info
+
+    
+    @samplemixinmethod
+    def sample(self, bqm, **parameters):
+        """Sample from a binary quadratic model.
+        Args:
+            bqm (openjij.BinaryQuadraticModel):
+                Binary Qudratic Model
+            **kwargs:
+                See the implemented sampling for additional keyword definitions.
+
+        Returns:
+            :obj:`.SampleSet`
+        """
+        if bqm.vartype == openjij.SPIN:
+            if not getattr(self.sample_ising, '__issamplemixin__', False):
+                # sample_ising is implemented
+                h, J, offset = bqm.to_ising()
+                sampleset = self.sample_ising(h, J, **parameters)
+                sampleset.record.energy += offset
+                return sampleset
+            else:
+                Q, offset = bqm.to_qubo()
+                sampleset = self.sample_qubo(Q, **parameters)
+                sampleset.change_vartype(dimod.SPIN, energy_offset=offset)
+                return sampleset
+        elif bqm.vartype == openjij.BINARY:
+            if not getattr(self.sample_qubo, '__issamplemixin__', False):
+                # sample_qubo is implemented
+                Q, offset = bqm.to_qubo()
+                sampleset = self.sample_qubo(Q, **parameters)
+                sampleset.record.energy += offset
+                return sampleset
+            else:
+                h, J, offset = bqm.to_ising()
+                sampleset = self.sample_ising(h, J, **parameters)
+                sampleset.change_vartype(dimod.BINARY, energy_offset=offset)
+                return sampleset
+        else:
+            raise RuntimeError("binary quadratic model has an unknown vartype")
+
+    
+
+    @samplemixinmethod
+    def sample_ising(self, h, J, **parameters):
+        """Sample from an Ising model using the implemented sample method.
+
+        Args:
+            h (dict): Linear biases
+            J (dict): Quadratic biases
+
+        Returns:
+            :obj: `.Sampleset`
+        """
+        bqm = openjij.BinaryQuadraticModel.from_ising(h, J)
+        return self.sample(bqm, **parameters)
+
+
+    @samplemixinmethod
+    def sample_qubo(self, Q, **parameters):
+        """Sample from a QUBO model using the implemented sample method.
+
+        Args:
+            Q (dict): Coefficients of a quadratic unconstrained binary optimization
+
+        Returns:
+            :obj: `.Sampleset`
+        """
+        bqm = openjij.BinaryQuadraticModel.from_qubo(Q)
+        return self.sample(bqm, **parameters)
+

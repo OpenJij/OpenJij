@@ -31,7 +31,7 @@ class BinaryHigherOrderModel:
                     adj_dict[i].append([_inds_list, value])
         return adj_dict
 
-    def calc_energy(self, state):
+    def energy(self, state):
         """calculate energy of state
 
         Args:

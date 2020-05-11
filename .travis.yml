@@ -27,8 +27,9 @@ install:
   - python setup.py build --debug install
 
 script:
-  - pip install numpy 
-  - pip install scipy 
+  - pip install -U numpy 
+  - pip install -U scipy 
+  - pip list
   - python tests/test.py
   - python tests/test_model.py
   - python tests/test_sampler.py
