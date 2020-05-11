@@ -155,5 +155,5 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
                      num_sweeps=num_sweeps, schedule=schedule,
                      num_reads=num_reads,
                      initial_state=initial_state, updater=updater,
-                     reinitialize_state=reinitialize_state, seed=seed, **kwargs)
+                     reinitialize_state=reinitialize_state, seed=seed, structure=structure, **kwargs)
 
