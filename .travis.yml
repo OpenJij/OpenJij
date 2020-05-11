@@ -29,6 +29,7 @@ install:
 script:
   - pip install numpy 
   - pip install scipy 
+  - pip list
   - python tests/test.py
   - python tests/test_model.py
   - python tests/test_sampler.py
