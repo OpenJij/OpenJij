@@ -128,7 +128,7 @@ setup(
     description='Framework for the Ising model and QUBO',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    install_requires=['numpy >= 1.16.0', 'dimod >= 0.9.1', 'requests', 'jij-cimod >= 1.0.3'],
+    install_requires=['dimod >= 0.9.1', 'numpy >= 1.16.1', 'requests', 'jij-cimod >= 1.0.3'],
     ext_modules=[CMakeExtension('cxxjij')],
     cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
                   pytest=PyTestCommand),
