@@ -80,7 +80,6 @@ def make_BinaryQuadraticModel(linear, quadratic):
                 temp[size, :size] = np.diag(mat)
                 np.fill_diagonal(temp, 0)
                 temp[size, size] = 1
-                temp[:size, :size] /= 2.0
     
                 dense.set_interaction_matrix(temp)
     
