@@ -100,7 +100,6 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
 
     def _get_result(self, system, model):
         result = cxxjij.result.get_solution(system)
-        result = [result[i] for i in model.indices]
         sys_info = {}
         return result, sys_info
 

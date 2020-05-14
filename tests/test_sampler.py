@@ -32,6 +32,12 @@ class TestSamplers(unittest.TestCase):
         self.ground_q = [1, 1, 0, 0, 0]
         self.e_q = -1-1-1
 
+        # for antiferromagnetic one-dimensional Ising model
+        N = 30
+        self.afih = {0: -10}
+        self.afiJ = {(i, i+1): 1 for i in range(N-1)}
+        self.afiground = {i:(-1)**i for i in range(N)}
+
     def samplers(self, sampler, init_state=None, init_q_state=None):
         res = sampler.sample_ising(
             self.num_ind['h'], self.num_ind['J'],
@@ -75,6 +81,7 @@ class TestSamplers(unittest.TestCase):
         )
         self._test_response_num(res, num_reads)
 
+
     def test_sa(self):
         sampler = oj.SASampler()
         self.samplers(sampler)
@@ -85,6 +92,11 @@ class TestSamplers(unittest.TestCase):
             init_state={i: 1 for i in range(len(self.ground_state))}
             )
         self._test_num_reads(oj.SASampler)
+
+        #antiferromagnetic one-dimensional Ising model
+        sampler = oj.SASampler(num_sweeps=51, num_reads=100)
+        res = sampler.sample_ising(self.afih, self.afiJ)
+        self.assertDictEqual(self.afiground, res.first.sample)
 
     def test_sqa(self):
         sampler = oj.SQASampler()
@@ -98,11 +110,21 @@ class TestSamplers(unittest.TestCase):
             )
         self._test_num_reads(oj.SQASampler)
 
+        #antiferromagnetic one-dimensional Ising model
+        sampler = oj.SASampler(num_sweeps=51, num_reads=100)
+        res = sampler.sample_ising(self.afih, self.afiJ)
+        self.assertDictEqual(self.afiground, res.first.sample)
+
     def test_csqa(self):
         sampler = oj.CSQASampler(gamma=10)
         self.samplers(sampler,
                 init_state=[1 for _ in range(len(self.ground_state))],
                 init_q_state=[1 for _ in range(len(self.ground_state))])
+
+        #antiferromagnetic one-dimensional Ising model
+        sampler = oj.CSQASampler(num_sweeps=51, num_reads=100)
+        res = sampler.sample_ising(self.afih, self.afiJ)
+        self.assertDictEqual(self.afiground, res.first.sample)
 
 
 if __name__ == '__main__':
