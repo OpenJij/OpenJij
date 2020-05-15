@@ -5,7 +5,7 @@
 * gcc >= 7.0.0 (or another C++ compiler that supports C++17)
 * cmake >= 3.12.2
 
-- [Documents](https://openjij.github.io/OpenJij/main.html)
+- [Documents](https://openjij.github.io/OpenJij_Documentation/build/html/)
 - [Tutorials](https://openjij.github.io/OpenJijTutorial/_build/html/index.html)
 - [C++ Docs](https://openjij.github.io/OpenJij/html/index.html)
 
@@ -65,7 +65,6 @@ response = sampler.sample_ising(h={'a': -1}, J={('a','b'): 1})
 ### C++ example
 
 ```
-$ git submodule update -i
 $ source ./build_gcc.sh
 $ cd ./project_template
 $ make
