@@ -215,11 +215,10 @@ TEST(Graph, EnergyCheck){
         }
     }
 
-    // the energy must be consistent with dimod.BinaryQuadraticModel
-    EXPECT_EQ(b_d.calc_energy(spins), (N*N - N));
-    EXPECT_EQ(b_d.calc_energy(spins_neg), (N*N - N));
-    EXPECT_EQ(b.calc_energy(spins), (N*N - N));
-    EXPECT_EQ(b.calc_energy(spins_neg), (N*N - N));
+    EXPECT_EQ(b_d.calc_energy(spins), (1./2) * (N*N - N));
+    EXPECT_EQ(b_d.calc_energy(spins_neg), (1./2) * (N*N - N));
+    EXPECT_EQ(b.calc_energy(spins), (1./2) * (N*N - N));
+    EXPECT_EQ(b.calc_energy(spins_neg), (1./2) * (N*N - N));
     EXPECT_EQ(b_d.calc_energy(spins_r), b.calc_energy(spins_r));
 
     Dense<double> c_d(N);
@@ -237,11 +236,10 @@ TEST(Graph, EnergyCheck){
         }
     }
 
-    // the energy must be consistent with dimod.BinaryQuadraticModel
-    EXPECT_EQ(c_d.calc_energy(spins), N*N);
-    EXPECT_EQ(c_d.calc_energy(spins_neg), (N*N - 2*N));
-    EXPECT_EQ(c.calc_energy(spins), N*N );
-    EXPECT_EQ(c.calc_energy(spins_neg), (N*N - 2*N));
+    EXPECT_EQ(c_d.calc_energy(spins), (1./2) * (N*N + N));
+    EXPECT_EQ(c_d.calc_energy(spins_neg), (1./2) * (N*N - 3*N));
+    EXPECT_EQ(c.calc_energy(spins), (1./2) * (N*N + N));
+    EXPECT_EQ(c.calc_energy(spins_neg), (1./2) * (N*N - 3*N));
     EXPECT_EQ(c_d.calc_energy(spins_r), c.calc_energy(spins_r));
 }
 
