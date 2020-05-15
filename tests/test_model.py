@@ -70,9 +70,33 @@ class ModelTest(unittest.TestCase):
         J[0, 1] /= 3
         J[1, 0] = J[0, 1] * 2
         bqm = oj.BinaryQuadraticModel(self.h, J)
-        np.testing.assert_array_equal(
-            bqm.interaction_matrix(), ising_matrix
-        )
+        np.testing.assert_array_equal(bqm.interaction_matrix(), ising_matrix)
+
+    def test_transfer_to_cxxjij(self):
+        bqm = oj.BinaryQuadraticModel(self.h, self.J)
+        # to Dense
+        ising_graph = bqm.get_cxxjij_ising_graph(sparse=False)
+        self.assertEqual(ising_graph.size(), len(bqm.indices))
+        for i in range(len(bqm.indices)):
+            for j in range(len(bqm.indices)):
+                if i != j:
+                    self.assertAlmostEqual(bqm.interaction_matrix()[i,j], ising_graph.get_interactions()[i, j])
+                else:
+                    # i == j
+                    self.assertAlmostEqual(bqm.interaction_matrix()[i,j], ising_graph.get_interactions()[i, len(bqm.indices)])
+                    self.assertAlmostEqual(bqm.interaction_matrix()[i,j], ising_graph.get_interactions()[len(bqm.indices), i])
+                    self.assertEqual(ising_graph.get_interactions()[i,i], 0)
+
+        self.assertEqual(ising_graph.get_interactions()[len(bqm.indices),len(bqm.indices)], 1)
+
+
+        # to Sparse
+        ising_graph = bqm.get_cxxjij_ising_graph(sparse=True)
+        self.assertEqual(ising_graph.size(), len(bqm.indices))
+        for i in range(ising_graph.size()):
+            for j in ising_graph.adj_nodes(i):
+                self.assertEqual(bqm.interaction_matrix()[i,j], ising_graph[i,j])
+
 
     def test_bqm_calc_energy(self):
         # Test to calculate energy
@@ -105,6 +129,14 @@ class ModelTest(unittest.TestCase):
         qubo_energy = qubo_bqm.energy(binary)
 
         self.assertEqual(qubo_energy, qubo_bqm.energy(spins, convert_sample=True))
+
+    def test_energy_consistency(self):
+        bqm = oj.BinaryQuadraticModel(self.h, self.J, var_type='SPIN')
+        dense_ising_graph = bqm.get_cxxjij_ising_graph(sparse=False)
+        sparse_ising_graph = bqm.get_cxxjij_ising_graph(sparse=True)
+        spins = {0: -1, 1: -1, 2: -1, 3: -1}
+        self.assertAlmostEqual(dense_ising_graph.calc_energy([spins[i] for i in range(len(spins))]), bqm.energy(spins))
+        self.assertAlmostEqual(sparse_ising_graph.calc_energy([spins[i] for i in range(len(spins))]), bqm.energy(spins))
 
     def test_bqm(self):
         h = {}

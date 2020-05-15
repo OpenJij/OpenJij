@@ -15,6 +15,7 @@ import numpy as np
 import openjij
 from openjij.sampler import BaseSampler
 from openjij.utils.decorator import deprecated_alias
+from openjij.utils.graph_utils import qubo_to_ising
 from openjij.model import BinaryHigherOrderModel
 from .hubo_simulated_annealing import hubo_sa_sampling
 from .hubo_simulated_annealing import default_schedule
@@ -314,9 +315,7 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
         ising_interaction = model.interaction_matrix()
         if (model.vartype == openjij.BINARY):
             # convert to ising matrix
-            ising_interaction /= 4
-            for i in range(len(ising_interaction)):
-                ising_interaction[i, i] += np.sum(ising_interaction[i, :])
+            qubo_to_ising(ising_interaction)
 
         ising_interaction = np.abs(ising_interaction)
 

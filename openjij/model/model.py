@@ -15,6 +15,7 @@
 import numpy as np
 import cxxjij
 import openjij
+from openjij.utils.graph_utils import qubo_to_ising
 import cimod
 import dimod
 import warnings
@@ -66,9 +67,7 @@ def make_BinaryQuadraticModel(linear, quadratic):
 
                 if (self.vartype == openjij.BINARY):
                     # convert to ising matrix
-                    mat /= 4
-                    for i in range(len(mat)):
-                        mat[i, i] += np.sum(mat[i, :])
+                    qubo_to_ising(mat)
 
                 size = mat.shape[0]
                 dense = GraphClass(size)
@@ -80,7 +79,6 @@ def make_BinaryQuadraticModel(linear, quadratic):
                 temp[size, :size] = np.diag(mat)
                 np.fill_diagonal(temp, 0)
                 temp[size, size] = 1
-                temp[:size, :size] /= 2.0
     
                 dense.set_interaction_matrix(temp)
     

@@ -94,7 +94,7 @@ namespace openjij {
                     }
 
                     /**
-                     * @brief Dense constructor (from Eigen Matrix)
+                     * @brief set interaction matrix from Eigen Matrix.
                      *
                      * @param interaction Eigen matrix
                      */
@@ -151,7 +151,8 @@ namespace openjij {
                         }
                         s(get_num_spins()) = 1;
 
-                        return (s.transpose()*(_J*s))(0,0)-1;
+                        // the energy must be consistent with BinaryQuadraticModel.
+                        return (s.transpose()*(_J.template triangularView<Eigen::Upper>()*s))(0,0)-1;
                     }
 
                     FloatType calc_energy(const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins) const{
