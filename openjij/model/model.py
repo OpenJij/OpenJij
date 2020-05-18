@@ -21,19 +21,22 @@ import dimod
 import warnings
 import sys
 
-def make_BinaryQuadraticModel(linear, quadratic):
-    """ BinaryQuadraticModel factory
+def make_BinaryQuadraticModel(linear: dict, quadratic: dict) -> type:
+    """BinaryQuadraticModel factory.
+
     Args:
         linear (dict): linear biases
         quadratic (dict): quadratic biases
+
     Returns:
-        generated BinaryQuadraticModel class
+        type: generated BinaryQuadraticModel class
     """
+
     class BinaryQuadraticModel(cimod.make_BinaryQuadraticModel(linear, quadratic)):
         """Represents Binary quadratic model. 
            Indices are listed in self.indices.
         Attributes:
-            var_type (cimod.VariableType): variable type SPIN or BINARY
+            var_type (dimod.Vartype): variable type SPIN or BINARY
             linear (dict): represents linear term
             quadratic (dict): represents quadratic term
             adj (dict): represents adjacency
@@ -41,20 +44,30 @@ def make_BinaryQuadraticModel(linear, quadratic):
             offset (float): represents constant energy term when convert to SPIN from BINARY
         """
     
-        def __init__(self, linear, quadratic, offset=0.0,
-                     var_type=openjij.SPIN, gpu=False, **kwargs):
+        def __init__(self, linear: dict, quadratic: dict, offset: float=0.0,
+                var_type: openjij.variable_type.Vartype=openjij.SPIN, gpu: bool=False, **kwargs):
+            """BinaryQuadraticModel constructor.
+
+            Args:
+                linear (dict): linear biases.
+                quadratic (dict): quadratic biases
+                offset (float): offset
+                var_type (openjij.variable_type.Vartype): var_type
+                gpu (bool): if true, this can be used for gpu samplers.
+                kwargs:
+            """
     
             super().__init__(linear, quadratic, offset, var_type, **kwargs)
             self.gpu = gpu
     
     
-        def get_cxxjij_ising_graph(self, sparse=False):
-            """
-            Convert to cxxjij.graph.Dense or Sparse class from Python dictionary (h, J) or Q
+        def get_cxxjij_ising_graph(self, sparse: bool=False):
+            """generate cxxjij Ising graph from the interactions.
+
             Args:
-                sparse (bool): if true returns sparse graph
+                sparse (bool): if true, this function returns cxxjij.graph.Sparse. Otherwise it returns cxxjij.graph.Dense.
             Returns:
-                openjij.graph.Dense openjij.graph.Sparse
+                cxxjij.graph.Dense or cxxjij.graph.Sparse: 
             """
     
             if sparse:
@@ -91,13 +104,13 @@ def make_BinaryQuadraticModel(linear, quadratic):
 
     return BinaryQuadraticModel
 
-def make_BinaryQuadraticModel_from_JSON(obj):
-    """ BinaryQuadraticModel factory for JSON
+def make_BinaryQuadraticModel_from_JSON(obj: dict):
+    """make BinaryQuadraticModel from JSON.
+
     Args:
-        obj (dict): JSON object
-    Returns:
-        generated BinaryQuadraticModel class
+        obj:
     """
+
     label = obj['variable_labels'][0]
     if isinstance(label, list):
         #convert to tuple
