@@ -11,8 +11,12 @@ class SQASampler(BaseSampler):
 
     Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
     Hamiltonian
-    $$H(s) = s H_p + (1-s)\sum_i \sigma_i^x$$
-    which $H_p$ is problem Hamiltonian that we want solve.
+
+    .. math:: 
+
+        H(s) = s H_p + \\Gamma (1-s)\\sum_i \\sigma_i^x
+
+    where $H_p$ is the problem Hamiltonian we want to solve.
 
     Args:
         beta (float):
@@ -173,10 +177,10 @@ class SQASampler(BaseSampler):
             structure must have two types of keys, namely "size" which shows the total size of spins and "dict" which is the map from model index (elements in model.indices) to the number.
 
         Raises:
-            ValueError: [description]
+            ValueError: 
 
         Returns:
-            [type]: [description]
+            :class:`openjij.sampler.response.Response`: results
         """
 
         bqm = openjij.BinaryQuadraticModel(
@@ -279,6 +283,16 @@ class SQASampler(BaseSampler):
 
 
 def linear_ising_schedule(model, beta, gamma, num_sweeps):
+    """Generate linear ising schedule.
+
+    Args:
+        model (:class:`openjij.model.model.BinaryQuadraticModel`): BinaryQuadraticModel
+        beta (float): inverse temperature
+        gamma (float): transverse field
+        num_sweeps (int): number of steps
+    Returns:
+        generated schedule
+    """
     schedule = cxxjij.utility.make_transverse_field_schedule_list(
         beta=beta, one_mc_step=1, num_call_updater=num_sweeps
     )

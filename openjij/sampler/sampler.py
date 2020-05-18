@@ -80,7 +80,7 @@ class BaseSampler(dimod.Sampler):
             structure (dict): structure dictionary that must have keys "size" and "dict"
 
         Returns:
-            :class:`openjij.Response`: results 
+            :class:`openjij.sampler.response.Response`: results 
         """
 
         # set algorithm function and set random seed ----
@@ -173,7 +173,7 @@ class BaseSampler(dimod.Sampler):
                 See the implemented sampling for additional keyword definitions.
 
         Returns:
-            :class:`openjij.Response`: results 
+            :class:`openjij.sampler.response.Response`: results 
         """
         if bqm.vartype == openjij.SPIN:
             if not getattr(self.sample_ising, '__issamplemixin__', False):
@@ -213,7 +213,7 @@ class BaseSampler(dimod.Sampler):
             J (dict): Quadratic biases
 
         Returns:
-            :class:`openjij.Response`: results 
+            :class:`openjij.sampler.response.Response`: results 
         """
         bqm = openjij.BinaryQuadraticModel.from_ising(h, J)
         return self.sample(bqm, **parameters)
@@ -227,7 +227,7 @@ class BaseSampler(dimod.Sampler):
             Q (dict): Coefficients of a quadratic unconstrained binary optimization
 
         Returns:
-            :class:`openjij.Response`: results 
+            :class:`openjij.sampler.response.Response`: results 
         """
         bqm = openjij.BinaryQuadraticModel.from_qubo(Q)
         return self.sample(bqm, **parameters)
