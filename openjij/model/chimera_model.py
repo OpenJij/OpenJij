@@ -19,9 +19,6 @@ import cxxjij as cj
 
 def make_ChimeraModel(linear, quadratic):
     """ ChimeraModel factory
-    Args:
-        linear (dict): linear biases
-        quadratic (dict): quadratic biases
     Returns:
         generated ChimeraModel class
     """
@@ -220,6 +217,12 @@ def make_ChimeraModel(linear, quadratic):
             return chimera
     
         def energy(self, sample, convert_sample=False):
+            """calc energy of the BinaryQuadraticModel.
+
+            Args:
+                sample: samples
+                convert_sample: if true, the type of sample is automatically converted to self.vartype.
+            """
             return super().energy(sample, sparse=True, convert_sample=convert_sample)
     
         def energies(self, samples_like, convert_sample=False):

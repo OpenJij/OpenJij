@@ -24,10 +24,6 @@ import sys
 def make_BinaryQuadraticModel(linear: dict, quadratic: dict) -> type:
     """BinaryQuadraticModel factory.
 
-    Args:
-        linear (dict): linear biases
-        quadratic (dict): quadratic biases
-
     Returns:
         type: generated BinaryQuadraticModel class
     """
@@ -104,11 +100,11 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict) -> type:
 
     return BinaryQuadraticModel
 
-def make_BinaryQuadraticModel_from_JSON(obj: dict):
+def make_BinaryQuadraticModel_from_JSON(obj: dict) -> type:
     """make BinaryQuadraticModel from JSON.
 
-    Args:
-        obj:
+    Returns:
+        type: corresponding BinaryQuadraticModel type
     """
 
     label = obj['variable_labels'][0]
@@ -120,8 +116,19 @@ def make_BinaryQuadraticModel_from_JSON(obj: dict):
 
     return make_BinaryQuadraticModel(mock_linear, {})
 
-def BinaryQuadraticModel(linear, quadratic, offset=0.0,
-        var_type=dimod.SPIN, **kwargs):
+def BinaryQuadraticModel(linear: dict, quadratic: dict, offset: float=0.0,
+        var_type: openjij.variable_type.Vartype=dimod.SPIN, **kwargs) -> BinaryQuadraticModel:
+    """generate BinaryQuadraticModel object.
+
+    Args:
+        linear (dict): linear
+        quadratic (dict): quadratic
+        offset (float): offset
+        var_type (openjij.variable_type.Vartype): var_type
+        kwargs:
+    Returns:
+        BinaryQuadraticModel: generated BinaryQuadraticModel
+    """
 
     Model = make_BinaryQuadraticModel(linear, quadratic)
 
