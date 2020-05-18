@@ -21,11 +21,11 @@ import dimod
 import warnings
 import sys
 
-def make_BinaryQuadraticModel(linear: dict, quadratic: dict) -> type:
+def make_BinaryQuadraticModel(linear: dict, quadratic: dict):
     """BinaryQuadraticModel factory.
 
     Returns:
-        type: generated BinaryQuadraticModel class
+        generated BinaryQuadraticModel class
     """
 
     class BinaryQuadraticModel(cimod.make_BinaryQuadraticModel(linear, quadratic)):
@@ -100,11 +100,11 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict) -> type:
 
     return BinaryQuadraticModel
 
-def make_BinaryQuadraticModel_from_JSON(obj: dict) -> type:
+def make_BinaryQuadraticModel_from_JSON(obj: dict):
     """make BinaryQuadraticModel from JSON.
 
     Returns:
-        type: corresponding BinaryQuadraticModel type
+        corresponding BinaryQuadraticModel type
     """
 
     label = obj['variable_labels'][0]
@@ -117,17 +117,25 @@ def make_BinaryQuadraticModel_from_JSON(obj: dict) -> type:
     return make_BinaryQuadraticModel(mock_linear, {})
 
 def BinaryQuadraticModel(linear: dict, quadratic: dict, offset: float=0.0,
-        var_type=dimod.SPIN, **kwargs):
+        var_type=dimod.SPIN, gpu: bool=False, **kwargs):
     """generate BinaryQuadraticModel object.
 
+    Attributes:
+        var_type (dimod.Vartype): variable type SPIN or BINARY
+        linear (dict): represents linear term
+        quadratic (dict): represents quadratic term
+        adj (dict): represents adjacency
+        indices (list): labels of each variables sorted by results variables
+        offset (float): represents constant energy term when convert to SPIN from BINARY
     Args:
         linear (dict): linear
         quadratic (dict): quadratic
         offset (float): offset
-        var_type (openjij.variable_type.Vartype): var_type
+        var_type (openjij.variable_type.Vartype): vartype ('SPIN' or 'BINARY')
+        gpu (bool): if true, this can be used for gpu samplers.
         kwargs:
     Returns:
-        BinaryQuadraticModel: generated BinaryQuadraticModel
+        generated BinaryQuadraticModel
     """
 
     Model = make_BinaryQuadraticModel(linear, quadratic)
