@@ -41,7 +41,7 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict) -> type:
         """
     
         def __init__(self, linear: dict, quadratic: dict, offset: float=0.0,
-                var_type: openjij.variable_type.Vartype=openjij.SPIN, gpu: bool=False, **kwargs):
+                var_type=openjij.SPIN, gpu: bool=False, **kwargs):
             """BinaryQuadraticModel constructor.
 
             Args:
@@ -117,7 +117,7 @@ def make_BinaryQuadraticModel_from_JSON(obj: dict) -> type:
     return make_BinaryQuadraticModel(mock_linear, {})
 
 def BinaryQuadraticModel(linear: dict, quadratic: dict, offset: float=0.0,
-        var_type: openjij.variable_type.Vartype=dimod.SPIN, **kwargs) -> BinaryQuadraticModel:
+        var_type=dimod.SPIN, **kwargs):
     """generate BinaryQuadraticModel object.
 
     Args:
