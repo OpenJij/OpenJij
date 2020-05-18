@@ -21,11 +21,12 @@ from .hubo_simulated_annealing import hubo_sa_sampling
 from .hubo_simulated_annealing import default_schedule
 import cxxjij
 
+"""
+This module contains Simulated Annealing sampler.
+"""
 
 class SASampler(BaseSampler):
     """Sampler with Simulated Annealing (SA).
-
-    Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
 
     Args:
         beta_min (float):
@@ -46,19 +47,6 @@ class SASampler(BaseSampler):
 
         schedule_info (dict):
             Information about an annealing schedule.
-
-    Attributes:
-        energy_bias (float):
-            Energy bias.
-
-        var_type (str):
-            Type of variables: 'SPIN' or 'BINARY' which mean {-1, 1} or {0, 1}.
-
-        indices (int):
-            Indices of `openjij.model.model.BinaryQuadraticModel` object.
-
-        N (int):
-            Number of the indices.
 
     Raises:
         ValueError: If schedules or variables violate as below.
@@ -165,7 +153,7 @@ class SASampler(BaseSampler):
             This argument is necessary if the model has a specific structure (e.g. Chimera graph) and the updater algorithm is structure-dependent.
             structure must have two types of keys, namely "size" which shows the total size of spins and "dict" which is the map from model index (elements in model.indices) to the number.
         Returns:
-            [type]: [description]
+            :class:`openjij.Response`: results
         """
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         # swendsen wang algorithm runs only on sparse ising graphs.

@@ -182,8 +182,9 @@ def KingGraph(linear=None, quadratic=None, offset=0.0,
         offset (float): offset
         king_graph: represents ising or QUBO interaction.
             Each spins are decided by 2-d corrdinate x, y.
-            Quadratic term [x1, y1, x2, y2, value]
-            Linear term    [x1, y1, x1, y1, value]
+            
+            * Quadratic term: [x1, y1, x2, y2, value]
+            * Linear term:    [x1, y1, x1, y1, value]
         var_type: 'SPIN' or 'BINARY'
         machine_type (str): choose 'ASIC' or 'FPGA'
     Returns:

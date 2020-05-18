@@ -2,6 +2,9 @@ import numpy as np
 
 
 class BinaryHigherOrderModel:
+    """Higher order model.
+    """
+
     def __init__(self, interactions: list):
         self.interactions = interactions
 
