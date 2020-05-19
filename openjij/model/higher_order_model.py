@@ -5,11 +5,12 @@ class BinaryHigherOrderModel:
     """Higher order model.
     Examples:
         
-        ::
-￼           >>> h = {0: -1}
-￼           >>> J = {(0, 1): -1}
-￼           >>> K = {(0, 1, 2): 1}
-            >>> model = BinaryHigherOrderModel([h, J, K])
+        An example of initialization::
+
+￼       >>> h = {0: -1}
+￼       >>> J = {(0, 1): -1}
+￼       >>> K = {(0, 1, 2): 1}
+        >>> model = BinaryHigherOrderModel([h, J, K])
 ￼
     """
 
