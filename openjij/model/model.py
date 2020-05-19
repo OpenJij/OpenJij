@@ -11,15 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-import numpy as np
-import cxxjij
-import openjij
-from openjij.utils.graph_utils import qubo_to_ising
-import cimod
-import dimod
-import warnings
-import sys
 """
 | This module defines the BinaryQuadraticModel with the Hamiltonian,
 
@@ -36,6 +27,15 @@ import sys
 | in a QUBO form.
 
 """
+
+import numpy as np
+import cxxjij
+import openjij
+from openjij.utils.graph_utils import qubo_to_ising
+import cimod
+import dimod
+import warnings
+import sys
 
 def make_BinaryQuadraticModel(linear: dict, quadratic: dict):
     """BinaryQuadraticModel factory.
