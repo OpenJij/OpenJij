@@ -142,17 +142,27 @@ def BinaryQuadraticModel(linear: dict, quadratic: dict, offset: float=0.0,
         linear (dict): represents linear term
         quadratic (dict): represents quadratic term
         adj (dict): represents adjacency
-        indices (list): labels of each variables sorted by results variables
+        indices (list): labels of each variables sorted by results variables.
         offset (float): represents constant energy term when convert to SPIN from BINARY
     Args:
-        linear (dict): linear
-        quadratic (dict): quadratic
+        linear (dict): linear biases
+        quadratic (dict): quadratic biases
         offset (float): offset
         var_type (openjij.variable_type.Vartype): vartype ('SPIN' or 'BINARY')
         gpu (bool): if true, this can be used for gpu samplers.
         kwargs:
     Returns:
         generated BinaryQuadraticModel
+    Examples:
+        BinaryQuadraticModel can be initialized by specifing h and J::
+            >>> h = {0: 1, 1: -2}
+            >>> J = {(0, 1): -1, (1, 2): -3, (2, 3): 0.5}
+            >>> bqm = oj.BinaryQuadraticModel(self.h, self.J)
+
+        You can also use strings and tuples of integers (up to 4 elements) as indices::
+            >>> h = {'a': 1, 'b': -2}
+            >>> J = {('a', 'b'): -1, ('b', 'c'): -3, ('c', 'd'): 0.5}
+            >>> bqm = oj.BinaryQuadraticModel(self.h, self.J)
     """
 
     Model = make_BinaryQuadraticModel(linear, quadratic)

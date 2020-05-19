@@ -189,6 +189,15 @@ def KingGraph(linear=None, quadratic=None, offset=0.0,
         machine_type (str): choose 'ASIC' or 'FPGA'
     Returns:
         generated KingGraphModel
+    Examples:
+        The following code shows intialization of KingGraph::
+            >>> h = {}
+            >>> J = {(0, 1): -1.0, (1, 2): -3.0}
+            >>> king_graph = oj.KingGraph(machine_type="ASIC", linear=h, quadratic=J)
+
+        You can initialize it from `king_interaction`::
+            >>> king_interaction = [[0, 0, 1, 0, -1.0], [1, 0, 2, 0, -3.0]]
+            >>> king_graph = oj.KingGraph(machine_type="ASIC", king_graph=king_interaction)
     """
 
     Model = make_KingGraph(linear, quadratic, king_graph)
