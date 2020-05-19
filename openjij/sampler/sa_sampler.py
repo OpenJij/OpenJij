@@ -140,12 +140,14 @@ class SASampler(BaseSampler):
             kwargs:
         Returns:
             :class:`openjij.sampler.response.Response`: results
-        Examples::
-        
-            >>> h = {0: -1, 1: -1, 2: 1, 3: 1}
-            >>> J = {(0, 1): -1, (3, 4): -1}
-            >>> sampler = oj.SASampler()
-            >>> res = sampler.sample_ising(h, J)
+        Examples:
+
+            ::
+                >>> h = {0: -1, 1: -1, 2: 1, 3: 1}
+                >>> J = {(0, 1): -1, (3, 4): -1}
+                >>> sampler = oj.SASampler()
+                >>> res = sampler.sample_ising(h, J)
+                >>> 
 
             
         """
