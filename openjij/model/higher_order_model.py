@@ -3,6 +3,13 @@ import numpy as np
 
 class BinaryHigherOrderModel:
     """Higher order model.
+    Examples::
+        
+￼       >>> h = {0: -1}
+￼       >>> J = {(0, 1): -1}
+￼       >>> K = {(0, 1, 2): 1}
+        >>> model = BinaryHigherOrderModel([h, J, K])
+￼
     """
 
     def __init__(self, interactions: list):
@@ -20,7 +27,7 @@ class BinaryHigherOrderModel:
                 self.interactions[0][i] = 0.0
 
     def adj_dict(self):
-        """adjgency list of each variables
+        """adjacency list of each variables
 
         Returns:
             dict: key (variables key), value (list of tuple represents connected indices)
@@ -44,6 +51,10 @@ class BinaryHigherOrderModel:
             float: energy of state
         """
         energy = 0.0
+        if isinstance(state, dict):
+            # convert to array
+            state = [state[elem] for elem in self.indices]
+
         state = np.array(state)
         for coeff in self.interactions[1:]:
             for _inds, value in coeff.items():
@@ -52,3 +63,14 @@ class BinaryHigherOrderModel:
             energy += hi * state[i]
 
         return energy
+
+    def calc_energy(self, state):
+        """alias of `energy`
+
+        Args:
+            state (list of int): list of SPIN or BINARY 
+
+        Returns:
+            float: energy of state
+        """
+        return self.energy(state)

@@ -155,11 +155,13 @@ def BinaryQuadraticModel(linear: dict, quadratic: dict, offset: float=0.0,
         generated BinaryQuadraticModel
     Examples:
         BinaryQuadraticModel can be initialized by specifing h and J::
+
             >>> h = {0: 1, 1: -2}
             >>> J = {(0, 1): -1, (1, 2): -3, (2, 3): 0.5}
             >>> bqm = oj.BinaryQuadraticModel(self.h, self.J)
 
         You can also use strings and tuples of integers (up to 4 elements) as indices::
+
             >>> h = {'a': 1, 'b': -2}
             >>> J = {('a', 'b'): -1, ('b', 'c'): -3, ('c', 'd'): 0.5}
             >>> bqm = oj.BinaryQuadraticModel(self.h, self.J)
