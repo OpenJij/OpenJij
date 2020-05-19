@@ -29,11 +29,10 @@ def make_ChimeraModel(linear, quadratic):
         ChimeraModel provide methods to verify whether a given interaction graph matches a Chimera graph and to convert it to cxxjij.graph.Chimera.
     
         Examples:
-            .. code-block:: python
-                # This interactions satisfy chimera topology.
-                >>> Q={(0, 4): -1, (4, 12): -1}
-                >>> chimera_model = ChimeraModel(Q, unit_num_L=2)  # make
-                >>> chimera_self.validate_chimera()
+            # This interactions satisfy chimera topology.
+            >>> Q={(0, 4): -1, (4, 12): -1}
+            >>> chimera_model = ChimeraModel(Q, unit_num_L=2)  # make
+            >>> chimera_self.validate_chimera()
         """
     
         def __init__(self, linear=None, quadratic=None,
@@ -288,14 +287,6 @@ def ChimeraModel(linear: dict=None, quadratic: dict=None,
     """generate ChimeraModel object.
     This model deal with chimera graph.
     ChimeraModel provide methods to verify whether a given interaction graph matches a Chimera graph and to convert it to cxxjij.graph.Chimera.
-    
-    Examples:
-
-        .. code-block:: python
-            # This interactions satisfy chimera topology.
-            >>> Q={(0, 4): -1, (4, 12): -1}
-            >>> chimera_model = ChimeraModel(Q, unit_num_L=2)  # make
-            >>> chimera_self.validate_chimera()
 
     Args:
         linear (dict): linear biases
@@ -307,6 +298,15 @@ def ChimeraModel(linear: dict=None, quadratic: dict=None,
         gpu (bool): if true, this can be used for gpu samplers.
     Returns:
         generated ChimeraModel
+
+    Examples:
+        Example shows how to initialize ChimeraModel.
+        
+        # This interactions satisfy chimera topology.
+        >>> Q={(0, 4): -1, (4, 12): -1}
+        >>> chimera_model = ChimeraModel(Q, unit_num_L=2)  # make
+        >>> chimera_self.validate_chimera()
+
     """
 
     Model = make_ChimeraModel(linear, quadratic)
