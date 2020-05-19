@@ -16,16 +16,16 @@ def chimera_to_ind(r: int, c: int, z: int, L: int):
     """[summary]
 
     Args:
-        r (int): [description]
-        c (int): [description]
-        z (int): [description]
-        L (int): [description]
+        r (int): row index
+        c (int): column index
+        z (int): in-chimera index (must be from 0 to 7)
+        L (int): height and width of  chimera-units (total number of spins is :math:`L \\times L \\times 8`)
 
     Raises:
         ValueError: [description]
 
     Returns:
-        [int]: [description]
+        int: corresponding Chimera index
     """
     if not (0 <= r < L and 0 <= c < L and 0 <= z < 8):
         raise ValueError(
