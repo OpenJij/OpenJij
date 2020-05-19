@@ -20,6 +20,22 @@ import cimod
 import dimod
 import warnings
 import sys
+"""
+| This module defines the BinaryQuadraticModel with the Hamiltonian,
+
+.. math:: 
+
+    H = \\sum_{i\\neq j} J_{ij}\sigma_i \sigma_j + \\sum_{i} h_{i}\sigma_i,
+
+| in an Ising form and
+
+.. math:: 
+
+    H = \\sum_{ij} Q_{ij}x_i x_j + \\sum_{i} H_{i}x_i,
+
+| in a QUBO form.
+
+"""
 
 def make_BinaryQuadraticModel(linear: dict, quadratic: dict):
     """BinaryQuadraticModel factory.
