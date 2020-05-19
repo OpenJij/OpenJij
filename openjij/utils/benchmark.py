@@ -109,7 +109,7 @@ def residual_energy(response, ref_energy):
         response (openjij.Response): response from solver (or sampler).
         ref_energy (float): the reference energy (usually use the ground energy)
     Returns:
-        float: Residual energy which is defined as :math:`<E> - E_0` (:math:`<...>` represents average, :math:`E_0` is the reference energy (usually use the ground energy)).
+        float: Residual energy which is defined as :math:`\\langle E \\rangle - E_0` (:math:`\\langle...\\rangle` represents average, :math:`E_0` is the reference energy (usually use the ground energy)).
 
     """
     return np.mean(response.energies) - ref_energy
