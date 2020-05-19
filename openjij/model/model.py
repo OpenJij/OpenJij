@@ -25,7 +25,7 @@
     H = \\sum_{ij} Q_{ij}x_i x_j + \\sum_{i} H_{i}x_i,
 
 | in a QUBO form.
-| The methos and usage are basically the same as `dimod <https://github.com/dwavesystems/dimod>`_.
+| The methods and usage are basically the same as `dimod <https://github.com/dwavesystems/dimod>`_.
 
 """
 

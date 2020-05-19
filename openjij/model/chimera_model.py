@@ -289,10 +289,12 @@ def ChimeraModel(linear: dict=None, quadratic: dict=None,
     ChimeraModel provide methods to verify whether a given interaction graph matches a Chimera graph and to convert it to cxxjij.graph.Chimera.
     
     Examples:
+
         # This interactions satisfy chimera topology.
         >>> Q={(0, 4): -1, (4, 12): -1}
         >>> chimera_model = ChimeraModel(Q, unit_num_L=2)  # make
         >>> chimera_self.validate_chimera()
+
     Args:
         linear (dict): linear biases
         quadratic (dict): quadratic biases
