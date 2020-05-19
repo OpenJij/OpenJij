@@ -16,48 +16,16 @@ class SQASampler(BaseSampler):
 
         H(s) = s H_p + \\Gamma (1-s)\\sum_i \\sigma_i^x
 
-    where $H_p$ is the problem Hamiltonian we want to solve.
+    where :math:`H_p` is the problem Hamiltonian we want to solve.
 
     Args:
-        beta (float):
-            Inverse temperature.
-
-        gamma (float):
-            Amplitude of quantum fluctuation.
-
-        trotter (int):
-            Trotter number.
-
-        step_length (int):
-            Length of Monte Carlo step.
-
-        step_num (int):
-            Number of Monte Carlo step.
-
-        schedule_info (dict):
-            Information about a annealing schedule.
-
-        iteration (int):
-            Number of iterations.
-
-    Attributes:
-        energy_bias (float):
-            Energy bias.
-
-        var_type (str):
-            Type of variables: 'SPIN' or 'BINARY' which mean {-1, 1} or {0, 1}.
-
-        indices (int):
-            Indices of `openjij.model.model.BinaryQuadraticModel` object.
-
-        N (int):
-            Number of the indices.
-
-        system_class (:class:):
-            `cxxjij.system.QuantumIsing` class.
-
-        sqa_kwargs (dict):
-            Parameters of SQA: beta, gamma, and schedule_info.
+        beta (float): Inverse temperature.
+        gamma (float): Amplitude of quantum fluctuation.
+        trotter (int): Trotter number.
+        num_sweeps (int): number of sweeps
+        schedule (list): schedule list
+        num_reads (int): Number of iterations.
+        schedule_info (dict): Information about a annealing schedule.
 
     Raises:
         ValueError: If the schedule violates as below.
@@ -181,6 +149,21 @@ class SQASampler(BaseSampler):
 
         Returns:
             :class:`openjij.sampler.response.Response`: results
+
+        Examples:
+            
+            for Ising case::
+
+                >>> h = {0: -1, 1: -1, 2: 1, 3: 1}
+                >>> J = {(0, 1): -1, (3, 4): -1}
+                >>> sampler = oj.SQASampler()
+                >>> res = sampler.sample_ising(h, J)
+
+            for QUBO case::
+
+                >>> Q = {(0, 0): -1, (1, 1): -1, (2, 2): 1, (3, 3): 1, (4, 4): 1, (0, 1): -1, (3, 4): 1}
+                >>> sampler = oj.SQASampler()
+                >>> res = sampler.sample_qubo(Q)
         """
 
         bqm = openjij.BinaryQuadraticModel(

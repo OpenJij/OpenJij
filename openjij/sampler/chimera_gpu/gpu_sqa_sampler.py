@@ -23,48 +23,16 @@ import numpy as np
 class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
     """Sampler with Simulated Quantum Annealing (SQA) on GPU.
 
-    Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
+    Inherits from :class:`openjij.sampler.sqa_sampler.SQASampler`.
 
     Args:
-        beta (float):
-            Inverse temperature.
-
-        gamma (float):
-            Amplitude of quantum fluctuation.
-
-        trotter (int):
-            Trotter number.
-
-        num_sweeps (int):
-
-        schedule_info (dict):
-            Information about a annealing schedule.
-
-        iteration (int):
-            Number of iterations.
-
-        unit_num_L (int):
-            Length of one side of two-dimensional lattice
-            in which chimera unit cells are arranged.
-
-    Attributes:
-        indices (int):
-            Indices of `openjij.model.model.BinaryQuadraticModel` model.
-
-        energy_bias (float):
-            Energy bias.
-
-        model (:obj:):
-             `openjij.model.model.BinaryQuadraticModel` model.
-
-        var_type (str):
-            Type of variables: 'SPIN' or 'BINARY' which mean {-1, 1} or {0, 1}.
-
-        system_class (:class:):
-            `cxxjij.system.QuantumIsing` class.
-
-        sqa_kwargs (dict):
-            Parameters of SQA: beta, gamma, and schedule_info.
+        beta (float): Inverse temperature.
+        gamma (float): Amplitude of quantum fluctuation.
+        trotter (int): Trotter number.
+        num_sweeps (int): number of sweeps
+        schedule_info (dict): Information about a annealing schedule.
+        num_reads (int): Number of iterations.
+        unit_num_L (int): Length of one side of two-dimensional lattice in which chimera unit cells are arranged.
 
     Raises:
         ValueError: If variables violate as below.
@@ -75,8 +43,6 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
         AttributeError: If GPU doesn't work.
 
     """
-
-
 
     def __init__(self, beta=10.0, gamma=1.0,
                  trotter=4, num_sweeps=100,
@@ -125,11 +91,15 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
             reinitialize_state (bool, optional): Re-initilization at each sampling. Defaults to True.
             seed (int, optional): Sampling seed. Defaults to None.
 
-        Raises:
-            ValueError: [description]
-
         Returns:
-            [type]: [description]
+            :class:`openjij.sampler.response.Response`: results
+
+        Examples::
+            
+            >>> sampler = oj.GPUChimeraSQASampler(unit_num_L=2)
+            >>> h = {0: -1, 1: -1, 2: 1, 3: 1},
+            >>> J = {(0, 4): -1, (2, 5): -1}
+            >>> res = sampler.sample_ising(h, J)
         """
 
         self.unit_num_L = unit_num_L if unit_num_L else self.unit_num_L

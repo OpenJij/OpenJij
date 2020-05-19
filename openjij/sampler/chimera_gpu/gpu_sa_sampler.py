@@ -28,41 +28,12 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
     Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
 
     Args:
-        beta_min (float):
-            Minimum inverse temperature.
-        beta_max (float):
-            Maximum inverse temperature.
-        num_sweeps (int):
-            Length of Monte Carlo step.
-
-        schedule_info (dict):
-            Information about a annealing schedule.
-
-        num_reads (int):
-            Number of iterations.
-
-        unit_num_L (int):
-            Length of one side of two-dimensional lattice
-            in which chimera unit cells are arranged.
-
-    Attributes:
-        indices (int):
-            Indices of `openjij.model.model.BinaryQuadraticModel` model.
-
-        energy_bias (float):
-            Energy bias.
-
-        model (:obj:):
-             `openjij.model.model.BinaryQuadraticModel` model.
-
-        var_type (str):
-            Type of variables: 'SPIN' or 'BINARY' which mean {-1, 1} or {0, 1}.
-
-        system_class (:class:):
-            `cxxjij.system.QuantumIsing` class.
-
-        sqa_kwargs (dict):
-            Parameters of SQA: beta, gamma, and schedule_info.
+        beta_min (float): Minimum inverse temperature.
+        beta_max (float): Maximum inverse temperature.
+        num_sweeps (int): Length of Monte Carlo step.
+        schedule_info (dict): Information about a annealing schedule.
+        num_reads (int): Number of iterations.
+        unit_num_L (int): Length of one side of two-dimensional lattice in which chimera unit cells are arranged.
 
     Raises:
         ValueError: If variables violate as below.
@@ -71,12 +42,6 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
         - given problem graph is incompatible with chimera graph.
 
         AttributeError: If GPU doesn't work.
-
-    Raises:
-        ValueError: [description]
-        AttributeError: [description]
-        ValueError: [description]
-        ValueError: [description]
 
     """
 
@@ -104,6 +69,34 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
                      initial_state=None, updater='single spin flip',
                      reinitialize_state=True, seed=None, unit_num_L=None,
                      **kwargs):
+        """sample with Ising model.
+
+        Args:
+            h (dict): linear biases
+            J (dict): quadratic biases
+            beta_min (float): minimal value of inverse temperature
+            beta_max (float): maximum value of inverse temperature
+            num_sweeps (int): number of sweeps
+            num_reads (int): number of reads
+            schedule (list): list of inverse temperature
+            initial_state (dict): initial state
+            updater(str): updater algorithm
+            reinitialize_state (bool): if true reinitialize state for each run
+            seed (int): seed for Monte Carlo algorithm
+            unit_num_L (int): number of chimera units
+            kwargs:
+
+        Returns:
+            :class:`openjij.sampler.response.Response`: results
+
+        Examples::
+            
+            >>> sampler = oj.GPUChimeraSASampler(unit_num_L=2)
+            >>> h = {0: -1, 1: -1, 2: 1, 3: 1},
+            >>> J = {(0, 4): -1, (2, 5): -1}
+            >>> res = sampler.sample_ising(h, J)
+
+        """
         
 
         self.unit_num_L = unit_num_L if unit_num_L else self.unit_num_L

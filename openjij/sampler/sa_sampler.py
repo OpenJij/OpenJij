@@ -140,15 +140,21 @@ class SASampler(BaseSampler):
             kwargs:
         Returns:
             :class:`openjij.sampler.response.Response`: results
+            
         Examples:
+            
+            for Ising case::
 
-            ::
                 >>> h = {0: -1, 1: -1, 2: 1, 3: 1}
                 >>> J = {(0, 1): -1, (3, 4): -1}
                 >>> sampler = oj.SASampler()
                 >>> res = sampler.sample_ising(h, J)
-                >>> 
 
+            for QUBO case::
+
+                >>> Q = {(0, 0): -1, (1, 1): -1, (2, 2): 1, (3, 3): 1, (4, 4): 1, (0, 1): -1, (3, 4): 1}
+                >>> sampler = oj.SASampler()
+                >>> res = sampler.sample_qubo(Q)
             
         """
 
@@ -277,6 +283,15 @@ class SASampler(BaseSampler):
 
         Returns:
             :class:`openjij.sampler.response.Response`: results
+
+        Examples::
+
+            >>> sampler = oj.SASampler()
+            >>> h = {0: -1}
+            >>> J = {(0, 1): -1}
+            >>> K = {(0, 1, 2): 1}
+            >>> response = sampler.sample_hubo([h, J, K], var_type="SPIN")
+
         """
 
         self._setting_overwrite(
