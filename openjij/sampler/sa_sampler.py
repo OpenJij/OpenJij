@@ -269,15 +269,16 @@ class SASampler(BaseSampler):
                     beta_min=None, beta_max=None, schedule=None,
                     num_sweeps=100, num_reads=1,
                     init_state=None, seed=None):
-        """sampling from higher order unconstrainted binary optimization
+        """sampling from higher order unconstrainted binary optimization.
+
         Args:
-            interactions (list of dict): ordered by degree of interaction. [linear, quadratic, ...]
+            interactions (list): ordered by degree of interaction.
             var_type (str, openjij.VarType): "SPIN" or "BINARY"
             beta_min (float, optional): Minimum beta (initial inverse temperature). Defaults to None.
             beta_max (float, optional): Maximum beta (final inverse temperature). Defaults to None.
-            schedule (list, optional): [description]. Defaults to None.
-            num_sweeps (int, optional): [description]. Defaults to 100.
-            num_reads (int, optional): [description]. Defaults to 1.
+            schedule (list, optional): schedule list. Defaults to None.
+            num_sweeps (int, optional): number of sweeps. Defaults to 100.
+            num_reads (int, optional): number of reads. Defaults to 1.
             init_state (list, optional): initial state. Defaults to None.
             seed (int, optional): [description]. Defaults to None.
 
