@@ -4,6 +4,7 @@
 
 * gcc >= 7.0.0 (or another C++ compiler that supports C++17)
 * cmake >= 3.12.2
+* python >= 3.5
 
 - [Documents](https://openjij.github.io/OpenJij_Documentation/build/html/)
 - [Tutorials](https://openjij.github.io/OpenJijTutorial/_build/html/index.html)
