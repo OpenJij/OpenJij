@@ -169,7 +169,7 @@ def BinaryQuadraticModel(linear: dict, quadratic: dict, offset: float=0.0,
 
     Model = make_BinaryQuadraticModel(linear, quadratic)
 
-    return Model(linear, quadratic, offset, var_type, **kwargs)
+    return Model(linear, quadratic, offset, var_type, gpu, **kwargs)
 
 #classmethods
 BinaryQuadraticModel.from_qubo = \
