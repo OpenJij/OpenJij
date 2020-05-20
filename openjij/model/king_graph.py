@@ -18,10 +18,6 @@ from .model import make_BinaryQuadraticModel, make_BinaryQuadraticModel_from_JSO
 
 def make_KingGraph(linear=None, quadratic=None, king_graph=None):
     """ KingGraph factory
-    Args:
-        linear (dict): linear biases
-        quadratic (dict): quadratic biases
-        king_graph (list(list)): king_graph connectivity
     Returns:
         generated KingGraph class
     """
@@ -44,35 +40,32 @@ def make_KingGraph(linear=None, quadratic=None, king_graph=None):
     class KingGraph(make_BinaryQuadraticModel(mock_linear, mock_quadratic)):
         """
         BQM for king graph of HITACHI CMOS Annealer
-        Attributes
-        ---------
-        xrange : list of int
-            represents hardware (CMOS) restricts for coordinate. [xmin, xmax]
-        yrange : list of int
-            represents hardware (CMOS) restricts for coordinate. [ymin, ymax]
-        prange : list of int
-            represents hardware (CMOS) restricts for the strength of interactions 'p'. [pmin, pmax]
-        king_graph : list of list of int
-            Annealing cloud Web API format representation of interaction coefficients
-            Quadratic term [x1, y1, x2, y2, value]
-            Linear term    [x1, y1, x1, y1, value]
-        """
-    
-        def __init__(self, linear=None, quadratic=None, offset=0.0,
-                     king_graph=None, var_type=openjij.SPIN, machine_type=''):
-            """
-            The constructor reformat interactions to Web API format (ising king graph),
-            and validates that the interaction is in King Graph. 
-            ----------
-            machine_type : str
-                choose 'ASIC' or 'FPGA'
-            king_graph : list of list
-                represents ising or QUBO interaction.
-                Each spins are decided by 2-d corrdinate x, y.
+        Attributes:
+            xrange (list(int)): represents hardware (CMOS) restricts for coordinate. [xmin, xmax]
+            yrange (list(int)): represents hardware (CMOS) restricts for coordinate. [ymin, ymax]
+            prange (list(int)): represents hardware (CMOS) restricts for the strength of interactions 'p'. [pmin, pmax]
+            king_graph (list(int)): 
+                Annealing cloud Web API format representation of interaction coefficients
                 Quadratic term [x1, y1, x2, y2, value]
                 Linear term    [x1, y1, x1, y1, value]
-            """
+        """
     
+        def __init__(self, linear: dict=None, quadratic: dict=None, offset: float=0.0,
+
+                king_graph=None, var_type=openjij.SPIN, machine_type: str=''):
+            """__init__.
+
+            Args:
+                linear (dict): linear biases
+                quadratic (dict): quadratic biases
+                offset (float): offset
+                king_graph: represents ising or QUBO interaction.
+                    Each spins are decided by 2-d corrdinate x, y.
+                    Quadratic term [x1, y1, x2, y2, value]
+                    Linear term    [x1, y1, x1, y1, value]
+                var_type: 'SPIN' or 'BINARY'
+                machine_type (str): choose 'ASIC' or 'FPGA'
+            """
             var_type = openjij.cast_var_type(var_type)
     
             # set parameter ranges
@@ -181,6 +174,33 @@ def make_KingGraph_from_JSON(obj):
 
 def KingGraph(linear=None, quadratic=None, offset=0.0,
                      king_graph=None, var_type=openjij.SPIN, machine_type=''):
+    """generate KingGraph model.
+
+    Args:
+        linear (dict): linear biases
+        quadratic (dict): quadratic biases
+        offset (float): offset
+        king_graph: represents ising or QUBO interaction.
+            Each spins are decided by 2-d corrdinate x, y.
+            
+            * Quadratic term: [x1, y1, x2, y2, value]
+            * Linear term:    [x1, y1, x1, y1, value]
+        var_type: 'SPIN' or 'BINARY'
+        machine_type (str): choose 'ASIC' or 'FPGA'
+    Returns:
+        generated KingGraphModel
+    Examples:
+        The following code shows intialization of KingGraph::
+
+            >>> h = {}
+            >>> J = {(0, 1): -1.0, (1, 2): -3.0}
+            >>> king_graph = oj.KingGraph(machine_type="ASIC", linear=h, quadratic=J)
+
+        You can initialize it from `king_interaction`::
+
+            >>> king_interaction = [[0, 0, 1, 0, -1.0], [1, 0, 2, 0, -3.0]]
+            >>> king_graph = oj.KingGraph(machine_type="ASIC", king_graph=king_interaction)
+    """
 
     Model = make_KingGraph(linear, quadratic, king_graph)
 

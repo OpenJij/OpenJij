@@ -33,17 +33,18 @@ def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_ene
         ref_energy (float): The ground (reference to calculate success probability and the residual energy) energy.
         measure_with_energy (bool): use a energy as measure for success
     Returns:
-        dict: {
-                "time": list of compuation time,
-                "success_prob" list of success probability at each computation time
-                "tts": list of time to solusion at each computation time
-                "residual_energy": list of residual energy at each computation time
-                "se_lower_tts": list of tts's lower standard error at each computation time
-                "se_upper_tts": list of tts's upper standard error at each computation time
-                "se_success_prob": list of success probability's standard error at each computation time
-                "se_residual_energy": list of residual_energy's standard error at each computation time
-                "info" (dict): Parameter information for the benchmark
-            }
+        dict: dictionary which has the following keys:
+
+        * **time**: list of compuation time
+        * **success_prob** list of success probability at each computation time
+        * **tts**: list of time to solusion at each computation time
+        * **residual_energy**: list of residual energy at each computation time
+        * **se_lower_tts**: list of tts's lower standard error at each computation time
+        * **se_upper_tts**: list of tts's upper standard error at each computation time
+        * **se_success_prob**: list of success probability's standard error at each computation time
+        * **se_residual_energy**: list of residual_energy's standard error at each computation time
+        * **info** (dict): Parameter information for the benchmark
+            
     """
 
     if not measure_with_energy:
@@ -108,9 +109,8 @@ def residual_energy(response, ref_energy):
         response (openjij.Response): response from solver (or sampler).
         ref_energy (float): the reference energy (usually use the ground energy)
     Returns:
-        float: Residual energy which is defined as follow
-               <E> - E_0
-               (<...> represents average, E_0 is the reference energy (usually use the ground energy)).
+        float: Residual energy which is defined as :math:`\\langle E \\rangle - E_0` (:math:`\\langle...\\rangle` represents average, :math:`E_0` is the reference energy (usually use the ground energy)).
+
     """
     return np.mean(response.energies) - ref_energy
 
@@ -133,8 +133,10 @@ def success_probability(response, solutions, ref_energy=0, measure_with_energy=F
         solutions (list[int]): true solutions.
     Returns:
         float: Success probability.
-              When measure_with_energy is False, success is defined as getting the same state as solutions.
-              When measure_with_energy is True, success is defined as getting a state which energy is below reference energy
+
+        * When measure_with_energy is False, success is defined as getting the same state as solutions.
+        * When measure_with_energy is True, success is defined as getting a state which energy is below reference energy
+
     """
 
     if measure_with_energy:
@@ -164,8 +166,10 @@ def se_success_probability(response, solutions, ref_energy=0, measure_with_energ
         solutions (list[int]): true solutions.
     Returns:
         float: Success probability's standard error.
-              When measure_with_energy is False, success is defined as getting the same state as solutions.
-              When measure_with_energy is True, success is defined as getting a state which energy is below reference energy
+
+        * When measure_with_energy is False, success is defined as getting the same state as solutions.
+        * When measure_with_energy is True, success is defined as getting a state which energy is below reference energy
+
     """
 
     if measure_with_energy:
@@ -194,8 +198,8 @@ def time_to_solution(success_prob, computation_time, p_r):
         success_prob (float): success probability.
         computation_time (float):
         p_r (float): thereshold probability to calculate time to solution.
-    Returens:
-        float: time to solution `tau * log(1-pr)/log(1-ps)` which pr is thereshold probability, ps is success probability and tau is computation time.
+    Returns:
+        float: time to solution :math:`\\tau * \\log(1-pr)/\\log(1-ps)` which pr is thereshold probability, ps is success probability and :math:`tau` is computation time.
     """
 
     if success_prob == 1.0:
@@ -214,8 +218,8 @@ def se_lower_tts(tts, success_prob, computation_time, p_r, se_success_prob):
         success_prob (float): success probability.
         computation_time (float):
         p_r (float): thereshold probability to calculate time to solution.
-    Returens:
-        float: time to solution `tau * log(1-pr)/log(1-ps)` 's standard error which pr is thereshold probability, ps is success probability and tau is computation time.
+    Returns:
+        float: time to solution :math:`\\tau * \\log(1-pr)/\\log(1-ps)` 's standard error which pr is thereshold probability, ps is success probability and :math:`tau` is computation time.
     """
 
     if 1 - (success_prob + se_success_prob) <= 0.0:
@@ -238,7 +242,7 @@ def se_upper_tts(tts, success_prob, computation_time, p_r, se_success_prob):
         computation_time (float):
         p_r (float): thereshold probability to calculate time to solution.
     Returens:
-        float: time to solution `tau * log(1-pr)/log(1-ps)` 's standard error which pr is thereshold probability, ps is success probability and tau is computation time.
+        float: time to solution :math:`\\tau * \\log(1-pr)/\\log(1-ps)` 's standard error which pr is thereshold probability, ps is success probability and :math:`tau` is computation time.
     """
 
     if success_prob == 1.0:

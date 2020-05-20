@@ -18,10 +18,8 @@ import cxxjij as cj
 
 
 def make_ChimeraModel(linear, quadratic):
-    """ ChimeraModel factory
-    Args:
-        linear (dict): linear biases
-        quadratic (dict): quadratic biases
+    """ChimeraModel factory.
+
     Returns:
         generated ChimeraModel class
     """
@@ -30,7 +28,7 @@ def make_ChimeraModel(linear, quadratic):
         This model deal with chimera graph.
         ChimeraModel provide methods to verify whether a given interaction graph matches a Chimera graph and to convert it to cxxjij.graph.Chimera.
     
-        Examples:
+        Examples::
             # This interactions satisfy chimera topology.
             >>> Q={(0, 4): -1, (4, 12): -1}
             >>> chimera_model = ChimeraModel(Q, unit_num_L=2)  # make
@@ -220,6 +218,12 @@ def make_ChimeraModel(linear, quadratic):
             return chimera
     
         def energy(self, sample, convert_sample=False):
+            """calc energy of the BinaryQuadraticModel.
+
+            Args:
+                sample: samples
+                convert_sample: if true, the type of sample is automatically converted to self.vartype.
+            """
             return super().energy(sample, sparse=True, convert_sample=convert_sample)
     
         def energies(self, samples_like, convert_sample=False):
@@ -262,11 +266,10 @@ def make_ChimeraModel(linear, quadratic):
     return ChimeraModel
 
 def make_ChimeraModel_from_JSON(obj):
-    """ ChimeraModel factory for JSON
-    Args:
-        obj (dict): JSON object
+    """make ChimeraModel from JSON.
+
     Returns:
-        generated ChimeraModel class
+        corresponding ChimeraModel type
     """
     label = obj['variable_labels'][0]
     if isinstance(label, list):
@@ -277,10 +280,34 @@ def make_ChimeraModel_from_JSON(obj):
 
     return make_ChimeraModel(mock_linear, {})
 
-def ChimeraModel(linear=None, quadratic=None,
-                     offset=0.0, var_type=openjij.SPIN,
-                     unit_num_L=None, model=None,
-                     gpu=False):
+def ChimeraModel(linear: dict=None, quadratic: dict=None,
+        offset: float=0.0, var_type=openjij.SPIN,
+        unit_num_L: int=None, model=None,
+        gpu: bool=False):
+    """generate ChimeraModel object.
+    This model deal with chimera graph.
+    ChimeraModel provide methods to verify whether a given interaction graph matches a Chimera graph and to convert it to cxxjij.graph.Chimera.
+
+    Args:
+        linear (dict): linear biases
+        quadratic (dict): quadratic biases
+        offset (float): offset
+        var_type: vartype ('SPIN' or 'BINARY')
+        unit_num_L (int): unit_num_L
+        model (BinaryQuadraticModel): if model is not None, the object is initialized by model.
+        gpu (bool): if true, this can be used for gpu samplers.
+    Returns:
+        generated ChimeraModel
+
+    Examples:
+        Example shows how to initialize ChimeraModel.::
+        
+            # This interactions satisfy chimera topology.
+            >>> Q={(0, 4): -1, (4, 12): -1}
+            >>> chimera_model = ChimeraModel(Q, unit_num_L=2)  # make
+            >>> chimera_self.validate_chimera()
+
+    """
 
     Model = make_ChimeraModel(linear, quadratic)
 

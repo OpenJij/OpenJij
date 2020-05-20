@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+This module defines the abstract sampler (BaseSampler).
+"""
 
 import numpy as np
 import cxxjij
@@ -22,6 +25,11 @@ import cimod
 import time
 
 def measure_time(func):
+    """Decorator for measuring calculation time.
+
+    Args:
+        func: decorator function
+    """
     def wrapper(*args, **kargs):
         start_time = time.perf_counter()
 
@@ -72,7 +80,7 @@ class BaseSampler(dimod.Sampler):
             structure (dict): structure dictionary that must have keys "size" and "dict"
 
         Returns:
-            [type]: [description]
+            :class:`openjij.sampler.response.Response`: results 
         """
 
         # set algorithm function and set random seed ----
@@ -165,7 +173,7 @@ class BaseSampler(dimod.Sampler):
                 See the implemented sampling for additional keyword definitions.
 
         Returns:
-            :obj:`.SampleSet`
+            :class:`openjij.sampler.response.Response`: results 
         """
         if bqm.vartype == openjij.SPIN:
             if not getattr(self.sample_ising, '__issamplemixin__', False):
@@ -205,7 +213,7 @@ class BaseSampler(dimod.Sampler):
             J (dict): Quadratic biases
 
         Returns:
-            :obj: `.Sampleset`
+            :class:`openjij.sampler.response.Response`: results 
         """
         bqm = openjij.BinaryQuadraticModel.from_ising(h, J)
         return self.sample(bqm, **parameters)
@@ -219,7 +227,7 @@ class BaseSampler(dimod.Sampler):
             Q (dict): Coefficients of a quadratic unconstrained binary optimization
 
         Returns:
-            :obj: `.Sampleset`
+            :class:`openjij.sampler.response.Response`: results 
         """
         bqm = openjij.BinaryQuadraticModel.from_qubo(Q)
         return self.sample(bqm, **parameters)

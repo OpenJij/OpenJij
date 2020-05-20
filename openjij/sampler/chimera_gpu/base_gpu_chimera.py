@@ -20,6 +20,8 @@ import dimod
 
 
 class BaseGPUChimeraSampler(dimod.Structured):
+    """Abstract GPUChimera Sampler
+    """
 
 
     @property

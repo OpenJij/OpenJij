@@ -1,12 +1,13 @@
 language: python
 
-dist: trusty
+dist: xenial
 
 sudo: false
 
 python:
-  - "3.5"
   - "3.6"
+  - "3.7"
+  - "3.8"
 
 addons:
   apt:
