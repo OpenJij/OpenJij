@@ -41,6 +41,13 @@ namespace openjij {
 
         /**
          * @brief naive Dense TransverseIsing structure with discrete-time trotter spins (with Eigen implementation)
+         * The original Hamiltonian is like
+         * \f[
+         * H(s) = s\left(\sum_{i<j}J_{ij} \sigma_i^z \sigma_j^z + \sum_{i}h_{i} \sigma_i^z \right) + \Gamma (1-s)\sum_i \sigma_i^x,
+         * \f]
+         * where \f$ \Gamma \f$ shows the strength of transverse field (referred to as `gamma`) and \f$ s \f$ shows the annealing schedule (referred to as `s`).
+         *
+         * Quantum Monte Carlo simulation is performed under the finite (inverse) temperature (\f$ \beta \f$ or `beta`).
          *
          * @tparam FloatType
          */
@@ -141,6 +148,13 @@ namespace openjij {
 
         /**
          * @brief naive Sparse TransverseIsing structure with discrete-time trotter spins (with Eigen implementation)
+         * The original Hamiltonian is like
+         * \f[
+         * H(s) = s\left(\sum_{i<j}J_{ij} \sigma_i^z \sigma_j^z + \sum_{i}h_{i} \sigma_i^z \right) + \Gamma (1-s)\sum_i \sigma_i^x,
+         * \f]
+         * where \f$ \Gamma \f$ shows the strength of transverse field (referred to as `gamma`) and \f$ s \f$ shows the annealing schedule (referred to as `s`).
+         *
+         * Quantum Monte Carlo simulation is performed under the finite (inverse) temperature (\f$ \beta \f$ or `beta`).
          *
          * @tparam FloatType
          */

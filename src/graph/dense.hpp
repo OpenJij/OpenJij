@@ -34,6 +34,10 @@ namespace openjij {
 
         /**
          * @brief two-body all-to-all interactions 
+         * The Hamiltonian is like
+         * \f[
+         * H = \sum_{i<j}J_{ij} \sigma_i \sigma_j + \sum_{i}h_{i} \sigma_i
+         * \f]
          *
          * @tparam FloatType float type of Sparse class (double or float)
          */
