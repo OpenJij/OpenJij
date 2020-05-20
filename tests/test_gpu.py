@@ -4,6 +4,43 @@
 # 
 # import unittest
 # 
+# class TestGPUModel(unittest.TestCase):
+#     def setUp(self):
+#         self.h = {0: 1, 1: -2}
+#         self.J = {(0, 1): -1, (1, 2): -3, (2, 3): 0.5}
+#         self.spins = {0: 1, 1: -1, 2: 1, 3: 1}
+# 
+#         self.Q = {(0, 0): 1, (1, 2): -1, (2, 0): -0.2, (1, 3): 3}
+#         self.binaries = {0: 0, 1: 1, 2: 1, 3: 0}
+# 
+#     def test_transfer_to_cxxjij(self):
+#         bqm = oj.BinaryQuadraticModel(self.h, self.J, gpu=True)
+#         # to Dense
+#         ising_graph = bqm.get_cxxjij_ising_graph(sparse=False)
+#         self.assertTrue(isinstance(ising_graph, cj.graph.DenseGPU))
+#         self.assertEqual(ising_graph.size(), len(bqm.indices))
+#         for i in range(len(bqm.indices)):
+#             for j in range(len(bqm.indices)):
+#                 if i != j:
+#                     self.assertAlmostEqual(bqm.interaction_matrix()[i,j], ising_graph.get_interactions()[i, j])
+#                 else:
+#                     # i == j
+#                     self.assertAlmostEqual(bqm.interaction_matrix()[i,j], ising_graph.get_interactions()[i, len(bqm.indices)])
+#                     self.assertAlmostEqual(bqm.interaction_matrix()[i,j], ising_graph.get_interactions()[len(bqm.indices), i])
+#                     self.assertEqual(ising_graph.get_interactions()[i,i], 0)
+# 
+#         self.assertEqual(ising_graph.get_interactions()[len(bqm.indices),len(bqm.indices)], 1)
+# 
+# 
+#         # to Sparse
+#         ising_graph = bqm.get_cxxjij_ising_graph(sparse=True)
+#         self.assertTrue(isinstance(ising_graph, cj.graph.SparseGPU))
+#         self.assertEqual(ising_graph.size(), len(bqm.indices))
+#         for i in range(ising_graph.size()):
+#             for j in ising_graph.adj_nodes(i):
+#                 self.assertEqual(bqm.interaction_matrix()[i,j], ising_graph[i,j])
+# 
+# 
 # 
 # class TestGPUSampler(unittest.TestCase):
 #     def setUp(self):
