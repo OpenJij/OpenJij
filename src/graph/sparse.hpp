@@ -31,6 +31,10 @@ namespace openjij {
 
         /**
          * @brief Sparse graph: two-body intereactions with O(1) connectivity
+         * The Hamiltonian is like
+         * \f[
+         * H = \sum_{i<j}J_{ij} \sigma_i \sigma_j + \sum_{i}h_{i} \sigma_i
+         * \f]
          *
          * @tparam FloatType floating-point type
          */
