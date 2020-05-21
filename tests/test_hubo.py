@@ -11,5 +11,3 @@ class HUBOTest(unittest.TestCase):
         K = {(0, 1, 2): 1}
 
         response = sampler.sample_hubo([h, J, K], var_type="SPIN")
-
-        print(response)
