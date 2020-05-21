@@ -27,6 +27,7 @@ option(USE_TEST "Use test code" No)
 if(NOT DEFINED USE_OMP)
     set(USE_OMP ${DEFAULT_USE_OMP})
 endif()
+
 if(NOT DEFINED USE_CUDA)
     include(CheckLanguage)
     check_language(CUDA)
