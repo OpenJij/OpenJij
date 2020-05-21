@@ -51,7 +51,37 @@ static openjij::utility::TransverseFieldScheduleList generate_tfm_schedule_list(
 // tests
 // #####################################
 
-//graph tests
+#include <chrono>
+
+//speed test
+//TEST(Graph, speedtest){
+//    using namespace openjij::graph;
+//    std::size_t N = 5000;
+//    auto begin = std::chrono::high_resolution_clock::now();
+//    Dense<double> a(N);
+//    for(std::size_t i=0; i<N; i++){
+//        for(std::size_t j=i; j<N; j++){
+//            a.J(i, j)  = 1;
+//        }
+//    }
+//    auto end = std::chrono::high_resolution_clock::now();
+//    std::cout << "time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << std::endl;
+//
+//    auto quad = cimod::Quadratic<size_t, double>();
+//    auto lin = cimod::Linear<size_t, double>();
+//    begin = std::chrono::high_resolution_clock::now();
+//    for(std::size_t i=0; i<N; i++){
+//        for(std::size_t j=i+1; j<N; j++){
+//            quad[std::make_pair(i,j)] = 1;
+//        }
+//    }
+//    for(std::size_t i=0; i<N; i++){
+//        lin[i] = 1;
+//    }
+//    auto bqm = cimod::BinaryQuadraticModel<size_t, double>(lin, quad, 0, cimod::Vartype::BINARY);
+//    end = std::chrono::high_resolution_clock::now();
+//    std::cout << "time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << std::endl;
+//}
 
 TEST(Graph, DenseGraphCheck){
     using namespace openjij::graph;
@@ -213,6 +243,31 @@ TEST(Graph, EnergyCheck){
     EXPECT_EQ(c_d.calc_energy(spins_r), c.calc_energy(spins_r));
 }
 
+//json tests
+TEST(Graph, JSONTest){
+    using namespace cimod;
+    using namespace openjij;
+
+    Linear<uint32_t, double> linear{ {0, 1.0}, {11, 3.0}};
+    Quadratic<uint32_t, double> quadratic
+    {
+        {std::make_pair(0, 4), 12.0}, {std::make_pair(4, 12), 13.0}, {std::make_pair(6, 14), 14.0},
+            {std::make_pair(3, 4), 23.0}, {std::make_pair(11, 12), 24.0},
+            {std::make_pair(5, 13), 34.0}
+    };
+    double offset = 0.0;
+    Vartype vartype = Vartype::SPIN;
+    BinaryQuadraticModel<uint32_t, double> bqm_k4(linear, quadratic, offset, vartype);
+    auto s = graph::Chimera<double>(bqm_k4.to_serializable(), 1, 2);
+    EXPECT_NEAR(s.J(0,1,3,graph::ChimeraDir::IN_0or4), 24, 1e-5);
+    EXPECT_NEAR(s.J(0,0,4,graph::ChimeraDir::PLUS_C), 13, 1e-5);
+    EXPECT_NEAR(s.J(0,1,6,graph::ChimeraDir::MINUS_C), 14, 1e-5);
+    EXPECT_NEAR(s.J(0,0,4,graph::ChimeraDir::IN_3or7), 23, 1e-5);
+    EXPECT_NEAR(s.J(0,0,3,graph::ChimeraDir::IN_0or4), 23, 1e-5);
+    EXPECT_NEAR(s.J(0,1,5,graph::ChimeraDir::MINUS_C), 34, 1e-5);
+    EXPECT_NEAR(s.h(0,1,3), 3, 1e-5);
+}
+
 //ClassicalIsing tests
 
 TEST(ClassicalIsing, GenerateTheSameEigenObject){
@@ -225,8 +280,8 @@ TEST(ClassicalIsing, GenerateTheSameEigenObject){
     d.J(2,2) = s.J(2,2) = 10;
 
     auto engine_for_spin = std::mt19937(1);
-    auto cl_dense = system::make_classical_ising<true>(d.gen_spin(engine_for_spin), d);
-    auto cl_sparse = system::make_classical_ising<true>(s.gen_spin(engine_for_spin), s);
+    auto cl_dense = system::make_classical_ising(d.gen_spin(engine_for_spin), d);
+    auto cl_sparse = system::make_classical_ising(s.gen_spin(engine_for_spin), s);
     Eigen::MatrixXd m1 = cl_dense.interaction;
     //convert from sparse to dense
     Eigen::MatrixXd m2 = cl_sparse.interaction;
@@ -236,48 +291,15 @@ TEST(ClassicalIsing, GenerateTheSameEigenObject){
 //TODO: macro?
 //SingleSpinFlip tests
 
-TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
+
+TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Dense) {
     using namespace openjij;
 
     //generate classical dense system
     const auto interaction = generate_interaction<graph::Dense<double>>();
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
-
-    auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list = generate_schedule_list();
-
-    algorithm::Algorithm<updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
-
-    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
-}
-
-TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Sparse_NoEigenImpl) {
-    using namespace openjij;
-
-    //generate classical dense system
-    const auto interaction = generate_interaction<graph::Sparse<double>>();
-    auto engine_for_spin = std::mt19937(1);
-    const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
-
-    auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list = generate_schedule_list();
-
-    algorithm::Algorithm<updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
-
-    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
-}
-
-TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Dense_WithEigenImpl) {
-    using namespace openjij;
-
-    //generate classical dense system
-    const auto interaction = generate_interaction<graph::Dense<double>>();
-    auto engine_for_spin = std::mt19937(1);
-    const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = system::make_classical_ising<true>(spin, interaction); //Eigen implementation enabled
+    auto classical_ising = system::make_classical_ising(spin, interaction); 
     
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list = generate_schedule_list();
@@ -287,14 +309,14 @@ TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Dense_WithEigenImpl) {
     EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
 }
 
-TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Sparse_WithEigenImpl) {
+TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Sparse) {
     using namespace openjij;
 
     //generate classical dense system
     const auto interaction = generate_interaction<graph::Sparse<double>>();
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = system::make_classical_ising<true>(spin, interaction); //Eigen implementation enabled
+    auto classical_ising = system::make_classical_ising(spin, interaction);
     
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list = generate_schedule_list();
@@ -304,7 +326,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_ClassicalIsing_Sparse_WithEigenImpl) {
     EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
 }
 
-TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Dense_NoEigenImpl) {
+TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Dense) {
     using namespace openjij;
 
     //generate classical dense system
@@ -319,6 +341,8 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Dense_NoEigenImpl) {
     }
 
     auto transverse_ising = system::make_transverse_ising(init_trotter_spins, interaction, 1.0);
+
+    auto transverse_ising2 = system::make_transverse_ising(interaction.gen_spin(engine_for_spin), interaction, 1.0, 10);
     
     auto random_numder_engine = std::mt19937(1);
     const auto schedule_list = generate_tfm_schedule_list();
@@ -328,7 +352,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Dense_NoEigenImpl) {
     EXPECT_EQ(get_true_groundstate(), result::get_solution(transverse_ising));
 }
 
-TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse_NoEigenImpl) {
+TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse) {
     using namespace openjij;
 
     //generate classical dense system
@@ -352,63 +376,13 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse_NoEigenImpl) {
     EXPECT_EQ(get_true_groundstate(), result::get_solution(transverse_ising));
 }
 
-TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Dense_WithEigenImpl) {
-    using namespace openjij;
-
-    //generate classical dense system
-    const auto interaction = generate_interaction<graph::Dense<double>>();
-    auto engine_for_spin = std::mt19937(1);
-    std::size_t num_trotter_slices = 10;
-
-    //generate random trotter spins
-    system::TrotterSpins init_trotter_spins(num_trotter_slices);
-    for(auto& spins : init_trotter_spins){
-        spins = interaction.gen_spin(engine_for_spin);
-    }
-
-    auto transverse_ising = system::make_transverse_ising<true>(init_trotter_spins, interaction, 1.0);
-
-    auto transverse_ising2 = system::make_transverse_ising<true>(interaction.gen_spin(engine_for_spin), interaction, 1.0, 10);
-    
-    auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list = generate_tfm_schedule_list();
-
-    algorithm::Algorithm<updater::SingleSpinFlip>::run(transverse_ising, random_numder_engine, schedule_list);
-
-    EXPECT_EQ(get_true_groundstate(), result::get_solution(transverse_ising));
-}
-
-TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse_WithEigenImpl) {
-    using namespace openjij;
-
-    //generate classical dense system
-    const auto interaction = generate_interaction<graph::Sparse<double>>();
-    auto engine_for_spin = std::mt19937(1);
-    std::size_t num_trotter_slices = 10;
-
-    //generate random trotter spins
-    system::TrotterSpins init_trotter_spins(num_trotter_slices);
-    for(auto& spins : init_trotter_spins){
-        spins = interaction.gen_spin(engine_for_spin);
-    }
-
-    auto transverse_ising = system::make_transverse_ising<true>(init_trotter_spins, interaction, 1.0); //gamma = 1.0
-    
-    auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list = generate_tfm_schedule_list();
-
-    algorithm::Algorithm<updater::SingleSpinFlip>::run(transverse_ising, random_numder_engine, schedule_list);
-
-    EXPECT_EQ(get_true_groundstate(), result::get_solution(transverse_ising));
-}
-
 //swendsen-wang test
-TEST(SwendsenWang, FindTrueGroundState_CLassicalIsing_Dense_OneDimensionalIsing) {
+TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Sparse_OneDimensionalIsing) {
     using namespace openjij;
 
     //generate classical dense system
     const auto interaction = [](){
-        auto interaction = graph::Dense<double>(num_system_size);
+        auto interaction = graph::Sparse<double>(num_system_size);
         interaction.J(0,1) = -1;
         interaction.J(1,2) = -1;
         interaction.J(2,3) = -1;
@@ -423,41 +397,22 @@ TEST(SwendsenWang, FindTrueGroundState_CLassicalIsing_Dense_OneDimensionalIsing)
     const auto spin = interaction.gen_spin(engine_for_spin);
     auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
 
-    auto random_numder_engine = std::mt19937(1);
+    auto random_number_engine = std::mt19937(1);
     const auto schedule_list = generate_schedule_list();
 
-    algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
+    algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_number_engine, schedule_list);
 
     EXPECT_EQ(openjij::graph::Spins({-1, -1, -1, -1, -1, +1, -1, +1}), result::get_solution(classical_ising));
 }
 
-TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Dense_NoEigenImpl) {
-    using namespace openjij;
-
-    //generate classical dense system
-    const auto interaction = generate_interaction<graph::Dense<double>>();
-    auto engine_for_spin = std::mt19937(1);
-    const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = system::make_classical_ising(spin, interaction); //default: no eigen implementation
-
-    auto random_numder_engine = std::mt19937(1);
-
-    //in general swendsen wang is not efficient in simulating frustrated systems. We need more annealing time.
-    const auto schedule_list = openjij::utility::make_classical_schedule_list(0.01, 100.0, 100, 3000);
-
-    algorithm::Algorithm<updater::SwendsenWang>::run(classical_ising, random_numder_engine, schedule_list);
-
-    EXPECT_EQ(get_true_groundstate(), result::get_solution(classical_ising));
-}
-
-TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Sparse_WithEigenImpl) {
+TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Sparse) {
     using namespace openjij;
 
     //generate classical dense system
     const auto interaction = generate_interaction<graph::Sparse<double>>();
     auto engine_for_spin = std::mt19937(1);
     const auto spin = interaction.gen_spin(engine_for_spin);
-    auto classical_ising = system::make_classical_ising<true>(spin, interaction); //with eigen implementation
+    auto classical_ising = system::make_classical_ising(spin, interaction); //with eigen implementation
 
     auto random_numder_engine = std::mt19937(1);
 
@@ -473,8 +428,8 @@ TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Sparse_WithEigenImpl) {
 /* Continuous time Swendsen-Wang test */
 TEST(ContinuousTimeSwendsenWang, Place_Cuts) {
     using namespace openjij;
-    using TimeType = typename system::ContinuousTimeIsing<graph::Dense<double>, false>::TimeType;
-    using CutPoint = typename system::ContinuousTimeIsing<graph::Dense<double>, false>::CutPoint;
+    using TimeType = typename system::ContinuousTimeIsing<graph::Sparse<double>>::TimeType;
+    using CutPoint = typename system::ContinuousTimeIsing<graph::Sparse<double>>::CutPoint;
 
     std::vector<CutPoint> timeline;
     timeline.emplace_back(1.0, 1);
@@ -486,7 +441,7 @@ TEST(ContinuousTimeSwendsenWang, Place_Cuts) {
     timeline.emplace_back(7.0, 4);
 
     std::vector<TimeType> cuts { 0.5, 1.5, 3.5, 4.5, 5.5, 7.5, 8.5 };
-    timeline = updater::ContinuousTimeSwendsenWang<system::ContinuousTimeIsing<graph::Dense<double>, false>>::create_timeline(timeline, cuts);
+    timeline = updater::ContinuousTimeSwendsenWang<system::ContinuousTimeIsing<graph::Sparse<double>>>::create_timeline(timeline, cuts);
 
     std::vector<CutPoint> correct_timeline;
     correct_timeline.emplace_back(0.5, 4);
@@ -506,23 +461,23 @@ TEST(ContinuousTimeSwendsenWang, Place_Cuts) {
 
 TEST(ContinuousTimeSwendsenWang, Place_Cuts_Special_Case) {
     using namespace openjij;
-    using TimeType = typename system::ContinuousTimeIsing<graph::Dense<double>, false>::TimeType;
-    using CutPoint = typename system::ContinuousTimeIsing<graph::Dense<double>, false>::CutPoint;
+    using TimeType = typename system::ContinuousTimeIsing<graph::Sparse<double>>::TimeType;
+    using CutPoint = typename system::ContinuousTimeIsing<graph::Sparse<double>>::CutPoint;
 
     std::vector<CutPoint> timeline { {1.0, 1}, {2.0, 1} };
 
     std::vector<TimeType> cuts { };
-    timeline = updater::ContinuousTimeSwendsenWang<system::ContinuousTimeIsing<graph::Dense<double>, false>>::create_timeline(timeline, cuts);
+    timeline = updater::ContinuousTimeSwendsenWang<system::ContinuousTimeIsing<graph::Sparse<double>>>::create_timeline(timeline, cuts);
     std::vector<CutPoint> correct_timeline { {1.0, 1} };
 
     EXPECT_EQ(timeline, correct_timeline);
 }
 
-TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ContinuousTimeIsing_Dense_OneDimensionalIsing) {
+TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ContinuousTimeIsing_Sparse_OneDimensionalIsing) {
     using namespace openjij;
 
     const auto interaction = [](){
-        auto interaction = graph::Dense<double>(num_system_size);
+        auto interaction = graph::Sparse<double>(num_system_size);
         interaction.J(0,1) = -1;
         interaction.J(1,2) = -1;
         interaction.J(2,3) = -1;
@@ -539,18 +494,18 @@ TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ContinuousTimeIsing_Dense_O
 
     auto ising = system::make_continuous_time_ising(spins, interaction, 1.0);
 
-    auto random_numder_engine = std::mt19937(1);
-    const auto schedule_list = utility::make_transverse_field_schedule_list(10, 100, 100);
+    //auto random_numder_engine = std::mt19937(1);
+    //const auto schedule_list = utility::make_transverse_field_schedule_list(10, 100, 100);
 
-    algorithm::Algorithm<updater::ContinuousTimeSwendsenWang>::run(ising, random_numder_engine, schedule_list);
+    //algorithm::Algorithm<updater::ContinuousTimeSwendsenWang>::run(ising, random_numder_engine, schedule_list);
 
-    EXPECT_EQ(openjij::graph::Spins({-1, -1, -1, -1, -1, +1, -1, +1}), result::get_solution(ising));
+    //EXPECT_EQ(openjij::graph::Spins({-1, -1, -1, -1, -1, +1, -1, +1}), result::get_solution(ising));
 }
 
-TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ContinuousTimeIsing_Dense_NoEigenImpl) {
+TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ContinuousTimeIsing_Sparse) {
     using namespace openjij;
 
-    const auto interaction = generate_interaction<graph::Dense<double>>();
+    const auto interaction = generate_interaction<graph::Sparse<double>>();
     auto engine_for_spin = std::mt19937(1);
 
     const auto spins = interaction.gen_spin(engine_for_spin);
@@ -565,30 +520,7 @@ TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ContinuousTimeIsing_Dense_N
     EXPECT_EQ(get_true_groundstate(), result::get_solution(ising));
 }
 
-// result test
 TEST(RESULT, GetSolutionFromTrotter){
-    auto graph = openjij::graph::Dense<float>(4);
-    graph.J(1, 1) = -1.0;
-    graph.J(0, 1) = -1.0;
-    graph.J(1, 2) = -1.0;
-    graph.J(2, 3) = -1.0;
-
-    auto r = openjij::utility::Xorshift(1234);
-    int num_trotter_slices = 4;
-    openjij::system::TrotterSpins init_trotter_spins(num_trotter_slices);
-    for(auto& spins : init_trotter_spins){
-        spins = graph.gen_spin(r);
-    }
-
-    init_trotter_spins[0] = openjij::graph::Spins({1, 1, 1, 1});
-
-    auto q_sys = openjij::system::make_transverse_ising(init_trotter_spins, graph, 1.0);
-    // get_solution get minimum energy state
-    auto solution = openjij::result::get_solution(q_sys);
-    EXPECT_EQ(solution, init_trotter_spins[0]);
-}
-
-TEST(RESULT, GetSolutionFromTrotterWithEigen){
     auto graph = openjij::graph::Dense<float>(4);
     graph.J(1, 1) = -1.0;
     graph.J(0, 1) = -1.0;
@@ -604,7 +536,7 @@ TEST(RESULT, GetSolutionFromTrotterWithEigen){
 
     init_trotter_spins[0] = openjij::graph::Spins({1, 1, 1, -1});
 
-    auto q_sys = openjij::system::make_transverse_ising<true>(init_trotter_spins, graph, 1.0);
+    auto q_sys = openjij::system::make_transverse_ising(init_trotter_spins, graph, 1.0);
     // get_solution get minimum energy state
     auto solution = openjij::result::get_solution(q_sys);
     EXPECT_EQ(solution, init_trotter_spins[0]);
@@ -628,7 +560,7 @@ TEST(RESULT, GetSolutionFromChimera){
 
     init_trotter_spins[0] = openjij::graph::Spins({-1,-1,-1,-1,-1,-1,-1,-1});
 
-    auto q_sys = openjij::system::make_transverse_ising(init_trotter_spins, graph, 1.0);
+    auto q_sys = openjij::system::make_transverse_ising(init_trotter_spins, static_cast<openjij::graph::Sparse<float>>(graph), 1.0);
     // get_solution get minimum energy state
     auto solution = openjij::result::get_solution(q_sys);
     EXPECT_EQ(solution, init_trotter_spins[0]);

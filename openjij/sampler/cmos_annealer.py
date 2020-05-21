@@ -31,33 +31,17 @@ class CMOSAnnealer(BaseSampler, dimod.Structured):
     please access the reference (https://annealing-cloud.com/web-api/reference.html).
 
     Args:
-        token (str):
-            API token of COMS Annealer.
-
-        machine_type (str):
-            Type of CMOS Annealer: 'ASIC' or 'FPGA'.
-
-        beta_min (float):
-            Minimum beta (inverse temperature).
-
-        beta_max (float):
-            Maximum beta (inverse temperature).
-
-        step_length (int):
-            Length of Monte Carlo step.
-
-        num_sweeps (int):
-            Number of Monte Carlo step.
-
-        num_reads (int):
-            Number of iterations.
-
-        **kwargs:
-            Optional keyword arguments for CMOS Annealer.
+        token (str): API token of COMS Annealer.
+        machine_type (str): Type of CMOS Annealer: 'ASIC' or 'FPGA'.
+        beta_min (float): Minimum beta (inverse temperature).
+        beta_max (float): Maximum beta (inverse temperature).
+        step_length (int): Length of Monte Carlo step.
+        num_sweeps (int): Number of Monte Carlo step.
+        num_reads (int): Number of iterations.
+        **kwargs: Optional keyword arguments for CMOS Annealer.
 
     Attributes:
-        cmos_parameters (dict):
-            Parameters of CMOS Annealer.
+        cmos_parameters (dict): Parameters of CMOS Annealer.
 
     Raises:
         ValueError:
@@ -144,6 +128,17 @@ class CMOSAnnealer(BaseSampler, dimod.Structured):
     def sample_ising(self, h, J, num_reads=1,
                      num_sweeps=None, step_length=None,
                      beta_min=None, beta_max=None,):
+        """sample Ising model.
+
+        Args:
+            h (dict): linear biases
+            J (dict): quadratic biases
+            num_reads (int): number of reads
+            num_sweeps (int): number of sweeps
+            step_length (int): number of Monte Carlo steop for each step
+            beta_min (float): minimal value of inverse temperature
+            beta_max (float): maximum value of inverse temperature
+        """
 
         # settting annealing parameters and validation -------------
         self._setting_overwrite(

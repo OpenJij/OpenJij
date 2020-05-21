@@ -1,22 +1,23 @@
 language: python
 
-dist: trusty
+dist: xenial
 
 sudo: false
 
 python:
-  - "3.5"
   - "3.6"
+  - "3.7"
+  - "3.8"
 
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-8
-      - g++-8
+      - gcc-7
+      - g++-7
 env:
-  - CMAKE_DIR="${HOME}/cmake" PATH="${CMAKE_DIR}/:${CMAKE_DIR}/bin:$PATH"
+  - CXX=g++-7 CMAKE_DIR="${HOME}/cmake" PATH="${CMAKE_DIR}/:${CMAKE_DIR}/bin:$PATH"
 
 before_install:
   - travis_retry wget -q https://cmake.org/files/v3.13/cmake-3.13.3-Linux-x86_64.tar.gz
@@ -24,11 +25,12 @@ before_install:
   - mv cmake-3.13.3-Linux-x86_64 "${CMAKE_DIR}"
 
 install:
-  - python setup.py install
+  - python setup.py build --debug install
 
 script:
-  - pip install numpy 
-  - pip install scipy 
+  - pip install -U numpy 
+  - pip install -U scipy 
+  - pip list
   - python tests/test.py
   - python tests/test_model.py
   - python tests/test_sampler.py

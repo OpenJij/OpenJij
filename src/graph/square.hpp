@@ -21,6 +21,7 @@
 #include <utility>
 
 #include <graph/sparse.hpp>
+#include <exception>
 
 namespace openjij {
     namespace graph {
@@ -104,7 +105,28 @@ namespace openjij {
                     return (a+_num_column)% _num_column;
                 }
 
+                /**
+                 * @brief check if the pair has a valid connection
+                 *
+                 * @param idx1 index1
+                 * @param idx2 index2
+                 *
+                 */
+                inline void _checkpair(Index idx1, Index idx2) const{
+                    std::int64_t r1,c1,r2,c2;
+                    std::tie(r1,c1) = to_rc(idx1);
+                    std::tie(r2,c2) = to_rc(idx2);
+                    if(
+                            !((r1 == r2 && std::abs(c1 - c2) == 1) || //horizontal connect
+                              (c1 == c2 && std::abs(r1 - r2) == 1) || //vertical connect
+                              (r1 == r2 && c1 == c2)) //local field
+                            ){
+                        throw std::runtime_error("invalid index pair "+std::to_string(idx1)+" "+std::to_string(idx2)+" inserted in Square");
+                    }
+                }
+
             public:
+
 
                 /**
                  * @brief convert from (row x column) index to global index
@@ -115,8 +137,13 @@ namespace openjij {
                  * @return corresponding global index
                  */
                 Index to_ind(std::int64_t r, std::int64_t c) const{
-                    assert(-1 <= r && r <= (std::int64_t)_num_row);
-                    assert(-1 <= c && c <= (std::int64_t)_num_column);
+                    if(!(-1 <= r && r <= (std::int64_t)_num_row)){
+                        throw std::runtime_error("invalid value r="+std::to_string(r)+" inserted in Square");
+                    }
+
+                    if(!(-1 <= c && c <= (std::int64_t)_num_column)){
+                        throw std::runtime_error("invalid value c="+std::to_string(c)+" inserted in Square");
+                    }
 
                     return _num_column * mod_r(r) + mod_c(c);
                 }
@@ -129,7 +156,10 @@ namespace openjij {
                  * @return corresponding (row x column) index (RowColumn type)
                  */
                 RowColumn to_rc(Index ind) const{
-                    assert(ind < this->get_num_spins());
+                    if(!(ind < this->get_num_spins())){
+                        throw std::runtime_error("invalid value index="+std::to_string(ind)+" inserted in Square");
+                    }
+
                     std::int64_t r = ind/_num_column;
                     std::int64_t c = ind%_num_column;
                     return std::make_pair(r, c);
@@ -173,6 +203,35 @@ namespace openjij {
                     }
 
                 /**
+                 * @brief Square constructor (from nlohmann::json)
+                 *
+                 * @param j JSON object
+                 * @param num_row number of rows
+                 * @param num_column number of columns
+                 * @param init_val initial value set to interaction (default: 0)
+                 */
+                Square(const json& j, std::size_t num_row, std::size_t num_column, FloatType init_val=0) : Square<FloatType>(num_row, num_column, init_val){
+                    if(!(j["num_variables"] <= num_row*num_column)){
+                        throw std::runtime_error("number of system size does not match");
+                    }
+                    //define bqm with ising variables
+                    auto bqm = json_parse<FloatType>(j, false);
+                    //interactions
+                    for(auto&& elem : bqm.get_quadratic()){
+                        const auto& key = elem.first;
+                        const auto& val = elem.second;
+                        _checkpair(key.first, key.second);
+                        this->Sparse<FloatType>::J(key.first, key.second) += val;
+                    }
+                    //local field
+                    for(auto&& elem : bqm.get_linear()){
+                        const auto& key = elem.first;
+                        const auto& val = elem.second;
+                        this->Sparse<FloatType>::h(key) += val;
+                    }
+                }
+
+                /**
                  * @brief square lattice graph copy constructor
                  *
                  */
@@ -189,14 +248,14 @@ namespace openjij {
                  *
                  * @return number of rows
                  */
-                std::size_t get_num_row(){return _num_row;}
+                std::size_t get_num_row() const{return _num_row;}
 
                 /**
                  * @brief get number of columns
                  *
                  * @return number of columns
                  */
-                std::size_t get_num_column(){return _num_column;}
+                std::size_t get_num_column() const{return _num_column;}
 
                 /**
                  * @brief access J(row, colum, direction)
@@ -221,7 +280,6 @@ namespace openjij {
                         case Dir::PLUS_C:
                             return this->Sparse<FloatType>::J(to_ind(r,c), to_ind(r,static_cast<std::int64_t>(c)+1));
                         default:
-                            assert(false);
                             return _init_val;
                     }
                 }
@@ -249,7 +307,6 @@ namespace openjij {
                         case Dir::PLUS_C:
                             return this->Sparse<FloatType>::J(to_ind(r,c), to_ind(r,static_cast<std::int64_t>(c)+1));
                         default:
-                            assert(false);
                             return _init_val;
                     }
                 }

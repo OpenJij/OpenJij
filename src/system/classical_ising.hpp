@@ -29,46 +29,13 @@ namespace openjij {
     namespace system {
 
         /**
-         * @brief naive ClassicalIsing structure (system for classical Ising model)
+         * @brief ClassicalIsing structure (system for classical Ising model)
          *
          * @tparam GraphType type of graph
-         * @tparam eigen_impl specify that Eigen implementation is enabled.
          */
-        template<typename GraphType, bool eigen_impl=false>
-            struct ClassicalIsing {
-                static_assert(!eigen_impl, "Eigen implementation is not supported.");
+        template<typename GraphType>
+            struct ClassicalIsing;
 
-                using system_type = classical_system;
-
-                /**
-                 * @brief Constructor to initialize spin and interaction
-                 *
-                 * @param spin
-                 * @param interaction
-                 */
-                ClassicalIsing(const graph::Spins& init_spin, const GraphType& init_interaction)
-                    : spin{init_spin}, interaction{init_interaction}, num_spins{init_spin.size()} {
-                        assert(init_spin.size() == init_interaction.get_num_spins());
-                    }
-
-                /**
-                 * @brief reset spins
-                 *
-                 * @param init_spin
-                 */
-                void reset_spins(const graph::Spins& init_spin){
-                    this->spin = init_spin;
-                }
-
-                graph::Spins spin;
-                const GraphType interaction;
-                /**
-                 * @brief number of real spins (dummy spin excluded)
-                 */
-                const std::size_t num_spins; //spin.size()
-            };
-
-        //TODO: unify Dense and Sparse Eigen-implemented ClassicalIsing struct
 
         /**
          * @brief ClassicalIsing structure for Dense graph (Eigen-based)
@@ -76,7 +43,7 @@ namespace openjij {
          * @tparam FloatType type of floating-point
          */
         template<typename FloatType>
-            struct ClassicalIsing<graph::Dense<FloatType>, true>{
+            struct ClassicalIsing<graph::Dense<FloatType>>{
                 using system_type = classical_system;
 
                 //matrix (row major)
@@ -92,7 +59,7 @@ namespace openjij {
                  */
                 ClassicalIsing(const graph::Spins& init_spin, const graph::Dense<FloatType>& init_interaction)
                     : spin(utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(init_spin)),
-                    interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)),
+                    interaction(init_interaction.get_interactions()),
                     num_spins(init_interaction.get_num_spins()){
                         assert(init_spin.size() == init_interaction.get_num_spins());
                     }
@@ -106,7 +73,14 @@ namespace openjij {
                     this->spin = utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(init_spin);
                 }
 
+                /**
+                 * @brief spins (Eigen Vector)
+                 */
                 VectorXx spin;
+
+                /**
+                 * @brief interactions (Eigen Matrix)
+                 */
                 const MatrixXx interaction;
 
                 /**
@@ -121,7 +95,7 @@ namespace openjij {
          * @tparam FloatType type of floating-point
          */
         template<typename FloatType>
-            struct ClassicalIsing<graph::Sparse<FloatType>, true>{
+            struct ClassicalIsing<graph::Sparse<FloatType>>{
                 using system_type = classical_system;
 
                 //matrix (row major)
@@ -151,7 +125,14 @@ namespace openjij {
                     this->spin = utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(init_spin);
                 }
 
+                /**
+                 * @brief spins (Eigen Vector)
+                 */
                 VectorXx spin;
+
+                /**
+                 * @brief interaction (Eigen SparseMatrix)
+                 */
                 const SparseMatrixXx interaction;
 
                 /**
@@ -163,16 +144,15 @@ namespace openjij {
         /**
          * @brief helper function for ClassicalIsing constructor
          *
-         * @tparam eigen_impl
          * @tparam GraphType
          * @param init_spin initial spin
-         -        * @param init_interaction initial interaction
+         * @param init_interaction initial interaction
          *
          * @return generated object
          */
-        template<bool eigen_impl=false,typename GraphType>
-            ClassicalIsing<GraphType, eigen_impl> make_classical_ising(const graph::Spins& init_spin, const GraphType& init_interaction){
-                return ClassicalIsing<GraphType, eigen_impl>(init_spin, init_interaction);
+        template<typename GraphType>
+            auto make_classical_ising(const graph::Spins& init_spin, const GraphType& init_interaction){
+                return ClassicalIsing<GraphType>(init_spin, init_interaction);
             }
 
 

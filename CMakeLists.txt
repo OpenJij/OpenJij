@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.11)
 project(openjij)
 
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 # Set default compile flags for GCC
 if(CMAKE_COMPILER_IS_GNUCXX)
     message(STATUS "GCC detected, adding compile flags")
@@ -69,6 +69,8 @@ else()
 endif()
 include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
 include(${CMAKE_SOURCE_DIR}/external/eigen.cmake)
+include(${CMAKE_SOURCE_DIR}/external/json.cmake)
+include(${CMAKE_SOURCE_DIR}/external/pybind11-json.cmake)
 
 add_subdirectory(src)
 add_subdirectory(openjij)

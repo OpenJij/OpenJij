@@ -21,14 +21,37 @@
 #include <vector>
 #include <utility>
 
+#include <utility/eigen.hpp>
+
 namespace openjij {
     namespace system {
-        template<typename GraphType, bool eigen_impl=false>
-        struct ContinuousTimeIsing {
+        
+        /**
+         * @brief Continuous Time Quantum Ising system
+         *
+         * @tparam GraphType
+         */
+
+        template<typename GraphType>
+        struct ContinuousTimeIsing;
+
+
+        /**
+         * @brief Continuous Time Quantum Ising system (for Sparse graph)
+         *
+         * @tparam FloatType
+         */
+        template<typename FloatType>
+        struct ContinuousTimeIsing<graph::Sparse<FloatType>> {
+            using GraphType = graph::Sparse<FloatType>;
             using system_type = transverse_field_system;
-            using FloatType = typename GraphType::value_type;
             using TimeType = FloatType;
             using CutPoint = std::pair<TimeType, graph::Spin>;
+
+            /**
+             * @brief Interaction type (Eigen sparse matrix)
+             */
+            using SparseMatrixXx = Eigen::SparseMatrix<FloatType, Eigen::RowMajor>;
 
             /**
              * @brief spin configuration in real and continuous time space
@@ -45,26 +68,30 @@ namespace openjij {
              */
             ContinuousTimeIsing(const SpinConfiguration& init_spin_config,
                                 const GraphType& init_interaction,
-                                const FloatType gamma)
+                                const double gamma)
                 : spin_config(init_spin_config),
                   num_spins(init_spin_config.size()+1),
-                  interaction(init_interaction.get_num_spins()+1),
+                  interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)),
                   gamma(gamma) {
 
                 assert(init_spin_config.size() == init_interaction.get_num_spins());
 
-                for(graph::Index i = 0;i < init_interaction.get_num_spins();i++) {
-                    for(auto&& j : init_interaction.adj_nodes(i)) {
-                        if(i < j) {
-                            continue;
-                        }
+                // insert numbers to diagnonal elements in the interaction
+                SparseMatrixXx diag(init_interaction.get_num_spins()+1, init_interaction.get_num_spins()+1);
 
-                        this->interaction.J(i, j) = init_interaction.J(i, j); // add actual interactions
+                for(typename SparseMatrixXx::InnerIterator it(interaction, init_interaction.get_num_spins()); it; ++it) {
+                    std::size_t j = it.index();
+                    FloatType v = it.value();
+                    if(j != init_interaction.get_num_spins()){
+                        diag.insert(j,j) = v;
                     }
-
-                    this->interaction.J(i, this->num_spins-1) = init_interaction.h(i);
-                    // add longitudinal magnetic field as interaction between ith spin and auxiliary spin
+                    else{
+                        diag.insert(j,j) = -1;
+                    }
                 }
+
+
+                interaction += diag;
 
                 spin_config.push_back(std::vector<CutPoint> { CutPoint(0.0, 1) });
                 // initialize auxiliary spin with 1 along entire timeline
@@ -81,7 +108,7 @@ namespace openjij {
              */
             ContinuousTimeIsing(const graph::Spins& init_spins,
                                 const GraphType& init_interaction,
-                                const FloatType gamma) :
+                                const double gamma) :
                 ContinuousTimeIsing(convert_to_spin_config(init_spins),
                                     init_interaction,
                                     gamma) {} // constructor delegation
@@ -208,7 +235,7 @@ namespace openjij {
             /**
              * @brief interaction
              */
-            GraphType interaction;
+            SparseMatrixXx interaction;
 
             /**
              * @brief coefficient of transverse field term, actual field would be gamma * s, where s = [0:1]
@@ -219,7 +246,6 @@ namespace openjij {
         /**
          * @brief helper function for ContinuousTimeIsing constructor
          *
-         * @tparam eigen_impl
          * @tparam GraphType
          * @param init_spins
          * @param interaction
@@ -227,13 +253,13 @@ namespace openjij {
          *
          * @return generated object
          */
-        template<bool eigen_impl=false, typename GraphType>
-        ContinuousTimeIsing<GraphType, eigen_impl> make_continuous_time_ising(const graph::Spins& init_spins,
-                                                                              const GraphType& init_interaction,
-                                                                              typename GraphType::value_type gamma) {
-            return ContinuousTimeIsing<GraphType, eigen_impl>(init_spins,
-                                                              init_interaction,
-                                                              gamma);
+        template<typename GraphType>
+        ContinuousTimeIsing<GraphType> make_continuous_time_ising(const graph::Spins& init_spins,
+                                                                  const GraphType& init_interaction,
+                                                                  double gamma) {
+            return ContinuousTimeIsing<GraphType>(init_spins,
+                                                  init_interaction,
+                                                  gamma);
         }
     } // namespace system
 } // namespace openjij

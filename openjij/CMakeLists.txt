@@ -24,6 +24,8 @@ target_link_libraries(cxxjij
     pybind11::module
     eigen_lib
     cxxjij_header_only
+    pybind11_json
+    nlohmann_json::nlohmann_json
 )
 
 if(USE_CUDA)
