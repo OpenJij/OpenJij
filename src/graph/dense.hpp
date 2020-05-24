@@ -48,6 +48,17 @@ namespace openjij {
 
                     /**
                      * @brief interaction type (Eigen)
+                     * The stored matrix has the following triangular form:
+                     *
+                     * \f[
+                     * \begin{pmatrix}
+                     * J_{0,0} & J_{0,1} & \cdots & J_{0,N-1} & h_{0}\\
+                     * 0 & J_{1,1} & \cdots & J_{1,N-1} & h_{1}\\
+                     * \vdots & \vdots & \vdots & \vdots & \vdots \\
+                     * 0 & 0 & \cdots & J_{N-1,N-1} & h_{N-1}\\
+                     * 0 & 0 & \cdots & 0 & 1 \\
+                     * \end{pmatrix}
+                     * \f]
                      */
                     using Interactions = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
@@ -230,6 +241,18 @@ namespace openjij {
 
                     /**
                      * @brief get interactions (Eigen Matrix)
+                     *
+                     * The returned matrix has the following symmetric form:
+                     *
+                     * \f[
+                     * \begin{pmatrix}
+                     * J_{0,0} & J_{0,1} & \cdots & J_{0,N-1} & h_{0}\\
+                     * J_{0,1} & J_{1,1} & \cdots & J_{1,N-1} & h_{1}\\
+                     * \vdots & \vdots & \vdots & \vdots & \vdots \\
+                     * J_{0,N-1} & J_{N-1,1} & \cdots & J_{N-1,N-1} & h_{N-1}\\
+                     * h_{0} & h_{1} & \cdots & h_{N-1} & 1 \\
+                     * \end{pmatrix}
+                     * \f]
                      *
                      * @return Eigen Matrix
                      */
