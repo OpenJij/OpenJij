@@ -100,7 +100,7 @@ Inheritance diagram for openjij::graph::Dense&lt; FloatType &gt;:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:aa0f487e2e61a9e434abede83092b170d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#aa0f487e2e61a9e434abede83092b170d">Interactions</a> = Eigen::Matrix&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor &gt;</td></tr>
-<tr class="memdesc:aa0f487e2e61a9e434abede83092b170d"><td class="mdescLeft">&#160;</td><td class="mdescRight">interaction type (Eigen)  <a href="classopenjij_1_1graph_1_1_dense.html#aa0f487e2e61a9e434abede83092b170d">More...</a><br /></td></tr>
+<tr class="memdesc:aa0f487e2e61a9e434abede83092b170d"><td class="mdescLeft">&#160;</td><td class="mdescRight">interaction type (Eigen) The stored matrix has the following triangular form:  <a href="classopenjij_1_1graph_1_1_dense.html#aa0f487e2e61a9e434abede83092b170d">More...</a><br /></td></tr>
 <tr class="separator:aa0f487e2e61a9e434abede83092b170d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5aaf6a2c629d505bf6b492bf2c3e171e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a5aaf6a2c629d505bf6b492bf2c3e171e">value_type</a> = <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a></td></tr>
 <tr class="memdesc:a5aaf6a2c629d505bf6b492bf2c3e171e"><td class="mdescLeft">&#160;</td><td class="mdescRight">float type  <a href="classopenjij_1_1graph_1_1_dense.html#a5aaf6a2c629d505bf6b492bf2c3e171e">More...</a><br /></td></tr>
@@ -193,8 +193,11 @@ template&lt;typename FloatType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>interaction type (Eigen) </p>
-
+<p>interaction type (Eigen) The stored matrix has the following triangular form: </p>
+<p class="formulaDsp">
+\[ \begin{pmatrix} J_{0,0} &amp; J_{0,1} &amp; \cdots &amp; J_{0,N-1} &amp; h_{0}\\ 0 &amp; J_{1,1} &amp; \cdots &amp; J_{1,N-1} &amp; h_{1}\\ \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots \\ 0 &amp; 0 &amp; \cdots &amp; J_{N-1,N-1} &amp; h_{N-1}\\ 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 1 \\ \end{pmatrix} \]
+</p>
+ 
 </div>
 </div>
 <a id="a5aaf6a2c629d505bf6b492bf2c3e171e"></a>
@@ -440,6 +443,10 @@ template&lt;typename FloatType &gt; </div>
 </div><div class="memdoc">
 
 <p>get interactions (Eigen Matrix) </p>
+<p>The returned matrix has the following symmetric form:</p>
+<p class="formulaDsp">
+\[ \begin{pmatrix} J_{0,0} &amp; J_{0,1} &amp; \cdots &amp; J_{0,N-1} &amp; h_{0}\\ J_{0,1} &amp; J_{1,1} &amp; \cdots &amp; J_{1,N-1} &amp; h_{1}\\ \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots \\ J_{0,N-1} &amp; J_{N-1,1} &amp; \cdots &amp; J_{N-1,N-1} &amp; h_{N-1}\\ h_{0} &amp; h_{1} &amp; \cdots &amp; h_{N-1} &amp; 1 \\ \end{pmatrix} \]
+</p>
 <dl class="section return"><dt>Returns</dt><dd>Eigen Matrix </dd></dl>
 
 </div>
