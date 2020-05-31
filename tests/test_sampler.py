@@ -116,13 +116,13 @@ class TestSamplers(unittest.TestCase):
         self.assertDictEqual(self.afiground, res.first.sample)
 
     def test_csqa(self):
-        sampler = oj.CSQASampler(gamma=10)
+        sampler = oj.CSQASampler(gamma=10, num_sweeps=500)
         self.samplers(sampler,
                 init_state=[1 for _ in range(len(self.ground_state))],
                 init_q_state=[1 for _ in range(len(self.ground_state))])
 
         #antiferromagnetic one-dimensional Ising model
-        sampler = oj.CSQASampler(num_sweeps=51, num_reads=100)
+        sampler = oj.CSQASampler(num_sweeps=71, num_reads=100)
         res = sampler.sample_ising(self.afih, self.afiJ)
         self.assertDictEqual(self.afiground, res.first.sample)
 
