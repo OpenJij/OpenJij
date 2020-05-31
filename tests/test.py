@@ -278,8 +278,8 @@ class CXXTest(unittest.TestCase):
         #classial ising (sparse)
         system = S.make_continuous_time_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse, 1.0)
 
-        #schedulelist
-        schedule_list = U.make_transverse_field_schedule_list(5, 300, 3000)
+        #schedulelist (TODO: why is it so hard?)
+        schedule_list = U.make_transverse_field_schedule_list(10, 500, 3000)
 
         #anneal
         A.Algorithm_ContinuousTimeSwendsenWang_run(system, self.seed_for_mc, schedule_list)
