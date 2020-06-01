@@ -287,9 +287,6 @@ class CXXTest(unittest.TestCase):
         #result spin
         result_spin = R.get_solution(system)
 
-        print(result_spin)
-        print(self.true_groundstate)
-
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
 

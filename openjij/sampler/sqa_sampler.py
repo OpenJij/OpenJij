@@ -4,8 +4,6 @@ from openjij.sampler import measure_time
 from openjij.sampler import BaseSampler
 from openjij.utils.decorator import deprecated_alias
 import cxxjij
-
-
 class SQASampler(BaseSampler):
     """Sampler with Simulated Quantum Annealing (SQA).
 
@@ -252,7 +250,7 @@ class SQASampler(BaseSampler):
         else:
 
             self.num_sweeps = num_sweeps if num_sweeps else self.num_sweeps
-            self._schedule, beta_gamma = linear_ising_schedule(
+            self._schedule, beta_gamma = quartic_ising_schedule(
                 model=model,
                 beta=self._schedule_setting['beta'],
                 gamma=self._schedule_setting['gamma'],
@@ -282,4 +280,20 @@ def linear_ising_schedule(model, beta, gamma, num_sweeps):
     return schedule, [beta, gamma]
 
 #TODO: more optimal schedule?
+def quartic_ising_schedule(model, beta, gamma, num_sweeps):
+    """Generate quartic ising schedule based on S. Morita and H. Nishimori, Journal of Mathematical Physics 49, 125210 (2008).
+
+    Args:
+        model (:class:`openjij.model.model.BinaryQuadraticModel`): BinaryQuadraticModel
+        beta (float): inverse temperature
+        gamma (float): transverse field
+        num_sweeps (int): number of steps
+    Returns:
+        generated schedule
+    """
+
+    s = np.linspace(0, 1, num_sweeps)
+    fs = s**4*(35-84*s+70*s**2-20*s**3)
+    schedule = [((beta, elem), 1) for elem in fs]
+    return schedule, [beta, gamma]
 
