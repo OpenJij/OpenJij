@@ -49,11 +49,11 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
                  beta_min=None, beta_max=None,
                  num_sweeps=1000, schedule=None,
                  num_reads=1, unit_num_L=None,
-                 **kwargs):
+                 ):
 
         super().__init__(beta_min=beta_min, beta_max=beta_max, 
                          num_reads=num_reads, num_sweeps=num_sweeps, 
-                         schedule=schedule, **kwargs)
+                         schedule=schedule)
 
         self.unit_num_L = unit_num_L
 
@@ -68,7 +68,7 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
                      num_sweeps=None, num_reads=1, schedule=None,
                      initial_state=None, updater='single spin flip',
                      reinitialize_state=True, seed=None, unit_num_L=None,
-                     **kwargs):
+                     ):
         """sample with Ising model.
 
         Args:
@@ -84,7 +84,6 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
             reinitialize_state (bool): if true reinitialize state for each run
             seed (int): seed for Monte Carlo algorithm
             unit_num_L (int): number of chimera units
-            kwargs:
 
         Returns:
             :class:`openjij.sampler.response.Response`: results
@@ -121,7 +120,7 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
         return self._sampling(model, beta_min, beta_max,
                               num_sweeps, num_reads, schedule,
                               initial_state, updater,
-                              reinitialize_state, seed, structure, **kwargs)
+                              reinitialize_state, seed, structure)
 
         
 

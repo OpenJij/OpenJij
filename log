@@ -1,0 +1,156 @@
+running test
+running egg_info
+writing openjij.egg-info/PKG-INFO
+writing dependency_links to openjij.egg-info/dependency_links.txt
+writing requirements to openjij.egg-info/requires.txt
+writing top-level names to openjij.egg-info/top_level.txt
+reading manifest file 'openjij.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'openjij.egg-info/SOURCES.txt'
+running build_ext
+-- GCC detected, adding compile flags
+-- USE_OMP = No
+-- USE_CUDA = Yes
+-- USE_TEST = Yes
+-- Fetch googletest for C++ testing
+-- Fetch pybind11 for python-binding
+-- pybind11 v2.5.0
+-- Fetch eigen
+-- Performing Test COMPILER_SUPPORT_std=cpp03
+-- Performing Test COMPILER_SUPPORT_std=cpp03 - Success
+-- Standard libraries to link to explicitly: none
+-- Found unsuitable Qt version "5.15.0" from /usr/bin/qmake
+-- A cache variable, namely BLAS_DIR, has been set to specify the install directory of BLAS
+-- Looking for BLAS -- mkl.h not found
+-- Looking for MKL BLAS: not found
+-- Looking for Goto BLAS: not found
+-- Looking for Open BLAS: not found
+-- Looking for Eigen BLAS: not found
+-- Looking for Eigen BLAS: not found
+-- Looking for Atlas BLAS: not found
+-- Looking for PhiPACK BLAS: not found
+-- Looking for CXML BLAS: not found
+-- Looking for DXML BLAS: not found
+-- Looking for SunPerf BLAS: not found
+-- Looking for SCSL BLAS: not found
+-- Looking for SGIMATH BLAS: not found
+-- Looking for IBM ESSL BLAS: not found
+-- Looking for IBM ESSL MT BLAS: not found
+-- Looking for ACML BLAS: not found
+-- Looking for ACML BLAS: not found
+-- Looking for ACML BLAS: not found
+-- Looking for Apple BLAS: not found
+-- Looking for NAS BLAS: not found
+-- Looking for sgemm_
+-- Looking for sgemm_ - found
+-- Looking for Generic BLAS: found
+-- A library with BLAS API found.
+-- BLAS_LIBRARIES /lib/libblas.so;/lib/libgfortran.so
+-- Could NOT find CHOLMOD (missing: CHOLMOD_INCLUDES CHOLMOD_LIBRARIES) 
+-- Could NOT find UMFPACK (missing: UMFPACK_INCLUDES UMFPACK_LIBRARIES) 
+-- Could NOT find SUPERLU (missing: SUPERLU_INCLUDES SUPERLU_LIBRARIES SUPERLU_VERSION_OK) 
+-- A version of Pastix has been found but pastix_nompi.h does not exist in the include directory. Because Eigen tests require a version without MPI, we disable the Pastix backend.
+-- Could NOT find SPQR (missing: SPQR_INCLUDES SPQR_LIBRARIES) 
+-- Found unsuitable Qt version "5.15.0" from /usr/bin/qmake
+-- Could NOT find Boost (missing: Boost_INCLUDE_DIR) 
+-- Could NOT find GOOGLEHASH (missing: GOOGLEHASH_INCLUDES GOOGLEHASH_COMPILE) 
+-- Could NOT find ADOLC (missing: ADOLC_INCLUDES ADOLC_LIBRARIES) 
+-- Could NOT find FFTW (missing: FFTW_INCLUDES FFTW_LIBRARIES) 
+-- Could NOT find GLUT (missing: GLUT_glut_LIBRARY GLUT_INCLUDE_DIR) 
+-- Found Glew: /usr/lib/libGLEW.so
+-- Found CUDA: /opt/cuda (found suitable version "10.2", minimum required is "7.0") 
+-- Found unsuitable Qt version "5.15.0" from /usr/bin/qmake
+-- Qt4 not found, so disabling the mandelbrot and opengl demos
+-- Could NOT find CHOLMOD (missing: CHOLMOD_INCLUDES CHOLMOD_LIBRARIES) 
+-- Could NOT find UMFPACK (missing: UMFPACK_INCLUDES UMFPACK_LIBRARIES) 
+-- Could NOT find SUPERLU (missing: SUPERLU_INCLUDES SUPERLU_LIBRARIES SUPERLU_VERSION_OK) 
+-- A version of Pastix has been found but pastix_nompi.h does not exist in the include directory. Because Eigen tests require a version without MPI, we disable the Pastix backend.
+-- ************************************************************
+-- ***    Eigen's unit tests configuration summary          ***
+-- ************************************************************
+-- 
+-- Build type:        Release
+-- Build site:        jikopc
+-- Build string:      linux-5.6.15-arch1-1-g++-10.1.0-sse2-64bit
+-- Enabled backends:  MPFR C++, 
+-- Disabled backends: Cholmod,  UmfPack,  SuperLU,  PaStiX,  METIS,  SPQR,  Qt4 support,  Boost.Multiprecision,  GoogleHash,  Adolc,  fftw,  OpenGL, 
+-- Default order:     Column-major
+-- Maximal matrix/vector size: 320
+-- SSE2:              Using architecture defaults
+-- SSE3:              Using architecture defaults
+-- SSSE3:             Using architecture defaults
+-- SSE4.1:            Using architecture defaults
+-- SSE4.2:            Using architecture defaults
+-- AVX:               Using architecture defaults
+-- FMA:               Using architecture defaults
+-- AVX512:            Using architecture defaults
+-- Altivec:           Using architecture defaults
+-- VSX:               Using architecture defaults
+-- ARM NEON:          Using architecture defaults
+-- ARMv8 NEON:        Using architecture defaults
+-- S390X ZVECTOR:     Using architecture defaults
+-- C++11:             OFF
+-- SYCL:              OFF
+-- CUDA:              OFF
+-- 
+CXX:               /usr/bin/c++
+ CXX_VERSION:       c++ (GCC) 10.1.0
+ CXX_FLAGS:         -DVERSION_INFO="0.0.11" -Wall -Wextra -Wno-long-long -pedantic -std=c++03 -pedantic -Wall -Wextra -Wundef -Wcast-align -Wchar-subscripts -Wnon-virtual-dtor -Wunused-local-typedefs -Wpointer-arith -Wwrite-strings -Wformat-security -Wlogical-op -Wdouble-promotion -Wno-psabi -Wno-variadic-macros -Wno-long-long -fno-check-new -fno-common -fstrict-aliasing -ansi
+ Sparse lib flags:   
+
+-- ************************************************************
+-- 
+-- Configured Eigen 3.3.7
+-- 
+-- Some things you can do now:
+-- --------------+--------------------------------------------------------------
+-- Command       |   Description
+-- --------------+--------------------------------------------------------------
+-- make install  | Install Eigen. Headers will be installed to:
+--               |     <CMAKE_INSTALL_PREFIX>/<INCLUDE_INSTALL_DIR>
+--               |   Using the following values:
+--               |     CMAKE_INSTALL_PREFIX: /usr/local
+--               |     INCLUDE_INSTALL_DIR:  include/eigen3
+--               |   Change the install location of Eigen headers using:
+--               |     cmake . -DCMAKE_INSTALL_PREFIX=yourprefix
+--               |   Or:
+--               |     cmake . -DINCLUDE_INSTALL_DIR=yourdir
+-- make doc      | Generate the API documentation, requires Doxygen & LaTeX
+-- make check    | Build and run the unit-tests. Read this page:
+--               |   http://eigen.tuxfamily.org/index.php?title=Tests
+-- make blas     | Build BLAS library (not the same thing as Eigen)
+-- make uninstall| Removes files installed by make install
+-- --------------+--------------------------------------------------------------
+-- 
+-- Fetch pybind11_json for python-json-binding
+-- Found CUDA: /opt/cuda (found version "10.2") 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8
+/usr/bin/cmake -S/home/jiko/workspace/Jij/openjij/OpenJij -B/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8 --check-build-system CMakeFiles/Makefile.cmake 0
+/usr/bin/make  -f CMakeFiles/Makefile2 python
+make[1]: Entering directory '/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8'
+/usr/bin/cmake -S/home/jiko/workspace/Jij/openjij/OpenJij -B/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8 --check-build-system CMakeFiles/Makefile.cmake 0
+/usr/bin/cmake -E cmake_progress_start /home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8/CMakeFiles 0
+/usr/bin/make  -f CMakeFiles/Makefile2 openjij/CMakeFiles/python.dir/all
+make[2]: Entering directory '/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8'
+/usr/bin/make  -f src/system/CMakeFiles/cxxjij_chimera_gpu_kernel_static.dir/build.make src/system/CMakeFiles/cxxjij_chimera_gpu_kernel_static.dir/depend
+make[3]: Entering directory '/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8'
+cd /home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8 && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/jiko/workspace/Jij/openjij/OpenJij /home/jiko/workspace/Jij/openjij/OpenJij/src/system /home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8 /home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8/src/system /home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8/src/system/CMakeFiles/cxxjij_chimera_gpu_kernel_static.dir/DependInfo.cmake --color=
+make[3]: Leaving directory '/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8'
+/usr/bin/make  -f src/system/CMakeFiles/cxxjij_chimera_gpu_kernel_static.dir/build.make src/system/CMakeFiles/cxxjij_chimera_gpu_kernel_static.dir/build
+make[3]: Entering directory '/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8'
+make[3]: Nothing to be done for 'src/system/CMakeFiles/cxxjij_chimera_gpu_kernel_static.dir/build'.
+make[3]: Leaving directory '/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8'
+Built target cxxjij_chimera_gpu_kernel_static
+/usr/bin/make  -f openjij/CMakeFiles/cxxjij.dir/build.make openjij/CMakeFiles/cxxjij.dir/depend
+make[3]: Entering directory '/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8'
+cd /home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8 && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/jiko/workspace/Jij/openjij/OpenJij /home/jiko/workspace/Jij/openjij/OpenJij/openjij /home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8 /home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8/openjij /home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8/openjij/CMakeFiles/cxxjij.dir/DependInfo.cmake --color=
+make[3]: Leaving directory '/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8'
+/usr/bin/make  -f openjij/CMakeFiles/cxxjij.dir/build.make openjij/CMakeFiles/cxxjij.dir/build
+make[3]: Entering directory '/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8'
+Building CXX object openjij/CMakeFiles/cxxjij.dir/main.cpp.o
+cd /home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8/openjij && /usr/bin/c++  -DEIGEN_MPL2_ONLY -DUSE_CUDA -Dcxxjij_EXPORTS -I/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8/_deps/pybind11-src/include -I/usr/include/python3.8 -I/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8/_deps/eigen-src -I/home/jiko/workspace/Jij/openjij/OpenJij/src -I/opt/cuda/targets/x86_64-linux/include -I/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8/_deps/pybind11_json-src/include -I/home/jiko/workspace/Jij/openjij/OpenJij/external/nlohmann_json  -DVERSION_INFO=\"0.0.11\" -Wall -Wextra -Wno-long-long -pedantic -O3 -DNDEBUG -flto -fno-fat-lto-objects -fPIC -fvisibility=hidden   -fvisibility=hidden -mavx512 -pthread -std=gnu++17 -o CMakeFiles/cxxjij.dir/main.cpp.o -c /home/jiko/workspace/Jij/openjij/OpenJij/openjij/main.cpp
+make[3]: Leaving directory '/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8'
+make[2]: Leaving directory '/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8'
+make[1]: Leaving directory '/home/jiko/workspace/Jij/openjij/OpenJij/build/temp.linux-x86_64-3.8'

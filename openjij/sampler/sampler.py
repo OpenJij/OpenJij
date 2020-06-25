@@ -67,7 +67,7 @@ class BaseSampler(dimod.Sampler):
     def _cxxjij_sampling(self, model, init_generator,
                          algorithm, system,
                          reinitialize_state=None,
-                         seed=None, structure=None, **kwargs):
+                         seed=None, structure=None):
         """Basic sampling function: for cxxjij sampling
 
         Args:
@@ -169,7 +169,7 @@ class BaseSampler(dimod.Sampler):
         Args:
             bqm (openjij.BinaryQuadraticModel):
                 Binary Qudratic Model
-            **kwargs:
+            **parameters:
                 See the implemented sampling for additional keyword definitions.
 
         Returns:

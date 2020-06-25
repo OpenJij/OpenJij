@@ -122,7 +122,7 @@ class SASampler(BaseSampler):
                      num_sweeps=None, num_reads=1, schedule=None,
                      initial_state=None, updater='single spin flip',
                      reinitialize_state=True, seed=None,
-                     **kwargs):
+                     ):
         """sample Ising model.
 
         Args:
@@ -137,7 +137,6 @@ class SASampler(BaseSampler):
             updater(str): updater algorithm
             reinitialize_state (bool): if true reinitialize state for each run
             seed (int): seed for Monte Carlo algorithm
-            kwargs:
         Returns:
             :class:`openjij.sampler.response.Response`: results
             
@@ -164,13 +163,13 @@ class SASampler(BaseSampler):
         return self._sampling(model, beta_min, beta_max,
                               num_sweeps, num_reads, schedule,
                               initial_state, updater,
-                              reinitialize_state, seed, **kwargs)
+                              reinitialize_state, seed)
 
     def _sampling(self, model, beta_min=None, beta_max=None,
                      num_sweeps=None, num_reads=1, schedule=None,
                      initial_state=None, updater='single spin flip',
                      reinitialize_state=True, seed=None, structure=None, 
-                     **kwargs):
+                     ):
         """sampling by using specified model
         Args:
             model (openjij.BinaryQuadraticModel): BinaryQuadraticModel
@@ -258,7 +257,7 @@ class SASampler(BaseSampler):
         response = self._cxxjij_sampling(
             model, _generate_init_state,
             algorithm, sa_system,
-            reinitialize_state, seed, structure, **kwargs
+            reinitialize_state, seed, structure
         )
 
         response.info['schedule'] = self.schedule_info
