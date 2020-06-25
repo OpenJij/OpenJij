@@ -123,7 +123,7 @@ class SQASampler(BaseSampler):
                      num_sweeps=None, schedule=None,
                      num_reads=1,
                      initial_state=None, updater='single spin flip',
-                     reinitialize_state=True, seed=None, structure=None, **kwargs):
+                     reinitialize_state=True, seed=None, structure=None):
         """Sampling from the Ising model
 
         Args:
@@ -171,13 +171,13 @@ class SQASampler(BaseSampler):
                      num_sweeps=num_sweeps, schedule=schedule,
                      num_reads=num_reads,
                      initial_state=initial_state, updater=updater,
-                     reinitialize_state=reinitialize_state, seed=seed, structure=structure, **kwargs)
+                     reinitialize_state=reinitialize_state, seed=seed, structure=structure)
 
     def _sampling(self, bqm, beta=None, gamma=None,
                      num_sweeps=None, schedule=None,
                      num_reads=1,
                      initial_state=None, updater='single spin flip',
-                     reinitialize_state=True, seed=None, structure=None, **kwargs):
+                     reinitialize_state=True, seed=None, structure=None):
 
         ising_graph = bqm.get_cxxjij_ising_graph()
 
@@ -229,7 +229,7 @@ class SQASampler(BaseSampler):
         response = self._cxxjij_sampling(
             bqm, init_generator,
             algorithm, sqa_system,
-            reinitialize_state, seed, structure, **kwargs
+            reinitialize_state, seed, structure
         )
 
         response.info['schedule'] = self.schedule_info

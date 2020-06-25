@@ -58,7 +58,7 @@ class CSQASampler(SQASampler):
                      num_sweeps=None, schedule=None,
                      num_reads=1,
                      initial_state=None, updater='swendsenwang',
-                     reinitialize_state=True, seed=None, **kwargs):
+                     reinitialize_state=True, seed=None):
         """Sampling from the Ising model.
 
         Args:
@@ -76,7 +76,6 @@ class CSQASampler(SQASampler):
             structure (int, optional): specify the structure. 
             This argument is necessary if the model has a specific structure (e.g. Chimera graph) and the updater algorithm is structure-dependent.
             structure must have two types of keys, namely "size" which shows the total size of spins and "dict" which is the map from model index (elements in model.indices) to the number.
-            kwargs:
         
         Returns:
             :class:`openjij.sampler.response.Response`: results
@@ -136,7 +135,7 @@ class CSQASampler(SQASampler):
         response = self._cxxjij_sampling(
             bqm, init_generator,
             algorithm, sqa_system,
-            reinitialize_state, seed, **kwargs
+            reinitialize_state, seed
         )
 
         response.info['schedule'] = self.schedule_info
