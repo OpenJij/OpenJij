@@ -13,7 +13,7 @@
 ## install
 
 ### install via pip
-> Note: To use GPGPU algorithms, please follow the [section (`install via pip from source codes`) below](#pip-from-source-code).
+> Note: To use GPGPU algorithms, please follow the section [`install via pip from source codes`) below](#install-via-pip-from-source-codes).
 ```
 $ pip install openjij
 ```
