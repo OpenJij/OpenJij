@@ -38,13 +38,13 @@ class TestSamplers(unittest.TestCase):
         self.afiJ = {(i, i+1): 1 for i in range(N-1)}
         self.afiground = {i:(-1)**i for i in range(N)}
 
-    def samplers(self, sampler, init_state=None, init_q_state=None):
+    def samplers(self, sampler, init_state=None, init_q_state=None, schedule=None):
         res = sampler.sample_ising(
-            self.num_ind['h'], self.num_ind['J'],
+            self.num_ind['h'], self.num_ind['J'], schedule=schedule,
             initial_state=init_state, seed=1)
         self._test_response(res, self.e_g, self.ground_state)
         res = sampler.sample_qubo(self.qubo,
-                                  initial_state=init_q_state, seed=2)
+                                  initial_state=init_q_state, schedule=schedule, seed=2)
         self._test_response(res, self.e_q, self.ground_q)
 
     def _test_response(self, res, e_g, s_g):
@@ -91,6 +91,20 @@ class TestSamplers(unittest.TestCase):
         self.samplers(sampler, 
             init_state={i: 1 for i in range(len(self.ground_state))}
             )
+
+        # schedule [[beta, one_mc_steps], ...]
+        # schedule test (list of list)
+        self.samplers(sampler, 
+            init_state={i: 1 for i in range(len(self.ground_state))},
+            schedule=[[0.1, 10], [1, 10], [10, 10]]
+            )
+
+        # schedule test (list of tuple)
+        self.samplers(sampler, 
+            init_state={i: 1 for i in range(len(self.ground_state))},
+            schedule=[(0.1, 10), (1, 10), (10, 10)]
+            )
+
         self._test_num_reads(oj.SASampler)
 
         #antiferromagnetic one-dimensional Ising model
@@ -108,6 +122,33 @@ class TestSamplers(unittest.TestCase):
         self.samplers(sampler, 
             init_state={i: 1 for i in range(len(self.ground_state))}
             )
+
+        # schedule [[s, one_mc_steps], ...]
+        # schedule test (list of list, temperature fixed)
+        self.samplers(sampler, 
+            init_state={i: 1 for i in range(len(self.ground_state))},
+            schedule=[[0.1, 10], [0.5, 10], [0.9, 10]]
+            )
+
+        # schedule test (list of tuple, temperature fixed)
+        self.samplers(sampler, 
+            init_state={i: 1 for i in range(len(self.ground_state))},
+            schedule=[(0.1, 10), (0.5, 10), (0.9, 10)]
+            )
+
+        # schedule [[s, beta, one_mc_steps], ...]
+        # schedule test (list of list, temperature non-fixed)
+        self.samplers(sampler, 
+            init_state={i: 1 for i in range(len(self.ground_state))},
+            schedule=[[0.1, 0.1, 10], [0.5, 1, 10], [0.9, 10, 10]]
+            )
+
+        # schedule test (list of tuple, temperature non-fixed)
+        self.samplers(sampler, 
+            init_state={i: 1 for i in range(len(self.ground_state))},
+            schedule=[(0.1, 0.1, 10), (0.5, 1, 10), (0.9, 10, 10)]
+            )
+
         self._test_num_reads(oj.SQASampler)
 
         #antiferromagnetic one-dimensional Ising model
