@@ -13,12 +13,15 @@
 ## install
 
 ### pip
+> Note: To use GPGPU algorithms, please follow the [section below](#pip from source code).
 ```
 $ pip install openjij
 ```
 
-### cmake setup
+### pip from source code
+To install OpenJij from source code, please install CMake first then install OpenJij.
 
+#### cmake setup
 
 If you had not installed cmake>=3.12.2, you need install cmake>=3.12.2
 
@@ -39,7 +42,12 @@ $ cd cmake-3.13.2
 $ ./bootstrap && make && sudo make install 
 ```
 
-### Install openjij 
+#### install OpenJij
+```
+$ pip install openjij --no-binary :all:
+```
+
+### github repository
 ```
 $ git clone git@github.com:OpenJij/OpenJij.git
 $ cd openjij
