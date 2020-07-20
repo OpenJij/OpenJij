@@ -79,13 +79,18 @@ $(function() {
 <li>cmake &gt;= 3.12.2</li>
 <li>python &gt;= 3.6</li>
 <li><a href="https://openjij.github.io/OpenJij_Documentation/build/html/">Documents</a></li>
-<li><a href="https://openjij.github.io/OpenJijTutorial/_build/html/index.html">Tutorials</a></li>
+<li><a href="https://openjij.github.io/OpenJijTutorial/build/html/index.html">Tutorials</a></li>
 <li><a href="https://openjij.github.io/OpenJij/html/index.html">C++ Docs</a></li>
 </ul>
 <h1>install</h1>
-<h2>pip</h2>
+<h2>install via pip</h2>
+<blockquote class="doxtable">
+<p>Note: To use GPGPU algorithms, please follow the section <a href="#install-via-pip-from-source-codes"><code>install via pip from source codes</code></a> below. </p>
+</blockquote>
 <div class="fragment"><div class="line">$ pip install openjij</div>
-</div><!-- fragment --><h2>cmake setup</h2>
+</div><!-- fragment --><h2>install via pip from source codes</h2>
+<p>To install OpenJij from source codes, please install CMake first then install OpenJij.</p>
+<h3>cmake setup</h3>
 <p>If you had not installed cmake&gt;=3.12.2, you need install cmake&gt;=3.12.2</p>
 <p>macOS </p><div class="fragment"><div class="line">$ brew install cmake</div>
 </div><!-- fragment --><p>Linux </p><div class="fragment"><div class="line"># if you installed old version by apt-get</div>
@@ -96,7 +101,11 @@ $(function() {
 <div class="line">$ tar xvf cmake-3.13.2.tar.gz</div>
 <div class="line">$ cd cmake-3.13.2</div>
 <div class="line">$ ./bootstrap &amp;&amp; make &amp;&amp; sudo make install </div>
-</div><!-- fragment --><h2>Install openjij</h2>
+</div><!-- fragment --><p>Alternatively, you can use </p><div class="fragment"><div class="line">$ pip install -U cmake</div>
+</div><!-- fragment --><p>Make sure the enviroment path for CMake is set correctly.</p>
+<h3>install OpenJij</h3>
+<div class="fragment"><div class="line">$ pip install openjij --no-binary :all:</div>
+</div><!-- fragment --><h2>install from github repository</h2>
 <div class="fragment"><div class="line">$ git clone git@github.com:OpenJij/OpenJij.git</div>
 <div class="line">$ cd openjij</div>
 <div class="line">$ python setup.py install</div>

@@ -120,7 +120,7 @@ class SQASampler(BaseSampler):
 
     def sample_ising(self, h, J,
                      beta=None, gamma=None,
-                     num_sweeps=None, schedule=None,
+                     num_sweeps=None, schedule=None, trotter=None,
                      num_reads=1,
                      initial_state=None, updater='single spin flip',
                      reinitialize_state=True, seed=None, structure=None):
@@ -133,6 +133,7 @@ class SQASampler(BaseSampler):
             gamma (float, optional): strangth of transverse field. Defaults to None.
             num_sweeps (int, optional): number of sweeps. Defaults to None.
             schedule (list[list[float, int]], optional): List of annealing parameter. Defaults to None.
+            trotter (int): Trotter number.
             num_reads (int, optional): number of sampling. Defaults to 1.
             initial_state (list[int], optional): Initial state. Defaults to None.
             updater (str, optional): update method. Defaults to 'single spin flip'.
@@ -168,13 +169,13 @@ class SQASampler(BaseSampler):
             linear=h, quadratic=J, var_type='SPIN'
         )
         return self._sampling(bqm, beta=beta, gamma=gamma,
-                     num_sweeps=num_sweeps, schedule=schedule,
+                     num_sweeps=num_sweeps, schedule=schedule, trotter=trotter,
                      num_reads=num_reads,
                      initial_state=initial_state, updater=updater,
                      reinitialize_state=reinitialize_state, seed=seed, structure=structure)
 
     def _sampling(self, bqm, beta=None, gamma=None,
-                     num_sweeps=None, schedule=None,
+                     num_sweeps=None, schedule=None, trotter=None,
                      num_reads=1,
                      initial_state=None, updater='single spin flip',
                      reinitialize_state=True, seed=None, structure=None):
@@ -183,10 +184,14 @@ class SQASampler(BaseSampler):
 
         self._setting_overwrite(
             beta=beta, gamma=gamma,
-            num_sweeps=num_sweeps, num_reads=num_reads
+            num_sweeps=num_sweeps, num_reads=num_reads,
+            trotter=trotter
         )
+
+        # set annealing schedule -------------------------------
         self._annealing_schedule_setting(
             bqm, beta, gamma, num_sweeps, schedule)
+        # ------------------------------- set annealing schedule
 
         # make init state generator --------------------------------
         if initial_state is None:
