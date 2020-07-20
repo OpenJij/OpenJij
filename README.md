@@ -2,9 +2,9 @@
 
 [![Build Status](https://travis-ci.org/OpenJij/OpenJij.svg?branch=master)](https://travis-ci.org/OpenJij/OpenJij)
 
-* gcc >= 7.0.0 (or another C++ compiler that supports C++17)
-* cmake >= 3.12.2
 * python >= 3.6
+* (optional) gcc >= 7.0.0 (or another C++ compiler that supports C++17)
+* (optional) cmake >= 3.12.2
 
 - [Documents](https://openjij.github.io/OpenJij_Documentation/build/html/)
 - [Tutorials](https://openjij.github.io/OpenJijTutorial/build/html/index.html)
@@ -14,6 +14,7 @@
 
 ### install via pip
 > Note: To use GPGPU algorithms, please follow the section [`install via pip from source codes`](#install-via-pip-from-source-codes) below.
+> GPGPU algorithms are automatically enabled once CMake finds CUDA frameworks during installation.
 ```
 $ pip install openjij
 ```
