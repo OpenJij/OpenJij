@@ -188,7 +188,7 @@ class CXXTest(unittest.TestCase):
         return J
 
     
-    def test_SingleSpinFlip_ClassicalIsing_Dense_NoEigenImpl(self):
+    def test_SingleSpinFlip_ClassicalIsing_Dense(self):
 
         #classial ising (dense)
         system = S.make_classical_ising(self.dense.gen_spin(self.seed_for_spin), self.dense)
@@ -205,24 +205,7 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
 
-    def test_SingleSpinFlip_ClassicalIsing_Dense_WithEigenImpl(self):
-
-        #classial ising (dense)
-        system = S.make_classical_ising_Eigen(self.dense.gen_spin(self.seed_for_spin), self.dense)
-
-        #schedulelist
-        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 100)
-
-        #anneal
-        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
-
-        #result spin
-        result_spin = R.get_solution(system)
-
-        #compare
-        self.assertTrue(self.true_groundstate == result_spin)
-
-    def test_SingleSpinFlip_ClassicalIsing_Sparse_NoEigenImpl(self):
+    def test_SingleSpinFlip_ClassicalIsing_Sparse(self):
 
         #classial ising (sparse)
         system = S.make_classical_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse)
@@ -239,24 +222,7 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
 
-    def test_SingleSpinFlip_ClassicalIsing_Sparse_WithEigenImpl(self):
-
-        #classial ising (sparse)
-        system = S.make_classical_ising_Eigen(self.sparse.gen_spin(self.seed_for_spin), self.sparse)
-
-        #schedulelist
-        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 100)
-
-        #anneal
-        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
-
-        #result spin
-        result_spin = R.get_solution(system)
-
-        #compare
-        self.assertTrue(self.true_groundstate == result_spin)
-
-    def test_SingleSpinFlip_TransverseIsing_Dense_NoEigenImpl(self):
+    def test_SingleSpinFlip_TransverseIsing_Dense(self):
 
         #transverse ising (dense)
         system = S.make_transverse_ising(self.dense.gen_spin(self.seed_for_spin), self.dense, 1.0, 10)
@@ -273,24 +239,7 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
 
-    def test_SingleSpinFlip_TransverseIsing_Dense_WithEigenImpl(self):
-
-        #classial ising (dense)
-        system = S.make_transverse_ising(self.dense.gen_spin(self.seed_for_spin), self.dense, 1.0, 10)
-
-        #schedulelist
-        schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
-
-        #anneal
-        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
-
-        #result spin
-        result_spin = R.get_solution(system)
-
-        #compare
-        self.assertTrue(self.true_groundstate == result_spin)
-
-    def test_SingleSpinFlip_TransverseIsing_Sparse_NoEigenImpl(self):
+    def test_SingleSpinFlip_TransverseIsing_Sparse(self):
 
         #classial ising (sparse)
         system = S.make_transverse_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse, 1.0, 10)
@@ -307,42 +256,7 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
 
-    def test_SingleSpinFlip_TransverseIsing_Sparse_WithEigenImpl(self):
-
-        #classial ising (sparse)
-        system = S.make_transverse_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse, 1.0, 10)
-
-        #schedulelist
-        schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
-
-        #anneal
-        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
-
-        #result spin
-        result_spin = R.get_solution(system)
-
-        #compare
-        self.assertTrue(self.true_groundstate == result_spin)
-
-
-    def test_SwendsenWang_ClassicalIsing_Dense_NoEigenImpl(self):
-
-        #classial ising (dense)
-        system = S.make_classical_ising(self.dense.gen_spin(self.seed_for_spin), self.dense)
-
-        #schedulelist
-        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 2000)
-
-        #anneal
-        A.Algorithm_SwendsenWang_run(system, self.seed_for_mc, schedule_list)
-
-        #result spin
-        result_spin = R.get_solution(system)
-
-        #compare
-        self.assertTrue(self.true_groundstate == result_spin)
-
-    def test_SwendsenWang_ClassicalIsing_Sparse_NoEigenImpl(self):
+    def test_SwendsenWang_ClassicalIsing_Sparse(self):
 
         #classial ising (sparse)
         system = S.make_classical_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse)
@@ -359,47 +273,13 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
 
-    def test_SwendsenWang_ClassicalIsing_Sparse_WithEigenImpl(self):
-
-        #classial ising with Eigen implementation(sparse)
-        system = S.make_classical_ising_Eigen(self.sparse.gen_spin(self.seed_for_spin), self.sparse)
-
-        #schedulelist
-        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 2000)
-
-        #anneal
-        A.Algorithm_SwendsenWang_run(system, self.seed_for_mc, schedule_list)
-
-        #result spin
-        result_spin = R.get_solution(system)
-
-        #compare
-        self.assertTrue(self.true_groundstate == result_spin)
-
-    def test_ContinuousTimeSwendsenWang_ContinuousTimeIsing_Dense_NoEigenImpl(self):
-
-        #classial ising (sparse)
-        system = S.make_continuous_time_ising(self.dense.gen_spin(self.seed_for_spin), self.dense, 1.0)
-
-        #schedulelist
-        schedule_list = U.make_transverse_field_schedule_list(10, 100, 3000)
-
-        #anneal
-        A.Algorithm_ContinuousTimeSwendsenWang_run(system, self.seed_for_mc, schedule_list)
-
-        #result spin
-        result_spin = R.get_solution(system)
-
-        #compare
-        self.assertTrue(self.true_groundstate == result_spin)
-
-    def test_ContinuousTimeSwendsenWang_ContinuousTimeIsing_Sparse_NoEigenImpl(self):
+    def test_ContinuousTimeSwendsenWang_ContinuousTimeIsing_Sparse(self):
 
         #classial ising (sparse)
         system = S.make_continuous_time_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse, 1.0)
 
-        #schedulelist
-        schedule_list = U.make_transverse_field_schedule_list(10, 100, 3000)
+        #schedulelist (TODO: why is it so hard?)
+        schedule_list = U.make_transverse_field_schedule_list(10, 500, 3000)
 
         #anneal
         A.Algorithm_ContinuousTimeSwendsenWang_run(system, self.seed_for_mc, schedule_list)

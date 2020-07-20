@@ -53,6 +53,30 @@ namespace openjij {
         };
 
         /**
+         * @brief updater paramter for classical ising model with a single constraint
+         */
+        template<>
+        struct UpdaterParameter<system::classical_constraint_system> {
+            using Tuple = std::pair<double, double>;
+            UpdaterParameter() = default;
+            UpdaterParameter(double beta, double lambda) : beta{beta}, lambda{lambda} {}
+            UpdaterParameter(const Tuple &obj) : UpdaterParameter(obj.first, obj.second){}
+            inline Tuple get_tuple() const{
+                return std::make_pair(beta, lambda);
+            }
+
+            /**
+             * @brief inverse temperature
+             */
+            double beta;
+
+            /**
+             * @brief constraint coefficient
+             */
+            double lambda;
+        };
+
+        /**
          * @brief updater paramter for transverse ising model
          */
         template<>
@@ -77,11 +101,17 @@ namespace openjij {
         };
 
         //TODO: add UpdaterParameter here if needed.
+        //
 
         /**
          * @brief ClassicalUpdaterParameter alias
          */
         using ClassicalUpdaterParameter = UpdaterParameter<system::classical_system>;
+
+        /**
+         * @brief ClassicalUpdaterParameter alias
+         */
+        using ClassicalConstraintUpdaterParameter = UpdaterParameter<system::classical_constraint_system>;
 
         /**
          * @brief TransverseFieldUpdaterParameter alias

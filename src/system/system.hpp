@@ -31,6 +31,11 @@ namespace openjij {
         struct classical_system : public mc_system {};
 
         /**
+         * @brief classical monte carlo system with a constraint (using beta (inverse temperature) for annealing parameter)
+         */
+        struct classical_constraint_system : public mc_system {};
+
+        /**
          * @brief quantum monte carlo system
          */
         struct quantum_system : public mc_system {};

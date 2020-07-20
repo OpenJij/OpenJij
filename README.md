@@ -2,21 +2,27 @@
 
 [![Build Status](https://travis-ci.org/OpenJij/OpenJij.svg?branch=master)](https://travis-ci.org/OpenJij/OpenJij)
 
-cmake >= 3.12.2
+* python >= 3.6
+* (optional) gcc >= 7.0.0 (or another C++ compiler that supports C++17)
+* (optional) cmake >= 3.12.2
 
-- [Documents](https://openjij.github.io/OpenJij/main.html)
+- [Documents](https://openjij.github.io/OpenJij_Documentation/build/html/)
 - [Tutorials](https://openjij.github.io/OpenJijTutorial/build/html/index.html)
 - [C++ Docs](https://openjij.github.io/OpenJij/html/index.html)
 
 ## install
 
-### pip
+### install via pip
+> Note: To use GPGPU algorithms, please follow the section [`install via pip from source codes`](#install-via-pip-from-source-codes) below.
+> GPGPU algorithms are automatically enabled once CMake finds CUDA frameworks during installation.
 ```
 $ pip install openjij
 ```
 
-### cmake setup
+### install via pip from source codes
+To install OpenJij from source codes, please install CMake first then install OpenJij.
 
+#### cmake setup
 
 If you had not installed cmake>=3.12.2, you need install cmake>=3.12.2
 
@@ -37,7 +43,18 @@ $ cd cmake-3.13.2
 $ ./bootstrap && make && sudo make install 
 ```
 
-### Install openjij 
+Alternatively, you can use
+```
+$ pip install -U cmake
+```
+Make sure the enviroment path for CMake is set correctly.
+
+#### install OpenJij
+```
+$ pip install openjij --no-binary :all:
+```
+
+### install from github repository
 ```
 $ git clone git@github.com:OpenJij/OpenJij.git
 $ cd openjij

@@ -20,51 +20,19 @@ from openjij.model import BinaryQuadraticModel, ChimeraModel
 import numpy as np
 
 
-class GPUSQASampler(SQASampler, BaseGPUChimeraSampler):
+class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
     """Sampler with Simulated Quantum Annealing (SQA) on GPU.
 
-    Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
+    Inherits from :class:`openjij.sampler.sqa_sampler.SQASampler`.
 
     Args:
-        beta (float):
-            Inverse temperature.
-
-        gamma (float):
-            Amplitude of quantum fluctuation.
-
-        trotter (int):
-            Trotter number.
-
-        num_sweeps (int):
-
-        schedule_info (dict):
-            Information about a annealing schedule.
-
-        iteration (int):
-            Number of iterations.
-
-        unit_num_L (int):
-            Length of one side of two-dimensional lattice
-            in which chimera unit cells are arranged.
-
-    Attributes:
-        indices (int):
-            Indices of `openjij.model.model.BinaryQuadraticModel` model.
-
-        energy_bias (float):
-            Energy bias.
-
-        model (:obj:):
-             `openjij.model.model.BinaryQuadraticModel` model.
-
-        var_type (str):
-            Type of variables: 'SPIN' or 'BINARY' which mean {-1, 1} or {0, 1}.
-
-        system_class (:class:):
-            `cxxjij.system.QuantumIsing` class.
-
-        sqa_kwargs (dict):
-            Parameters of SQA: beta, gamma, and schedule_info.
+        beta (float): Inverse temperature.
+        gamma (float): Amplitude of quantum fluctuation.
+        trotter (int): Trotter number.
+        num_sweeps (int): number of sweeps
+        schedule_info (dict): Information about a annealing schedule.
+        num_reads (int): Number of iterations.
+        unit_num_L (int): Length of one side of two-dimensional lattice in which chimera unit cells are arranged.
 
     Raises:
         ValueError: If variables violate as below.
@@ -75,8 +43,6 @@ class GPUSQASampler(SQASampler, BaseGPUChimeraSampler):
         AttributeError: If GPU doesn't work.
 
     """
-
-
 
     def __init__(self, beta=10.0, gamma=1.0,
                  trotter=4, num_sweeps=100,
@@ -91,14 +57,15 @@ class GPUSQASampler(SQASampler, BaseGPUChimeraSampler):
                          num_reads=num_reads,
                          num_sweeps=num_sweeps, schedule=schedule)
 
-        self._make_system = cxxjij.system.make_chimera_transverse_gpu
+        self._make_system = {
+            'singlespinflip': cxxjij.system.make_chimera_transverse_gpu
+        }
         self._algorithm = {
             'singlespinflip': cxxjij.algorithm.Algorithm_GPU_run
         }
 
     def _get_result(self, system, model):
         result = cxxjij.result.get_solution(system)
-        result = [result[i] for i in model.indices]
         sys_info = {}
         return result, sys_info
 
@@ -108,7 +75,7 @@ class GPUSQASampler(SQASampler, BaseGPUChimeraSampler):
                      num_sweeps=None, schedule=None,num_reads=1,
                      unit_num_L=None,
                      initial_state=None, updater='single spin flip',
-                     reinitialize_state=True, seed=None, **kwargs):
+                     reinitialize_state=True, seed=None):
         """Sampling from the Ising model
 
         Args:
@@ -124,21 +91,38 @@ class GPUSQASampler(SQASampler, BaseGPUChimeraSampler):
             reinitialize_state (bool, optional): Re-initilization at each sampling. Defaults to True.
             seed (int, optional): Sampling seed. Defaults to None.
 
-        Raises:
-            ValueError: [description]
-
         Returns:
-            [type]: [description]
+            :class:`openjij.sampler.response.Response`: results
+
+        Examples::
+            
+            >>> sampler = oj.GPUChimeraSQASampler(unit_num_L=2)
+            >>> h = {0: -1, 1: -1, 2: 1, 3: 1},
+            >>> J = {(0, 4): -1, (2, 5): -1}
+            >>> res = sampler.sample_ising(h, J)
         """
 
         self.unit_num_L = unit_num_L if unit_num_L else self.unit_num_L
 
-        bqm = openjij.ChimeraModel(linear=h, quadratic=J, var_type='SPIN', 
+        model = openjij.ChimeraModel(linear=h, quadratic=J, var_type='SPIN', 
                                    unit_num_L=self.unit_num_L, gpu=True)
 
-        return self._sampling(bqm, beta=beta, gamma=gamma,
+        # define Chimera structure
+        structure = {}
+        structure['size'] = 8 * self.unit_num_L * self.unit_num_L
+        structure['dict'] = {}
+        if isinstance(model.indices[0], int):
+            # identity dict
+            for ind in model.indices:
+                structure['dict'][ind] = ind
+        elif isinstance(model.indices[0], tuple):
+            # map chimera coordinate to index
+            for ind in model.indices:
+                structure['dict'][ind] = model.to_index(*ind, self.unit_num_L)
+
+        return self._sampling(model, beta=beta, gamma=gamma,
                      num_sweeps=num_sweeps, schedule=schedule,
                      num_reads=num_reads,
                      initial_state=initial_state, updater=updater,
-                     reinitialize_state=reinitialize_state, seed=seed, **kwargs)
+                     reinitialize_state=reinitialize_state, seed=seed, structure=structure)
 

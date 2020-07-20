@@ -22,6 +22,7 @@
 #include <utility>
 #include <unordered_map>
 
+#include <graph/json/parse.hpp>
 #include <graph/graph.hpp>
 #include <utility/pairhash.hpp>
 
@@ -30,6 +31,10 @@ namespace openjij {
 
         /**
          * @brief Sparse graph: two-body intereactions with O(1) connectivity
+         * The Hamiltonian is like
+         * \f[
+         * H = \sum_{i<j}J_{ij} \sigma_i \sigma_j + \sum_{i}h_{i} \sigma_i
+         * \f]
          *
          * @tparam FloatType floating-point type
          */
@@ -124,6 +129,36 @@ namespace openjij {
                     explicit Sparse(std::size_t num_spins) : Sparse(num_spins, num_spins){}
 
                     /**
+                     * @brief Sparse constructor (from nlohmann::json)
+                     *
+                     * @param j JSON object
+                     * @param num_edges number of edges
+                     */
+                    Sparse(const json& j, std::size_t num_edges) : Sparse(static_cast<std::size_t>(j["num_variables"]), num_edges){
+                        //define bqm with ising variables
+                        auto bqm = json_parse<FloatType>(j);
+                        //interactions
+                        for(auto&& elem : bqm.get_quadratic()){
+                            const auto& key = elem.first;
+                            const auto& val = elem.second;
+                            J(key.first, key.second) += val;
+                        }
+                        //local field
+                        for(auto&& elem : bqm.get_linear()){
+                            const auto& key = elem.first;
+                            const auto& val = elem.second;
+                            h(key) += val;
+                        }
+                    }
+
+                    /**
+                     * @brief Sparse constructor (from nlohmann::json)
+                     *
+                     * @param j JSON object
+                     */
+                    Sparse(const json& j) : Sparse(j, j["num_variables"]){}
+
+                    /**
                      * @brief Sparse copy constructor
                      *
                      */
@@ -163,7 +198,10 @@ namespace openjij {
                      * @return corresponding energy
                      */
                     FloatType calc_energy(const Spins& spins) const{
-                        assert(spins.size() == get_num_spins());
+                        if(!(spins.size() == this->get_num_spins())){
+                            std::out_of_range("Out of range in calc_energy in Sparse graph.");
+                        }
+
                         FloatType ret = 0;
                         for(std::size_t ind=0; ind<this->get_num_spins(); ind++){
                             for(auto& adj_ind : _list_adj_nodes[ind]){
@@ -176,6 +214,16 @@ namespace openjij {
 
                         return ret;
                     }
+
+                    FloatType calc_energy(const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins) const{
+                        graph::Spins temp_spins(get_num_spins());
+                        for(size_t i=0; i<temp_spins.size(); i++){
+                            temp_spins[i] = spins(i);
+                        }
+                        return calc_energy(temp_spins);
+
+                    }
+
 
                     /**
                      * @brief access J_{ij}

@@ -21,3 +21,10 @@ def rename_kwargs(func_name, kwargs, aliases):
             warnings.warn('{} is deprecated; use {}'.format(alias, new),
                           DeprecationWarning)
             kwargs[new] = kwargs.pop(alias)
+
+
+def disabled(func):
+    def wrapper(*args, **kwargs):
+        raise NotImplementedError("The function {} is disabled.".format(func.__name__))
+
+    return wrapper

@@ -32,13 +32,19 @@ class TestSamplers(unittest.TestCase):
         self.ground_q = [1, 1, 0, 0, 0]
         self.e_q = -1-1-1
 
-    def samplers(self, sampler, init_state=None, init_q_state=None):
+        # for antiferromagnetic one-dimensional Ising model
+        N = 30
+        self.afih = {0: -10}
+        self.afiJ = {(i, i+1): 1 for i in range(N-1)}
+        self.afiground = {i:(-1)**i for i in range(N)}
+
+    def samplers(self, sampler, init_state=None, init_q_state=None, schedule=None):
         res = sampler.sample_ising(
-            self.num_ind['h'], self.num_ind['J'],
+            self.num_ind['h'], self.num_ind['J'], schedule=schedule,
             initial_state=init_state, seed=1)
         self._test_response(res, self.e_g, self.ground_state)
         res = sampler.sample_qubo(self.qubo,
-                                  initial_state=init_q_state, seed=2)
+                                  initial_state=init_q_state, schedule=schedule, seed=2)
         self._test_response(res, self.e_q, self.ground_q)
 
     def _test_response(self, res, e_g, s_g):
@@ -75,6 +81,7 @@ class TestSamplers(unittest.TestCase):
         )
         self._test_response_num(res, num_reads)
 
+
     def test_sa(self):
         sampler = oj.SASampler()
         self.samplers(sampler)
@@ -84,7 +91,26 @@ class TestSamplers(unittest.TestCase):
         self.samplers(sampler, 
             init_state={i: 1 for i in range(len(self.ground_state))}
             )
+
+        # schedule [[beta, one_mc_steps], ...]
+        # schedule test (list of list)
+        self.samplers(sampler, 
+            init_state={i: 1 for i in range(len(self.ground_state))},
+            schedule=[[0.1, 10], [1, 10], [10, 10]]
+            )
+
+        # schedule test (list of tuple)
+        self.samplers(sampler, 
+            init_state={i: 1 for i in range(len(self.ground_state))},
+            schedule=[(0.1, 10), (1, 10), (10, 10)]
+            )
+
         self._test_num_reads(oj.SASampler)
+
+        #antiferromagnetic one-dimensional Ising model
+        sampler = oj.SASampler(num_sweeps=51, num_reads=100)
+        res = sampler.sample_ising(self.afih, self.afiJ)
+        self.assertDictEqual(self.afiground, res.first.sample)
 
     def test_sqa(self):
         sampler = oj.SQASampler()
@@ -96,13 +122,52 @@ class TestSamplers(unittest.TestCase):
         self.samplers(sampler, 
             init_state={i: 1 for i in range(len(self.ground_state))}
             )
+
+        # schedule [[s, one_mc_steps], ...]
+        # schedule test (list of list, temperature fixed)
+        self.samplers(sampler, 
+            init_state={i: 1 for i in range(len(self.ground_state))},
+            schedule=[[0.1, 10], [0.5, 10], [0.9, 10]]
+            )
+
+        # schedule test (list of tuple, temperature fixed)
+        self.samplers(sampler, 
+            init_state={i: 1 for i in range(len(self.ground_state))},
+            schedule=[(0.1, 10), (0.5, 10), (0.9, 10)]
+            )
+
+        # schedule [[s, beta, one_mc_steps], ...]
+        # schedule test (list of list, temperature non-fixed)
+        self.samplers(sampler, 
+            init_state={i: 1 for i in range(len(self.ground_state))},
+            schedule=[[0.1, 0.1, 10], [0.5, 1, 10], [0.9, 10, 10]]
+            )
+
+        # schedule test (list of tuple, temperature non-fixed)
+        self.samplers(sampler, 
+            init_state={i: 1 for i in range(len(self.ground_state))},
+            schedule=[(0.1, 0.1, 10), (0.5, 1, 10), (0.9, 10, 10)]
+            )
+
         self._test_num_reads(oj.SQASampler)
 
-    #TODO: bugcheck
-    #def test_csqa(self):
-    #    init_state = [[(0, 1)] for _ in range(len(self.ground_state))]
-    #    sampler = oj.CSQASampler(gamma=0.1)
-    #    self.samplers(sampler, init_state)
+        #antiferromagnetic one-dimensional Ising model
+        sampler = oj.SASampler(num_sweeps=51, num_reads=100)
+        res = sampler.sample_ising(self.afih, self.afiJ)
+        self.assertDictEqual(self.afiground, res.first.sample)
+
+    def test_csqa(self):
+        #FIXME: This test is instable. Make sure if there is no bug in ContinuousIsing solver.
+        #FIXME: Or is there some intristic reasons for this instability?
+        #sampler = oj.CSQASampler(gamma=5, num_sweeps=500)
+        #self.samplers(sampler,
+        #        init_state=[1 for _ in range(len(self.ground_state))],
+        #        init_q_state=[1 for _ in range(len(self.ground_state))])
+
+        #antiferromagnetic one-dimensional Ising model
+        sampler = oj.CSQASampler(num_sweeps=51, num_reads=100)
+        res = sampler.sample_ising(self.afih, self.afiJ)
+        self.assertDictEqual(self.afiground, res.first.sample)
 
 
 if __name__ == '__main__':
