@@ -35,7 +35,7 @@ class Response(dimod.SampleSet):
         return self.record.energy
 
     @property
-    def min_sampels(self):
+    def min_samples(self):
         return self.record.first
 
     def update_trotter_ising_states_energies(self, trotter_states, q_energies):
