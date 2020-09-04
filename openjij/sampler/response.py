@@ -36,10 +36,5 @@ class Response(dimod.SampleSet):
 
     @property
     def min_samples(self):
-        return self.first
+        return self.first.sample
 
-    def update_trotter_ising_states_energies(self, trotter_states, q_energies):
-        pass
-
-    def update_ising_states_energies(self, states, energies):
-        pass
