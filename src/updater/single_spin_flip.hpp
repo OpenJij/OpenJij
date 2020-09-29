@@ -68,19 +68,36 @@ namespace openjij {
                 // to do Metroopolis
                 auto urd = std::uniform_real_distribution<>(0, 1.0);
 
+                bool flip_spin;
                 for (std::size_t time = 0; time < system.num_spins; ++time) {
 
                     // index of spin selected at random
                     const auto index = uid(random_numder_engine);
 
-                    // local energy difference (matrix multiplication)
-                    assert(index < system.num_spins);
-                    FloatType dE = -2*system.spin(index)*(system.interaction.row(index).dot(system.spin));
+                    flip_spin = false;
 
-                    // Flip the spin?
-                    if (dE < 0 || std::exp( -parameter.beta * dE) > urd(random_numder_engine)) {
+                    if (system.dE(index) <= 0 || std::exp( -parameter.beta * system.dE(index)) > urd(random_numder_engine)) {
+                        flip_spin = true;
+                    }
+
+                    if(flip_spin){
+                        // TODO: Use element wise product (Hadamard product)
+                        for (std::size_t k=0; k < system.num_spins; ++k){
+                            system.dE(k) += 4 * system.spin(index) * system.interaction.coeff(index, k) * system.spin(k);
+                        }
+                        system.dE(index) *= -1;
                         system.spin(index) *= -1;
                     }
+
+
+                    // local energy difference (matrix multiplication)
+                    // assert(index < system.num_spins);
+                    // FloatType dE = -2*system.spin(index)*(system.interaction.row(index).dot(system.spin));
+
+                    // // Flip the spin?
+                    // if (dE < 0 || std::exp( -parameter.beta * dE) > urd(random_numder_engine)) {
+                    //     system.spin(index) *= -1;
+                    // }
 
                     //assure that the dummy spin is not changed.
                     system.spin(system.num_spins) = 1;
