@@ -79,7 +79,7 @@ namespace openjij {
                  * @brief reset dE
                  * 
                  */
-                void reset_dE(){
+                inline void reset_dE(){
                     this->dE = -2.0 * this->spin.array() * (this->interaction * this->spin).array();
                 }
 
