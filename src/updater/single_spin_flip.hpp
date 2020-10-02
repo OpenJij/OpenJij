@@ -69,7 +69,7 @@ namespace openjij {
 
                 bool flip_spin;
                 // do a iteraction except for the auxiliary spin
-                for (std::size_t index = 0; index < system.num_spins - 1; ++index) {
+                for (std::size_t index = 0; index < system.num_spins; ++index) {
 
                     flip_spin = false;
 
@@ -105,7 +105,10 @@ namespace openjij {
           inline static std::enable_if_t<std::is_same_v<T, graph::Dense<FloatType>>>
           update_dE(ClIsing& system, size_t index){
               //specialized for Dense Graph
-              system.dE += 4 * system.spin(index) * (system.interaction.row(index).transpose().cwiseProduct(system.spin));
+              //system.dE += 4 * system.spin(index) * (system.interaction.row(index).transpose().cwiseProduct(system.spin));
+              for (std::size_t k=0; k < system.num_spins; ++k){
+                  system.dE(k) += 4 * system.spin(index) * system.interaction.coeff(index, k) * system.spin(k);
+              }
           }
 
           /**
@@ -123,7 +126,7 @@ namespace openjij {
               //    // note that the matrix is row-major.
               //    system.dE(it.col()) += 4 * system.spin(index) * it.value() * system.spin(it.col());
               //}
-              //system.dE += 4 * system.spin(index) * (system.interaction.row(index).transpose().cwiseProduct(system.spin));
+              system.dE += 4 * system.spin(index) * (system.interaction.row(index).transpose().cwiseProduct(system.spin));
           }
 
 
