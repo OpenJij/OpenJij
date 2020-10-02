@@ -23,7 +23,7 @@ BETA_MIN = 0.0015
 # Benchmark OpenJij Dense
 print('OpenJij Dense')
 sampler = oj.SASampler()
-steps_openjij = [1000, 3000, 6000, 12000]
+steps_openjij = [100, 300, 600, 1200]
 openjij_time = []
 openjij_energy = []
 for step in steps_openjij:
@@ -57,7 +57,7 @@ for step in steps_openjij:
 # Benchmark neal
 print('dwave-neal')
 sampler = neal.SimulatedAnnealingSampler()
-steps_openjij = [1000, 3000, 6000, 12000]
+steps_openjij = [100, 300, 600, 1200]
 neal_time = []
 neal_energy = []
 for step in steps_openjij:
