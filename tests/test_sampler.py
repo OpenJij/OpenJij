@@ -111,6 +111,40 @@ class TestSamplers(unittest.TestCase):
         sampler = oj.SASampler(num_sweeps=51, num_reads=100)
         res = sampler.sample_ising(self.afih, self.afiJ)
         self.assertDictEqual(self.afiground, res.first.sample)
+        #antiferromagnetic one-dimensional Ising model
+        sampler = oj.SASampler(num_sweeps=51, num_reads=100)
+        res = sampler.sample_ising(self.afih, self.afiJ, updater='swendsen wang')
+        self.assertDictEqual(self.afiground, res.first.sample)
+
+    def test_sa_sparse(self):
+        #sampler = oj.SASampler()
+        #self.samplers(sampler)
+        #self.samplers(sampler, 
+        #    init_state=[1 for _ in range(len(self.ground_state))],
+        #    init_q_state=[1 for _ in range(len(self.ground_state))])
+        #self.samplers(sampler, 
+        #    init_state={i: 1 for i in range(len(self.ground_state))}
+        #    )
+
+        ## schedule [[beta, one_mc_steps], ...]
+        ## schedule test (list of list)
+        #self.samplers(sampler, 
+        #    init_state={i: 1 for i in range(len(self.ground_state))},
+        #    schedule=[[0.1, 10], [1, 10], [10, 10]]
+        #    )
+
+        ## schedule test (list of tuple)
+        #self.samplers(sampler, 
+        #    init_state={i: 1 for i in range(len(self.ground_state))},
+        #    schedule=[(0.1, 10), (1, 10), (10, 10)]
+        #    )
+
+        #self._test_num_reads(oj.SASampler)
+
+        #antiferromagnetic one-dimensional Ising model
+        sampler = oj.SASampler(num_sweeps=51, num_reads=100)
+        res = sampler.sample_ising(self.afih, self.afiJ, sparse=True)
+        self.assertDictEqual(self.afiground, res.first.sample)
 
     def test_sqa(self):
         sampler = oj.SQASampler()

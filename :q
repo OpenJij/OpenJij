@@ -80,7 +80,10 @@ namespace openjij {
                     if(flip_spin){
 
                         // update dE
-                        system.dE += 4 * system.spin(index) * (system.interaction.row(index).transpose().cwiseProduct(system.spin));
+                        update_dE<GraphType>(system, index);
+                        //for (std::size_t k=0; k < system.num_spins; ++k){
+                        //    system.dE(k) += 4 * system.spin(index) * system.interaction.coeff(index, k) * system.spin(k);
+                        //}
 
                         system.dE(index) *= -1;
                         system.spin(index) *= -1;
@@ -91,6 +94,42 @@ namespace openjij {
                     system.spin(system.num_spins) = 1;
                 }
             }
+
+          /**
+           * @brief update_dE (for Dense Graph)
+           *
+           * @param system
+           * @param graph::Dense
+           */
+
+          template<typename T>
+          inline static std::enable_if_t<std::is_same_v<T, graph::Dense<FloatType>>>
+          update_dE(ClIsing& system, size_t index){
+              //specialized for Dense Graph
+              system.dE += 4 * system.spin(index) * (system.interaction.row(index).transpose().cwiseProduct(system.spin));
+              //for (std::size_t k=0; k < system.num_spins; ++k){
+              //    system.dE(k) += 4 * system.spin(index) * system.interaction.coeff(index, k) * system.spin(k);
+              //}
+          }
+
+          /**
+           * @brief update_dE (for Sparse Graph)
+           *
+           * @brief 
+           * @param system
+           * @param graph::Sparse
+           */
+          template<typename T>
+          inline static std::enable_if_t<std::is_same_v<T, graph::Sparse<FloatType>>>
+          update_dE(ClIsing& system, size_t index){
+              //specialized for Sparse Graph
+              for(typename ClIsing::SparseMatrixXx::InnerIterator it(system.interaction, index); it; ++it){
+                  // note that the matrix is row-major.
+                  system.dE(it.col()) += 4 * system.spin(index) * it.value() * system.spin(it.col());
+              }
+              //system.dE += 4 * system.spin(index) * (system.interaction.row(index).transpose().cwiseProduct(system.spin));
+          }
+
 
         };
 

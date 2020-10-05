@@ -139,6 +139,7 @@ namespace openjij {
                  */
                 void reset_spins(const graph::Spins& init_spin){
                     this->spin = utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(init_spin);
+                    reset_dE();
                 }
 
                 /**
