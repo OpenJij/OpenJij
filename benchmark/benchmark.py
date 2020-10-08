@@ -53,7 +53,6 @@ for step in steps_openjij:
 
     print("\telapsed_time:{0}".format(elapsed_time) + "[sec]")
 
-
 # Benchmark neal
 print('dwave-neal')
 sampler = neal.SimulatedAnnealingSampler()

@@ -260,6 +260,15 @@ namespace openjij {
                  * @brief coefficient of transverse field term
                  */
                 FloatType gamma;
+
+                /**
+                 * @brief trotterlized dE
+                 */
+                TrotterMatrix dE;
+                /**
+                 * @brief trotterlized dE (between trotter slices)
+                 */
+                TrotterMatrix dEtrot;
             };
 
         /**

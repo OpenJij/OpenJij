@@ -61,7 +61,7 @@ namespace openjij {
              */
           template<typename RandomNumberEngine>
             inline static void update(ClIsing& system,
-                                 RandomNumberEngine& random_numder_engine,
+                                 RandomNumberEngine& random_number_engine,
                                  const utility::ClassicalUpdaterParameter& parameter) {
                 // set probability distribution object
                 // to do Metroopolis
@@ -73,7 +73,7 @@ namespace openjij {
                     
                     flip_spin = false;
 
-                    if (system.dE(index) <= 0 || std::exp( -parameter.beta * system.dE(index)) > urd(random_numder_engine)) {
+                    if (system.dE(index) <= 0 || std::exp( -parameter.beta * system.dE(index)) > urd(random_number_engine)) {
                         flip_spin = true;
                     }
 
@@ -123,16 +123,13 @@ namespace openjij {
              */
             template<typename RandomNumberEngine>
                 inline static void update(QIsing& system,
-                        RandomNumberEngine& random_numder_engine,
+                        RandomNumberEngine& random_number_engine,
                         const utility::TransverseFieldUpdaterParameter& parameter) {
 
                     //get number of classical spins
                     std::size_t num_classical_spins = system.num_classical_spins;
                     //get number of trotter slices
                     std::size_t num_trotter_slices = system.trotter_spins.cols();
-
-                    auto uid = std::uniform_int_distribution<std::size_t>{0, num_classical_spins-1};
-                    auto uid_trotter = std::uniform_int_distribution<std::size_t>{0, num_trotter_slices-1};
 
                     //do metropolis
                     auto urd = std::uniform_real_distribution<>(0, 1.0);
@@ -143,31 +140,55 @@ namespace openjij {
                     auto& beta = parameter.beta;
                     auto& s = parameter.s;
 
+                    // transverse factor
+                    FloatType B = (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices));
+
                     //initialize dE and dEtrot
+                    system.dE = -2 * s * (beta/num_trotter_slices) * spins.cwiseProduct(system.interaction * spins);
+                    system.dEtrot = QIsing::TrotterMatrix::Zero(num_classical_spins+1, num_trotter_slices);
+                    for(std::size_t t=0; t<num_trotter_slices; t++){
+                        system.dEtrot.col(t) = -2 * B * spins.col(t).cwiseProduct(
+                                spins.col(mod_t((int64_t)t+1, num_trotter_slices)) +
+                                spins.col(mod_t((int64_t)t-1, num_trotter_slices))
+                                );
+                    }
 
+                    
+                    for(std::size_t t=0; t<num_trotter_slices; t++){
+                        for(std::size_t i=0; i<num_classical_spins; i++){
+                            //calculate matrix dot product
+                            
+                            FloatType dE = system.dE(i, t) + system.dEtrot(i, t);
 
-                    for(std::size_t i=0; i<num_classical_spins*num_trotter_slices; i++){
-                        //select random trotter slice
-                        std::size_t index_trot = uid_trotter(random_numder_engine);
-                        //select random classical spin index
-                        std::size_t index = uid(random_numder_engine);
-                        //do metropolis
-                        FloatType dE = 0;
-                        assert(index < num_classical_spins);
-                        assert(index_trot < num_trotter_slices);
-                        //calculate matrix dot product
-                        dE += -2 * s * (beta/num_trotter_slices) * spins(index, index_trot)*(system.interaction.row(index).dot(spins.col(index_trot)));
+                            // for debugging
 
-                        //trotter direction
-                        dE += -2 * (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * spins(index, index_trot)*
-                            (  spins(index, mod_t((int64_t)index_trot+1, num_trotter_slices)) 
-                             + spins(index, mod_t((int64_t)index_trot-1, num_trotter_slices)));
+                            //FloatType testdE = 0;
 
-                        //metropolis 
-                        if(dE < 0 || exp(-dE) > urd(random_numder_engine)){
-                            spins(index, index_trot) *= -1;
+                            ////do metropolis
+                            //testdE += -2 * s * (beta/num_trotter_slices) * spins(i, t)*(system.interaction.row(i).dot(spins.col(t)));
+
+                            ////trotter direction
+                            //testdE += -2 * (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * spins(i, t) *
+                            //    (    spins(i, mod_t((int64_t)t+1, num_trotter_slices)) 
+                            //       + spins(i, mod_t((int64_t)t-1, num_trotter_slices)));
+
+                            //assert(dE == testdE);
+
+                            //metropolis 
+                            if(dE < 0 || exp(-dE) > urd(random_number_engine)){
+
+                                //update dE and dEtrot
+                                system.dE.col(t) += 4 * s * (beta/num_trotter_slices) * spins(i, t) * (system.interaction.row(i).transpose().cwiseProduct(spins.col(t)));
+                                system.dEtrot(i, mod_t(t+1, num_trotter_slices)) += 4 * B * spins(i, t) * spins(i, mod_t(t+1, num_trotter_slices));
+                                system.dEtrot(i, mod_t(t-1, num_trotter_slices)) += 4 * B * spins(i, t) * spins(i, mod_t(t-1, num_trotter_slices));
+
+                                system.dE(i, t)     *= -1;
+                                system.dEtrot(i, t) *= -1;
+
+                                //update spins
+                                spins(i, t) *= -1;
+                            }
                         }
-
                     }
                 }
 
