@@ -143,6 +143,9 @@ namespace openjij {
                     auto& beta = parameter.beta;
                     auto& s = parameter.s;
 
+                    //initialize dE and dEtrot
+
+
                     for(std::size_t i=0; i<num_classical_spins*num_trotter_slices; i++){
                         //select random trotter slice
                         std::size_t index_trot = uid_trotter(random_numder_engine);
