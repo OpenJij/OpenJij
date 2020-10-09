@@ -20,6 +20,7 @@
 #include <system/transverse_ising.hpp>
 #include <utility/schedule_list.hpp>
 #include <type_traits>
+#include <omp.h>
 
 namespace openjij {
     namespace updater {
@@ -67,24 +68,18 @@ namespace openjij {
                 // to do Metroopolis
                 auto urd = std::uniform_real_distribution<>(0, 1.0);
 
-                bool flip_spin;
+                Eigen::setNbThreads(1);
+                Eigen::initParallel();
+
                 // do a iteraction except for the auxiliary spin
                 for (std::size_t index = 0; index < system.num_spins; ++index) {
                     
-                    flip_spin = false;
-
                     if (system.dE(index) <= 0 || std::exp( -parameter.beta * system.dE(index)) > urd(random_number_engine)) {
-                        flip_spin = true;
-                    }
-
-                    if(flip_spin){
-
                         // update dE
                         system.dE += 4 * system.spin(index) * (system.interaction.row(index).transpose().cwiseProduct(system.spin));
 
                         system.dE(index) *= -1;
                         system.spin(index) *= -1;
-
                     }
 
                     //assure that the dummy spin is not changed.
@@ -143,6 +138,9 @@ namespace openjij {
                     // transverse factor
                     FloatType B = (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices));
 
+                    Eigen::setNbThreads(1);
+                    Eigen::initParallel();
+
                     //initialize dE and dEtrot
                     system.dE = -2 * s * (beta/num_trotter_slices) * spins.cwiseProduct(system.interaction * spins);
                     system.dEtrot = QIsing::TrotterMatrix::Zero(num_classical_spins+1, num_trotter_slices);
@@ -153,24 +151,38 @@ namespace openjij {
                                 );
                     }
 
-                    
-                    for(std::size_t t=0; t<num_trotter_slices; t++){
+                    //using OpenMP
+                    #pragma omp parallel for
+                    for(std::size_t t=0; t<num_trotter_slices; t+=2){
                         for(std::size_t i=0; i<num_classical_spins; i++){
                             //calculate matrix dot product
-                            
+                            do_calc(system, random_number_engine, parameter, i, t, B, urd);
+                        }
+                    }
+
+                    //using OpenMP
+                    #pragma omp parallel for
+                    for(std::size_t t=1; t<num_trotter_slices; t+=2){
+                        for(std::size_t i=0; i<num_classical_spins; i++){
+                            //calculate matrix dot product
+                            do_calc(system, random_number_engine, parameter, i, t, B, urd);
                         }
                     }
                 }
 
             private: 
             template<typename RandomNumberEngine>
-                inline static void do_job(QIsing& system,
+                inline static void do_calc(QIsing& system,
                         RandomNumberEngine& random_number_engine,
-                        const utility::TransverseFieldUpdaterParameter& parameter, size_t i, size_t t) {
+                        const utility::TransverseFieldUpdaterParameter& parameter, size_t i, size_t t, FloatType B,
+                        std::uniform_real_distribution<>& urd) {
+
+                            //get number of trotter slices
+                            std::size_t num_trotter_slices = system.trotter_spins.cols();
 
                             //aliases
                             auto& spins = system.trotter_spins;
-                            auto& gamma = system.gamma;
+                            //auto& gamma = system.gamma;
                             auto& beta = parameter.beta;
                             auto& s = parameter.s;
 

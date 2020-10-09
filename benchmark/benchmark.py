@@ -53,6 +53,22 @@ for step in steps_openjij:
 
     print("\telapsed_time:{0}".format(elapsed_time) + "[sec]")
 
+# Benchmark OpenJij SQA
+print('OpenJij SQA')
+sampler = oj.SQASampler(beta=10, trotter=6)
+openjij_sql_time = []
+openjij_sql_energy = []
+for step in steps_openjij:
+    print('num_sweeps:', step)
+    start = time.time()
+    response = sampler.sample_ising(h, J, num_sweeps=step, num_reads=NUM_READS)
+    elapsed_time = time.time() - start
+
+    openjij_sparse_time.append(elapsed_time)
+    openjij_sparse_energy.append(np.mean(response.energies))
+
+    print("\telapsed_time:{0}".format(elapsed_time) + "[sec]")
+
 # Benchmark neal
 print('dwave-neal')
 sampler = neal.SimulatedAnnealingSampler()
