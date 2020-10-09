@@ -12,8 +12,8 @@ h, J = {}, {}
 
 for i in range(n-1):
     for j in range(i+1, n):
-        if np.random.random() <= 0.3:
-            J[i, j] = np.random.uniform(-1, 1)
+        #if np.random.random() <= 0.3:
+        J[i, j] = np.random.uniform(-1, 1)
 
 NUM_READS = 10
 
