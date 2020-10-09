@@ -158,6 +158,22 @@ namespace openjij {
                         for(std::size_t i=0; i<num_classical_spins; i++){
                             //calculate matrix dot product
                             
+                        }
+                    }
+                }
+
+            private: 
+            template<typename RandomNumberEngine>
+                inline static void do_job(QIsing& system,
+                        RandomNumberEngine& random_number_engine,
+                        const utility::TransverseFieldUpdaterParameter& parameter, size_t i, size_t t) {
+
+                            //aliases
+                            auto& spins = system.trotter_spins;
+                            auto& gamma = system.gamma;
+                            auto& beta = parameter.beta;
+                            auto& s = parameter.s;
+
                             FloatType dE = system.dE(i, t) + system.dEtrot(i, t);
 
                             // for debugging
@@ -188,11 +204,9 @@ namespace openjij {
                                 //update spins
                                 spins(i, t) *= -1;
                             }
-                        }
-                    }
                 }
+            
 
-            private: 
             inline static std::size_t mod_t(std::int64_t a, std::size_t num_trotter_slices){
                 //a -> [-1:num_trotter_slices]
                 //return a%num_trotter_slices (a>0), num_trotter_slices-1 (a==-1)
