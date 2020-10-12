@@ -219,10 +219,7 @@ namespace openjij {
 
                 //metropolis 
                 
-                //s == 1 gives log0, which results in unexpected behavior.
-
-
-                if(s != 1 || dE < 0 || exp(-dE) > system.rand_pool(i, t)){
+                if(dE < 0 || exp(-dE) > system.rand_pool(i, t)){
 
                     //update dE and dEtrot
                     system.dE.col(t) += 4 * s * (beta/num_trotter_slices) * spins(i, t) * (system.interaction.row(i).transpose().cwiseProduct(spins.col(t)));
