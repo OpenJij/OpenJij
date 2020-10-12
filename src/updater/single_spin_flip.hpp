@@ -130,10 +130,10 @@ namespace openjij {
                     auto urd = std::uniform_real_distribution<>(0, 1.0);
 
                     //aliases
-                    auto& spins = system.trotter_spins;
-                    auto& gamma = system.gamma;
-                    auto& beta = parameter.beta;
-                    auto& s = parameter.s;
+                    const auto& spins = system.trotter_spins;
+                    const auto& gamma = system.gamma;
+                    const auto& beta = parameter.beta;
+                    const auto& s = parameter.s;
 
                     // transverse factor
                     FloatType B = (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices));
@@ -151,12 +151,23 @@ namespace openjij {
                                 );
                     }
 
+                    //generate random number (col major)
+                    for(std::size_t t=0; t<num_trotter_slices; t++){
+                        for(std::size_t i=0; i<num_classical_spins; i++){
+                            system.rand_pool(i, t) = urd(random_number_engine);
+                        }
+                    }
+
                     //using OpenMP
+                    
+                    //we have to consider the case num_trotter_slices is odd.
+                    std::size_t upper_limit = num_trotter_slices%2!=0 ? num_trotter_slices-1 : num_trotter_slices;
+
                     #pragma omp parallel for
-                    for(std::size_t t=0; t<num_trotter_slices; t+=2){
+                    for(std::size_t t=0; t<upper_limit; t+=2){
                         for(std::size_t i=0; i<num_classical_spins; i++){
                             //calculate matrix dot product
-                            do_calc(system, random_number_engine, parameter, i, t, B, urd);
+                            do_calc(system, parameter, i, t, B);
                         }
                     }
 
@@ -165,58 +176,66 @@ namespace openjij {
                     for(std::size_t t=1; t<num_trotter_slices; t+=2){
                         for(std::size_t i=0; i<num_classical_spins; i++){
                             //calculate matrix dot product
-                            do_calc(system, random_number_engine, parameter, i, t, B, urd);
+                            do_calc(system, parameter, i, t, B);
+                        }
+                    }
+
+                    //for the case num_trotter_slices is odd.
+                    if(num_trotter_slices%2!=0){
+                        std::size_t t = num_trotter_slices-1;
+                        for(std::size_t i=0; i<num_classical_spins; i++){
+                            //calculate matrix dot product
+                            do_calc(system, parameter, i, t, B);
                         }
                     }
                 }
 
             private: 
-            template<typename RandomNumberEngine>
-                inline static void do_calc(QIsing& system,
-                        RandomNumberEngine& random_number_engine,
-                        const utility::TransverseFieldUpdaterParameter& parameter, size_t i, size_t t, FloatType B,
-                        std::uniform_real_distribution<>& urd) {
+            inline static void do_calc(QIsing& system,
+                    const utility::TransverseFieldUpdaterParameter& parameter, size_t i, size_t t, FloatType B) {
 
-                            //get number of trotter slices
-                            std::size_t num_trotter_slices = system.trotter_spins.cols();
+                //get number of trotter slices
+                std::size_t num_trotter_slices = system.trotter_spins.cols();
 
-                            //aliases
-                            auto& spins = system.trotter_spins;
-                            //auto& gamma = system.gamma;
-                            auto& beta = parameter.beta;
-                            auto& s = parameter.s;
+                //aliases
+                auto& spins = system.trotter_spins;
+                const auto& gamma = system.gamma;
+                const auto& beta = parameter.beta;
+                const auto& s = parameter.s;
 
-                            FloatType dE = system.dE(i, t) + system.dEtrot(i, t);
+                FloatType dE = system.dE(i, t) + system.dEtrot(i, t);
 
-                            // for debugging
+                // for debugging
 
-                            //FloatType testdE = 0;
+                FloatType testdE = 0;
 
-                            ////do metropolis
-                            //testdE += -2 * s * (beta/num_trotter_slices) * spins(i, t)*(system.interaction.row(i).dot(spins.col(t)));
+                //do metropolis
+                testdE += -2 * s * (beta/num_trotter_slices) * spins(i, t)*(system.interaction.row(i).dot(spins.col(t)));
 
-                            ////trotter direction
-                            //testdE += -2 * (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * spins(i, t) *
-                            //    (    spins(i, mod_t((int64_t)t+1, num_trotter_slices)) 
-                            //       + spins(i, mod_t((int64_t)t-1, num_trotter_slices)));
+                //trotter direction
+                testdE += -2 * (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * spins(i, t) *
+                    (    spins(i, mod_t((int64_t)t+1, num_trotter_slices)) 
+                       + spins(i, mod_t((int64_t)t-1, num_trotter_slices)));
 
-                            //assert(dE == testdE);
+                //metropolis 
+                
+                //s == 1 gives log0, which results in unexpected behavior.
 
-                            //metropolis 
-                            if(dE < 0 || exp(-dE) > urd(random_number_engine)){
 
-                                //update dE and dEtrot
-                                system.dE.col(t) += 4 * s * (beta/num_trotter_slices) * spins(i, t) * (system.interaction.row(i).transpose().cwiseProduct(spins.col(t)));
-                                system.dEtrot(i, mod_t(t+1, num_trotter_slices)) += 4 * B * spins(i, t) * spins(i, mod_t(t+1, num_trotter_slices));
-                                system.dEtrot(i, mod_t(t-1, num_trotter_slices)) += 4 * B * spins(i, t) * spins(i, mod_t(t-1, num_trotter_slices));
+                if(s != 1 || dE < 0 || exp(-dE) > system.rand_pool(i, t)){
 
-                                system.dE(i, t)     *= -1;
-                                system.dEtrot(i, t) *= -1;
+                    //update dE and dEtrot
+                    system.dE.col(t) += 4 * s * (beta/num_trotter_slices) * spins(i, t) * (system.interaction.row(i).transpose().cwiseProduct(spins.col(t)));
+                    system.dEtrot(i, mod_t(t+1, num_trotter_slices)) += 4 * B * spins(i, t) * spins(i, mod_t(t+1, num_trotter_slices));
+                    system.dEtrot(i, mod_t(t-1, num_trotter_slices)) += 4 * B * spins(i, t) * spins(i, mod_t(t-1, num_trotter_slices));
 
-                                //update spins
-                                spins(i, t) *= -1;
-                            }
+                    system.dE(i, t)     *= -1;
+                    system.dEtrot(i, t) *= -1;
+
+                    //update spins
+                    spins(i, t) *= -1;
                 }
+            }
             
 
             inline static std::size_t mod_t(std::int64_t a, std::size_t num_trotter_slices){

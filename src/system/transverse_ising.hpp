@@ -73,6 +73,9 @@ namespace openjij {
                     if(!(init_trotter_spins.size() >= 2)){
                         throw std::invalid_argument("trotter slices must be equal or larger than 2.");
                     }
+
+                    //initialize rand_pool
+                    rand_pool = TrotterMatrix(num_classical_spins+1, trotter_spins.cols());
                 }
 
                 /**
@@ -99,6 +102,9 @@ namespace openjij {
 
                     //init trotter_spins
                     trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
+
+                    //initialize rand_pool
+                    rand_pool = TrotterMatrix(num_classical_spins+1, trotter_spins.cols());
                 }
 
                 /**
@@ -146,13 +152,20 @@ namespace openjij {
                 FloatType gamma;
 
                 /**
+                 * @brief rand_pool
+                 */
+                TrotterMatrix rand_pool;
+
+                /**
                  * @brief trotterlized dE
                  */
                 TrotterMatrix dE;
+
                 /**
                  * @brief trotterlized dE (between trotter slices)
                  */
                 TrotterMatrix dEtrot;
+
             };
 
         /**
@@ -189,6 +202,9 @@ namespace openjij {
                     if(!(init_trotter_spins.size() >= 2)){
                         throw std::invalid_argument("trotter slices must be equal or larger than 2.");
                     }
+
+                    //initialize rand_pool
+                    rand_pool = TrotterMatrix(num_classical_spins+1, trotter_spins.cols());
                 }
 
                 /**
@@ -216,6 +232,9 @@ namespace openjij {
 
                     //init trotter_spins
                     trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
+
+                    //initialize rand_pool
+                    rand_pool = TrotterMatrix(num_classical_spins+1, trotter_spins.cols());
                 }
 
                 /**
@@ -260,6 +279,11 @@ namespace openjij {
                  * @brief coefficient of transverse field term
                  */
                 FloatType gamma;
+
+                /**
+                 * @brief rand_pool
+                 */
+                TrotterMatrix rand_pool;
 
                 /**
                  * @brief trotterlized dE
