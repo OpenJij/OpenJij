@@ -189,40 +189,43 @@ namespace openjij {
 
                 //aliases
                 auto& spins = system.trotter_spins;
-                const auto& gamma = system.gamma;
+                //const auto& gamma = system.gamma;
                 const auto& beta = parameter.beta;
                 const auto& s = parameter.s;
 
-                FloatType dE = s * (beta/num_trotter_slices) * system.dE(i, t) + B * system.dEtrot(i, t);
+                //calculate dE for trotter direction
+                FloatType dEtrot = -2 * spins(i, t)*
+                    (spins(i, mod_t((int64_t)t+1, num_trotter_slices)) + 
+                     spins(i, mod_t((int64_t)t-1, num_trotter_slices))
+                     );
+
+                //calculate total dE
+                FloatType dE = s * (beta/num_trotter_slices) * system.dE(i, t) + B * dEtrot;
 
                 // for debugging
 
-                FloatType testdE = 0;
+                //FloatType testdE = 0;
 
-                //do metropolis
-                testdE += -2 * s * (beta/num_trotter_slices) * spins(i, t)*(system.interaction.row(i).dot(spins.col(t)));
+                ////do metropolis
+                //testdE += -2 * s * (beta/num_trotter_slices) * spins(i, t)*(system.interaction.row(i).dot(spins.col(t)));
 
-                //trotter direction
-                testdE += -2 * (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * spins(i, t) *
-                    (    spins(i, mod_t((int64_t)t+1, num_trotter_slices)) 
-                       + spins(i, mod_t((int64_t)t-1, num_trotter_slices)));
+                ////trotter direction
+                //testdE += -2 * (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * spins(i, t) *
+                //    (    spins(i, mod_t((int64_t)t+1, num_trotter_slices)) 
+                //       + spins(i, mod_t((int64_t)t-1, num_trotter_slices)));
 
                 //std::cout << "s=" << s << std::endl;
                 //std::cout << "dE=" << dE << std::endl;
                 //std::cout << "testdE=" << testdE << std::endl;
-                //assert((std::isinf(dE) && std::isinf(testdE)) || dE-testdE == 0);
+                //assert((std::isinf(dE) && std::isinf(testdE)) || abs(dE-testdE) < 1e-5);
 
                 //metropolis 
                 
                 if(dE < 0 || exp(-dE) > system.rand_pool(i, t)){
 
-                    //update dE and dEtrot
+                    //update dE (spatial direction) 
                     system.dE.col(t) += 4 * spins(i, t) * (system.interaction.row(i).transpose().cwiseProduct(spins.col(t)));
-                    system.dEtrot(i, mod_t(t+1, num_trotter_slices)) += 4 * spins(i, t) * spins(i, mod_t(t+1, num_trotter_slices));
-                    system.dEtrot(i, mod_t(t-1, num_trotter_slices)) += 4 * spins(i, t) * spins(i, mod_t(t-1, num_trotter_slices));
-
                     system.dE(i, t)     *= -1;
-                    system.dEtrot(i, t) *= -1;
 
                     //update spins
                     spins(i, t) *= -1;

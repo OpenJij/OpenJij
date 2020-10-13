@@ -149,18 +149,21 @@ namespace openjij {
                 inline void reset_dE(){
                     // reset dE and dEtrot
 
-                    //initialize dE and dEtrot
+                    //initialize dE (spatial direction)
+                    //we store only dE for spatial direction
                     const auto& spins = this->trotter_spins;
-                    std::size_t num_trotter_slices = this->trotter_spins.cols();
+                    //std::size_t num_trotter_slices = this->trotter_spins.cols();
 
                     this->dE = -2 * spins.cwiseProduct(this->interaction * spins);
-                    this->dEtrot = TrotterMatrix::Zero(num_classical_spins+1, num_trotter_slices);
-                    for(std::size_t t=0; t<num_trotter_slices; t++){
-                        this->dEtrot.col(t) = -2 * spins.col(t).cwiseProduct(
-                                spins.col(mod_t((int64_t)t+1, num_trotter_slices)) +
-                                spins.col(mod_t((int64_t)t-1, num_trotter_slices))
-                                );
-                    }
+
+                    //for trotter direction
+                    //this->dEtrot = TrotterMatrix::Zero(num_classical_spins+1, num_trotter_slices);
+                    //for(std::size_t t=0; t<num_trotter_slices; t++){
+                    //    this->dEtrot.col(t) = -2 * spins.col(t).cwiseProduct(
+                    //            spins.col(mod_t((int64_t)t+1, num_trotter_slices)) +
+                    //            spins.col(mod_t((int64_t)t-1, num_trotter_slices))
+                    //            );
+                    //}
 
                     //diffE = s * (beta/num_trotter_slices) * this->dE + (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * this->dEtrot
                 }
@@ -197,14 +200,9 @@ namespace openjij {
                 TrotterMatrix rand_pool;
 
                 /**
-                 * @brief trotterlized dE
+                 * @brief trotterlized dE (spatial direction)
                  */
                 TrotterMatrix dE;
-
-                /**
-                 * @brief trotterlized dE (between trotter slices)
-                 */
-                TrotterMatrix dEtrot;
 
             };
 
@@ -319,18 +317,21 @@ namespace openjij {
                 inline void reset_dE(){
                     // reset dE and dEtrot
 
-                    //initialize dE and dEtrot
+                    //initialize dE (spatial direction)
+                    //we store only dE for spatial direction
                     const auto& spins = this->trotter_spins;
-                    std::size_t num_trotter_slices = this->trotter_spins.cols();
+                    //std::size_t num_trotter_slices = this->trotter_spins.cols();
 
                     this->dE = -2 * spins.cwiseProduct(this->interaction * spins);
-                    this->dEtrot = TrotterMatrix::Zero(num_classical_spins+1, num_trotter_slices);
-                    for(std::size_t t=0; t<num_trotter_slices; t++){
-                        this->dEtrot.col(t) = -2 * spins.col(t).cwiseProduct(
-                                spins.col(mod_t((int64_t)t+1, num_trotter_slices)) +
-                                spins.col(mod_t((int64_t)t-1, num_trotter_slices))
-                                );
-                    }
+
+                    //for trotter direction
+                    //this->dEtrot = TrotterMatrix::Zero(num_classical_spins+1, num_trotter_slices);
+                    //for(std::size_t t=0; t<num_trotter_slices; t++){
+                    //    this->dEtrot.col(t) = -2 * spins.col(t).cwiseProduct(
+                    //            spins.col(mod_t((int64_t)t+1, num_trotter_slices)) +
+                    //            spins.col(mod_t((int64_t)t-1, num_trotter_slices))
+                    //            );
+                    //}
 
                     //diffE = s * (beta/num_trotter_slices) * this->dE + (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * this->dEtrot
                 }
@@ -368,13 +369,10 @@ namespace openjij {
                 TrotterMatrix rand_pool;
 
                 /**
-                 * @brief trotterlized dE
+                 * @brief trotterlized dE (spatial direction)
                  */
                 TrotterMatrix dE;
-                /**
-                 * @brief trotterlized dE (between trotter slices)
-                 */
-                TrotterMatrix dEtrot;
+
             };
 
         /**
