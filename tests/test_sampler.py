@@ -108,12 +108,12 @@ class TestSamplers(unittest.TestCase):
         self._test_num_reads(oj.SASampler)
 
         #antiferromagnetic one-dimensional Ising model
-        sampler = oj.SASampler(num_sweeps=51, num_reads=100)
-        res = sampler.sample_ising(self.afih, self.afiJ)
+        sampler = oj.SASampler(num_reads=100)
+        res = sampler.sample_ising(self.afih, self.afiJ, seed=1)
         self.assertDictEqual(self.afiground, res.first.sample)
         #antiferromagnetic one-dimensional Ising model
-        sampler = oj.SASampler(num_sweeps=51, num_reads=100)
-        res = sampler.sample_ising(self.afih, self.afiJ, updater='swendsen wang')
+        sampler = oj.SASampler(num_reads=100)
+        res = sampler.sample_ising(self.afih, self.afiJ, updater='swendsen wang', seed=1)
         self.assertDictEqual(self.afiground, res.first.sample)
 
     def test_sa_sparse(self):
@@ -142,8 +142,8 @@ class TestSamplers(unittest.TestCase):
         #self._test_num_reads(oj.SASampler)
 
         #antiferromagnetic one-dimensional Ising model
-        sampler = oj.SASampler(num_sweeps=51, num_reads=100)
-        res = sampler.sample_ising(self.afih, self.afiJ, sparse=True)
+        sampler = oj.SASampler(num_reads=100)
+        res = sampler.sample_ising(self.afih, self.afiJ, sparse=True, seed=1)
         self.assertDictEqual(self.afiground, res.first.sample)
 
     def test_sqa(self):
@@ -186,8 +186,8 @@ class TestSamplers(unittest.TestCase):
         self._test_num_reads(oj.SQASampler)
 
         #antiferromagnetic one-dimensional Ising model
-        sampler = oj.SASampler(num_sweeps=51, num_reads=100)
-        res = sampler.sample_ising(self.afih, self.afiJ)
+        sampler = oj.SQASampler(num_reads=100)
+        res = sampler.sample_ising(self.afih, self.afiJ, seed=1)
         self.assertDictEqual(self.afiground, res.first.sample)
 
     def test_csqa(self):
@@ -199,8 +199,8 @@ class TestSamplers(unittest.TestCase):
         #        init_q_state=[1 for _ in range(len(self.ground_state))])
 
         #antiferromagnetic one-dimensional Ising model
-        sampler = oj.CSQASampler(num_sweeps=51, num_reads=100)
-        res = sampler.sample_ising(self.afih, self.afiJ)
+        sampler = oj.CSQASampler(num_reads=100)
+        res = sampler.sample_ising(self.afih, self.afiJ, seed=1)
         self.assertDictEqual(self.afiground, res.first.sample)
 
 

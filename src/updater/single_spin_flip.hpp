@@ -130,7 +130,7 @@ namespace openjij {
                     auto urd = std::uniform_real_distribution<>(0, 1.0);
 
                     //aliases
-                    const auto& spins = system.trotter_spins;
+                    //const auto& spins = system.trotter_spins;
                     const auto& gamma = system.gamma;
                     const auto& beta = parameter.beta;
                     const auto& s = parameter.s;
@@ -140,16 +140,6 @@ namespace openjij {
 
                     Eigen::setNbThreads(1);
                     Eigen::initParallel();
-
-                    //initialize dE and dEtrot
-                    system.dE = -2 * s * (beta/num_trotter_slices) * spins.cwiseProduct(system.interaction * spins);
-                    system.dEtrot = QIsing::TrotterMatrix::Zero(num_classical_spins+1, num_trotter_slices);
-                    for(std::size_t t=0; t<num_trotter_slices; t++){
-                        system.dEtrot.col(t) = -2 * B * spins.col(t).cwiseProduct(
-                                spins.col(mod_t((int64_t)t+1, num_trotter_slices)) +
-                                spins.col(mod_t((int64_t)t-1, num_trotter_slices))
-                                );
-                    }
 
                     //generate random number (col major)
                     for(std::size_t t=0; t<num_trotter_slices; t++){
@@ -203,7 +193,7 @@ namespace openjij {
                 const auto& beta = parameter.beta;
                 const auto& s = parameter.s;
 
-                FloatType dE = system.dE(i, t) + system.dEtrot(i, t);
+                FloatType dE = s * (beta/num_trotter_slices) * system.dE(i, t) + B * system.dEtrot(i, t);
 
                 // for debugging
 
@@ -217,14 +207,19 @@ namespace openjij {
                     (    spins(i, mod_t((int64_t)t+1, num_trotter_slices)) 
                        + spins(i, mod_t((int64_t)t-1, num_trotter_slices)));
 
+                //std::cout << "s=" << s << std::endl;
+                //std::cout << "dE=" << dE << std::endl;
+                //std::cout << "testdE=" << testdE << std::endl;
+                //assert((std::isinf(dE) && std::isinf(testdE)) || dE-testdE == 0);
+
                 //metropolis 
                 
                 if(dE < 0 || exp(-dE) > system.rand_pool(i, t)){
 
                     //update dE and dEtrot
-                    system.dE.col(t) += 4 * s * (beta/num_trotter_slices) * spins(i, t) * (system.interaction.row(i).transpose().cwiseProduct(spins.col(t)));
-                    system.dEtrot(i, mod_t(t+1, num_trotter_slices)) += 4 * B * spins(i, t) * spins(i, mod_t(t+1, num_trotter_slices));
-                    system.dEtrot(i, mod_t(t-1, num_trotter_slices)) += 4 * B * spins(i, t) * spins(i, mod_t(t-1, num_trotter_slices));
+                    system.dE.col(t) += 4 * spins(i, t) * (system.interaction.row(i).transpose().cwiseProduct(spins.col(t)));
+                    system.dEtrot(i, mod_t(t+1, num_trotter_slices)) += 4 * spins(i, t) * spins(i, mod_t(t+1, num_trotter_slices));
+                    system.dEtrot(i, mod_t(t-1, num_trotter_slices)) += 4 * spins(i, t) * spins(i, mod_t(t-1, num_trotter_slices));
 
                     system.dE(i, t)     *= -1;
                     system.dEtrot(i, t) *= -1;
