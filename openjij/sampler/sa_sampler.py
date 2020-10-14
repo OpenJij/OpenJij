@@ -121,6 +121,7 @@ class SASampler(BaseSampler):
     def sample_ising(self, h, J, beta_min=None, beta_max=None,
                      num_sweeps=None, num_reads=1, schedule=None,
                      initial_state=None, updater='single spin flip',
+                     sparse=False,
                      reinitialize_state=True, seed=None,
                      ):
         """sample Ising model.
@@ -163,11 +164,14 @@ class SASampler(BaseSampler):
         return self._sampling(model, beta_min, beta_max,
                               num_sweeps, num_reads, schedule,
                               initial_state, updater,
-                              reinitialize_state, seed)
+                              sparse=sparse,
+                              reinitialize_state=reinitialize_state, 
+                              seed=seed)
 
     def _sampling(self, model, beta_min=None, beta_max=None,
                      num_sweeps=None, num_reads=1, schedule=None,
                      initial_state=None, updater='single spin flip',
+                     sparse=False,
                      reinitialize_state=True, seed=None, structure=None, 
                      ):
         """sampling by using specified model
@@ -190,7 +194,7 @@ class SASampler(BaseSampler):
         """
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         # swendsen wang algorithm runs only on sparse ising graphs.
-        if _updater_name == 'swendsenwang':
+        if _updater_name == 'swendsenwang' or sparse:
             ising_graph = model.get_cxxjij_ising_graph(sparse=True)
         else:
             ising_graph = model.get_cxxjij_ising_graph()
@@ -367,7 +371,7 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
     schedule = cxxjij.utility.make_classical_schedule_list(
         beta_min=beta_min, beta_max=beta_max,
         one_mc_step=num_sweeps_per_beta,
-        num_call_updater=num_sweeps
+        num_call_updater=num_sweeps//num_sweeps_per_beta
     )
 
     return schedule, [beta_max, beta_min]

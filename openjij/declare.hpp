@@ -289,19 +289,27 @@ inline void declare_Algorithm_run(py::module &m, const std::string& updater_str)
     //with seed
     m.def(str.c_str(), [](System& system, std::size_t seed, const utility::ScheduleList<SystemType>& schedule_list,
                 const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            py::gil_scoped_release release;
+
             using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(seed);
             algorithm::Algorithm<Updater>::run(system, rng, schedule_list,
                     callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
+
+            py::gil_scoped_acquire acquire;
             }, "system"_a, "seed"_a, "schedule_list"_a, "callback"_a = nullptr);
 
     //without seed
     m.def(str.c_str(), [](System& system, const utility::ScheduleList<SystemType>& schedule_list,
                 const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            py::gil_scoped_release release;
+
             using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(std::random_device{}());
             algorithm::Algorithm<Updater>::run(system, rng, schedule_list,
                     callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
+
+            py::gil_scoped_acquire acquire;
             }, "system"_a, "schedule_list"_a, "callback"_a = nullptr);
 
     //schedule_list can be a list of tuples
@@ -310,19 +318,27 @@ inline void declare_Algorithm_run(py::module &m, const std::string& updater_str)
     //with seed
     m.def(str.c_str(), [](System& system, std::size_t seed, const TupleList& tuplelist,
                 const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            py::gil_scoped_release release;
+
             using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(seed);
             algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist),
                     callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
+
+            py::gil_scoped_acquire acquire;
             }, "system"_a, "seed"_a, "tuplelist"_a, "callback"_a = nullptr);
 
     //without seed
     m.def(str.c_str(), [](System& system, const TupleList& tuplelist,
                 const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+            py::gil_scoped_release release;
+
             using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(std::random_device{}());
             algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist),
                     callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
+
+            py::gil_scoped_acquire acquire;
             }, "system"_a, "tuplelist"_a, "callback"_a = nullptr);
 
 }

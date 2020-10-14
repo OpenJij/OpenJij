@@ -115,8 +115,8 @@ def hubo_sa_sampling(bhom, var_type,
     response.info['list_exec_times'] = np.array(
         execution_time) * 10**6  # micro sec
 
-    response.update_ising_states_energies(
-        response.states, response.energies)
+    #response.update_ising_states_energies(
+    #    response.states, response.energies)
 
     response.info['schedule'] = schedule_info
     return response
