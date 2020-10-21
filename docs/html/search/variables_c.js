@@ -1,6 +1,11 @@
 var searchData=
 [
-  ['s_567',['s',['../structopenjij_1_1utility_1_1_updater_parameter_3_01system_1_1transverse__field__system_01_4.html#aae3bb58fe15b530d8fb0202458c3fc06',1,'openjij::utility::UpdaterParameter&lt; system::transverse_field_system &gt;']]],
-  ['spin_568',['spin',['../structopenjij_1_1system_1_1_classical_ising_3_01graph_1_1_dense_3_01_float_type_01_4_01_4.html#aed9ba964b973e134329d3fa29e45cd74',1,'openjij::system::ClassicalIsing&lt; graph::Dense&lt; FloatType &gt; &gt;::spin()'],['../structopenjij_1_1system_1_1_classical_ising_3_01graph_1_1_sparse_3_01_float_type_01_4_01_4.html#a6c072bde34673596a4e8052e10e4a4df',1,'openjij::system::ClassicalIsing&lt; graph::Sparse&lt; FloatType &gt; &gt;::spin()'],['../structopenjij_1_1system_1_1_chimera_transverse_g_p_u.html#aea239f9e4066bfbc57595d3cf2383c52',1,'openjij::system::ChimeraTransverseGPU::spin()']]],
-  ['spin_5fconfig_569',['spin_config',['../structopenjij_1_1system_1_1_continuous_time_ising_3_01graph_1_1_sparse_3_01_float_type_01_4_01_4.html#a14e4f8a9b0146c546976abf84c22974a',1,'openjij::system::ContinuousTimeIsing&lt; graph::Sparse&lt; FloatType &gt; &gt;']]]
+  ['m1_711',['m1',['../structfmath_1_1local_1_1_log_var.html#ad845b1b17fc42a9cbc0201fa8517380c',1,'fmath::local::LogVar']]],
+  ['m2_712',['m2',['../structfmath_1_1local_1_1_log_var.html#a2998d5f81e930bb043e62df17375c74e',1,'fmath::local::LogVar']]],
+  ['m3_713',['m3',['../structfmath_1_1local_1_1_log_var.html#a51663eaabcad3d84950d82a8464e41d8',1,'fmath::local::LogVar']]],
+  ['m4_714',['m4',['../structfmath_1_1local_1_1_log_var.html#a656b6e5008764d8d9f8187dbc26f3e23',1,'fmath::local::LogVar']]],
+  ['m5_715',['m5',['../structfmath_1_1local_1_1_log_var.html#a9318108ec91b8922ccacef4fc92e853d',1,'fmath::local::LogVar']]],
+  ['mask_5fs_716',['mask_s',['../structfmath_1_1local_1_1_exp_var.html#aa59ade55fe366aada632a13ecd977eeb',1,'fmath::local::ExpVar']]],
+  ['maxx_717',['maxX',['../structfmath_1_1local_1_1_exp_var.html#a9e2d094e7f1f92f29bbfc02a59961da2',1,'fmath::local::ExpVar']]],
+  ['minx_718',['minX',['../structfmath_1_1local_1_1_exp_var.html#aab58e2fe709c0b41ca0ab5d82686ff10',1,'fmath::local::ExpVar']]]
 ];
