@@ -123,6 +123,7 @@ class SQASampler(BaseSampler):
                      num_sweeps=None, schedule=None, trotter=None,
                      num_reads=1,
                      initial_state=None, updater='single spin flip',
+                     sparse=False,
                      reinitialize_state=True, seed=None, structure=None):
         """Sampling from the Ising model
 
@@ -172,15 +173,21 @@ class SQASampler(BaseSampler):
                      num_sweeps=num_sweeps, schedule=schedule, trotter=trotter,
                      num_reads=num_reads,
                      initial_state=initial_state, updater=updater,
+                     sparse=sparse,
                      reinitialize_state=reinitialize_state, seed=seed, structure=structure)
 
     def _sampling(self, bqm, beta=None, gamma=None,
                      num_sweeps=None, schedule=None, trotter=None,
                      num_reads=1,
                      initial_state=None, updater='single spin flip',
+                     sparse=False,
                      reinitialize_state=True, seed=None, structure=None):
 
-        ising_graph = bqm.get_cxxjij_ising_graph()
+        if sparse:
+            ising_graph = bqm.get_cxxjij_ising_graph(sparse=True)
+        else:
+            ising_graph = bqm.get_cxxjij_ising_graph()
+
 
         self._setting_overwrite(
             beta=beta, gamma=gamma,

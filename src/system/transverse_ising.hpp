@@ -73,6 +73,12 @@ namespace openjij {
                     if(!(init_trotter_spins.size() >= 2)){
                         throw std::invalid_argument("trotter slices must be equal or larger than 2.");
                     }
+
+                    //initialize rand_pool
+                    rand_pool = TrotterMatrix(num_classical_spins+1, trotter_spins.cols());
+
+                    //reset dE
+                    reset_dE();
                 }
 
                 /**
@@ -99,6 +105,12 @@ namespace openjij {
 
                     //init trotter_spins
                     trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
+
+                    //initialize rand_pool
+                    rand_pool = TrotterMatrix(num_classical_spins+1, trotter_spins.cols());
+
+                    //reset dE
+                    reset_dE();
                 }
 
                 /**
@@ -108,6 +120,9 @@ namespace openjij {
                  */
                 void reset_spins(const TrotterSpins& init_trotter_spins){
                     this->trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
+
+                    //reset dE
+                    reset_dE();
                 }
                 
                 /**
@@ -123,6 +138,40 @@ namespace openjij {
                     }
                     //init trotter_spins
                     this->trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
+
+                    //reset dE
+                    reset_dE();
+                }
+
+                /**
+                 * @brief reset dE
+                 */
+                inline void reset_dE(){
+                    // reset dE and dEtrot
+
+                    //initialize dE (spatial direction)
+                    //we store only dE for spatial direction
+                    const auto& spins = this->trotter_spins;
+                    //std::size_t num_trotter_slices = this->trotter_spins.cols();
+
+                    this->dE = -2 * spins.cwiseProduct(this->interaction * spins);
+
+                    //for trotter direction
+                    //this->dEtrot = TrotterMatrix::Zero(num_classical_spins+1, num_trotter_slices);
+                    //for(std::size_t t=0; t<num_trotter_slices; t++){
+                    //    this->dEtrot.col(t) = -2 * spins.col(t).cwiseProduct(
+                    //            spins.col(mod_t((int64_t)t+1, num_trotter_slices)) +
+                    //            spins.col(mod_t((int64_t)t-1, num_trotter_slices))
+                    //            );
+                    //}
+
+                    //diffE = s * (beta/num_trotter_slices) * this->dE + (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * this->dEtrot
+                }
+
+                inline static std::size_t mod_t(std::int64_t a, std::size_t num_trotter_slices){
+                    //a -> [-1:num_trotter_slices]
+                    //return a%num_trotter_slices (a>0), num_trotter_slices-1 (a==-1)
+                    return (a+num_trotter_slices)%num_trotter_slices;
                 }
 
                 /**
@@ -144,6 +193,17 @@ namespace openjij {
                  * @brief coefficient of transverse field term
                  */
                 FloatType gamma;
+
+                /**
+                 * @brief rand_pool
+                 */
+                TrotterMatrix rand_pool;
+
+                /**
+                 * @brief trotterlized dE (spatial direction)
+                 */
+                TrotterMatrix dE;
+
             };
 
         /**
@@ -180,6 +240,12 @@ namespace openjij {
                     if(!(init_trotter_spins.size() >= 2)){
                         throw std::invalid_argument("trotter slices must be equal or larger than 2.");
                     }
+
+                    //initialize rand_pool
+                    rand_pool = TrotterMatrix(num_classical_spins+1, trotter_spins.cols());
+
+                    //reset dE
+                    reset_dE();
                 }
 
                 /**
@@ -207,6 +273,12 @@ namespace openjij {
 
                     //init trotter_spins
                     trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
+
+                    //initialize rand_pool
+                    rand_pool = TrotterMatrix(num_classical_spins+1, trotter_spins.cols());
+
+                    //reset dE
+                    reset_dE();
                 }
 
                 /**
@@ -216,6 +288,9 @@ namespace openjij {
                  */
                 void reset_spins(const TrotterSpins& init_trotter_spins){
                     this->trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
+
+                    //reset dE
+                    reset_dE();
                 }
                 
                 /**
@@ -231,7 +306,43 @@ namespace openjij {
                     }
                     //init trotter_spins
                     this->trotter_spins = utility::gen_matrix_from_trotter_spins<FloatType, Eigen::ColMajor>(init_trotter_spins);
+
+                    //reset dE
+                    reset_dE();
                 }
+
+                /**
+                 * @brief reset dE
+                 */
+                inline void reset_dE(){
+                    // reset dE and dEtrot
+
+                    //initialize dE (spatial direction)
+                    //we store only dE for spatial direction
+                    const auto& spins = this->trotter_spins;
+                    //std::size_t num_trotter_slices = this->trotter_spins.cols();
+
+                    this->dE = -2 * spins.cwiseProduct(this->interaction * spins);
+
+                    //for trotter direction
+                    //this->dEtrot = TrotterMatrix::Zero(num_classical_spins+1, num_trotter_slices);
+                    //for(std::size_t t=0; t<num_trotter_slices; t++){
+                    //    this->dEtrot.col(t) = -2 * spins.col(t).cwiseProduct(
+                    //            spins.col(mod_t((int64_t)t+1, num_trotter_slices)) +
+                    //            spins.col(mod_t((int64_t)t-1, num_trotter_slices))
+                    //            );
+                    //}
+
+                    //diffE = s * (beta/num_trotter_slices) * this->dE + (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * this->dEtrot
+                }
+
+
+                inline static std::size_t mod_t(std::int64_t a, std::size_t num_trotter_slices){
+                    //a -> [-1:num_trotter_slices]
+                    //return a%num_trotter_slices (a>0), num_trotter_slices-1 (a==-1)
+                    return (a+num_trotter_slices)%num_trotter_slices;
+                }
+
                 /**
                  * @brief trotterlized spins
                  */
@@ -251,6 +362,17 @@ namespace openjij {
                  * @brief coefficient of transverse field term
                  */
                 FloatType gamma;
+
+                /**
+                 * @brief rand_pool
+                 */
+                TrotterMatrix rand_pool;
+
+                /**
+                 * @brief trotterlized dE (spatial direction)
+                 */
+                TrotterMatrix dE;
+
             };
 
         /**

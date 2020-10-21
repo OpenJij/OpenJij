@@ -19,6 +19,7 @@
 #include <result/all.hpp>
 #include <utility/schedule_list.hpp>
 #include <random>
+#include <time.h>
 
 #include <iostream>
 
@@ -27,7 +28,7 @@ using namespace openjij;
 int main(void){
 
     //generate dense graph with size N=5
-    constexpr std::size_t N = 5;
+    constexpr std::size_t N = 500;
     auto dense = graph::Dense<double>(N);
 
     //set interactions
@@ -50,10 +51,15 @@ int main(void){
 
     //generate schedule list
     //from beta=0.1 to beta=100, 10 samples, 10 Monte Carlo step for each tempearature
-    auto schedule_list = utility::make_classical_schedule_list(0.1, 100, 10, 10);
+    auto schedule_list = utility::make_classical_schedule_list(0.1, 100, 10, 200);
 
     //do annealing (updater: SingleSpinFlip)
+    clock_t start = clock();
     algorithm::Algorithm<updater::SingleSpinFlip>::run(system, rand_engine, schedule_list);
+    clock_t end = clock();
+
+    const double time = static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000.0;
+    printf("time %lf[ms]\n", time);
 
     //show spins
     std::cout << "The result spins are [";

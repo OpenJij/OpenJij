@@ -1,9 +1,6 @@
 var searchData=
 [
-  ['j_5fin_5f04_556',['J_in_04',['../structopenjij_1_1system_1_1_chimera_interactions.html#a4dde55a5a29a620ba19c23805367e389',1,'openjij::system::ChimeraInteractions']]],
-  ['j_5fin_5f15_557',['J_in_15',['../structopenjij_1_1system_1_1_chimera_interactions.html#abdb4fb1462543f725e5cf3ca8b5862f1',1,'openjij::system::ChimeraInteractions']]],
-  ['j_5fin_5f26_558',['J_in_26',['../structopenjij_1_1system_1_1_chimera_interactions.html#a1b996aae39c8e187f74fae632ef438f6',1,'openjij::system::ChimeraInteractions']]],
-  ['j_5fin_5f37_559',['J_in_37',['../structopenjij_1_1system_1_1_chimera_interactions.html#a5f515c93f7f5fa9c562168d7cc8f9b67',1,'openjij::system::ChimeraInteractions']]],
-  ['j_5fout_5fn_560',['J_out_n',['../structopenjij_1_1system_1_1_chimera_interactions.html#a02af9ea0ec8dcf36423762ba963c3b1f',1,'openjij::system::ChimeraInteractions']]],
-  ['j_5fout_5fp_561',['J_out_p',['../structopenjij_1_1system_1_1_chimera_interactions.html#a0b89aeb8dfed97bd947051cc169f6636',1,'openjij::system::ChimeraInteractions']]]
+  ['gamma_692',['gamma',['../structopenjij_1_1system_1_1_continuous_time_ising_3_01graph_1_1_sparse_3_01_float_type_01_4_01_4.html#a560d18fbc4dcf03064063af12753027d',1,'openjij::system::ContinuousTimeIsing&lt; graph::Sparse&lt; FloatType &gt; &gt;::gamma()'],['../structopenjij_1_1system_1_1_chimera_transverse_g_p_u.html#a22124d4fa6467908f12873c396a2b502',1,'openjij::system::ChimeraTransverseGPU::gamma()'],['../structopenjij_1_1system_1_1_transverse_ising_3_01graph_1_1_dense_3_01_float_type_01_4_01_4.html#aafee0c09a45a31c8f0dad442b25e4507',1,'openjij::system::TransverseIsing&lt; graph::Dense&lt; FloatType &gt; &gt;::gamma()'],['../structopenjij_1_1system_1_1_transverse_ising_3_01graph_1_1_sparse_3_01_float_type_01_4_01_4.html#ac73dbc5d8910f386554c3b3975399333',1,'openjij::system::TransverseIsing&lt; graph::Sparse&lt; FloatType &gt; &gt;::gamma()']]],
+  ['gpurandomengine_693',['GPURandomEngine',['../namespaceopenjij.html#a824bcb173fe1f82c4e85dafc0d08309f',1,'openjij']]],
+  ['grid_694',['grid',['../structopenjij_1_1system_1_1_chimera_transverse_g_p_u.html#a271991745c5e5a43f2983647c9d34fd7',1,'openjij::system::ChimeraTransverseGPU']]]
 ];

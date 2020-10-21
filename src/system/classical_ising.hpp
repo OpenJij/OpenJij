@@ -62,6 +62,7 @@ namespace openjij {
                     interaction(init_interaction.get_interactions()),
                     num_spins(init_interaction.get_num_spins()){
                         assert(init_spin.size() == init_interaction.get_num_spins());
+                        reset_dE();
                     }
 
                 /**
@@ -71,6 +72,15 @@ namespace openjij {
                  */
                 void reset_spins(const graph::Spins& init_spin){
                     this->spin = utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(init_spin);
+                    reset_dE();
+                }
+
+                /**
+                 * @brief reset dE
+                 * 
+                 */
+                inline void reset_dE(){
+                    this->dE = -2.0 * this->spin.array() * (this->interaction * this->spin).array();
                 }
 
                 /**
@@ -87,6 +97,11 @@ namespace openjij {
                  * @brief number of real spins (dummy spin excluded)
                  */
                 const std::size_t num_spins; //spin.size()-1
+
+                /**
+                 * @brief delta E for updater
+                 */
+                VectorXx dE;
             };
 
         /**
@@ -114,6 +129,7 @@ namespace openjij {
                     interaction(utility::gen_matrix_from_graph<Eigen::RowMajor>(init_interaction)),
                     num_spins(init_interaction.get_num_spins()){
                         assert(init_spin.size() == init_interaction.get_num_spins());
+                        reset_dE();
                     }
 
                 /**
@@ -123,7 +139,17 @@ namespace openjij {
                  */
                 void reset_spins(const graph::Spins& init_spin){
                     this->spin = utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(init_spin);
+                    reset_dE();
                 }
+
+                /**
+                 * @brief reset dE
+                 * 
+                 */
+                void reset_dE(){
+                    this->dE = -2.0 * this->spin.array() * (this->interaction * this->spin).array();
+                }
+                
 
                 /**
                  * @brief spins (Eigen Vector)
@@ -139,6 +165,11 @@ namespace openjij {
                  * @brief number of real spins (dummy spin excluded)
                  */
                 const std::size_t num_spins; //spin.size()-1
+
+                /**
+                 * @brief delta E for updater
+                 */
+                VectorXx dE;
             };
 
         /**

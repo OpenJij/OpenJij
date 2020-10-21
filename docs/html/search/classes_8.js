@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['quantum_5fsystem_348',['quantum_system',['../structopenjij_1_1system_1_1quantum__system.html',1,'openjij::system']]]
+  ['mc_5fsystem_435',['mc_system',['../structopenjij_1_1system_1_1mc__system.html',1,'openjij::system']]]
 ];

@@ -29,7 +29,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">OpenJij C++ interface
-   &#160;<span id="projectnumber">0.1.0</span>
+   &#160;<span id="projectnumber">0.1.1</span>
    </div>
   </td>
  </tr>
@@ -163,7 +163,7 @@ $(function() {
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> FloatType, curandRngType_t rng_type&gt;</div>
 <div class="line"><a name="l00111"></a><span class="lineno"><a class="line" href="classopenjij_1_1utility_1_1cuda_1_1_curand_wrapper.html">  111</a></span>&#160;                <span class="keyword">class </span><a class="code" href="classopenjij_1_1utility_1_1cuda_1_1_curand_wrapper.html">CurandWrapper</a>{</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00113"></a><span class="lineno"><a class="line" href="classopenjij_1_1utility_1_1cuda_1_1_curand_wrapper.html#afcb87d0fd9a8c996a95517a6de053966">  113</a></span>&#160;                       <a class="code" href="classopenjij_1_1utility_1_1cuda_1_1_curand_wrapper.html#afcb87d0fd9a8c996a95517a6de053966">CurandWrapper</a>(std::uint64_t seed){</div>
+<div class="line"><a name="l00113"></a><span class="lineno"><a class="line" href="classopenjij_1_1utility_1_1cuda_1_1_curand_wrapper.html#afcb87d0fd9a8c996a95517a6de053966">  113</a></span>&#160;                       <a class="code" href="classopenjij_1_1utility_1_1cuda_1_1_curand_wrapper.html#afcb87d0fd9a8c996a95517a6de053966">CurandWrapper</a>(<a class="code" href="namespacefmath_1_1local.html#a311aaf6d898817ed7c6b294465b2eccc">std::uint64_t</a> seed){</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                           <span class="comment">//generate psudo_random_number generator</span></div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;                           HANDLE_ERROR_CURAND(curandCreateGenerator(&amp;<a class="code" href="classopenjij_1_1utility_1_1cuda_1_1_curand_wrapper.html#ae2dd009ca1e461bce6eb59fdd0a5e232">_rng</a>, rng_type));</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                           <span class="comment">//set seed</span></div>
@@ -203,6 +203,7 @@ $(function() {
 <div class="ttc" id="aclassopenjij_1_1utility_1_1_xorshift_html_af9ae17b886b8a70559b34088259ecb1a"><div class="ttname"><a href="classopenjij_1_1utility_1_1_xorshift.html#af9ae17b886b8a70559b34088259ecb1a">openjij::utility::Xorshift::z</a></div><div class="ttdeci">unsigned z</div><div class="ttdef"><b>Definition:</b> random.hpp:88</div></div>
 <div class="ttc" id="aclassopenjij_1_1utility_1_1_xorshift_html_a76cf699e1814f13679b0fd6684b1fd49"><div class="ttname"><a href="classopenjij_1_1utility_1_1_xorshift.html#a76cf699e1814f13679b0fd6684b1fd49">openjij::utility::Xorshift::Xorshift</a></div><div class="ttdeci">Xorshift(unsigned s)</div><div class="ttdoc">Xorshift constructor with seed.</div><div class="ttdef"><b>Definition:</b> random.hpp:84</div></div>
 <div class="ttc" id="aclassopenjij_1_1utility_1_1_xorshift_html"><div class="ttname"><a href="classopenjij_1_1utility_1_1_xorshift.html">openjij::utility::Xorshift</a></div><div class="ttdoc">xorshift random generator for c++11 random</div><div class="ttdef"><b>Definition:</b> random.hpp:36</div></div>
+<div class="ttc" id="anamespacefmath_1_1local_html_a311aaf6d898817ed7c6b294465b2eccc"><div class="ttname"><a href="namespacefmath_1_1local.html#a311aaf6d898817ed7c6b294465b2eccc">fmath::local::uint64_t</a></div><div class="ttdeci">unsigned long long uint64_t</div><div class="ttdef"><b>Definition:</b> fmath.hpp:73</div></div>
 <div class="ttc" id="aclassopenjij_1_1utility_1_1cuda_1_1_curand_wrapper_html_a5448626020481bd6ee60967388717494"><div class="ttname"><a href="classopenjij_1_1utility_1_1cuda_1_1_curand_wrapper.html#a5448626020481bd6ee60967388717494">openjij::utility::cuda::CurandWrapper::~CurandWrapper</a></div><div class="ttdeci">~CurandWrapper()</div><div class="ttdef"><b>Definition:</b> random.hpp:128</div></div>
 <div class="ttc" id="ahandle__error_8hpp_html"><div class="ttname"><a href="handle__error_8hpp.html">handle_error.hpp</a></div></div>
 <div class="ttc" id="aclassopenjij_1_1utility_1_1_xorshift_html_a3b6838356978d68e8b789969d4548ad1"><div class="ttname"><a href="classopenjij_1_1utility_1_1_xorshift.html#a3b6838356978d68e8b789969d4548ad1">openjij::utility::Xorshift::x</a></div><div class="ttdeci">unsigned x</div><div class="ttdef"><b>Definition:</b> random.hpp:88</div></div>

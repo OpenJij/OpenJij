@@ -19,6 +19,8 @@
 #include <system/classical_ising.hpp>
 #include <system/transverse_ising.hpp>
 #include <utility/schedule_list.hpp>
+#include <type_traits>
+#include <omp.h>
 
 namespace openjij {
     namespace updater {
@@ -60,25 +62,23 @@ namespace openjij {
              */
           template<typename RandomNumberEngine>
             inline static void update(ClIsing& system,
-                                 RandomNumberEngine& random_numder_engine,
+                                 RandomNumberEngine& random_number_engine,
                                  const utility::ClassicalUpdaterParameter& parameter) {
                 // set probability distribution object
-                // to select candidate for flip at random
-                auto uid = std::uniform_int_distribution<std::size_t>(0, system.num_spins-1); //to avoid flipping last spin (must be set to 1.)
                 // to do Metroopolis
                 auto urd = std::uniform_real_distribution<>(0, 1.0);
 
-                for (std::size_t time = 0; time < system.num_spins; ++time) {
+                Eigen::setNbThreads(1);
+                Eigen::initParallel();
 
-                    // index of spin selected at random
-                    const auto index = uid(random_numder_engine);
+                // do a iteraction except for the auxiliary spin
+                for (std::size_t index = 0; index < system.num_spins; ++index) {
+                    
+                    if (system.dE(index) <= 0 || std::exp( -parameter.beta * system.dE(index)) > urd(random_number_engine)) {
+                        // update dE
+                        system.dE += 4 * system.spin(index) * (system.interaction.row(index).transpose().cwiseProduct(system.spin));
 
-                    // local energy difference (matrix multiplication)
-                    assert(index < system.num_spins);
-                    FloatType dE = -2*system.spin(index)*(system.interaction.row(index).dot(system.spin));
-
-                    // Flip the spin?
-                    if (dE < 0 || std::exp( -parameter.beta * dE) > urd(random_numder_engine)) {
+                        system.dE(index) *= -1;
                         system.spin(index) *= -1;
                     }
 
@@ -86,6 +86,7 @@ namespace openjij {
                     system.spin(system.num_spins) = 1;
                 }
             }
+
         };
 
         /**
@@ -117,7 +118,7 @@ namespace openjij {
              */
             template<typename RandomNumberEngine>
                 inline static void update(QIsing& system,
-                        RandomNumberEngine& random_numder_engine,
+                        RandomNumberEngine& random_number_engine,
                         const utility::TransverseFieldUpdaterParameter& parameter) {
 
                     //get number of classical spins
@@ -125,44 +126,113 @@ namespace openjij {
                     //get number of trotter slices
                     std::size_t num_trotter_slices = system.trotter_spins.cols();
 
-                    auto uid = std::uniform_int_distribution<std::size_t>{0, num_classical_spins-1};
-                    auto uid_trotter = std::uniform_int_distribution<std::size_t>{0, num_trotter_slices-1};
-
                     //do metropolis
                     auto urd = std::uniform_real_distribution<>(0, 1.0);
 
                     //aliases
-                    auto& spins = system.trotter_spins;
-                    auto& gamma = system.gamma;
-                    auto& beta = parameter.beta;
-                    auto& s = parameter.s;
+                    //const auto& spins = system.trotter_spins;
+                    const auto& gamma = system.gamma;
+                    const auto& beta = parameter.beta;
+                    const auto& s = parameter.s;
 
-                    for(std::size_t i=0; i<num_classical_spins*num_trotter_slices; i++){
-                        //select random trotter slice
-                        std::size_t index_trot = uid_trotter(random_numder_engine);
-                        //select random classical spin index
-                        std::size_t index = uid(random_numder_engine);
-                        //do metropolis
-                        FloatType dE = 0;
-                        assert(index < num_classical_spins);
-                        assert(index_trot < num_trotter_slices);
-                        //calculate matrix dot product
-                        dE += -2 * s * (beta/num_trotter_slices) * spins(index, index_trot)*(system.interaction.row(index).dot(spins.col(index_trot)));
+                    // transverse factor
+                    FloatType B = (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices));
 
-                        //trotter direction
-                        dE += -2 * (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * spins(index, index_trot)*
-                            (  spins(index, mod_t((int64_t)index_trot+1, num_trotter_slices)) 
-                             + spins(index, mod_t((int64_t)index_trot-1, num_trotter_slices)));
+                    Eigen::setNbThreads(1);
+                    Eigen::initParallel();
 
-                        //metropolis 
-                        if(dE < 0 || exp(-dE) > urd(random_numder_engine)){
-                            spins(index, index_trot) *= -1;
+                    //generate random number (col major)
+                    for(std::size_t t=0; t<num_trotter_slices; t++){
+                        for(std::size_t i=0; i<num_classical_spins; i++){
+                            system.rand_pool(i, t) = urd(random_number_engine);
                         }
+                    }
 
+                    //using OpenMP
+                    
+                    //we have to consider the case num_trotter_slices is odd.
+                    std::size_t upper_limit = num_trotter_slices%2!=0 ? num_trotter_slices-1 : num_trotter_slices;
+
+                    #pragma omp parallel for
+                    for(std::size_t t=0; t<upper_limit; t+=2){
+                        for(std::size_t i=0; i<num_classical_spins; i++){
+                            //calculate matrix dot product
+                            do_calc(system, parameter, i, t, B);
+                        }
+                    }
+
+                    //using OpenMP
+                    #pragma omp parallel for
+                    for(std::size_t t=1; t<num_trotter_slices; t+=2){
+                        for(std::size_t i=0; i<num_classical_spins; i++){
+                            //calculate matrix dot product
+                            do_calc(system, parameter, i, t, B);
+                        }
+                    }
+
+                    //for the case num_trotter_slices is odd.
+                    if(num_trotter_slices%2!=0){
+                        std::size_t t = num_trotter_slices-1;
+                        for(std::size_t i=0; i<num_classical_spins; i++){
+                            //calculate matrix dot product
+                            do_calc(system, parameter, i, t, B);
+                        }
                     }
                 }
 
             private: 
+            inline static void do_calc(QIsing& system,
+                    const utility::TransverseFieldUpdaterParameter& parameter, size_t i, size_t t, FloatType B) {
+
+                //get number of trotter slices
+                std::size_t num_trotter_slices = system.trotter_spins.cols();
+
+                //aliases
+                auto& spins = system.trotter_spins;
+                //const auto& gamma = system.gamma;
+                const auto& beta = parameter.beta;
+                const auto& s = parameter.s;
+
+                //calculate dE for trotter direction
+                FloatType dEtrot = -2 * spins(i, t)*
+                    (spins(i, mod_t((int64_t)t+1, num_trotter_slices)) + 
+                     spins(i, mod_t((int64_t)t-1, num_trotter_slices))
+                     );
+
+                //calculate total dE
+                FloatType dE = s * (beta/num_trotter_slices) * system.dE(i, t) + B * dEtrot;
+
+                // for debugging
+
+                //FloatType testdE = 0;
+
+                ////do metropolis
+                //testdE += -2 * s * (beta/num_trotter_slices) * spins(i, t)*(system.interaction.row(i).dot(spins.col(t)));
+
+                ////trotter direction
+                //testdE += -2 * (1/2.) * log(tanh(beta* gamma * (1.0-s) /num_trotter_slices)) * spins(i, t) *
+                //    (    spins(i, mod_t((int64_t)t+1, num_trotter_slices)) 
+                //       + spins(i, mod_t((int64_t)t-1, num_trotter_slices)));
+
+                //std::cout << "s=" << s << std::endl;
+                //std::cout << "dE=" << dE << std::endl;
+                //std::cout << "testdE=" << testdE << std::endl;
+                //assert((std::isinf(dE) && std::isinf(testdE)) || abs(dE-testdE) < 1e-5);
+
+                //metropolis 
+                
+                if(dE < 0 || exp(-dE) > system.rand_pool(i, t)){
+
+                    //update dE (spatial direction) 
+                    system.dE.col(t) += 4 * spins(i, t) * (system.interaction.row(i).transpose().cwiseProduct(spins.col(t)));
+                    system.dE(i, t)     *= -1;
+
+                    //update spins
+                    spins(i, t) *= -1;
+                }
+            }
+            
+
             inline static std::size_t mod_t(std::int64_t a, std::size_t num_trotter_slices){
                 //a -> [-1:num_trotter_slices]
                 //return a%num_trotter_slices (a>0), num_trotter_slices-1 (a==-1)

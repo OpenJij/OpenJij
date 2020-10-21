@@ -17,7 +17,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
  
 
 ##### Set default behavior #####
-set(DEFAULT_USE_OMP No)
+set(DEFAULT_USE_OMP Yes)
 set(DEFAULT_USE_CUDA Yes)
 set(DEFAULT_USE_TEST No)
 option(USE_TEST "Use test code" No)
@@ -53,10 +53,18 @@ message(STATUS "USE_OMP = ${USE_OMP}")
 message(STATUS "USE_CUDA = ${USE_CUDA}")
 message(STATUS "USE_TEST = ${USE_TEST}")
 
-#TODO: OMP settings
-
 if(USE_CUDA)
     add_definitions(-DUSE_CUDA)
+endif()
+
+if(USE_OMP)
+    find_package(OpenMP REQUIRED)
+    if(OpenMP_FOUND)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+        #disable Eigen parallelization
+        add_definitions(-DEIGEN_DONT_PARALLELIZE)
+    endif()
 endif()
 
 list(APPEND CMAKE_MODULE_PATH external)
