@@ -96,3 +96,11 @@ The result spins are [1 1 1 1 1 ]
 
 - [OpenJij Slack](https://join.slack.com/t/openjij/shared_invite/enQtNjQyMjIwMzMwNzA4LTQ5MWRjOWYxYmY1Nzk4YzdiYzlmZjIxYjhhMmMxZjAyMzE3MDc1ZWRkYmI1YjhkNjRlOTM1ODE0NTc5Yzk3ZDA)
 
+## About us
+
+This product is maintained by Jij Inc.
+
+Please visit our website for more information! 
+
+https://j-ij.com/
+
