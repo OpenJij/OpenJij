@@ -199,7 +199,7 @@ class TestSamplers(unittest.TestCase):
         #        init_q_state=[1 for _ in range(len(self.ground_state))])
 
         #antiferromagnetic one-dimensional Ising model
-        sampler = oj.CSQASampler(num_reads=100)
+        sampler = oj.CSQASampler(num_reads=200)
         res = sampler.sample_ising(self.afih, self.afiJ, seed=1)
         self.assertDictEqual(self.afiground, res.first.sample)
 
