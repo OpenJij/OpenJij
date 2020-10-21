@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/OpenJij/OpenJij.svg?branch=master)](https://travis-ci.org/OpenJij/OpenJij)
 
 * python >= 3.6
-* (optional) gcc >= 7.0.0 (or another C++ compiler that supports C++17)
+* (optional) gcc >= 7.0.0
 * (optional) cmake >= 3.12.2
 
 - [Documents](https://openjij.github.io/OpenJij_Documentation/build/html/)
@@ -26,12 +26,12 @@ To install OpenJij from source codes, please install CMake first then install Op
 
 If you had not installed cmake>=3.12.2, you need install cmake>=3.12.2
 
-macOS
+* macOS
 ```
 $ brew install cmake
 ```
 
-Linux
+* Linux
 ```
 # if you installed old version by apt-get
 $ apt-get purge cmake
@@ -42,6 +42,10 @@ $ tar xvf cmake-3.13.2.tar.gz
 $ cd cmake-3.13.2
 $ ./bootstrap && make && sudo make install 
 ```
+
+* Windows
+
+Please install cmake from [here](https://cmake.org/download/).
 
 Alternatively, you can use
 ```
