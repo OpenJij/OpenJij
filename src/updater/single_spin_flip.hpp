@@ -153,9 +153,10 @@ namespace openjij {
                     //we have to consider the case num_trotter_slices is odd.
                     std::size_t upper_limit = num_trotter_slices%2!=0 ? num_trotter_slices-1 : num_trotter_slices;
 
+                    //NOTE: only signed integer is allowed for OpenMP
                     #pragma omp parallel for
-                    for(std::size_t t=0; t<upper_limit; t+=2){
-                        for(std::size_t i=0; i<num_classical_spins; i++){
+                    for(int64_t t=0; t<(int64_t)upper_limit; t+=2){
+                        for(int64_t i=0; i<(int64_t)num_classical_spins; i++){
                             //calculate matrix dot product
                             do_calc(system, parameter, i, t, B);
                         }
@@ -163,8 +164,8 @@ namespace openjij {
 
                     //using OpenMP
                     #pragma omp parallel for
-                    for(std::size_t t=1; t<num_trotter_slices; t+=2){
-                        for(std::size_t i=0; i<num_classical_spins; i++){
+                    for(int64_t t=1; t<(int64_t)num_trotter_slices; t+=2){
+                        for(int64_t i=0; i<(int64_t)num_classical_spins; i++){
                             //calculate matrix dot product
                             do_calc(system, parameter, i, t, B);
                         }
@@ -172,8 +173,8 @@ namespace openjij {
 
                     //for the case num_trotter_slices is odd.
                     if(num_trotter_slices%2!=0){
-                        std::size_t t = num_trotter_slices-1;
-                        for(std::size_t i=0; i<num_classical_spins; i++){
+                        int64_t t = (int64_t)(num_trotter_slices-1);
+                        for(int64_t i=0; i<(int64_t)num_classical_spins; i++){
                             //calculate matrix dot product
                             do_calc(system, parameter, i, t, B);
                         }
