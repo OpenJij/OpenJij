@@ -20,7 +20,10 @@
 #include <system/transverse_ising.hpp>
 #include <utility/schedule_list.hpp>
 #include <type_traits>
+
+#ifdef USE_OMP
 #include <omp.h>
+#endif
 
 namespace openjij {
     namespace updater {
