@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/OpenJij/OpenJij.svg?branch=master)](https://travis-ci.org/OpenJij/OpenJij)
 
-* python >= 3.6
+* python >= 3.7
 * (optional) gcc >= 7.0.0
 * (optional) cmake >= 3.12.2
 
