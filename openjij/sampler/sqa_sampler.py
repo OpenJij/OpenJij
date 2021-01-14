@@ -289,7 +289,6 @@ def linear_ising_schedule(model, beta, gamma, num_sweeps):
     schedule = cxxjij.utility.make_transverse_field_schedule_list(
         beta=beta, one_mc_step=1, num_call_updater=num_sweeps
     )
-    gamma = 1
     return schedule, [beta, gamma]
 
 #TODO: more optimal schedule?
@@ -308,6 +307,5 @@ def quartic_ising_schedule(model, beta, gamma, num_sweeps):
     s = np.linspace(0, 1, num_sweeps)
     fs = s**4*(35-84*s+70*s**2-20*s**3)
     schedule = [((beta, elem), 1) for elem in fs]
-    gamma = 1
     return schedule, [beta, gamma]
 
