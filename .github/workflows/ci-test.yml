@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -16,12 +16,9 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version : ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install dependencies and test
       run: |
         python -m pip install --upgrade pip
         pip install cmake
-        python setup.py build --debug install
-    - name: test
-      run: |
-        python setup.py test
+        python setup.py build --debug test
 
