@@ -20,4 +20,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install cmake
         python setup.py build --debug install
+    - name: test
+      run: |
+        python setup.py test
 
