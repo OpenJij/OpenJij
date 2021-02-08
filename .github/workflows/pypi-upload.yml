@@ -1,8 +1,9 @@
 name: pypi-upload
 
-on:
-  release:
-    types: [created]
+on: [push]
+#on:
+#  release:
+#    types: [created]
 
 jobs:
   manylinux-pypi:
