@@ -1,9 +1,8 @@
 name: pypi-upload
 
-on: [push]
-#on:
-#  release:
-#    types: [created]
+on:
+  release:
+    types: [created]
 
 jobs:
   manylinux-pypi:
@@ -26,12 +25,11 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         pip install twine
+        ls dist/*manylinux*
+        #twine upload --repository testpypi dist/openjij-0.1.2-cp37-cp37m-manylinux2014_x86_64.whl
         #twine upload --repository testpypi dist/openjij-0.1.2-cp37-cp37m-manylinux2014_x86_64.whl
         #twine upload --repository testpypi dist/openjij-0.1.2-cp38-cp38-manylinux2014_x86_64.whl
-        #twine upload --repository testpypi dist/penjij-0.1.2-cp39-cp39-manylinux2014_x86_64.whl
-        twine upload --repository testpypi dist/openjij_test-0.1.2-cp37-cp37m-manylinux2014_x86_64.whl
-        twine upload --repository testpypi dist/openjij_test-0.1.2-cp38-cp38-manylinux2014_x86_64.whl
-        twine upload --repository testpypi dist/openjij_test-0.1.2-cp39-cp39-manylinux2014_x86_64.whl
+        #twine upload --repository testpypi dist/openjij-0.1.2-cp39-cp39-manylinux2014_x86_64.whl
 
 #  windows-pypi:
 #    strategy:
