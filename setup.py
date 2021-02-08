@@ -12,11 +12,11 @@ from distutils.version import LooseVersion
 
 
 # Package meta-data.
-NAME = 'openjij'
+NAME = 'openjij-test'
 DESCRIPTION = 'Framework for the Ising model and QUBO'
 EMAIL = 'openjij@j-ij.com'
 AUTHOR = 'Jij Inc.'
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 
 
 class CMakeExtension(Extension):

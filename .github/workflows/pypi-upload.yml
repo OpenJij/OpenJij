@@ -5,8 +5,6 @@ on: [push]
 #  release:
 #    types: [created]
 
-# ${GITHUB_REF##*/}
-
 jobs:
   manylinux-pypi:
     runs-on: ubuntu-latest
@@ -18,9 +16,17 @@ jobs:
         python-versions: 'cp37-cp37m cp38-cp38 cp39-cp39'
         build-requirements: 'cmake'
         pip-wheel-args: '-w ./dist --no-deps'
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version : 3.9
     - name: Upload wheels
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        ls ./dist
+        pip install twine
+        twine upload dist/*
 
   windows-pypi:
     strategy:
@@ -40,8 +46,12 @@ jobs:
         pip install cmake wheel
         python setup.py bdist_wheel
     - name: Upload wheels
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        ls ./dist
+        pip install twine
+        twine upload dist/*
 
   macos-pypi:
     strategy:
@@ -61,5 +71,10 @@ jobs:
         pip install cmake wheel
         python setup.py bdist_wheel
     - name: Upload wheels
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        ls ./dist
+        pip install twine
+        twine upload dist/*
+
