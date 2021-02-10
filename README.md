@@ -2,7 +2,7 @@
 
 ![build-test](https://github.com/OpenJij/OpenJij/workflows/build-test/badge.svg)
 
-* python >= 3.6
+* python >= 3.7
 * (optional) gcc >= 7.0.0
 * (optional) cmake >= 3.12.2
 

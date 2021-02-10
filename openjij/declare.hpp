@@ -362,6 +362,41 @@ inline std::string repr_impl(const utility::UpdaterParameter<system::transverse_
     return "(beta: " + std::to_string(obj.beta) + ", s: " + std::to_string(obj.s) + ")";
 }
 
+
+inline void declare_ClassicalUpdaterParameter(py::module& m){
+    py::class_<utility::ClassicalUpdaterParameter>(m, "ClassicalUpdaterParameter")
+        .def(py::init<>())
+        .def(py::init<double>(), "beta"_a)
+        .def_readwrite("beta", &utility::ClassicalUpdaterParameter::beta)
+        .def("__repr__", [](const utility::ClassicalUpdaterParameter& self){
+                return repr_impl(self);
+                });
+}
+
+inline void declare_ClassicalConstraintUpdaterParameter(py::module& m){
+    py::class_<utility::ClassicalConstraintUpdaterParameter>(m, "ClassicalConstraintUpdaterParameter")
+        .def(py::init<>())
+        .def(py::init<double, double>(), "beta"_a, "lambda"_a)
+        .def(py::init<const std::pair<double, double>&>(), "obj"_a)
+        .def_readwrite("beta", &utility::ClassicalConstraintUpdaterParameter::beta)
+        .def_readwrite("lambda", &utility::ClassicalConstraintUpdaterParameter::lambda)
+        .def("__repr__", [](const utility::ClassicalConstraintUpdaterParameter& self){
+                return repr_impl(self);
+                });
+}
+
+inline void declare_TransverseFieldUpdaterParameter(py::module& m){
+    py::class_<utility::TransverseFieldUpdaterParameter>(m, "TransverseFieldUpdaterParameter")
+        .def(py::init<>())
+        .def(py::init<double, double>(), "beta"_a, "s"_a)
+        .def(py::init<const std::pair<double, double>&>(), "obj"_a)
+        .def_readwrite("beta", &utility::TransverseFieldUpdaterParameter::beta)
+        .def_readwrite("s", &utility::TransverseFieldUpdaterParameter::s)
+        .def("__repr__", [](const utility::TransverseFieldUpdaterParameter& self){
+                return repr_impl(self);
+                });
+}
+
 template<typename SystemType>
 inline void declare_Schedule(py::module &m, const std::string& systemtype_str){
     auto str = systemtype_str + "Schedule";
