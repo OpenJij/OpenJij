@@ -473,6 +473,8 @@ TEST(ContinuousTimeSwendsenWang, Place_Cuts_Special_Case) {
     EXPECT_EQ(timeline, correct_timeline);
 }
 
+/*************** currently disabled *************
+
 TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ContinuousTimeIsing_Sparse_OneDimensionalIsing) {
     using namespace openjij;
 
@@ -519,6 +521,8 @@ TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ContinuousTimeIsing_Sparse)
 
     EXPECT_EQ(get_true_groundstate(), result::get_solution(ising));
 }
+
+**********************************/
 
 TEST(RESULT, GetSolutionFromTrotter){
     auto graph = openjij::graph::Dense<float>(4);
