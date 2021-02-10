@@ -1,6 +1,6 @@
 # OpenJij : Framework for the Ising model and QUBO.
 
-[![Build Status](https://travis-ci.org/OpenJij/OpenJij.svg?branch=master)](https://travis-ci.org/OpenJij/OpenJij)
+![build-test](https://github.com/OpenJij/OpenJij/workflows/build-test/badge.svg)
 
 * python >= 3.7
 * (optional) gcc >= 7.0.0
