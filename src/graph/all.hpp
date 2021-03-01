@@ -20,5 +20,6 @@
 #include <graph/sparse.hpp>
 #include <graph/square.hpp>
 #include <graph/chimera.hpp>
+#include <graph/polynomial.hpp>
 
 #endif
