@@ -380,4 +380,19 @@ openjij::graph::Spins get_true_chimera_groundstate(const openjij::graph::Chimera
     return ret_spin;
 }
 
+template<typename GraphType>
+GraphType generate_polynomial_interaction() {
+   auto interaction = GraphType(num_system_size);
+   interaction.J(0,1) = -0.30;
+   interaction.J(0,1,2) = -0.30;
+   interaction.J(0,1,2,3) = -0.30;
+   interaction.J(0,1,2,3,4) = -0.30;
+   interaction.J(0,1,2,3,4,5) = -0.30;
+   interaction.J(0,1,2,3,4,5,6) = -0.30;
+   interaction.J(0,1,2,3,4,5,6,7) = -0.30;
+   interaction.J(0,1,2,3,4,5,6,7,8) = -0.30;
+
+   return interaction;
+}
+
 #endif

@@ -30,20 +30,50 @@ public:
    using Interactions = std::unordered_map<std::vector<Index>, FloatType, utility::VectorHash>;
    using value_type   = FloatType;
    
-   Polynomial(const json &j): Graph(j["num_variables"]) {
+   Polynomial(const Interactions J, const std::size_t num_spins): Graph(num_spins), J_(J) {};
+   Polynomial(const cimod::Polynomial<Index, FloatType> &polynomial, std::size_t num_spins): Graph(num_spins) {
+      for (const auto &it: polynomial) {
+         J_[it.first] = it.second;
+      }
+   }
+   
+   Polynomial(const json &j): Graph(static_cast<std::size_t>(j["num_variables"])) {
       auto bpm = json_parse_polynomial<FloatType>(j);
       for (const auto &it: bpm.get_polynomial()) {
          J_[it.first] = it.second;
       }
-   };
-   Polynomial(const Interactions J, std::size_t num_spins): Graph(num_spins), J_(J) {};
+   }
    
-   const FloatType &J(std::vector<Index> &index) const {
+   
+   explicit Polynomial(std::size_t num_spins): Graph(num_spins) {}
+   
+   Polynomial(const cimod::BinaryPolynomialModel<Index, FloatType> &bpm): Graph(bpm.length()) {
+      for (const auto &it: bpm.get_polynomial()) {
+         J_[it.first] = it.second;
+      }
+   }
+      
+   FloatType &J(const std::vector<Index> &index) {
+      return J_[index];
+   }
+   
+   template<typename... Args>
+   FloatType &J(Args... args) {
+      std::vector<Index> index{(std::size_t)args...};
+      return J_[index];
+   }
+   
+   const FloatType &J(const std::vector<Index> &index) const {
       return J_.at(index);
+   }
+   
+   const Interactions &J() const {
+      return J_;
    }
    
 private:
    Interactions J_;
+   std::vector<std::vector<Nodes>> list_adj_nodes_;
    
 };
 }
