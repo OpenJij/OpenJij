@@ -383,6 +383,7 @@ openjij::graph::Spins get_true_chimera_groundstate(const openjij::graph::Chimera
 template<typename GraphType>
 GraphType generate_polynomial_interaction() {
    auto interaction = GraphType(num_system_size);
+   /*
    interaction.J(0,1) = -0.30;
    interaction.J(0,1,2) = -0.30;
    interaction.J(0,1,2,3) = -0.30;
@@ -390,7 +391,16 @@ GraphType generate_polynomial_interaction() {
    interaction.J(0,1,2,3,4,5) = -0.30;
    interaction.J(0,1,2,3,4,5,6) = -0.30;
    interaction.J(0,1,2,3,4,5,6,7) = -0.30;
-   interaction.J(0,1,2,3,4,5,6,7,8) = -0.30;
+*/
+   
+   interaction.J(0,1) = -1.0;
+   interaction.J(1,2) = -1.0;
+   interaction.J(2,3) = -1.0;
+   interaction.J(3,4) = -1.0;
+   interaction.J(4,5) = -1.0;
+   interaction.J(5,6) = -1.0;
+   interaction.J(6,7) = -1.0;
+   interaction.J(7,0) = -1.0;
 
    return interaction;
 }

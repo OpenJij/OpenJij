@@ -36,7 +36,7 @@ static constexpr std::size_t num_system_size = 8;
 #define TEST_CASE_INDEX 1
 #include "./testcase.hpp"
 static openjij::utility::ClassicalScheduleList generate_schedule_list() {
-    return openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 100);
+    return openjij::utility::make_classical_schedule_list(99, 100.0, 2, 2);
 }
 
 //BinaryPolynomialModel
@@ -60,7 +60,21 @@ TEST(BPM, test) {
       */
    const auto interaction = generate_polynomial_interaction<openjij::graph::Polynomial<double>>();
    auto engine_for_spin = std::mt19937(1);
-   const auto spin = interaction.gen_spin(engine_for_spin);
+   auto spin = interaction.gen_spin(engine_for_spin);
+   
+   spin[0] = 1;
+   spin[1] = 1;
+   spin[2] = -1;
+   spin[3] = -1;
+   spin[4] = 1;
+   spin[5] = 1;
+   spin[6] = -1;
+   spin[7] = -1;
+   
+   for (std::size_t index = 0; index < num_system_size; ++index) {
+      printf("Spin[%ld] = %d\n", index, spin[index]);
+   }
+   
    auto classical_ising_polynomial = openjij::system::make_classical_ising_polynomial(spin, interaction);
    
    auto random_numder_engine = std::mt19937(1);
