@@ -392,6 +392,16 @@ GraphType generate_polynomial_interaction() {
    interaction.J(0,1,2,3,4,5,6) = -0.30;
    interaction.J(0,1,2,3,4,5,6,7) = -0.30;
 */
+   /*
+   interaction.J(0,1,2) = -1.0;
+   interaction.J(1,2,3) = -1.0;
+   interaction.J(2,3,4) = -1.0;
+   interaction.J(3,4,5) = -1.0;
+   interaction.J(4,5,6) = -1.0;
+   interaction.J(5,6,7) = -1.0;
+   interaction.J(6,7,8) = -1.0;
+   interaction.J(7,0,1) = -1.0;
+    */
    
    interaction.J(0,1) = -1.0;
    interaction.J(1,2) = -1.0;
@@ -405,4 +415,20 @@ GraphType generate_polynomial_interaction() {
    return interaction;
 }
 
+/*
+template<typename FloatType>
+openjij::graph::Spins get_true_groundstate(std::unordered_map<std::vector<openjij::graph::Index>, FloatType, openjij::utility::VectorHash> &J, size_t num_system_size){
+
+   size_t loop = std::pow(2, num_system_size);
+   for (size_t i = 0; i < loop; ++i) {
+      
+   }
+   
+}
+
+int GetSpin(size_t num_system_size, size_t site) {
+   
+};
+
+ */
 #endif

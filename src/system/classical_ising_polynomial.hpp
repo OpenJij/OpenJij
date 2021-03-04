@@ -23,49 +23,74 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
    using system_type  = classical_system;
    
    ClassicalIsingPolynomial(const graph::Spins init_spin, const graph::Polynomial<FloatType> &init_interaction):
-   num_spins(init_interaction.get_num_spins()), spin(init_spin), list_adj_nodes(init_interaction.list_adj_nodes()), list_interactions(init_interaction.list_interactions()) {
+   num_spins(init_interaction.get_num_spins()), spin(init_spin) {
+      assert(init_spin.size() == num_spins);
       
-      for (const auto &it: list_interactions) {
-         J.push_back(init_interaction.J(it));
+      list_interactions.resize(init_interaction.GetInteractions().size());
+      list_adjacency.resize(num_spins);
+      connected_spins.resize(num_spins);
+      
+      if (init_interaction.GetMaxVariable() >= num_spins) {
+         printf("ssss\n");
+         std::exit(0);
       }
-      adj.resize(num_spins);
+      else {
+         std::size_t index_interaction = 0;
+         for (const auto &it: init_interaction.GetInteractions()) {
+            J.push_back(it.second);
+            for (const auto &it_index: it.first) {
+               list_interactions[index_interaction].push_back(it_index);
+               list_adjacency[it_index].push_back(index_interaction);
+            }
+            index_interaction++;
+         }
+      }
+
+      for (std::size_t index = 0; index < num_spins; ++index) {
+         for (const auto &it_adj: list_adjacency[index]) {
+            for (const auto &it_inter: list_interactions[it_adj]) {
+               if (it_inter != index) {
+                  connected_spins[index].push_back(it_inter);
+               }
+            }
+         }
+      }
+      reset_dE();
+      ResetEnergyTerm();
+   }
+
+   void reset_dE() {
       for (std::size_t index = 0; index < num_spins; ++index) {
          FloatType temp_dE = 0.0;
-         for (const auto &it_adj: list_adj_nodes[index]) {
+         for (const auto &it_adj: list_adjacency[index]) {
             graph::Spin temp_spin_multipl = 1;
             for (const auto &it_inter: list_interactions[it_adj]) {
-               temp_spin_multipl *= init_spin[it_inter];
-               if (index != it_inter && std::find(adj[index].begin(), adj[index].end(), it_inter) == adj[index].end()) {
-                  adj[index].push_back(it_inter);
-               }
+               temp_spin_multipl *= spin[it_inter];
             }
             temp_dE += -2*J[it_adj]*temp_spin_multipl;
          }
          dE.push_back(temp_dE);
       }
-      
-      
-      
-      for (std::size_t index = 0; index < num_spins; ++index) {
-         printf("dE[%d]=%lf\n", index, dE[index]);
-      }
-      
-      for (std::size_t index = 0; index < num_spins; ++index) {
-         printf("adj[%d]=", index);
-         for (std::size_t i = 0; i < adj[index].size(); i++) {
-            printf("%d, ",adj[index][i]);
+   }
+   
+   void ResetEnergyTerm() {
+      for (std::size_t index_interaction = 0; index_interaction < J.size(); ++index_interaction) {
+         graph::Spin temp_spin_multipl = 1;
+         for (const auto &it_inter: list_interactions[index_interaction]) {
+            temp_spin_multipl *= spin[it_inter];
          }
-         printf("\n");
+         energy_term.push_back(temp_spin_multipl*J[index_interaction]);
       }
    }
    
    graph::Spins spin;
    std::vector<FloatType> dE;
+   std::vector<FloatType> energy_term;
    std::vector<FloatType> J;
    std::size_t num_spins;
-   std::vector<std::vector<graph::Index>> list_adj_nodes;
+   std::vector<std::vector<graph::Index>> list_adjacency;
    std::vector<std::vector<graph::Index>> list_interactions;
-   std::vector<std::vector<graph::Index>> adj;
+   std::vector<std::vector<graph::Index>> connected_spins;
    
 };
 

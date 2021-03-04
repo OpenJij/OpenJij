@@ -36,7 +36,14 @@ static constexpr std::size_t num_system_size = 8;
 #define TEST_CASE_INDEX 1
 #include "./testcase.hpp"
 static openjij::utility::ClassicalScheduleList generate_schedule_list() {
-    return openjij::utility::make_classical_schedule_list(99, 100.0, 2, 2);
+    return openjij::utility::make_classical_schedule_list(10.0, 100.0, 100, 100);
+}
+
+static openjij::utility::ClassicalScheduleList generate_schedule_list(double beta, int mc_step) {
+   auto list = openjij::utility::ClassicalScheduleList(1);
+   list[0].one_mc_step = mc_step;
+   list[0].updater_parameter = openjij::utility::ClassicalUpdaterParameter(beta);
+   return list;
 }
 
 //BinaryPolynomialModel
@@ -58,6 +65,8 @@ TEST(BPM, test) {
    cimod::BinaryPolynomialModel<std::string, double> cimod_bpm(polynomial_str, cimod::Vartype::SPIN);
    openjij::graph::Polynomial<double> bpm(cimod_bpm.to_serializable());
       */
+   
+   /*
    const auto interaction = generate_polynomial_interaction<openjij::graph::Polynomial<double>>();
    auto engine_for_spin = std::mt19937(1);
    auto spin = interaction.gen_spin(engine_for_spin);
@@ -78,15 +87,89 @@ TEST(BPM, test) {
    auto classical_ising_polynomial = openjij::system::make_classical_ising_polynomial(spin, interaction);
    
    auto random_numder_engine = std::mt19937(1);
-   const auto schedule_list = generate_schedule_list();
+   const auto schedule_list = generate_schedule_list(100, 1);
    
    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_polynomial, random_numder_engine, schedule_list);
    
    for (const auto &it: openjij::result::get_solution(classical_ising_polynomial)) {
       std::cout << it << std::endl;
    }
-   
+   */
    
    
    
 }
+
+TEST(BPM, speed_quad) {
+   
+   auto system_size = 20;
+   auto interaction = openjij::graph::Sparse<double>(system_size);
+   
+   auto begin = std::chrono::high_resolution_clock::now();
+   for (auto i = 0; i < system_size; ++i) {
+      for (auto j = i + 1; j < system_size; ++j) {
+         interaction.J(i,j) = +1;
+      }
+   }
+   auto end = std::chrono::high_resolution_clock::now();
+   std::cout << "time1-1: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << std::endl;
+   
+   auto engine_for_spin = std::mt19937(1);
+   const auto spin = interaction.gen_spin(engine_for_spin);
+   
+   begin = std::chrono::high_resolution_clock::now();
+   auto classical_ising = openjij::system::make_classical_ising(spin, interaction);
+   end = std::chrono::high_resolution_clock::now();
+   std::cout << "time1-2: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << std::endl;
+   
+   auto random_numder_engine = std::mt19937(1);
+   const auto schedule_list = generate_schedule_list(10, 10000);
+
+   begin = std::chrono::high_resolution_clock::now();
+   openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
+   end = std::chrono::high_resolution_clock::now();
+   std::cout << "time1-3: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << std::endl;
+   
+   for (const auto &it: openjij::result::get_solution(classical_ising)) {
+      std::cout << it << std::endl;
+   }
+       
+}
+
+TEST(BPM, speed_poly) {
+   
+   auto system_size = 20;
+   auto interaction = openjij::graph::Polynomial<double>(system_size);
+   
+    
+   auto begin = std::chrono::high_resolution_clock::now();
+   for (auto i = 0; i < system_size; ++i) {
+      for (auto j = i + 1; j < system_size; ++j) {
+         interaction.J(i,j) = +1;
+      }
+   }
+   auto end = std::chrono::high_resolution_clock::now();
+   std::cout << "time2-1: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << std::endl;
+   
+   auto engine_for_spin = std::mt19937(1);
+   const auto spin = interaction.gen_spin(engine_for_spin);
+   
+   begin = std::chrono::high_resolution_clock::now();
+   auto classical_ising_polynomial = openjij::system::make_classical_ising_polynomial(spin, interaction);
+   end = std::chrono::high_resolution_clock::now();
+   std::cout << "time2-2: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << std::endl;
+   
+   auto random_numder_engine = std::mt19937(1);
+   const auto schedule_list = generate_schedule_list(10, 10000);
+
+   begin = std::chrono::high_resolution_clock::now();
+   openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_polynomial, random_numder_engine, schedule_list);
+   end = std::chrono::high_resolution_clock::now();
+   std::cout << "time2-3: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << std::endl;
+   
+   for (const auto &it: openjij::result::get_solution(classical_ising_polynomial)) {
+      std::cout << it << std::endl;
+   }
+      
+}
+ 

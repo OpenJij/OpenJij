@@ -15,6 +15,7 @@
 #include <utility>
 #include <unordered_map>
 
+
 #include <graph/json/parse.hpp>
 #include <graph/graph.hpp>
 #include <utility/vectorhash.hpp>
@@ -30,106 +31,80 @@ public:
    using Interactions = std::unordered_map<std::vector<Index>, FloatType, utility::VectorHash>;
    using value_type   = FloatType;
    
-   Polynomial(const Interactions &polynomial, const std::size_t num_spins): Graph(num_spins) {
-      list_adj_nodes_.resize(num_spins);
-      for (const auto &it: polynomial) {
-         J_[it.first] = it.second;
-         list_interactions_.push_back(it.first);
-         for (const auto &it_index: it.first) {
-            list_adj_nodes_[it_index].push_back(list_interactions_.size() - 1);
-         }
-      }
-      
-   }
-   
-   Polynomial(const cimod::Polynomial<Index, FloatType> &polynomial, std::size_t num_spins): Graph(num_spins) {
-      list_adj_nodes_.resize(num_spins);
-      for (const auto &it: polynomial) {
-         J_[it.first] = it.second;
-         list_interactions_.push_back(it.first);
-         for (const auto &it_index: it.first) {
-            list_adj_nodes_[it_index].push_back(list_interactions_.size() - 1);
-         }
-      }
-   }
-   
-   Polynomial(const json &j): Graph(static_cast<std::size_t>(j["num_variables"])) {
-      auto bpm = json_parse_polynomial<FloatType>(j);
-      list_adj_nodes_.resize(bpm.length());
-      for (const auto &it: bpm.get_polynomial()) {
-         J_[it.first] = it.second;
-         list_interactions_.push_back(it.first);
-         for (const auto &it_index: it.first) {
-            list_adj_nodes_[it_index].push_back(list_interactions_.size() - 1);
-         }
-      }
-   }
-   
-   
    explicit Polynomial(std::size_t num_spins): Graph(num_spins) {}
    
+   Polynomial(const Interactions &polynomial, const std::size_t num_spins): Graph(num_spins) {
+      for (const auto it: polynomial) {
+         std::unordered_set<Index> index_set(it.first.begin(), it.first.end());
+         std::vector<Index> index(index_set.begin(), index_set.end());
+         std::sort(index.begin(), index.end());
+         UpdateMaxVariable(index);
+         J_[index] = it.second;
+      }
+   }
+   
+   Polynomial(const json &j) {
+      Polynomial(json_parse_polynomial<FloatType>(j));
+   }
+   
+   
    Polynomial(const cimod::BinaryPolynomialModel<Index, FloatType> &bpm): Graph(bpm.length()) {
-      list_adj_nodes_.resize(bpm.length());
-      for (const auto &it: bpm.get_polynomial()) {
-         J_[it.first] = it.second;
-         list_interactions_.push_back(it.first);
-         for (const auto &it_index: it.first) {
-            list_adj_nodes_[it_index].push_back(list_interactions_.size() - 1);
-         }
+      for (auto &it: bpm.get_polynomial()) {
+         std::sort(it.first.begin(), it.first.end());
+         UpdateMaxVariable(it.first);
+         J_[it.first] += it.second;
       }
    }
       
-   FloatType &J(const std::vector<Index> &index) {
-      if (std::find(list_interactions_.begin(), list_interactions_.end(), index) == list_interactions_.end()) {
-         list_interactions_.push_back(index);
-         for (const auto &it: index) {
-            if (list_adj_nodes_.size() <= it) {
-               list_adj_nodes_.resize(it + 1);
-            }
-            list_adj_nodes_[it].push_back(list_interactions_.size() - 1);
-         }
+   FloatType &J(const std::unordered_set<Index> &index_set) {
+      if (index_set.size() > Graph::size()) {
+         std::cout << "Too small system size" << std::endl;
+         std::cout << "The degree of the input polynomial interaction is " << index_set.size() << std::endl;
+         std::cout << "But the number of system size is" << Graph::size() << std::endl;
+         assert(index_set.size() <= Graph::size());
       }
+      std::vector<Index> index(index_set.begin(), index_set.end());
+      std::sort(index.begin(), index.end());
+      UpdateMaxVariable(index);
       return J_[index];
    }
    
    template<typename... Args>
    FloatType &J(Args... args) {
-      std::vector<Index> index{(Index)args...};
-      
-      if (std::find(list_interactions_.begin(), list_interactions_.end(), index) == list_interactions_.end()) {
-        
-         list_interactions_.push_back(index);
-        
-         for (const auto &it: index) {
-            if (list_adj_nodes_.size() <= it) {
-               list_adj_nodes_.resize(it + 1);
-            }
-            list_adj_nodes_[it].push_back(list_interactions_.size() - 1);
-         }
-      }
-      return J_[index];
+      std::unordered_set<Index> index_set{(Index)args...};
+      return J(index_set);
    }
    
-   const FloatType &J(const std::vector<Index> &index) const {
+   const FloatType &J(const std::unordered_set<Index> &index_set) const {
+      std::vector<Index> index(index_set.begin(), index_set.end());
+      std::sort(index.begin(), index.end());
       return J_.at(index);
    }
    
-   const Interactions &J() const {
+   template<typename... Args>
+   const FloatType &J(Args... args) const {
+      std::unordered_set<Index> index_set{(Index)args...};
+      return J(index_set);
+   }
+   
+   const Interactions &GetInteractions() const {
       return J_;
    }
    
-   const std::vector<std::vector<Index>> &list_adj_nodes() const {
-      return list_adj_nodes_;
-   }
-   
-   const std::vector<std::vector<Index>> &list_interactions() const {
-      return list_interactions_;
+   const Index &GetMaxVariable() const {
+      return max_variable_;
    }
    
 private:
    Interactions J_;
-   std::vector<std::vector<Index>> list_adj_nodes_;
-   std::vector<std::vector<Index>> list_interactions_;
+   Index max_variable_ = 0;
+   
+   void UpdateMaxVariable(const std::vector<Index> &index) {
+      if (max_variable_ < index[index.size() - 1]) {
+         max_variable_ = index[index.size() - 1];
+      }
+   }
+
    
 };
 }

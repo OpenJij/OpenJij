@@ -254,21 +254,16 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
                              RandomNumberEngine& random_number_engine,
                              const utility::ClassicalUpdaterParameter& parameter
                              ) {
-      printf("Start Update *********************************************\n");
-      printf("beta=%lf\n",-parameter.beta);
-      for (std::size_t index = 0; index < system.num_spins; ++index) {
-         printf("Initial dE[%d]=%lf, spin[%d]=%d\n", index, system.dE[index], index, system.spin[index]);
-      }
-      
+ 
       
       auto urd = std::uniform_real_distribution<>(0, 1.0);
       for (std::size_t index = 0; index < system.num_spins; ++index) {
          if (system.dE[index] < 0.0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
             // update dE
-                     
+                   
+            /*
             system.spin[index] *= -1;
-            
-            for (const auto &it_adj: system.list_adj_nodes[index]) {
+            for (const auto &it_adj: system.list_adjacency[index]) {
                graph::Spin temp_spin_multipl = 1;
                std::vector<graph::Index> temp_variable;
                for (const auto &it_inter: system.list_interactions[it_adj]) {
@@ -283,21 +278,24 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
                }
                
             }
-            
-            
             system.dE[index] *= -1;
-            printf("Flip->%d\n", index);
-            printf("After Flip\n");
-         }
-         else {
-            printf("Not Flip->%d\n", index);
-         }
-         for (std::size_t index = 0; index < system.num_spins; ++index) {
-            printf("dE[%d]=%lf\n", index, system.dE[index]);
+            */
+            
+            
+            
+            
+            system.spin[index] *= -1;
+            for (const auto &it_adj: system.list_adjacency[index]) {
+               system.energy_term[it_adj] *= -1;
+               for (const auto &it: system.connected_spins[index]) {
+                  system.dE[it] += -4*system.energy_term[it_adj];
+               }
+            }
+            system.dE[index] *= -1;
+            
          }
       }
-      
-  }
+   }
 };
 
 
