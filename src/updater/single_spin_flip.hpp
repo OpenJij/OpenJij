@@ -254,47 +254,31 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
                              RandomNumberEngine& random_number_engine,
                              const utility::ClassicalUpdaterParameter& parameter
                              ) {
- 
-      
+
       auto urd = std::uniform_real_distribution<>(0, 1.0);
       for (std::size_t index = 0; index < system.num_spins; ++index) {
-         if (system.dE[index] < 0.0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
+
+         if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
             // update dE
-                   
-            /*
+         
+            
+            
             system.spin[index] *= -1;
-            for (const auto &it_adj: system.list_adjacency[index]) {
-               graph::Spin temp_spin_multipl = 1;
-               std::vector<graph::Index> temp_variable;
-               for (const auto &it_inter: system.list_interactions[it_adj]) {
-                  temp_spin_multipl *= system.spin[it_inter];
-                  if (it_inter != index) {
-                     temp_variable.push_back(it_inter);
-                  }
-               }
-               
-               for (const auto &it: temp_variable) {
-                  system.dE[it] += -4*system.J[it_adj]*temp_spin_multipl;
-               }
-               
-            }
             system.dE[index] *= -1;
-            */
-            
-            
-            
-            
-            system.spin[index] *= -1;
             for (const auto &it_adj: system.list_adjacency[index]) {
                system.energy_term[it_adj] *= -1;
-               for (const auto &it: system.connected_spins[index]) {
-                  system.dE[it] += -4*system.energy_term[it_adj];
+               auto temp = system.energy_term[it_adj];
+               for (const auto &it_index: system.list_interactions[it_adj]) {
+                  if (it_index != index) {
+                     system.dE[it_index] += -4*temp;
+                  }
+                  
                }
             }
-            system.dE[index] *= -1;
-            
          }
       }
+      
+      
    }
 };
 

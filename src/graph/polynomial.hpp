@@ -95,6 +95,21 @@ public:
       return max_variable_;
    }
    
+   FloatType CalclateEnergy(const Spins& spins) const {
+      if(spins.size() != Graph::size()){
+         std::out_of_range("Out of range in calc_energy in Dense graph.");
+      }
+      FloatType energy = 0.0;
+      for (const auto &it: J_) {
+         Spin temp_spin_multiple = 1;
+         for (const auto &index: it.first) {
+            temp_spin_multiple *= spins[index];
+         }
+         energy += temp_spin_multiple*it.second;
+      }
+      return energy;
+   }
+   
 private:
    Interactions J_;
    Index max_variable_ = 0;

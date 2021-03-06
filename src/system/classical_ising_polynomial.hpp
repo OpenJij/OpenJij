@@ -46,20 +46,27 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
          }
       }
 
+      std::vector<std::unordered_set<graph::Index>> temp;
+      temp.resize(num_spins);
       for (std::size_t index = 0; index < num_spins; ++index) {
          for (const auto &it_adj: list_adjacency[index]) {
             for (const auto &it_inter: list_interactions[it_adj]) {
                if (it_inter != index) {
-                  connected_spins[index].push_back(it_inter);
+                  temp[index].emplace(it_inter);
                }
             }
          }
+      }
+      for (auto i = 0; i < num_spins; ++i) {
+         connected_spins[i] = std::vector<graph::Index>(temp[i].begin(), temp[i].end());
+         std::sort(connected_spins[i].begin(), connected_spins[i].end());
       }
       reset_dE();
       ResetEnergyTerm();
    }
 
    void reset_dE() {
+      dE.clear();
       for (std::size_t index = 0; index < num_spins; ++index) {
          FloatType temp_dE = 0.0;
          for (const auto &it_adj: list_adjacency[index]) {
@@ -68,12 +75,14 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
                temp_spin_multipl *= spin[it_inter];
             }
             temp_dE += -2*J[it_adj]*temp_spin_multipl;
+            //printf("%d(%d)-->%lf\n", index, it_adj, -2*J[it_adj]*temp_spin_multipl);
          }
          dE.push_back(temp_dE);
       }
    }
    
    void ResetEnergyTerm() {
+      energy_term.clear();
       for (std::size_t index_interaction = 0; index_interaction < J.size(); ++index_interaction) {
          graph::Spin temp_spin_multipl = 1;
          for (const auto &it_inter: list_interactions[index_interaction]) {
