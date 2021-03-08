@@ -116,11 +116,11 @@ TEST(BPM, test) {
     */
 }
 
-/*
+
 TEST(BPM, speed_quad_dense) {
-   
+   /*
    //auto system_size = 2000;
-   for (auto system_size = 100; system_size <= 1000; system_size += 100) {
+   for (auto system_size = 100; system_size <= 10000; system_size += 500) {
       auto interaction = openjij::graph::Dense<double>(system_size);
       std::cout << system_size;
       auto begin = std::chrono::high_resolution_clock::now();
@@ -149,14 +149,14 @@ TEST(BPM, speed_quad_dense) {
       std::cout << "  " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
       printf("  %lf\n", interaction.calc_energy(openjij::result::get_solution(classical_ising)));
    }
-    
+ */
 }
  
 
 TEST(BPM, speed_quad_sparse) {
-   
+   /*
    //auto system_size = 2000;
-   for (auto system_size = 100; system_size <= 1000; system_size += 100) {
+   for (auto system_size = 100; system_size <= 10000; system_size += 500) {
       auto interaction = openjij::graph::Sparse<double>(system_size);
       std::cout << system_size;
       auto begin = std::chrono::high_resolution_clock::now();
@@ -185,10 +185,10 @@ TEST(BPM, speed_quad_sparse) {
       std::cout << "  " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
       printf("  %lf\n", interaction.calc_energy(openjij::result::get_solution(classical_ising)));
    }
-    
-   
+    */
 }
-*/
+ 
+
 TEST(BPM, speed_poly_quad_intetaction) {
    
    //auto system_size = 2000;
@@ -220,7 +220,7 @@ TEST(BPM, speed_poly_quad_intetaction) {
       openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_polynomial, random_numder_engine, schedule_list);
       end = std::chrono::high_resolution_clock::now();
       std::cout << "  " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
-      printf("  %lf\n", interaction.CalclateEnergy(openjij::result::get_solution(classical_ising_polynomial)));
+      printf("  %lf\n",interaction.CalclateEnergy(openjij::result::get_solution(classical_ising_polynomial)));
    }
 }
  
