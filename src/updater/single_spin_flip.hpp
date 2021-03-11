@@ -260,62 +260,14 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
 
          if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
             // update dE
-            /*
-            auto temp = system.dE[index];
-            for (auto i = system.row[index]; i < system.row[index + 1]; ++i) {
-               system.dE[system.col[i]] += 4*(*system.val[i]);
-               *system.val[i] *= -1;
-            }
-            system.spin[index] *= -1;
-            */
-            
-            /*
-            for (const auto &index_interaction: system.connected_interaction_index[index]) {
-               auto temp = system.J_term[index_interaction] *= -1;
-               for (const auto &index_spin: system.spins_in_iteraction[index_interaction]) {
-                  system.dE[index_spin] += -4*temp;
-               }
-            }
-            */
-            
-            system.dE[index] *= -1;
             for (const auto &index_interaction: system.connected_interaction_index[index]) {
                system.J_term[index_interaction] *= -1;
             }
-           
-            for (auto i = system.row[index]; i < system.row[index + 1]; ++i) {
-               for (const auto &it: system.val[i]) {
-                  system.dE[system.col[i]] += -4*(*it);
-               }
-            }
-            
-            /*
             system.dE[index] *= -1;
             for (auto i = system.row[index]; i < system.row[index + 1]; ++i) {
-               *system.val[i][0] *= -1;
-               system.dE[system.col[i]] += -4*(*system.val[i][0]);
+               system.dE[system.col[i]] += -4*(*system.val[i]);
             }
-             */
-            
-            
-            /*
-            for (const auto &index_interaction: system.connected_interaction_index[index]) {
-               system.J_term[index_interaction] *= -1;
-            }
-            for (const auto &it: system.connected_spins[index]) {
-               system.reset_dE_by_J_term(it);
-            }
-            system.dE[index] *= -1;
-            */
-
             system.spin[index] *= -1;
-            /*
-            for (const auto &it: system.connected_spins[index]) {
-               system.reset_dE_by_J(it);
-            }
-            system.dE[index] *= -1;
-            */
-            
          }
       }
       

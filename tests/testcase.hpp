@@ -380,7 +380,7 @@ openjij::graph::Spins get_true_chimera_groundstate(const openjij::graph::Chimera
     return ret_spin;
 }
 
-std::vector<openjij::graph::Spin> GetSpinState(std::size_t basis, std::size_t system_size) {
+std::vector<openjij::graph::Spin> PolynomialGetSpinState(std::size_t basis, std::size_t system_size) {
    std::vector<openjij::graph::Spin> spins(system_size);
    for (std::size_t i = 0; i < system_size; ++i) {
       if (basis%2 == 0) {
@@ -395,12 +395,11 @@ std::vector<openjij::graph::Spin> GetSpinState(std::size_t basis, std::size_t sy
 }
 
 template<typename FloatType>
-std::vector<openjij::graph::Spin> GetExactGroundState(openjij::graph::Polynomial<FloatType> polynomial, std::size_t system_size) {
+FloatType PolynomialExactGroundStateEnergy(openjij::graph::Polynomial<FloatType> &polynomial, std::size_t system_size) {
    FloatType min_energy = DBL_MAX;
-   std::vector<openjij::graph::Spin> min_spin(system_size);
    std::size_t loop = std::pow(2, system_size);
    for (std::size_t i = 0; i < loop; ++i) {
-      std::vector<openjij::graph::Spin> temp_spin = GetSpinState(i, system_size);
+      std::vector<openjij::graph::Spin> temp_spin = PolynomialGetSpinState(i, system_size);
       FloatType temp_energy = 0.0;
       for (const auto &it: polynomial.GetInteractions()) {
          openjij::graph::Spin temp_spin_multiple = 1;
@@ -411,84 +410,31 @@ std::vector<openjij::graph::Spin> GetExactGroundState(openjij::graph::Polynomial
       }
       if (min_energy > temp_energy) {
          min_energy = temp_energy;
-         min_spin = temp_spin;
-         printf("%lf\n",min_energy);
       }
    }
-   return min_spin;
+   return min_energy;
 }
 
-template<typename GraphType>
-GraphType generate_polynomial_interaction() {
-   auto interaction = GraphType(num_system_size);
+std::vector<std::unordered_set<std::size_t>> Combination(std::size_t N, std::size_t k) {
    
+   std::vector<std::unordered_set<std::size_t>> Out;
+   std::vector<bool> v(N);
+   std::fill(v.end() - k, v.end(), true);
    
-   interaction.J(0,1)     = -1;
-   interaction.J(0,1,2)   = -1;
-   interaction.J(0,1,2,3) = -1;
-   interaction.J(1,3,2)   = -1;
-
-   //interaction.J(0,1,2,3,4) = -0.30;
-   //interaction.J(0,1,2,3,4,5) = -0.30;
-   //interaction.J(0,1,2,3,4,5,6) = -0.30;
-   //interaction.J(0,1,2,3,4,5,6,7) = -0.30;
-    
-   /*
-   for (std::size_t i = 0; i < num_system_size; ++i) {
-      for (std::size_t j = i+1; j < num_system_size; ++j) {
-         interaction.J(i,j) = -1.0;
+   do {
+      std::unordered_set<std::size_t> temp;
+      for (int i = 0; i < N; ++i) {
+         if (v[i]) {
+            temp.emplace(i);
+         }
       }
-   }
-    */
-   /*
-   interaction.J(0,1) = -1.0;
-   interaction.J(1,2) = +1.0;
-   interaction.J(2,3) = -1.0;
-   interaction.J(3,4) = +1.0;
-   interaction.J(4,5) = -1.0;
-   interaction.J(5,6) = +1.0;
-   interaction.J(6,7) = -1.0;
-    */
+      if (temp.size() > 0) {
+         Out.push_back(temp);
+      }
+   } while (std::next_permutation(v.begin(), v.end()));
    
-   /*
-   interaction.J(0,0)=-1.6;
-   interaction.J(0,1)=-1.8;
-   interaction.J(0,2)=1.3;
-   interaction.J(0,3)=0.7;
-   interaction.J(0,4)=-0.6;
-   interaction.J(0,5)=1.6;
-   interaction.J(0,6)=-2.7;
-   interaction.J(0,7)=-0.7;
-   interaction.J(1,1)=1.0;
-   interaction.J(1,2)=-1.0;
-   interaction.J(1,3)=-2.3;
-   interaction.J(1,4)=-2.4;
-   interaction.J(1,5)=0.6;
-   interaction.J(1,6)=-0.1;
-   interaction.J(1,7)=-2.1;
-   interaction.J(2,2)=-0.9;
-   interaction.J(2,3)=-1.0;
-   interaction.J(2,4)=1.0;
-   interaction.J(2,5)=0.5;
-   interaction.J(2,6)=1.4;
-   interaction.J(2,7)=2.7;
-   interaction.J(3,3)=2.7;
-   interaction.J(3,4)=0.6;
-   interaction.J(3,5)=2.9;
-   interaction.J(3,6)=-2.6;
-   interaction.J(3,7)=1.8;
-   interaction.J(4,4)=0.6;
-   interaction.J(4,5)=0.6;
-   interaction.J(4,6)=1.9;
-   interaction.J(4,7)=-2.6;
-   interaction.J(5,5)=0.1;
-   interaction.J(5,6)=-2.0;
-   interaction.J(5,7)=-2.0;
-   interaction.J(6,6)=-1.1;
-   interaction.J(6,7)=0.4;
-   interaction.J(7,7)=1.6;
-*/
-   return interaction;
+   return Out;
 }
+
 
 #endif
