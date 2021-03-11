@@ -32,36 +32,25 @@ public:
    using value_type   = FloatType;
    
    explicit Polynomial(std::size_t num_spins): Graph(num_spins) {}
-   
-   Polynomial(const Interactions &polynomial, const std::size_t num_spins): Graph(num_spins) {
-      for (const auto it: polynomial) {
-         std::unordered_set<Index> index_set(it.first.begin(), it.first.end());
-         std::vector<Index> index(index_set.begin(), index_set.end());
-         std::sort(index.begin(), index.end());
-         UpdateMaxVariable(index);
-         J_[index] = it.second;
-      }
-   }
-   
-   Polynomial(const json &j) {
-      Polynomial(json_parse_polynomial<FloatType>(j));
-   }
-   
+      
+   Polynomial(const json &j): Polynomial(json_parse_polynomial<FloatType>(j)) { }
    
    Polynomial(const cimod::BinaryPolynomialModel<Index, FloatType> &bpm): Graph(bpm.length()) {
-      for (auto &it: bpm.get_polynomial()) {
-         std::sort(it.first.begin(), it.first.end());
-         UpdateMaxVariable(it.first);
-         J_[it.first] += it.second;
+      for (const auto &it: bpm.get_polynomial()) {
+         auto temp = it.first;
+         std::sort(temp.begin(), temp.end());
+         UpdateMaxVariable(temp);
+         J_[temp] += it.second;
       }
    }
       
    FloatType &J(const std::unordered_set<Index> &index_set) {
       if (index_set.size() > Graph::size()) {
-         std::cout << "Too small system size" << std::endl;
-         std::cout << "The degree of the input polynomial interaction is " << index_set.size() << std::endl;
-         std::cout << "But the number of system size is" << Graph::size() << std::endl;
-         assert(index_set.size() <= Graph::size());
+         std::stringstream ss;
+         ss << "Too small system size. ";
+         ss << "The degree of the input polynomial interaction is " << index_set.size();
+         ss << ". But the system size is" << Graph::size() << std::string("\n");
+         std::runtime_error(ss.str());
       }
       std::vector<Index> index(index_set.begin(), index_set.end());
       std::sort(index.begin(), index.end());
@@ -97,7 +86,7 @@ public:
    
    FloatType CalclateEnergy(const Spins& spins) const {
       if(spins.size() != Graph::size()){
-         std::out_of_range("Out of range in calc_energy in Dense graph.");
+         std::out_of_range("Out of range in CalclateEnergy in Polynomial graph.");
       }
       FloatType energy = 0.0;
       for (const auto &it: J_) {

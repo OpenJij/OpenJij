@@ -113,12 +113,12 @@
 
 /**
  * @file binary_polynomial_model.hpp
- * @author Fumiya Watanabe
- * @brief BinaryQuadraticModel class
+ * @author Kohei Suzuki
+ * @brief BinaryPolynomialModel class
  * @version 1.0.0
- * @date 2020-03-24
+ * @date 2021-02-10
  *
- * @copyright Copyright (c) Jij Inc. 2020
+ * @copyright Copyright (c) Jij Inc. 2021
  *
  */
 

@@ -260,10 +260,10 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
 
          if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
             // update dE
+            system.dE[index] *= -1;
             for (const auto &index_interaction: system.connected_interaction_index[index]) {
                system.J_term[index_interaction] *= -1;
             }
-            system.dE[index] *= -1;
             for (auto i = system.row[index]; i < system.row[index + 1]; ++i) {
                system.dE[system.col[i]] += -4*(*system.val[i]);
             }

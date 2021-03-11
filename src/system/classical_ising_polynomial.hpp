@@ -52,13 +52,10 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
                return lhs[1] < rhs[1];
             }
          }
-          
       };
       
       std::sort(temp_spins_in_interaction.begin(), temp_spins_in_interaction.end(), comp);
-      
-      
-      
+            
       connected_interaction_index.resize(num_spins);
       for (auto i = 0; i < temp_spins_in_interaction.size(); ++i) {
          graph::Spin temp_spin_multiple = 1;
@@ -91,19 +88,7 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
          }
          row.push_back(col.size());
       }
-      /*
-      for (std::size_t i = 0; i < num_spins; ++i) {
-         for (std::size_t j = row[i]; j < row[i+1]; ++j) {
-            std::cout << std::hex << "M[" << i << "][" << col[j] << "]=" << *val[j] << ": " << val[j] << std::endl;
-         }
-      }
-      
-      exit(1);
-      */
-      
-      
       reset_dE();
-      
    }
    
    void reset_dE() {
@@ -119,14 +104,12 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
    
    graph::Spins spin;
    graph::Index num_spins;
-   
    std::vector<std::vector<graph::Index>> connected_interaction_index;
    std::vector<FloatType>    dE;
    std::vector<FloatType>    J_term;
    std::vector<FloatType*>   val;
    std::vector<graph::Index> row;
    std::vector<graph::Index> col;
-   
    
 };
 

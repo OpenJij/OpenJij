@@ -936,8 +936,6 @@ TEST(GPUUtil, CuBLASWrapperTest){
     EXPECT_NEAR(dev_dotprod/1000.0, dotprod/1000.0, 1e-4);
 }
 
-
-
 #endif
 
 
