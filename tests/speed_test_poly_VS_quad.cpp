@@ -138,7 +138,7 @@ TEST(Polynomial, PolynomialDense) {
    printf("%lf, %lf\n",interaction.CalclateEnergy(openjij::result::get_solution(classical_ising_polynomial)), PolynomialExactGroundStateEnergy(interaction, system_size));
 }
 */
-
+/*
 TEST(BPM, speed_poly_quad_sparse_interactions) {
    
    for (auto total_loop = 10000; total_loop <= 50000; total_loop += 5000) {
@@ -301,11 +301,11 @@ TEST(BPM, speed_quad_dense) {
  
 }
  
-
+*/
 TEST(BPM, speed_quad_sparse) {
    
    //auto system_size = 2000;
-   for (auto system_size = 100; system_size <= 2000; system_size += 100) {
+   for (auto system_size = 2000; system_size <= 2000; system_size += 10) {
       auto interaction = openjij::graph::Sparse<double>(system_size);
       std::cout << system_size;
       auto begin = std::chrono::high_resolution_clock::now();
@@ -341,7 +341,7 @@ TEST(BPM, speed_quad_sparse) {
 TEST(BPM, speed_poly_quad_dense_intetactions) {
    
    //auto system_size = 2000;
-   for (auto system_size = 100; system_size <= 2000; system_size += 100) {
+   for (auto system_size = 2000; system_size <= 2000; system_size += 10) {
       auto interaction = openjij::graph::Polynomial<double>(system_size);
       std::cout << system_size;
       auto begin = std::chrono::high_resolution_clock::now();
@@ -373,4 +373,4 @@ TEST(BPM, speed_poly_quad_dense_intetactions) {
    }
 }
 
-*/
+

@@ -38,7 +38,7 @@ static openjij::utility::ClassicalScheduleList generate_schedule_list() {
     return openjij::utility::make_classical_schedule_list(1, 1000.0, 100, 100);
 }
 
-TEST(Poly_Graph, ConstructorCimod) {
+TEST(PolyGraph, ConstructorCimod1) {
    
    cimod::Polynomial<openjij::graph::Index, double> Polynomial {
       {{0}, 0.0}, {{1}, 1.0}, {{2}, 2.0},
@@ -76,7 +76,35 @@ TEST(Poly_Graph, ConstructorCimod) {
    
 }
 
-TEST(Poly_Graph, ConstructorJson) {
+TEST(PolyGraph, ConstructorCimod2) {
+   
+   cimod::Polynomial<openjij::graph::Index, double> Polynomial {
+      {{0}, 0.0}, {{1}, 1.0}, {{2}, 2.0},
+      {{0, 1}, 11.0}, {{1, 0}, 11.0}, {{0, 2}, 22.0}, {{2, 0}, 22.0}, {{1, 2}, 12.0}, {{2, 1}, 12.0},
+      {{0, 1, 2}, +12}, {{0, 2, 1}, +12}, {{1, 0, 2}, +12}, {{1, 2, 0}, +12},
+      {{2, 0, 1}, +12}, {{2, 1, 0}, +12}
+   };
+   
+   cimod::Vartype vartype = cimod::Vartype::SPIN;
+   cimod::BinaryPolynomialModel<openjij::graph::Index, double> bpm_cimod(Polynomial, vartype);
+   
+   openjij::graph::Polynomial<double> poly_graph(bpm_cimod);
+
+   EXPECT_EQ(poly_graph.GetMaxVariable(), 2);
+
+   EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.GetInteractions().size() + 8);
+   
+   EXPECT_DOUBLE_EQ(poly_graph.J(   {0}   ), bpm_cimod.get_polynomial().at(   {0}   ));
+   EXPECT_DOUBLE_EQ(poly_graph.J(   {1}   ), bpm_cimod.get_polynomial().at(   {1}   ));
+   EXPECT_DOUBLE_EQ(poly_graph.J(   {2}   ), bpm_cimod.get_polynomial().at(   {2}   ));
+   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 1}  ), bpm_cimod.get_polynomial().at( {0, 1}  )*2);
+   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 2}  ), bpm_cimod.get_polynomial().at( {0, 2}  )*2);
+   EXPECT_DOUBLE_EQ(poly_graph.J( {1, 2}  ), bpm_cimod.get_polynomial().at( {1, 2}  )*2);
+   EXPECT_DOUBLE_EQ(poly_graph.J({0, 1, 2}), bpm_cimod.get_polynomial().at({0, 1, 2})*6);
+   
+}
+
+TEST(PolyGraph, ConstructorJson) {
    
    cimod::Polynomial<std::string, double> Polynomial {
       {{"a"}, 0.0}, {{"b"}, 1.0}, {{"c"}, 2.0},
@@ -102,10 +130,10 @@ TEST(Poly_Graph, ConstructorJson) {
    
 }
 
-TEST(Poly_Graph, AddInteractions) {
+TEST(PolyGraph, AddInteractions) {
    
    openjij::graph::Index num_spins = 3;
-   openjij::graph::Polynomial<double> poly_graph(num_spins);
+   openjij::graph::Polynomial<double> poly_graph(num_spins, "SPIN");
    
    poly_graph.J(   {0}   ) = +0.0 ;
    poly_graph.J(   {1}   ) = +1.0 ;
@@ -141,10 +169,26 @@ TEST(Poly_Graph, AddInteractions) {
    EXPECT_DOUBLE_EQ(poly_graph.J( {0, 2}  ), +22.0*2);
    EXPECT_DOUBLE_EQ(poly_graph.J( {1, 2}  ), +12.0*2);
    EXPECT_DOUBLE_EQ(poly_graph.J({0, 1, 2}), +12.0*2);
+   
+   poly_graph.J(0,0,0) += +0.0 ;
+   poly_graph.J(1,1,1) += +1.0 ;
+   poly_graph.J(2,2,2) += +2.0 ;
+   poly_graph.J(0,1,1) += +11.0;
+   poly_graph.J(0,2,2) += +22.0;
+   poly_graph.J(1,2,1) += +12.0;
+   poly_graph.J(0,1,2) += +12.0;
+   
+   EXPECT_DOUBLE_EQ(poly_graph.J(   {0}   ), +0.0 *3);
+   EXPECT_DOUBLE_EQ(poly_graph.J(   {1}   ), +1.0 *3);
+   EXPECT_DOUBLE_EQ(poly_graph.J(   {2}   ), +2.0 *3);
+   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 1}  ), +11.0*3);
+   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 2}  ), +22.0*3);
+   EXPECT_DOUBLE_EQ(poly_graph.J( {1, 2}  ), +12.0*3);
+   EXPECT_DOUBLE_EQ(poly_graph.J({0, 1, 2}), +12.0*3);
 
 }
 
-TEST(Poly_Graph, Energy) {
+TEST(PolyGraph, Energy) {
    
    cimod::Polynomial<openjij::graph::Index, double> Polynomial {
       {{0}, 0.0}, {{1}, 1.0}, {{2}, 2.0},
@@ -164,3 +208,50 @@ TEST(Poly_Graph, Energy) {
    EXPECT_DOUBLE_EQ(bpm_cimod.energy(spin_for_cimod), poly_graph.CalclateEnergy(spin));
    
 }
+
+TEST(PolySystem, Constructor) {
+   
+   openjij::graph::Index num_spins = 3;
+   openjij::graph::Polynomial<double> poly_graph(num_spins);
+   
+   poly_graph.J(   {0}   ) = +0.0 ;
+   poly_graph.J(   {1}   ) = +1.0 ;
+   poly_graph.J(   {2}   ) = +2.0 ;
+   poly_graph.J( {0, 1}  ) = +11.0;
+   poly_graph.J( {0, 2}  ) = +22.0;
+   poly_graph.J( {1, 2}  ) = +12.0;
+   poly_graph.J({0, 1, 2}) = +12.0;
+   
+   openjij::graph::Spins spin = {+1, -1, +1};
+   
+   openjij::system::ClassicalIsingPolynomial<openjij::graph::Polynomial<double>> poly_system = openjij::system::make_classical_ising_polynomial(spin, poly_graph);
+   
+   EXPECT_EQ(poly_system.num_spins, 3);
+   for (auto i = 0; i < poly_system.num_spins; ++i) {
+      EXPECT_EQ(poly_system.spin[i], spin[i]);
+   }
+      
+   EXPECT_DOUBLE_EQ(poly_system.J_term[0], +0 );
+   EXPECT_DOUBLE_EQ(poly_system.J_term[1], -1 );
+   EXPECT_DOUBLE_EQ(poly_system.J_term[2], +2 );
+   EXPECT_DOUBLE_EQ(poly_system.J_term[3], -11);
+   EXPECT_DOUBLE_EQ(poly_system.J_term[4], +22);
+   EXPECT_DOUBLE_EQ(poly_system.J_term[5], -12);
+   EXPECT_DOUBLE_EQ(poly_system.J_term[6], -12);
+   
+   
+}
+
+TEST(PolyUpdater, QuadFMIsing) {
+   
+}
+
+TEST(PolyUpdater, QuadAFMISing) {
+   
+}
+
+TEST(PolyUpdater, Quad) {
+   
+}
+
+

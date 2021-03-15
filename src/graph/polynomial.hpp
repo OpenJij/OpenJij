@@ -31,11 +31,28 @@ public:
    using Interactions = std::unordered_map<std::vector<Index>, FloatType, utility::VectorHash>;
    using value_type   = FloatType;
    
-   explicit Polynomial(std::size_t num_spins): Graph(num_spins) {}
+   explicit Polynomial(std::size_t num_spins, std::string vartype): Graph(num_spins), vartype_(vartype) {
+      if (vartype != "SPIN" && vartype != "BINARY") {
+         std::stringstream ss;
+         ss << "The input vartype = " << vartype;
+         ss << " is unknown vartype.";
+         ss << "Ising or Binary is allowed\n";
+         std::runtime_error(ss.str());
+      }
+   }
       
-   Polynomial(const json &j): Polynomial(json_parse_polynomial<FloatType>(j)) { }
+   Polynomial(const json &j): Polynomial(json_parse_polynomial<FloatType>(j)) {}
    
    Polynomial(const cimod::BinaryPolynomialModel<Index, FloatType> &bpm): Graph(bpm.length()) {
+      if (bpm.get_vartype() == cimod::Vartype::SPIN) {
+         vartype_ = "SPIN";
+      }
+      else if (bpm.get_vartype() == cimod::Vartype::BINARY) {
+         vartype_ = "BINARY";
+      }
+      else {
+         std::runtime_error("Unknown vartype is detected in cimod\n");
+      }
       for (const auto &it: bpm.get_polynomial()) {
          auto temp = it.first;
          std::sort(temp.begin(), temp.end());
@@ -84,6 +101,19 @@ public:
       return max_variable_;
    }
    
+   const std::string &GetVartype() const {
+      return vartype_;
+   }
+   
+   bool isIsing() const {
+      if (vartype_ == "SPIN") {
+         return true;
+      }
+      else {
+         return false;
+      }
+   }
+   
    FloatType CalclateEnergy(const Spins& spins) const {
       if(spins.size() != Graph::size()){
          std::out_of_range("Out of range in CalclateEnergy in Polynomial graph.");
@@ -102,6 +132,7 @@ public:
 private:
    Interactions J_;
    Index max_variable_ = 0;
+   std::string vartype_ = "";
    
    void UpdateMaxVariable(const std::vector<Index> &index) {
       if (max_variable_ < index[index.size() - 1]) {

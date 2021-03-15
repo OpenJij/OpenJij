@@ -581,7 +581,6 @@ public:
    
       size_t num_interactions =  m_polynomial.size();
    
-
       std::vector<std::vector<size_t>> p_index;
       std::vector<FloatType> p_bias;
       for (const auto &it_polynomial: m_polynomial) {

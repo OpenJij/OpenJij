@@ -254,24 +254,68 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
                              RandomNumberEngine& random_number_engine,
                              const utility::ClassicalUpdaterParameter& parameter
                              ) {
-
+      if (system.isIsing) {
+         update_poly_ising<RandomNumberEngine>(system, random_number_engine, parameter);
+      }
+      else {
+         update_poly_pubo<RandomNumberEngine>(system, random_number_engine, parameter);
+      }
+      
+      
+   }
+   
+   template<typename RandomNumberEngine>
+   inline static void update_poly_ising(ClPIsing &system,
+                                        RandomNumberEngine& random_number_engine,
+                                        const utility::ClassicalUpdaterParameter& parameter) {
+      
       auto urd = std::uniform_real_distribution<>(0, 1.0);
       for (std::size_t index = 0; index < system.num_spins; ++index) {
-
+         
          if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
             // update dE
-            system.dE[index] *= -1;
-            for (const auto &index_interaction: system.connected_interaction_index[index]) {
+            for (const auto &index_interaction: system.connected_J_term_index[index]) {
                system.J_term[index_interaction] *= -1;
             }
-            for (auto i = system.row[index]; i < system.row[index + 1]; ++i) {
+            const auto begin = system.row[index];
+            const auto end   = system.row[index + 1];
+            for (auto i = begin; i < end; ++i) {
                system.dE[system.col[i]] += -4*(*system.val[i]);
             }
+            system.dE[index]   *= -1;
             system.spin[index] *= -1;
          }
       }
-      
    }
+   
+   template<typename RandomNumberEngine>
+   inline static void update_poly_pubo(ClPIsing &system,
+                                         RandomNumberEngine& random_number_engine,
+                                         const utility::ClassicalUpdaterParameter& parameter) {
+      
+      auto urd = std::uniform_real_distribution<>(0, 1.0);
+      for (std::size_t index = 0; index < system.num_spins; ++index) {
+         
+         if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
+            // update dE
+            /*
+            for (const auto &index_interaction: system.connected_J_term_index[index]) {
+               system.J_term[index_interaction] *= -1;
+            }
+            const auto begin = system.row[index];
+            const auto end   = system.row[index + 1];
+            for (auto i = begin; i < end; ++i) {
+               system.dE[system.col[i]] += -4*(*system.val[i]);
+            }
+            system.dE[index]   *= -1;
+            system.spin[index] *= -1;
+             */
+         }
+      }
+   }
+   
+   
+   
 };
 
 

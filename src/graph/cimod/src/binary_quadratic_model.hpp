@@ -89,7 +89,7 @@
 #include "vartypes.hpp"
 #include "hash.hpp"
 #include "utilities.hpp"
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 
 #include <algorithm>
 #include <cstdint>
