@@ -1,9 +1,16 @@
-//
-//  polynomial.hpp
-//  OpenJijXcode
-//
-//  Created by 鈴木浩平 on 2021/03/01.
-//
+//    Copyright 2021 Jij Inc.
+
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+
+//        http://www.apache.org/licenses/LICENSE-2.0
+
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
 
 #ifndef polynomial_hpp
 #define polynomial_hpp
@@ -14,8 +21,6 @@
 #include <type_traits>
 #include <utility>
 #include <unordered_map>
-
-
 #include <graph/json/parse.hpp>
 #include <graph/graph.hpp>
 #include <utility/vectorhash.hpp>
@@ -23,15 +28,26 @@
 namespace openjij {
 namespace graph {
 
+
+//! @brief Polynomial graph class, which can treat many-body interactions
+//! The Hamiltonian is like
+//! \f[
+//! H=\sum_{i \neq j} Q_{ij} x_i x_j +  \sum_{i \neq j \neq k} Q_{ijk} x_i x_j x_k + \ldots
+//! \f]
+//! Note here that \f$ x_i \in \{0, 1\} \f$ or \f$ x_i \in \{-1, +1\} \f$.
+//! @tparam FloatType floating-point type
 template<typename FloatType>
 class Polynomial: public Graph {
    static_assert(std::is_floating_point<FloatType>::value, "FloatType must be floating-point type.");
    
 public:
+   //! @brief interaction type
    using Interactions = std::unordered_map<std::vector<Index>, FloatType, utility::VectorHash>;
-   using value_type   = FloatType;
    
-   explicit Polynomial(std::size_t num_spins, std::string vartype): Graph(num_spins), vartype_(vartype) {
+   //! @brief float type
+   using value_type   = FloatType;
+      
+   Polynomial(const std::size_t num_spins, const std::string vartype): Graph(num_spins), vartype_(vartype) {
       if (vartype != "SPIN" && vartype != "BINARY") {
          std::stringstream ss;
          ss << "The input vartype = " << vartype;
@@ -40,7 +56,9 @@ public:
          std::runtime_error(ss.str());
       }
    }
-      
+   
+   Polynomial(const std::size_t num_spins): Graph(num_spins), vartype_("SPIN") {}
+   
    Polynomial(const json &j): Polynomial(json_parse_polynomial<FloatType>(j)) {}
    
    Polynomial(const cimod::BinaryPolynomialModel<Index, FloatType> &bpm): Graph(bpm.length()) {
@@ -114,7 +132,7 @@ public:
       }
    }
    
-   FloatType CalclateEnergy(const Spins& spins) const {
+   FloatType CalculateEnergy(const Spins& spins) const {
       if(spins.size() != Graph::size()){
          std::out_of_range("Out of range in CalclateEnergy in Polynomial graph.");
       }
@@ -132,14 +150,13 @@ public:
 private:
    Interactions J_;
    Index max_variable_ = 0;
-   std::string vartype_ = "";
+   std::string vartype_ = "SPIN";
    
    void UpdateMaxVariable(const std::vector<Index> &index) {
       if (max_variable_ < index[index.size() - 1]) {
          max_variable_ = index[index.size() - 1];
       }
    }
-
    
 };
 }

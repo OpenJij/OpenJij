@@ -302,10 +302,11 @@ TEST(BPM, speed_quad_dense) {
 }
  
 */
+
 TEST(BPM, speed_quad_sparse) {
    
    //auto system_size = 2000;
-   for (auto system_size = 2000; system_size <= 2000; system_size += 10) {
+   for (auto system_size = 100; system_size <= 500; system_size += 100) {
       auto interaction = openjij::graph::Sparse<double>(system_size);
       std::cout << system_size;
       auto begin = std::chrono::high_resolution_clock::now();
@@ -341,21 +342,23 @@ TEST(BPM, speed_quad_sparse) {
 TEST(BPM, speed_poly_quad_dense_intetactions) {
    
    //auto system_size = 2000;
-   for (auto system_size = 2000; system_size <= 2000; system_size += 10) {
-      auto interaction = openjij::graph::Polynomial<double>(system_size);
+   for (auto system_size = 100; system_size <= 500; system_size += 100) {
+      auto interaction = openjij::graph::Polynomial<double>(system_size, "SPIN");
       std::cout << system_size;
       auto begin = std::chrono::high_resolution_clock::now();
       for (auto i = 0; i < system_size; ++i) {
          for (auto j = i + 1; j < system_size; ++j) {
-            interaction.J(i,j) = +1;
+            for (auto k = j + 1; k < system_size; ++k) {
+               interaction.J(i,j,k) = +1;
+            }
          }
       }
-
       auto end = std::chrono::high_resolution_clock::now();
       std::cout << "  " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
-      
       auto engine_for_spin = std::mt19937(1);
-      const auto spin = interaction.gen_spin(engine_for_spin);
+      auto spin = interaction.gen_spin(engine_for_spin);
+      
+  
       
       begin = std::chrono::high_resolution_clock::now();
       auto classical_ising_polynomial = openjij::system::make_classical_ising_polynomial(spin, interaction);
@@ -370,6 +373,37 @@ TEST(BPM, speed_poly_quad_dense_intetactions) {
       end = std::chrono::high_resolution_clock::now();
       std::cout << "  " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
       printf("  %lf\n",interaction.CalclateEnergy(openjij::result::get_solution(classical_ising_polynomial)));
+
+      
+      
+      
+      std::cout << system_size;
+      begin = std::chrono::high_resolution_clock::now();
+      interaction.SPIN_to_BINARY();
+      end = std::chrono::high_resolution_clock::now();
+      std::cout << "  " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
+      engine_for_spin = std::mt19937(1);
+      spin = interaction.gen_spin(engine_for_spin);
+      for (auto &&it: spin) {
+         if (it == -1) {
+            it = 0;
+         }
+      }
+      
+      begin = std::chrono::high_resolution_clock::now();
+      auto classical_binary_polynomial = openjij::system::make_classical_ising_polynomial(spin, interaction);
+      end = std::chrono::high_resolution_clock::now();
+      std::cout << "  " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
+      random_numder_engine = std::mt19937(1);
+      begin = std::chrono::high_resolution_clock::now();
+      openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_binary_polynomial, random_numder_engine, schedule_list);
+      end = std::chrono::high_resolution_clock::now();
+      std::cout << "  " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
+      
+      printf("  %lf\n",interaction.CalclateEnergy(openjij::result::get_solution(classical_binary_polynomial)));
+
+      
+      
    }
 }
 

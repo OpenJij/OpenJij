@@ -395,7 +395,52 @@ std::vector<openjij::graph::Spin> PolynomialGetSpinState(std::size_t basis, std:
 }
 
 template<typename FloatType>
-FloatType PolynomialExactGroundStateEnergy(openjij::graph::Polynomial<FloatType> &polynomial, std::size_t system_size) {
+std::unordered_map<std::vector<openjij::graph::Index>, FloatType, openjij::utility::VectorHash>
+PolynomialSpinToBinary(const std::unordered_map<std::vector<openjij::graph::Index>, FloatType, openjij::utility::VectorHash> &J_in) {
+   std::unordered_map<std::vector<openjij::graph::Index>, FloatType, openjij::utility::VectorHash> J_out;
+   for (const auto &it: J_in) {
+      const auto &index_list = PolynomialGenerateCombinations(it.first);
+      for (const auto &index: index_list) {
+         int sign = ((it.first.size() - index.size())%2 == 0) ? 1: -1;
+         J_out[index] += it.second*pow(2.0, index.size())*sign;
+      }
+   }
+   return J_out;
+}
+
+template<typename FloatType>
+std::unordered_map<std::vector<openjij::graph::Index>, FloatType, openjij::utility::VectorHash>
+PolynomialBinaryToSpin(const std::unordered_map<std::vector<openjij::graph::Index>, FloatType, openjij::utility::VectorHash> &J_in) {
+   std::unordered_map<std::vector<openjij::graph::Index>, FloatType, openjij::utility::VectorHash> J_out;
+   for (const auto &it: J_in) {
+      FloatType coeef = std::pow(2.0, -static_cast<int64_t>(it.first.size()));
+      const auto &index_list = PolynomialGenerateCombinations(it.first);
+      for (const auto &index: index_list) {
+         J_out[index] += it.second*coeef;
+      }
+   }
+   return J_out;
+}
+
+std::vector<std::vector<openjij::graph::Index>> PolynomialGenerateCombinations(const std::vector<openjij::graph::Index> &vec_in) {
+   std::size_t loop = std::pow(2, vec_in.size());
+   std::size_t num  = vec_in.size();
+   std::vector<std::vector<openjij::graph::Index>> vec_out(loop);
+   for (auto i = 0; i < loop; ++i) {
+      std::bitset<64> bs(i);
+      for (auto j = 0; j < num; ++j) {
+         if (bs[j]) {
+            vec_out[i].push_back(vec_in[j]);
+         }
+      }
+   }
+   return vec_out;
+}
+
+
+template<typename FloatType>
+FloatType PolynomialExactGroundStateEnergy(openjij::graph::Polynomial<FloatType> &polynomial) {
+   std::size_t system_size = polynomial.size();
    FloatType min_energy = DBL_MAX;
    std::size_t loop = std::pow(2, system_size);
    for (std::size_t i = 0; i < loop; ++i) {
@@ -413,27 +458,6 @@ FloatType PolynomialExactGroundStateEnergy(openjij::graph::Polynomial<FloatType>
       }
    }
    return min_energy;
-}
-
-std::vector<std::unordered_set<std::size_t>> Combination(std::size_t N, std::size_t k) {
-   
-   std::vector<std::unordered_set<std::size_t>> Out;
-   std::vector<bool> v(N);
-   std::fill(v.end() - k, v.end(), true);
-   
-   do {
-      std::unordered_set<std::size_t> temp;
-      for (int i = 0; i < N; ++i) {
-         if (v[i]) {
-            temp.emplace(i);
-         }
-      }
-      if (temp.size() > 0) {
-         Out.push_back(temp);
-      }
-   } while (std::next_permutation(v.begin(), v.end()));
-   
-   return Out;
 }
 
 
