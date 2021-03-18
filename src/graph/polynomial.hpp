@@ -53,7 +53,7 @@ public:
          ss << "The input vartype = " << vartype;
          ss << " is unknown vartype.";
          ss << "Ising or Binary is allowed\n";
-         std::runtime_error(ss.str());
+         throw std::runtime_error(ss.str());
       }
    }
    
@@ -69,7 +69,7 @@ public:
          vartype_ = "BINARY";
       }
       else {
-         std::runtime_error("Unknown vartype is detected in cimod\n");
+         throw std::runtime_error("Unknown vartype is detected in cimod\n");
       }
       for (const auto &it: bpm.get_polynomial()) {
          auto temp = it.first;
@@ -79,36 +79,51 @@ public:
       }
    }
       
-   FloatType &J(const std::unordered_set<Index> &index_set) {
-      if (index_set.size() > Graph::size()) {
+   FloatType &J(std::vector<Index>&& index) {
+      std::sort(index.begin(), index.end());
+      index.erase(std::unique(index.begin(), index.end()), index.end());
+      if (index.size() > Graph::size()) {
          std::stringstream ss;
          ss << "Too small system size. ";
-         ss << "The degree of the input polynomial interaction is " << index_set.size();
+         ss << "The degree of the input polynomial interaction is " << index.size();
          ss << ". But the system size is" << Graph::size() << std::string("\n");
-         std::runtime_error(ss.str());
+         throw std::runtime_error(ss.str());
       }
-      std::vector<Index> index(index_set.begin(), index_set.end());
+      UpdateMaxVariable(index);
+      return J_[index];
+   }
+   
+   FloatType &J(std::vector<Index>& index) {
       std::sort(index.begin(), index.end());
+      index.erase(std::unique(index.begin(), index.end()), index.end());
+      if (index.size() > Graph::size()) {
+         std::stringstream ss;
+         ss << "Too small system size. ";
+         ss << "The degree of the input polynomial interaction is " << index.size();
+         ss << ". But the system size is" << Graph::size() << std::string("\n");
+         throw std::runtime_error(ss.str());
+      }
       UpdateMaxVariable(index);
       return J_[index];
    }
    
    template<typename... Args>
    FloatType &J(Args... args) {
-      std::unordered_set<Index> index_set{(Index)args...};
-      return J(index_set);
+      return J(std::vector<Index>{(Index)args...});
    }
    
-   const FloatType &J(const std::unordered_set<Index> &index_set) const {
-      std::vector<Index> index(index_set.begin(), index_set.end());
+   const FloatType &J(std::vector<Index> &index) const {
       std::sort(index.begin(), index.end());
+      index.erase(std::unique(index.begin(), index.end()), index.end());
       return J_.at(index);
    }
    
    template<typename... Args>
    const FloatType &J(Args... args) const {
-      std::unordered_set<Index> index_set{(Index)args...};
-      return J(index_set);
+      std::vector<Index> index{(Index)args...};
+      std::sort(index.begin(), index.end());
+      index.erase(std::unique(index.begin(), index.end()), index.end());
+      return J_.at(index);
    }
    
    const Interactions &GetInteractions() const {
@@ -153,6 +168,9 @@ private:
    std::string vartype_ = "SPIN";
    
    void UpdateMaxVariable(const std::vector<Index> &index) {
+      if (index.size() == 0) {
+         return;
+      }
       if (max_variable_ < index[index.size() - 1]) {
          max_variable_ = index[index.size() - 1];
       }

@@ -548,33 +548,202 @@ TEST(PolySystem, ConstructorBinary) {
    
 }
 
-TEST(PolyUpdater, Quad) {
+TEST(PolyUpdater, CompareQuadratic1) {
    
    //Check the polynomial updater work properly by comparing the result of the quadratic updater
+   const int seed = 1;
    
    //generate classical sparse system
    const auto interaction = generate_interaction<openjij::graph::Sparse<double>>();
-   auto engine_for_spin = std::mt19937(1);
+   auto       engine_for_spin = std::mt19937(seed);
    const auto spin = interaction.gen_spin(engine_for_spin);
-   auto classical_ising = openjij::system::make_classical_ising(spin, interaction);
+   auto       classical_ising = openjij::system::make_classical_ising(spin, interaction);
    
-   auto random_numder_engine = std::mt19937(1);
+   auto random_numder_engine = std::mt19937(seed);
    const auto schedule_list = generate_schedule_list();
 
    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
    
+   const auto result_spin = openjij::result::get_solution(classical_ising);
+   
    //generate classical polynomial system
    const auto interaction_poly = generate_interaction<openjij::graph::Polynomial<double>>();
-   auto engine_for_spin_poly = std::mt19937(1);
+   auto       engine_for_spin_poly = std::mt19937(seed);
    const auto spin_poly = interaction.gen_spin(engine_for_spin_poly);
-   auto classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, interaction_poly);
+   auto       classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, interaction_poly);
    
-   auto random_numder_engine_poly = std::mt19937(1);
+   auto random_numder_engine_poly = std::mt19937(seed);
    const auto schedule_list_poly = generate_schedule_list();
    
    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_poly, random_numder_engine_poly, schedule_list_poly);
    
-   EXPECT_EQ(openjij::result::get_solution(classical_ising_poly), openjij::result::get_solution(classical_ising));
+   const auto result_spin_poly = openjij::result::get_solution(classical_ising_poly);
+   
+   //Check both equal
+   EXPECT_EQ(result_spin_poly.size(), result_spin.size());
+   for (auto i = 0; i < result_spin_poly.size(); ++i) {
+      EXPECT_EQ(result_spin_poly[i], result_spin[i]);
+   }
+   
+   EXPECT_DOUBLE_EQ(interaction_poly.CalculateEnergy(result_spin_poly), interaction.calc_energy(result_spin));
+    
 }
 
+TEST(PolyUpdater, CompareQuadratic2) {
+   
+   //Check the polynomial updater work properly by comparing the result of the quadratic updater
+   const int seed = 1;
+   const int system_size = 9;
+   
+   //generate classical sparse system
+   auto engin_for_interaction = std::mt19937(seed);
+   auto urd = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
+   auto interaction = openjij::graph::Sparse<double>(system_size);
+   for (auto i = 0; i < system_size; ++i) {
+      for (auto j = i + 1; j < system_size; ++j) {
+         interaction.J(i,j) = urd(engin_for_interaction);
+      }
+   }
+   auto engine_for_spin = std::mt19937(seed);
+   const auto spin = interaction.gen_spin(engine_for_spin);
+   auto classical_ising = openjij::system::make_classical_ising(spin, interaction);
+   auto random_numder_engine = std::mt19937(seed);
+   const auto schedule_list = generate_schedule_list();
+   openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
+   const auto result_spin = openjij::result::get_solution(classical_ising);
+   
+   //generate classical polynomial system
+   auto engin_for_interaction_poly = std::mt19937(seed);
+   auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
+   auto interaction_poly = openjij::graph::Polynomial<double>(system_size);
+   for (auto i = 0; i < system_size; ++i) {
+      for (auto j = i + 1; j < system_size; ++j) {
+         interaction_poly.J(i,j) = urd_poly(engin_for_interaction_poly);
+      }
+   }
+   auto engine_for_spin_poly = std::mt19937(seed);
+   const auto spin_poly = interaction_poly.gen_spin(engine_for_spin_poly);
+   auto classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, interaction_poly);
+   auto random_numder_engine_poly = std::mt19937(seed);
+   const auto schedule_list_poly = generate_schedule_list();
+   openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_poly, random_numder_engine_poly, schedule_list_poly);
+   const auto result_spin_poly = openjij::result::get_solution(classical_ising_poly);
+   
+   //Check both equal
+   EXPECT_EQ(result_spin_poly.size(), result_spin.size());
+   for (auto i = 0; i < result_spin_poly.size(); ++i) {
+      EXPECT_EQ(result_spin_poly[i], result_spin[i]);
+   }
+   EXPECT_DOUBLE_EQ(interaction_poly.CalculateEnergy(result_spin_poly), interaction.calc_energy(result_spin));
+   
+}
 
+TEST(PolyUpdater, PolynomialFullyConnectedSpin) {
+   
+   //Check the polynomial updater work properly by comparing the exact ground state energy
+   const int seed = 1;
+   const int system_size = 6;
+   
+   //generate classical polynomial system
+   auto engin_for_interaction_poly = std::mt19937(seed);
+   auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
+   auto interaction_poly = openjij::graph::Polynomial<double>(system_size);
+   std::vector<openjij::graph::Index> temp_vec(system_size);
+   for (auto i = 0; i < system_size; ++i) {
+      temp_vec[i] = i;
+   }
+   for (auto &it: PolynomialGenerateCombinations(temp_vec)) {
+      interaction_poly.J(it) = urd_poly(engin_for_interaction_poly);
+   }
+
+   auto engine_for_spin_poly = std::mt19937(seed);
+   const auto spin_poly = interaction_poly.gen_spin(engine_for_spin_poly);
+   auto classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, interaction_poly);
+   auto random_numder_engine_poly = std::mt19937(seed);
+   const auto schedule_list_poly = generate_schedule_list();
+   openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_poly, random_numder_engine_poly, schedule_list_poly);
+   
+   //Check both equal
+   const auto energy_spin_poly  = interaction_poly.CalculateEnergy(openjij::result::get_solution(classical_ising_poly));
+   const auto energy_spin_exact = PolynomialExactGroundStateEnergy(interaction_poly, interaction_poly.GetVartype());
+   
+   EXPECT_DOUBLE_EQ(energy_spin_poly, energy_spin_exact);
+   
+}
+
+TEST(PolyUpdater, PolynomialFullyConnectedBinary1) {
+   
+   //Check the polynomial updater work properly by comparing the exact ground state
+   const int seed = 1;
+   const int system_size = 6;
+   
+   //generate classical polynomial system
+   auto engin_for_interaction_poly = std::mt19937(seed);
+   auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
+   auto interaction_poly = openjij::graph::Polynomial<double>(system_size, "BINARY");
+   std::vector<openjij::graph::Index> temp_vec(system_size);
+   for (auto i = 0; i < system_size; ++i) {
+      temp_vec[i] = i;
+   }
+   for (auto &it: PolynomialGenerateCombinations(temp_vec)) {
+      interaction_poly.J(it) = urd_poly(engin_for_interaction_poly);
+   }
+
+   auto engine_for_binary_poly = std::mt19937(seed);
+   const auto binary_poly = interaction_poly.gen_binary(engine_for_binary_poly);
+   auto classical_pubo_poly = openjij::system::make_classical_ising_polynomial(binary_poly, interaction_poly);
+   auto random_numder_engine_poly = std::mt19937(seed);
+   const auto schedule_list_poly = generate_schedule_list();
+   openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_pubo_poly, random_numder_engine_poly, schedule_list_poly);
+   
+   //Check both equal
+   const auto energy_binary_poly  = interaction_poly.CalculateEnergy(openjij::result::get_solution(classical_pubo_poly));
+   const auto energy_binary_exact = PolynomialExactGroundStateEnergy(interaction_poly, interaction_poly.GetVartype());
+   
+   EXPECT_DOUBLE_EQ(energy_binary_poly, energy_binary_exact);
+   
+}
+
+TEST(PolyUpdater, PolynomialFullyConnectedSpinToBinary) {
+   
+   //Check the both polynomial updater, SPIN and BINARY, work properly by comparing each other
+   const int seed = 1;
+   const int system_size = 6;
+   
+   //generate classical polynomial system
+   auto engin_for_interaction_spin   = std::mt19937(seed);
+   auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
+   auto interaction_spin   = openjij::graph::Polynomial<double>(system_size, "SPIN"  );
+   auto interaction_binary = openjij::graph::Polynomial<double>(system_size, "BINARY");
+   std::vector<openjij::graph::Index> temp_vec(system_size);
+   for (auto i = 0; i < system_size; ++i) {
+      temp_vec[i] = i;
+   }
+   for (auto &it: PolynomialGenerateCombinations(temp_vec)) {
+      interaction_spin.J(it) = urd_poly(engin_for_interaction_spin);
+   }
+   for (auto &it: PolynomialSpinToBinary(interaction_spin.GetInteractions())) {
+      //std::sort(it.first.begin(), it.first.end());
+      interaction_binary.J(std::vector<openjij::graph::Index>(it.first)) = it.second;
+   }
+
+   auto engine_for_spin   = std::mt19937(seed);
+   auto engine_for_binary = std::mt19937(seed);
+   const auto spin_poly   = interaction_spin  .gen_spin  (engine_for_spin);
+   const auto binary_poly = interaction_binary.gen_binary(engine_for_binary);
+   
+   auto classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly  , interaction_spin  );
+   auto classical_pubo_poly  = openjij::system::make_classical_ising_polynomial(binary_poly, interaction_binary);
+   auto random_numder_engine_spin   = std::mt19937(seed);
+   auto random_numder_engine_binary = std::mt19937(seed);
+   const auto schedule_list_poly = generate_schedule_list();
+   openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_poly, random_numder_engine_spin  , schedule_list_poly);
+   openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_pubo_poly , random_numder_engine_binary, schedule_list_poly);
+   
+   //Check both equal
+   const auto energy_spin_poly   = interaction_spin  .CalculateEnergy(openjij::result::get_solution(classical_ising_poly));
+   const auto energy_binary_poly = interaction_binary.CalculateEnergy(openjij::result::get_solution(classical_pubo_poly) );
+   
+   EXPECT_DOUBLE_EQ(energy_spin_poly, energy_binary_poly);
+   
+}

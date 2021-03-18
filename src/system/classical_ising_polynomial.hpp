@@ -42,7 +42,7 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
                std::stringstream ss;
                ss << "The variable at " << i << " is " << spin[i] << ".\n";
                ss << "But the spin variable must be -1 or +1.\n";
-               std::runtime_error(ss.str());
+               throw std::runtime_error(ss.str());
             }
          }
       }
@@ -52,7 +52,7 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
                std::stringstream ss;
                ss << "The variable at " << i << " is " << spin[i] << ".\n";
                ss << "But the binary variable must be 0 or 1.\n";
-               std::runtime_error(ss.str());
+               throw std::runtime_error(ss.str());
             }
          }
       }
