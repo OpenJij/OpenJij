@@ -158,6 +158,7 @@ class SASampler(BaseSampler):
             
         """
 
+        print("sample_ising in openjij")
         model = openjij.BinaryQuadraticModel(
             linear=h, quadratic=J, var_type='SPIN'
         )
@@ -192,6 +193,8 @@ class SASampler(BaseSampler):
         Returns:
             :class:`openjij.sampler.response.Response`: results
         """
+
+        print("_sampling in openjij")
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         # swendsen wang algorithm runs only on sparse ising graphs.
         if _updater_name == 'swendsenwang' or sparse:
@@ -258,6 +261,8 @@ class SASampler(BaseSampler):
         algorithm = self._algorithm[_updater_name]
         sa_system = self._make_system[_updater_name](_generate_init_state(), ising_graph)
         # ------------------------------------------- choose updater
+
+        print("cxxsampling in openjij")
         response = self._cxxjij_sampling(
             model, _generate_init_state,
             algorithm, sa_system,
@@ -265,6 +270,8 @@ class SASampler(BaseSampler):
         )
 
         response.info['schedule'] = self.schedule_info
+
+        print("end solving in openjij")
 
         return response
 
