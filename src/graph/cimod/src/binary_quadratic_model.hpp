@@ -1492,7 +1492,7 @@ public:
         //construct a BinaryQuadraticModel instance
         BinaryQuadraticModel<IndexType_serial, FloatType_serial> bqm(linear, quadratic, offset, vartype, info);
         return bqm;
-    };
+    }
 
 };
 }

@@ -223,7 +223,7 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
    //! @param zero_count std::size_t
    //! @return 1 if zero_count == 1 - binary, otherwise 0
    int ZeroOrOne(graph::Binary binary, std::size_t zero_count) {
-      return (zero_count == 1 - binary) ? 1 : 0;
+      return (zero_count == static_cast<std::size_t>(1 - binary)) ? 1 : 0;
    }
    
    //! @brief Return 0 or 1 in accordance with the input binaries and zero_count
@@ -232,7 +232,7 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
    //! @param zero_count std::size_t
    //! @return 1 if zero_count == 2 - binary1 - binary2, otherwise 0
    int ZeroOrOne(graph::Binary binary1, graph::Binary binary2, std::size_t zero_count) {
-      return (zero_count == 2 - binary1 - binary2) ? 1 : 0;
+      return (zero_count == static_cast<std::size_t>(2 - binary1 - binary2)) ? 1 : 0;
    }
    
    //! @brief Set "connected_J_term_index" and "J_term_". If "vartype" is cimod::BINARY, "zero_count_binary_" is also set.
