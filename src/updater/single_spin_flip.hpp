@@ -244,21 +244,34 @@ private:
    }
 };
 
+//! @brief Single spin flip for Ising models with polynomial interactions and polynomial unconstrained binary optimization models.
+//! @tparam GraphType graph type for Polynomial graph class
 template<typename GraphType>
 struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
-   using ClPIsing = system::ClassicalIsingPolynomial<GraphType>;
+   
+   //! @brief ClassicalIsingPolynomial system
+   using ClPIsing  = system::ClassicalIsingPolynomial<GraphType>;
+   
+   //! @brief floating point type
    using FloatType = typename GraphType::value_type;
    
+   //! @brief Operate single spin flip for Ising models with polynomial interactions and polynomial unconstrained binary optimization models.
+   //! @param system ClPIsing&. Object of a ClassicalIsingPolynomial system.
+   //! @param random_number_engine RandomNumberEngine&. Eandom number engine.
+   //! @param parameter const utility::ClassicalUpdaterParameter&. Parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f.
    template<typename RandomNumberEngine>
    inline static void update(ClPIsing &system,
                              RandomNumberEngine& random_number_engine,
                              const utility::ClassicalUpdaterParameter& parameter
                              ) {
-      if (system.GetVartype() == graph::Vartype::SPIN) {
-         update_poly_ising<RandomNumberEngine>(system, random_number_engine, parameter);
+      
+      //If "vartype" is cimod::Vartype::SPIN, call "UpdatePolyIsing()"
+      if (system.GetVartype() == cimod::Vartype::SPIN) {
+         UpdatePolyIsing<RandomNumberEngine>(system, random_number_engine, parameter);
       }
-      else if (system.GetVartype() == graph::Vartype::BINARY) {
-         update_poly_pubo<RandomNumberEngine>(system, random_number_engine, parameter);
+      //If "vartype" is cimod::Vartype::BINARY, call "UpdatePolyPubo()"
+      else if (system.GetVartype() == cimod::Vartype::BINARY) {
+         UpdatePolyPubo<RandomNumberEngine>(system, random_number_engine, parameter);
       }
       else {
          std::stringstream ss;
@@ -267,10 +280,14 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
       }
    }
    
+   //! @brief Operate single spin flip when the system is composed of spin variables.
+   //! @param system ClPIsing&. ClassicalIsingPolynomial system.
+   //! @param random_number_engine RandomNumberEngine&. Eandom number engine.
+   //! @param parameter const utility::ClassicalUpdaterParameter&. Parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f.
    template<typename RandomNumberEngine>
-   inline static void update_poly_ising(ClPIsing &system,
-                                        RandomNumberEngine& random_number_engine,
-                                        const utility::ClassicalUpdaterParameter& parameter) {
+   inline static void UpdatePolyIsing(ClPIsing &system,
+                                      RandomNumberEngine& random_number_engine,
+                                      const utility::ClassicalUpdaterParameter& parameter) {
       
       auto urd = std::uniform_real_distribution<>(0, 1.0);
       for (std::size_t index = 0; index < system.num_spins; ++index) {
@@ -279,10 +296,10 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
             for (const auto &index_interaction: system.connected_J_term_index[index]) {
                system.FlipJTerm(index_interaction);
             }
-            const std::size_t begin = system.row[index];
-            const std::size_t end   = system.row[index + 1];
+            const std::size_t begin = system.crs_row[index];
+            const std::size_t end   = system.crs_row[index + 1];
             for (std::size_t i = begin; i < end; ++i) {
-               system.dE[system.col[i]] += -4*(*system.val_p_spin[i]);
+               system.dE[system.crs_col[i]] += -4*(*system.crs_val_p_spin[i]);
             }
             system.dE[index]   *= -1;
             system.spin[index] *= -1;
@@ -290,20 +307,24 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
       }
    }
    
+   //! @brief Operate single spin flip when the system is composed of binary variables.
+   //! @param system ClPIsing&. ClassicalIsingPolynomial system.
+   //! @param random_number_engine RandomNumberEngine&. Eandom number engine.
+   //! @param parameter const utility::ClassicalUpdaterParameter&. Parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f.
    template<typename RandomNumberEngine>
-   inline static void update_poly_pubo(ClPIsing &system,
-                                         RandomNumberEngine& random_number_engine,
-                                         const utility::ClassicalUpdaterParameter& parameter) {
+   inline static void UpdatePolyPubo(ClPIsing &system,
+                                     RandomNumberEngine& random_number_engine,
+                                     const utility::ClassicalUpdaterParameter& parameter) {
       
       auto urd = std::uniform_real_distribution<>(0, 1.0);
       for (std::size_t index = 0; index < system.num_spins; ++index) {
-         if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {            
+         if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
             system.dE[index] *= -1;
-            const std::size_t begin = system.row[index];
-            const std::size_t end   = system.row[index + 1];
+            const std::size_t begin = system.crs_row[index];
+            const std::size_t end   = system.crs_row[index + 1];
             for (std::size_t i = begin; i < end; ++i) {
-               graph::Index col = system.col[i];
-               system.dE[col] += system.sign(system.spin[col] + system.spin[index])*(system.val_binary[i])*system.ZeroOrOne(system.spin[index], system.spin[col], *system.zero_count_p_binary[i]);
+               graph::Index col = system.crs_col[i];
+               system.dE[col] += system.Sign(system.spin[col] + system.spin[index])*(system.crs_val_binary[i])*system.ZeroOrOne(system.spin[index], system.spin[col], *system.zero_count_p_binary[i]);
             }
             system.UpdateZeroCountBinaryAndSpin(index);
          }

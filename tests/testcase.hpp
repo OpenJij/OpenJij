@@ -381,11 +381,11 @@ openjij::graph::Spins get_true_chimera_groundstate(const openjij::graph::Chimera
     return ret_spin;
 }
 
-std::vector<openjij::graph::Spin> PolynomialGetSpinState(std::size_t basis, const std::size_t system_size, const openjij::graph::Vartype &vartype) {
+std::vector<openjij::graph::Spin> PolynomialGetSpinState(std::size_t basis, const std::size_t system_size, const cimod::Vartype &vartype) {
    std::vector<openjij::graph::Spin> spins(system_size);
    for (std::size_t i = 0; i < system_size; ++i) {
       if (basis%2 == 0) {
-         (vartype == openjij::graph::Vartype::SPIN) ? spins[i] = -1 : spins[i] = 0;
+         (vartype == cimod::Vartype::SPIN) ? spins[i] = -1 : spins[i] = 0;
       }
       else {
          spins[i] = +1;
@@ -440,7 +440,7 @@ PolynomialBinaryToSpin(const std::unordered_map<std::vector<openjij::graph::Inde
 
 
 template<typename FloatType>
-FloatType PolynomialExactGroundStateEnergy(openjij::graph::Polynomial<FloatType> &polynomial, const openjij::graph::Vartype &vartype) {
+FloatType PolynomialExactGroundStateEnergy(openjij::graph::Polynomial<FloatType> &polynomial, const cimod::Vartype &vartype) {
    const std::size_t system_size = polynomial.size();
    const std::size_t loop = std::pow(2, system_size);
    FloatType min_energy = DBL_MAX;

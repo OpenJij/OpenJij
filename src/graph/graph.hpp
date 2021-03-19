@@ -31,12 +31,6 @@ using Index = std::size_t;
 
 using Nodes = std::vector<Index>;
 
-//! @brief Enum class for representing problem type
-enum class Vartype {
-   SPIN   = +0,
-   BINARY = +1,
-};
-
 /**
  * @brief Abstract graph class
  */

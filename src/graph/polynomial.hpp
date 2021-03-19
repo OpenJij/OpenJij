@@ -14,7 +14,6 @@
 
 //! @file polynomial.hpp
 //! @brief Graph class to represent polynomial unconstrained binary model or Ising model with polynomial interactions.
-//! @author Kohei Suzuki
 //! @date 2021-03-11
 //! @copyright Copyright (c) Jij Inc. 2021
 
@@ -35,7 +34,7 @@ namespace openjij {
 namespace graph {
 
 
-//! @brief Polynomial graph class, which can treat many-body interactions
+//! @brief Polynomial graph class, which can treat many-body interactions.
 //! The Hamiltonian is like
 //! \f[
 //! H=\sum_{i \neq j} Q_{ij} x_i x_j +  \sum_{i \neq j \neq k} Q_{ijk} x_i x_j x_k + \ldots
@@ -47,20 +46,20 @@ class Polynomial: public Graph {
    static_assert(std::is_floating_point<FloatType>::value, "FloatType must be floating-point type.");
    
 public:
-   //! @brief interaction type
+   //! @brief Interaction type
    using Interactions = std::unordered_map<std::vector<Index>, FloatType, utility::VectorHash>;
    
-   //! @brief floating-point type
+   //! @brief Floating-point type
    using value_type = FloatType;
       
    //! @brief Constructor of Polynomial class to initialize variables and vartype.
    //! @param num_variables std::size_t
-   //! @param vartype openjij::graph::Vartype
-   Polynomial(const std::size_t num_variables, const Vartype &vartype): Graph(num_variables), vartype_(vartype) {}
+   //! @param vartype cimod::Vartype
+   Polynomial(const std::size_t num_variables, const cimod::Vartype &vartype): Graph(num_variables), vartype_(vartype) {}
    
-   //! @brief Constructor of Polynomial class to initialize variables. Note that vartype is initialized with openjij::graph::Vartype::SPIN.
+   //! @brief Constructor of Polynomial class to initialize variables. Note that vartype is initialized with the cimod::Vartype::SPIN.
    //! @param num_variables std::size_t
-   Polynomial(const std::size_t num_variables): Graph(num_variables), vartype_(Vartype::SPIN) {}
+   Polynomial(const std::size_t num_variables): Graph(num_variables), vartype_(cimod::Vartype::SPIN) {}
    
    //! @brief Constructor of Polynomial class to initialize num_variables, vartype, and interactions from json by using a delegating constructor.
    //! @param j JSON object
@@ -68,22 +67,10 @@ public:
    
    //! @brief Constructor of Polynomial class to initialize num_variables, vartype, and interactions from cimod.
    //! @param bpm cimod::BinaryPolynomialModel object
-   Polynomial(const cimod::BinaryPolynomialModel<Index, FloatType> &bpm): Graph(bpm.length()) {
-      if (bpm.get_vartype() == cimod::Vartype::SPIN) {
-         vartype_ = Vartype::SPIN;
-      }
-      else if (bpm.get_vartype() == cimod::Vartype::BINARY) {
-         vartype_ = Vartype::BINARY;
-      }
-      else {
-         std::stringstream ss;
-         ss << "Unknown vartype detected in " << __func__ << std::endl;
-         throw std::runtime_error(ss.str());
-      }
+   Polynomial(const cimod::BinaryPolynomialModel<Index, FloatType> &bpm): Graph(bpm.length()), vartype_(bpm.get_vartype()) {
       for (const auto &it: bpm.get_polynomial()) {
          auto temp = it.first;
          std::sort(temp.begin(), temp.end());
-         UpdateMaxVariable(temp);
          J_[temp] += it.second;
       }
    }
@@ -102,7 +89,6 @@ public:
          ss << ". But the system size is" << Graph::size() << std::string("\n");
          throw std::runtime_error(ss.str());
       }
-      UpdateMaxVariable(index);
       return J_[index];
    }
    
@@ -120,69 +106,84 @@ public:
          ss << ". But the system size is" << Graph::size() << std::string("\n");
          throw std::runtime_error(ss.str());
       }
-      UpdateMaxVariable(index);
       return J_[index];
    }
    
+   //! @brief Access the interaction corresponding to the input argument "const std::vector<Index>& index" (lvalue references) to set an interaction.
+   //! @details The temporary object is generated from the input argument and is passed to "FloatType &J(std::vector<Index>&& index)".
+   //! @param index const std::vector<Index>&
+   //! @return The interaction corresponding to "const std::vector<Index>& index", i.e., J[index]
    FloatType &J(const std::vector<Index>& index) {
-      std::vector<Index> temp_index = index;
-      return J(temp_index);
+      return J(std::vector<Index>{index});//Access J(std::vector<Index>&& index)
    }
    
-   //! @brief Access the interaction corresponding to the input variables "args" (variadic templates) to set an interaction. Note that "args" is converted to std::vector<Index>.
-   //! @details Note that "args" is converted to std::vector<Index>, which is sorted and whose duplicate values are removed.
+   //! @brief Access the interaction corresponding to the input argument "args" (parameter pack) to set an interaction.
+   //! @details The temporary object is generated from the input argument "args" and is passed to "FloatType &J(std::vector<Index>&& index)".
    //! @param args parameter pack
    //! @return The interaction corresponding to "args", i.e., J[args]
    template<typename... Args>
    FloatType &J(Args... args) {
-      return J(std::vector<Index>{(Index)args...});
+      return J(std::vector<Index>{(Index)args...});//Access J(std::vector<Index>&& index)
    }
    
-   //! @brief Return the interaction corresponding to the input argument "std::vector<Index> &&index".
+   //! @brief Return the interaction corresponding to the input argument "std::vector<Index> &&index" (rvalue references).
    //! @details The input argument is sorted and duplicate values are removed. This function does not change the interaction.
-   //! @param args parameter pack
-   //! @return The interaction corresponding to "std::vector<Index>& index", i.e., J[index]
+   //! @param index std::vector<Index>&&
+   //! @return The interaction corresponding to "std::vector<Index>&& index", i.e., J.at(index)
    FloatType J(std::vector<Index> &&index) const {
       std::sort(index.begin(), index.end());
       index.erase(std::unique(index.begin(), index.end()), index.end());
       return J_.at(index);
    }
    
-   //! @brief Return the interaction corresponding to the input argument "std::vector<Index> &index".
+   //! @brief Return the interaction corresponding to the input argument "std::vector<Index> &index" (lvalue references).
    //! @details The input argument is sorted and duplicate values are removed. This function does not change the interaction.
    //! @param index std::vector<Index>&
-   //! @return The interaction corresponding to "std::vector<Index>& index", i.e., J[index]
+   //! @return The interaction corresponding to "std::vector<Index>& index", i.e., J.at(index)
    const FloatType &J(std::vector<Index> &index) const {
       std::sort(index.begin(), index.end());
       index.erase(std::unique(index.begin(), index.end()), index.end());
       return J_.at(index);
    }
    
+   //! @brief Return the interaction corresponding to the input argument "const std::vector<Index> &index".
+   //! @details The temporary object is generated from the input argument and is passed to "FloatType &J(std::vector<Index>&& index) const".
+   //! @param index const std::vector<Index>&
+   //! @return The interaction corresponding to "const std::vector<Index>& index", i.e., J.at(index)
    const FloatType &J(const std::vector<Index> &index) const {
-      std::vector<Index> temp_index = index;
-      return J(temp_index);
+      return J(std::vector<Index>{index});//Access J(std::vector<Index>&& index) const
    }
    
+   //! @brief Return the interaction corresponding to the input argument "args" (parameter pack).
+   //! @details The temporary object is generated from the input argument "args" and is passed to "FloatType &J(std::vector<Index>&& index) const".
+   //! @param args parameter pack
+   //! @return The interaction corresponding to "args", i.e., J[args]
    template<typename... Args>
    const FloatType &J(Args... args) const {
-      std::vector<Index> index{(Index)args...};
-      std::sort(index.begin(), index.end());
-      index.erase(std::unique(index.begin(), index.end()), index.end());
-      return J_.at(index);
+      return J(std::vector<Index>{(Index)args...});//Access J(std::vector<Index>&& index) const
    }
    
+   //! @brief Return the interactions.
+   //! @return The interactions
    const Interactions &GetInteractions() const {
       return J_;
    }
    
-   const Index &GetMaxVariable() const {
-      return max_variable_;
-   }
-   
-   const Vartype &GetVartype() const {
+   //! @brief Return the vartype
+   //! @return The vartype
+   const cimod::Vartype &GetVartype() const {
       return vartype_;
    }
    
+   //! @brief Change vartype
+   //! @param vartype cimod::Vartype
+   void ChangeVartype(const cimod::Vartype &vartype) {
+      vartype_ = vartype;
+   }
+   
+   //! @brief Return the total energy corresponding to the input variables, Spins or Binaries.
+   //! @param spins const Spins& or const Binaries& (both are the same type)
+   //! @return The total energy
    FloatType CalculateEnergy(const Spins& spins) const {
       if(spins.size() != Graph::size()){
          throw std::out_of_range("Out of range in CalclateEnergy in Polynomial graph.");
@@ -199,18 +200,11 @@ public:
    }
    
 private:
+   //! @brief Polynomial interactions as std::unordered_map<std::vector<Index>, FloatType, utility::VectorHash>
    Interactions J_;
-   Index max_variable_ = 0;
-   Vartype vartype_    = Vartype::SPIN;
    
-   void UpdateMaxVariable(const std::vector<Index> &index) {
-      if (index.size() == 0) {
-         return;
-      }
-      if (max_variable_ < index[index.size() - 1]) {
-         max_variable_ = index[index.size() - 1];
-      }
-   }
+   //! @brief The model's type. SPIN or BINARY
+   cimod::Vartype vartype_ = cimod::Vartype::NONE;
    
 };
 }
