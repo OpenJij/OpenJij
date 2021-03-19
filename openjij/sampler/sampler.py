@@ -175,7 +175,7 @@ class BaseSampler(dimod.Sampler):
         Returns:
             :class:`openjij.sampler.response.Response`: results 
         """
-        print("same_bqm in openjij")
+        print("same_bqm in openjij", flush=True)
         if bqm.vartype == openjij.SPIN:
             if not getattr(self.sample_ising, '__issamplemixin__', False):
                 # sample_ising is implemented
