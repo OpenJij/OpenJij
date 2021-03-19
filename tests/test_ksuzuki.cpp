@@ -135,7 +135,7 @@ TEST(PolyGraph, ConstructorJson) {
 TEST(PolyGraph, AddInteractions) {
    
    openjij::graph::Index num_spins = 3;
-   openjij::graph::Polynomial<double> poly_graph(num_spins, "SPIN");
+   openjij::graph::Polynomial<double> poly_graph(num_spins, openjij::graph::Vartype::SPIN);
    
    poly_graph.J(   {0}   ) = +0.0 ;
    poly_graph.J(   {1}   ) = +1.0 ;
@@ -214,7 +214,7 @@ TEST(PolyGraph, Energy) {
 TEST(PolySystem, ConstructorSpin1) {
    
    openjij::graph::Index num_spins = 3;
-   openjij::graph::Polynomial<double> poly_graph(num_spins, "SPIN");
+   openjij::graph::Polynomial<double> poly_graph(num_spins, openjij::graph::Vartype::SPIN);
    
    poly_graph.J(   {0}   ) = +0.0 ;//0
    poly_graph.J(   {1}   ) = +1.0 ;//1
@@ -229,18 +229,18 @@ TEST(PolySystem, ConstructorSpin1) {
    openjij::system::ClassicalIsingPolynomial<openjij::graph::Polynomial<double>> poly_system = openjij::system::make_classical_ising_polynomial(spin, poly_graph);
    
    EXPECT_EQ(poly_system.num_spins, 3);
-   for (auto i = 0; i < poly_system.num_spins; ++i) {
+   for (openjij::graph::Index i = 0; i < poly_system.num_spins; ++i) {
       EXPECT_EQ(poly_system.spin[i], spin[i]);
    }
    
    //Check J_term: set in SetJTerm()
-   EXPECT_DOUBLE_EQ(poly_system.J_term[0], +0 );
-   EXPECT_DOUBLE_EQ(poly_system.J_term[1], -1 );
-   EXPECT_DOUBLE_EQ(poly_system.J_term[2], +2 );
-   EXPECT_DOUBLE_EQ(poly_system.J_term[3], -11);
-   EXPECT_DOUBLE_EQ(poly_system.J_term[4], +22);
-   EXPECT_DOUBLE_EQ(poly_system.J_term[5], -12);
-   EXPECT_DOUBLE_EQ(poly_system.J_term[6], -12);
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(0), +0 );
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(1), -1 );
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(2), +2 );
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(3), -11);
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(4), +22);
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(5), -12);
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(6), -12);
    
    //Check connected_J_term_index: set in SetJTerm()
    EXPECT_EQ(poly_system.connected_J_term_index.size(), poly_system.num_spins);
@@ -306,19 +306,19 @@ TEST(PolySystem, ConstructorSpin1) {
    EXPECT_DOUBLE_EQ(*poly_system.val_p_spin[11], poly_graph.J(0, 1, 2)*spin[0]*spin[1]*spin[2]);
    
    //Check vartype
-   EXPECT_TRUE(poly_system.isIsing);
+   EXPECT_TRUE(poly_system.GetVartype() == openjij::graph::Vartype::SPIN);
    
    //Check variables for binary
    EXPECT_EQ(poly_system.val_binary.size(), 0);
    EXPECT_EQ(poly_system.zero_count_p_binary.size(), 0);
-   EXPECT_EQ(poly_system.zero_count_binary.size(), 0);
+   EXPECT_EQ(poly_system.GetZeroCountBinary().size(), 0);
    
 }
 
 TEST(PolySystem, ConstructorSpin2) {
    
    openjij::graph::Index num_spins = 3;
-   openjij::graph::Polynomial<double> poly_graph(num_spins, "SPIN");
+   openjij::graph::Polynomial<double> poly_graph(num_spins, openjij::graph::Vartype::SPIN);
    
    //The spin index does not start with 0
    poly_graph.J(    {10}    ) = +0.0 ;//0
@@ -334,19 +334,19 @@ TEST(PolySystem, ConstructorSpin2) {
    openjij::system::ClassicalIsingPolynomial<openjij::graph::Polynomial<double>> poly_system = openjij::system::make_classical_ising_polynomial(spin, poly_graph);
    
    EXPECT_EQ(poly_system.num_spins, 3);
-   for (auto i = 0; i < poly_system.num_spins; ++i) {
+   for (openjij::graph::Index i = 0; i < poly_system.num_spins; ++i) {
       EXPECT_EQ(poly_system.spin[i], spin[i]);
    }
    
    //Check J_term: set in SetJTerm()
-   EXPECT_EQ(poly_system.J_term.size(), 7);
-   EXPECT_DOUBLE_EQ(poly_system.J_term[0], +0 );
-   EXPECT_DOUBLE_EQ(poly_system.J_term[1], -1 );
-   EXPECT_DOUBLE_EQ(poly_system.J_term[2], +2 );
-   EXPECT_DOUBLE_EQ(poly_system.J_term[3], -11);
-   EXPECT_DOUBLE_EQ(poly_system.J_term[4], +22);
-   EXPECT_DOUBLE_EQ(poly_system.J_term[5], -12);
-   EXPECT_DOUBLE_EQ(poly_system.J_term[6], -12);
+   EXPECT_EQ(poly_system.GetJTerm().size(), 7);
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(0), +0 );
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(1), -1 );
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(2), +2 );
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(3), -11);
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(4), +22);
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(5), -12);
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(6), -12);
    
    //Check connected_J_term_index: set in SetJTerm()
    EXPECT_EQ(poly_system.connected_J_term_index.size(), poly_system.num_spins);
@@ -412,19 +412,19 @@ TEST(PolySystem, ConstructorSpin2) {
    EXPECT_DOUBLE_EQ(*poly_system.val_p_spin[11], poly_graph.J(10, 11, 12)*spin[0]*spin[1]*spin[2]);
    
    //Check vartype
-   EXPECT_TRUE(poly_system.isIsing);
+   EXPECT_TRUE(poly_system.GetVartype() == openjij::graph::Vartype::SPIN);
    
    //Check variables for binary
    EXPECT_EQ(poly_system.val_binary.size(), 0);
    EXPECT_EQ(poly_system.zero_count_p_binary.size(), 0);
-   EXPECT_EQ(poly_system.zero_count_binary.size(), 0);
+   EXPECT_EQ(poly_system.GetZeroCountBinary().size(), 0);
    
 }
 
 TEST(PolySystem, ConstructorBinary) {
    
    openjij::graph::Index num_spins = 3;
-   openjij::graph::Polynomial<double> poly_graph(num_spins, "BINARY");
+   openjij::graph::Polynomial<double> poly_graph(num_spins, openjij::graph::Vartype::BINARY);
    
    poly_graph.J(   {0}   ) = +0.0 ;//0
    poly_graph.J(   {1}   ) = +1.0 ;//1
@@ -439,29 +439,29 @@ TEST(PolySystem, ConstructorBinary) {
    openjij::system::ClassicalIsingPolynomial<openjij::graph::Polynomial<double>> poly_system = openjij::system::make_classical_ising_polynomial(spin, poly_graph);
    
    EXPECT_EQ(poly_system.num_spins, 3);
-   for (auto i = 0; i < poly_system.num_spins; ++i) {
+   for (openjij::graph::Index i = 0; i < poly_system.num_spins; ++i) {
       EXPECT_EQ(poly_system.spin[i], spin[i]);
    }
    
    //Check J_term: set in SetJTerm()
-   EXPECT_EQ(poly_system.J_term.size(), 7);
-   EXPECT_DOUBLE_EQ(poly_system.J_term[0], 0 );
-   EXPECT_DOUBLE_EQ(poly_system.J_term[1], 1 );
-   EXPECT_DOUBLE_EQ(poly_system.J_term[2], 2 );
-   EXPECT_DOUBLE_EQ(poly_system.J_term[3], 11);
-   EXPECT_DOUBLE_EQ(poly_system.J_term[4], 22);
-   EXPECT_DOUBLE_EQ(poly_system.J_term[5], 12);
-   EXPECT_DOUBLE_EQ(poly_system.J_term[6], 12);
+   EXPECT_EQ(poly_system.GetJTerm().size(), 7);
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(0), 0 );
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(1), 1 );
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(2), 2 );
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(3), 11);
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(4), 22);
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(5), 12);
+   EXPECT_DOUBLE_EQ(poly_system.GetJTerm().at(6), 12);
    
    //Check zero_count_binary: set in SetJTerm()
-   EXPECT_EQ(poly_system.zero_count_binary.size(), 7);
-   EXPECT_EQ(poly_system.zero_count_binary[0], 0);
-   EXPECT_EQ(poly_system.zero_count_binary[1], 1);
-   EXPECT_EQ(poly_system.zero_count_binary[2], 0);
-   EXPECT_EQ(poly_system.zero_count_binary[3], 1);
-   EXPECT_EQ(poly_system.zero_count_binary[4], 0);
-   EXPECT_EQ(poly_system.zero_count_binary[5], 1);
-   EXPECT_EQ(poly_system.zero_count_binary[6], 1);
+   EXPECT_EQ(poly_system.GetZeroCountBinary().size(), 7);
+   EXPECT_EQ(poly_system.GetZeroCountBinary().at(0), 0);
+   EXPECT_EQ(poly_system.GetZeroCountBinary().at(1), 1);
+   EXPECT_EQ(poly_system.GetZeroCountBinary().at(2), 0);
+   EXPECT_EQ(poly_system.GetZeroCountBinary().at(3), 1);
+   EXPECT_EQ(poly_system.GetZeroCountBinary().at(4), 0);
+   EXPECT_EQ(poly_system.GetZeroCountBinary().at(5), 1);
+   EXPECT_EQ(poly_system.GetZeroCountBinary().at(6), 1);
 
    //Check connected_J_term_index: set in SetJTerm()
    EXPECT_EQ(poly_system.connected_J_term_index.size(), poly_system.num_spins);
@@ -527,21 +527,21 @@ TEST(PolySystem, ConstructorBinary) {
    EXPECT_DOUBLE_EQ(poly_system.val_binary[10], poly_graph.J(1, 2)   );
    EXPECT_DOUBLE_EQ(poly_system.val_binary[11], poly_graph.J(0, 1, 2));
    
-   EXPECT_EQ(*poly_system.zero_count_p_binary[0 ], poly_system.zero_count_binary[3]);
-   EXPECT_EQ(*poly_system.zero_count_p_binary[1 ], poly_system.zero_count_binary[6]);
-   EXPECT_EQ(*poly_system.zero_count_p_binary[2 ], poly_system.zero_count_binary[4]);
-   EXPECT_EQ(*poly_system.zero_count_p_binary[3 ], poly_system.zero_count_binary[6]);
-   EXPECT_EQ(*poly_system.zero_count_p_binary[4 ], poly_system.zero_count_binary[3]);
-   EXPECT_EQ(*poly_system.zero_count_p_binary[5 ], poly_system.zero_count_binary[6]);
-   EXPECT_EQ(*poly_system.zero_count_p_binary[6 ], poly_system.zero_count_binary[5]);
-   EXPECT_EQ(*poly_system.zero_count_p_binary[7 ], poly_system.zero_count_binary[6]);
-   EXPECT_EQ(*poly_system.zero_count_p_binary[8 ], poly_system.zero_count_binary[4]);
-   EXPECT_EQ(*poly_system.zero_count_p_binary[9 ], poly_system.zero_count_binary[6]);
-   EXPECT_EQ(*poly_system.zero_count_p_binary[10], poly_system.zero_count_binary[5]);
-   EXPECT_EQ(*poly_system.zero_count_p_binary[11], poly_system.zero_count_binary[6]);
-   
+   EXPECT_EQ(*poly_system.zero_count_p_binary[0 ], poly_system.GetZeroCountBinary().at(3));
+   EXPECT_EQ(*poly_system.zero_count_p_binary[1 ], poly_system.GetZeroCountBinary().at(6));
+   EXPECT_EQ(*poly_system.zero_count_p_binary[2 ], poly_system.GetZeroCountBinary().at(4));
+   EXPECT_EQ(*poly_system.zero_count_p_binary[3 ], poly_system.GetZeroCountBinary().at(6));
+   EXPECT_EQ(*poly_system.zero_count_p_binary[4 ], poly_system.GetZeroCountBinary().at(3));
+   EXPECT_EQ(*poly_system.zero_count_p_binary[5 ], poly_system.GetZeroCountBinary().at(6));
+   EXPECT_EQ(*poly_system.zero_count_p_binary[6 ], poly_system.GetZeroCountBinary().at(5));
+   EXPECT_EQ(*poly_system.zero_count_p_binary[7 ], poly_system.GetZeroCountBinary().at(6));
+   EXPECT_EQ(*poly_system.zero_count_p_binary[8 ], poly_system.GetZeroCountBinary().at(4));
+   EXPECT_EQ(*poly_system.zero_count_p_binary[9 ], poly_system.GetZeroCountBinary().at(6));
+   EXPECT_EQ(*poly_system.zero_count_p_binary[10], poly_system.GetZeroCountBinary().at(5));
+   EXPECT_EQ(*poly_system.zero_count_p_binary[11], poly_system.GetZeroCountBinary().at(6));
+
    //Check vartype
-   EXPECT_FALSE(poly_system.isIsing);
+   EXPECT_FALSE(poly_system.GetVartype() == openjij::graph::Vartype::SPIN);
    
    //Check variables for binary
    EXPECT_EQ(poly_system.val_p_spin.size(), 0);
@@ -567,7 +567,7 @@ TEST(PolyUpdater, CompareQuadratic1) {
    const auto result_spin = openjij::result::get_solution(classical_ising);
    
    //generate classical polynomial system
-   const auto interaction_poly = generate_interaction<openjij::graph::Polynomial<double>>();
+   auto       interaction_poly = generate_interaction<openjij::graph::Polynomial<double>>();
    auto       engine_for_spin_poly = std::mt19937(seed);
    const auto spin_poly = interaction.gen_spin(engine_for_spin_poly);
    auto       classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, interaction_poly);
@@ -581,7 +581,7 @@ TEST(PolyUpdater, CompareQuadratic1) {
    
    //Check both equal
    EXPECT_EQ(result_spin_poly.size(), result_spin.size());
-   for (auto i = 0; i < result_spin_poly.size(); ++i) {
+   for (std::size_t i = 0; i < result_spin_poly.size(); ++i) {
       EXPECT_EQ(result_spin_poly[i], result_spin[i]);
    }
    
@@ -599,8 +599,8 @@ TEST(PolyUpdater, CompareQuadratic2) {
    auto engin_for_interaction = std::mt19937(seed);
    auto urd = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
    auto interaction = openjij::graph::Sparse<double>(system_size);
-   for (auto i = 0; i < system_size; ++i) {
-      for (auto j = i + 1; j < system_size; ++j) {
+   for (int i = 0; i < system_size; ++i) {
+      for (int j = i + 1; j < system_size; ++j) {
          interaction.J(i,j) = urd(engin_for_interaction);
       }
    }
@@ -616,8 +616,8 @@ TEST(PolyUpdater, CompareQuadratic2) {
    auto engin_for_interaction_poly = std::mt19937(seed);
    auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
    auto interaction_poly = openjij::graph::Polynomial<double>(system_size);
-   for (auto i = 0; i < system_size; ++i) {
-      for (auto j = i + 1; j < system_size; ++j) {
+   for (int i = 0; i < system_size; ++i) {
+      for (int j = i + 1; j < system_size; ++j) {
          interaction_poly.J(i,j) = urd_poly(engin_for_interaction_poly);
       }
    }
@@ -631,7 +631,7 @@ TEST(PolyUpdater, CompareQuadratic2) {
    
    //Check both equal
    EXPECT_EQ(result_spin_poly.size(), result_spin.size());
-   for (auto i = 0; i < result_spin_poly.size(); ++i) {
+   for (std::size_t i = 0; i < result_spin_poly.size(); ++i) {
       EXPECT_EQ(result_spin_poly[i], result_spin[i]);
    }
    EXPECT_DOUBLE_EQ(interaction_poly.CalculateEnergy(result_spin_poly), interaction.calc_energy(result_spin));
@@ -649,7 +649,7 @@ TEST(PolyUpdater, PolynomialFullyConnectedSpin) {
    auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
    auto interaction_poly = openjij::graph::Polynomial<double>(system_size);
    std::vector<openjij::graph::Index> temp_vec(system_size);
-   for (auto i = 0; i < system_size; ++i) {
+   for (int i = 0; i < system_size; ++i) {
       temp_vec[i] = i;
    }
    for (auto &it: PolynomialGenerateCombinations(temp_vec)) {
@@ -680,9 +680,9 @@ TEST(PolyUpdater, PolynomialFullyConnectedBinary1) {
    //generate classical polynomial system
    auto engin_for_interaction_poly = std::mt19937(seed);
    auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
-   auto interaction_poly = openjij::graph::Polynomial<double>(system_size, "BINARY");
+   auto interaction_poly = openjij::graph::Polynomial<double>(system_size, openjij::graph::Vartype::BINARY);
    std::vector<openjij::graph::Index> temp_vec(system_size);
-   for (auto i = 0; i < system_size; ++i) {
+   for (int i = 0; i < system_size; ++i) {
       temp_vec[i] = i;
    }
    for (auto &it: PolynomialGenerateCombinations(temp_vec)) {
@@ -713,18 +713,18 @@ TEST(PolyUpdater, PolynomialFullyConnectedSpinToBinary) {
    //generate classical polynomial system
    auto engin_for_interaction_spin   = std::mt19937(seed);
    auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
-   auto interaction_spin   = openjij::graph::Polynomial<double>(system_size, "SPIN"  );
-   auto interaction_binary = openjij::graph::Polynomial<double>(system_size, "BINARY");
+   auto interaction_spin   = openjij::graph::Polynomial<double>(system_size, openjij::graph::Vartype::SPIN);
+   auto interaction_binary = openjij::graph::Polynomial<double>(system_size, openjij::graph::Vartype::BINARY);
    std::vector<openjij::graph::Index> temp_vec(system_size);
-   for (auto i = 0; i < system_size; ++i) {
+   for (int i = 0; i < system_size; ++i) {
       temp_vec[i] = i;
    }
    for (auto &it: PolynomialGenerateCombinations(temp_vec)) {
       interaction_spin.J(it) = urd_poly(engin_for_interaction_spin);
    }
-   for (auto &it: PolynomialSpinToBinary(interaction_spin.GetInteractions())) {
-      //std::sort(it.first.begin(), it.first.end());
-      interaction_binary.J(std::vector<openjij::graph::Index>(it.first)) = it.second;
+   
+   for (const auto &it: PolynomialSpinToBinary<double>(interaction_spin.GetInteractions())) {
+      interaction_binary.J(it.first) = it.second;
    }
 
    auto engine_for_spin   = std::mt19937(seed);
@@ -736,7 +736,7 @@ TEST(PolyUpdater, PolynomialFullyConnectedSpinToBinary) {
    auto classical_pubo_poly  = openjij::system::make_classical_ising_polynomial(binary_poly, interaction_binary);
    auto random_numder_engine_spin   = std::mt19937(seed);
    auto random_numder_engine_binary = std::mt19937(seed);
-   const auto schedule_list_poly = generate_schedule_list();
+   const auto schedule_list_poly    = generate_schedule_list();
    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_poly, random_numder_engine_spin  , schedule_list_poly);
    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_pubo_poly , random_numder_engine_binary, schedule_list_poly);
    

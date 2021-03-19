@@ -23,11 +23,19 @@
 namespace openjij {
 namespace graph {
 
-using Spin = int;
-using Spins = std::vector<Spin>;
+using Spin     = int;
+using Spins    = std::vector<Spin>;
+using Binary   = int;
+using Binaries = std::vector<Binary>;
 using Index = std::size_t;
 
 using Nodes = std::vector<Index>;
+
+//! @brief Enum class for representing problem type
+enum class Vartype {
+   SPIN   = +0,
+   BINARY = +1,
+};
 
 /**
  * @brief Abstract graph class
@@ -69,12 +77,10 @@ public:
     *
     * @return generated spins
     */
-   // const Spins gen_spin() const{
    template<typename RandomNumberEngine>
-   const Spins gen_binary(RandomNumberEngine& random_numder_engine) const{
+   const Binaries gen_binary(RandomNumberEngine &random_numder_engine) const {
       //generate binary array
-      Spins ret_binary(_num_spins);
-      
+      Binaries ret_binary(_num_spins);
       std::uniform_int_distribution<> uid(0, 1);
       for(auto& elem : ret_binary){
          elem = uid(random_numder_engine);

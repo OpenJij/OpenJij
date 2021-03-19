@@ -17,6 +17,7 @@
 
 #include <graph/all.hpp>
 #include <iostream>
+#include <bitset>
 
 #if TEST_CASE_INDEX == 1
 //GraphType -> Dense or Sparse
@@ -380,11 +381,11 @@ openjij::graph::Spins get_true_chimera_groundstate(const openjij::graph::Chimera
     return ret_spin;
 }
 
-std::vector<openjij::graph::Spin> PolynomialGetSpinState(std::size_t basis, std::size_t system_size, const bool isIsing = true) {
+std::vector<openjij::graph::Spin> PolynomialGetSpinState(std::size_t basis, const std::size_t system_size, const openjij::graph::Vartype &vartype) {
    std::vector<openjij::graph::Spin> spins(system_size);
    for (std::size_t i = 0; i < system_size; ++i) {
       if (basis%2 == 0) {
-         isIsing ? spins[i] = -1 : spins[i] = 0;
+         (vartype == openjij::graph::Vartype::SPIN) ? spins[i] = -1 : spins[i] = 0;
       }
       else {
          spins[i] = +1;
@@ -395,12 +396,12 @@ std::vector<openjij::graph::Spin> PolynomialGetSpinState(std::size_t basis, std:
 }
 
 std::vector<std::vector<openjij::graph::Index>> PolynomialGenerateCombinations(const std::vector<openjij::graph::Index> &vec_in) {
-   std::size_t loop = std::pow(2, vec_in.size());
-   std::size_t num  = vec_in.size();
+   const std::size_t loop = std::pow(2, vec_in.size());
+   const std::size_t num  = vec_in.size();
    std::vector<std::vector<openjij::graph::Index>> vec_out(loop);
-   for (auto i = 0; i < loop; ++i) {
+   for (std::size_t i = 0; i < loop; ++i) {
       std::bitset<64> bs(i);
-      for (auto j = 0; j < num; ++j) {
+      for (std::size_t j = 0; j < num; ++j) {
          if (bs[j]) {
             vec_out[i].push_back(vec_in[j]);
          }
@@ -416,7 +417,7 @@ PolynomialSpinToBinary(const std::unordered_map<std::vector<openjij::graph::Inde
    for (const auto &it: J_in) {
       const auto &index_list = PolynomialGenerateCombinations(it.first);
       for (const auto &index: index_list) {
-         int sign = ((it.first.size() - index.size())%2 == 0) ? 1: -1;
+         FloatType sign = ((it.first.size() - index.size())%2 == 0) ? 1.0 : -1.0;
          J_out[index] += it.second*pow(2.0, index.size())*sign;
       }
    }
@@ -439,22 +440,12 @@ PolynomialBinaryToSpin(const std::unordered_map<std::vector<openjij::graph::Inde
 
 
 template<typename FloatType>
-FloatType PolynomialExactGroundStateEnergy(openjij::graph::Polynomial<FloatType> &polynomial, std::string vartype) {
-   bool isIsing = true;
-   if (vartype == "SPIN") {
-      isIsing = true;
-   }
-   else if (vartype == "BINARY") {
-      isIsing = false;
-   }
-   else {
-      std::runtime_error("Unknown vertype");
-   }
-   std::size_t system_size = polynomial.size();
+FloatType PolynomialExactGroundStateEnergy(openjij::graph::Polynomial<FloatType> &polynomial, const openjij::graph::Vartype &vartype) {
+   const std::size_t system_size = polynomial.size();
+   const std::size_t loop = std::pow(2, system_size);
    FloatType min_energy = DBL_MAX;
-   std::size_t loop = std::pow(2, system_size);
    for (std::size_t i = 0; i < loop; ++i) {
-      std::vector<openjij::graph::Spin> temp_spin = PolynomialGetSpinState(i, system_size, isIsing);
+      std::vector<openjij::graph::Spin> temp_spin = PolynomialGetSpinState(i, system_size, vartype);
       FloatType temp_energy = 0.0;
       for (const auto &it: polynomial.GetInteractions()) {
          openjij::graph::Spin temp_spin_multiple = 1;

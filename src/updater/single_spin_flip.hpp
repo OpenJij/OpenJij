@@ -254,14 +254,17 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
                              RandomNumberEngine& random_number_engine,
                              const utility::ClassicalUpdaterParameter& parameter
                              ) {
-      if (system.isIsing) {
+      if (system.GetVartype() == graph::Vartype::SPIN) {
          update_poly_ising<RandomNumberEngine>(system, random_number_engine, parameter);
       }
-      else {
+      else if (system.GetVartype() == graph::Vartype::BINARY) {
          update_poly_pubo<RandomNumberEngine>(system, random_number_engine, parameter);
       }
-      
-      
+      else {
+         std::stringstream ss;
+         ss << "Unknown vartype detected in " << __func__ << std::endl;
+         throw std::runtime_error(ss.str());
+      }
    }
    
    template<typename RandomNumberEngine>
@@ -273,13 +276,12 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
       for (std::size_t index = 0; index < system.num_spins; ++index) {
          
          if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
-            // update dE
             for (const auto &index_interaction: system.connected_J_term_index[index]) {
-               system.J_term[index_interaction] *= -1;
+               system.FlipJTerm(index_interaction);
             }
-            const auto begin = system.row[index];
-            const auto end   = system.row[index + 1];
-            for (auto i = begin; i < end; ++i) {
+            const std::size_t begin = system.row[index];
+            const std::size_t end   = system.row[index + 1];
+            for (std::size_t i = begin; i < end; ++i) {
                system.dE[system.col[i]] += -4*(*system.val_p_spin[i]);
             }
             system.dE[index]   *= -1;
@@ -295,32 +297,15 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
       
       auto urd = std::uniform_real_distribution<>(0, 1.0);
       for (std::size_t index = 0; index < system.num_spins; ++index) {
-         
-
-         //exit(1);
-         if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
-            
+         if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {            
             system.dE[index] *= -1;
-            const auto begin = system.row[index];
-            const auto end   = system.row[index + 1];
-            
-            for (auto i = begin; i < end; ++i) {
-               auto col = system.col[i];
+            const std::size_t begin = system.row[index];
+            const std::size_t end   = system.row[index + 1];
+            for (std::size_t i = begin; i < end; ++i) {
+               graph::Index col = system.col[i];
                system.dE[col] += system.sign(system.spin[col] + system.spin[index])*(system.val_binary[i])*system.ZeroOrOne(system.spin[index], system.spin[col], *system.zero_count_p_binary[i]);
             }
-             
-            if (system.spin[index] == 0) {
-               system.spin[index] = 1;
-               for (const auto &index_interaction: system.connected_J_term_index[index]) {
-                  system.zero_count_binary[index_interaction]--;
-               }
-            }
-            else {
-               system.spin[index] = 0;
-               for (const auto &index_interaction: system.connected_J_term_index[index]) {
-                  system.zero_count_binary[index_interaction]++;
-               }
-            }
+            system.UpdateZeroCountBinaryAndSpin(index);
          }
       }
    }
