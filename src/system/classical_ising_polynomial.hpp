@@ -41,7 +41,7 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
    //! @brief Constructor of ClassicalIsingPolynomial
    //! @param init_spins graph::Spins&. The initial spin/binary configurations.
    //! @param init_interaction graph::Polynomial<FloatType>& (Polynomial graph class). The initial interacrtions.
-   ClassicalIsingPolynomial(const graph::Spins &init_spins, graph::Polynomial<FloatType> &init_interaction):
+   ClassicalIsingPolynomial(const graph::Spins &init_spins, const graph::Polynomial<FloatType> &init_interaction):
    num_spins(init_interaction.get_num_spins()), spin(init_spins), vartype(init_interaction.GetVartype()) {
       
       //Check if the number of the initial spins/binaries is equal to num_spins defined from the Polynomial graph class.
@@ -53,7 +53,7 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
       //Set max_variable_, which is the max index of the std::vector representing the initial spin/binary configurations.
       SetMaxVariable(init_interaction.GetInteractions());
       
-      //Receive the interactions by rvalue references from the Polynomial graph class.
+      //Receive the interactions from the Polynomial graph class.
       //If the "max_variable_" is larger than or equal to num_spins,
       //which means that the index of the spin/binary variables does not start at zero, relabel interactions.
       //"const_cast" is used here to have access to the interactions through operator[]. Note that "init_interaction" should not be changed.
@@ -61,51 +61,19 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
       const_cast<Interactions&>(init_interaction.GetInteractions()) :
       RelabelInteractions(const_cast<Interactions&>(init_interaction.GetInteractions()));
       
-      //"interacted_spins" stores the set of spins/binaries corresponding to the interactions,
-      //i.e., the keys of "Interactions" (std::unordered_map<std::vector<graph::Index>, FloatType, utility::VectorHash>)
-      std::vector<std::vector<graph::Index>> interacted_spins;
-      interacted_spins.reserve(interaction.size());
-      for (const auto &it: interaction) {
-         interacted_spins.push_back(it.first);
-      }
+      //Set "interacted_spins_", which stores the set of spins/binaries corresponding to the interactions.
+      SetInteractedSpins(interaction);
       
-      //nameless function to sort "interacted_spins"
-      auto comp = [](const auto &lhs, const auto &rhs) {
-         if (lhs.size() != rhs.size()) {
-            return lhs.size() < rhs.size();
-         }
-         else {
-            if (lhs[0] != rhs[0]) {
-               return lhs[0] < rhs[0];
-            }
-            else {
-               return lhs[1] < rhs[1];
-            }
-         }
-      };
+      //Set "connected_J_term_index_" and "J_term_".
+      //If "vartype" is cimod::SPIN, "sign_" is also set, else if "vartype" is cimod::BINARY, "zero_count_" is also set.
+      SetJTerm(interaction);
       
-      //Sort "interacted_spins" for continuous memory access
-      std::sort(interacted_spins.begin(), interacted_spins.end(), comp);
-      
-      //Set "connected_J_term_index" and "J_term_". If "vartype" is cimod::SPIN, "zero_count_binary_" is also set.
-      SetJTerm(interaction, interacted_spins);
-      
-      //Set "crs_row" and "crs_col". If "vartype" is cimod::SPIN, "crs_val_p_spin" is also set,
-      //else if "vartype" is cimod::BINARY, "crs_val_binary" and "zero_count_p_binary" are also set.
-      SetUpdateMatrix(interacted_spins);
+      //Set "crs_row", "crs_col", and "crs_val". If "vartype" is cimod::SPIN, "crs_sign_p" is also set,
+      //else if "vartype" is cimod::BINARY, "crs_zero_count_p" is also set.
+      SetUpdateMatrix(interacted_spins_);
       
       //Set "dE"
       SetdE();
-   }
-   
-   //! @brief Set "max_variable_". If an interaction is zero, corresponding variable is ignored.
-   //! @param interaction const Interactions&
-   void SetMaxVariable(const Interactions &interaction) {
-      for (const auto &it: interaction) {
-         if (it.first.size() != 0 && std::abs(it.second) > 0.0 && max_variable_ < it.first.back()) {
-            max_variable_ = it.first.back();
-         }
-      }
    }
    
    //! @brief Return "max_variable_"
@@ -150,8 +118,8 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
 //#pragma omp parallel for //Maybe OK but afraid so comment out for now
          for (graph::Index i = 0; i < num_spins; ++i) {
             FloatType temp_energy = 0.0;
-            for (const auto &it: connected_J_term_index[i]) {
-               temp_energy += J_term_[it];
+            for (const auto &it: connected_J_term_index_[i]) {
+               temp_energy += J_term_[it]*sign_[it];
             }
             dE[i] = -2*temp_energy;
          }
@@ -161,8 +129,8 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
          for (graph::Index i = 0; i < num_spins; ++i) {
             FloatType temp_energy = 0.0;
             auto temp_spin = spin[i];
-            for (const auto &it: connected_J_term_index[i]) {
-               temp_energy += J_term_[it]*Sign(temp_spin)*ZeroOrOne(temp_spin, zero_count_binary_[it]);
+            for (const auto &it: connected_J_term_index_[i]) {
+               temp_energy += J_term_[it]*Sign(temp_spin)*ZeroOrOne(temp_spin, zero_count_[it]);
             }
             dE[i] = temp_energy;
          }
@@ -235,99 +203,67 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
       return (zero_count == static_cast<std::size_t>(2 - binary1 - binary2)) ? 1 : 0;
    }
    
-   //! @brief Set "connected_J_term_index" and "J_term_". If "vartype" is cimod::BINARY, "zero_count_binary_" is also set.
-   //! @param interaction Interactions&
-   //! @param interacted_spins std::vector<std::vector<graph::Index>>&
-   void SetJTerm(Interactions &interaction, std::vector<std::vector<graph::Index>> &interacted_spins) {
-      connected_J_term_index.resize(num_spins);
-      J_term_.resize(interacted_spins.size());
-      if (vartype == cimod::Vartype::SPIN) {
-         for (std::size_t i = 0; i < interacted_spins.size(); ++i) {
-            graph::Spin temp_spin_multiple = 1;
-            for (const auto &index_spin: interacted_spins[i]) {
-               temp_spin_multiple *= spin[index_spin];
-               connected_J_term_index[index_spin].push_back(i);
-            }
-            J_term_[i] = interaction[interacted_spins[i]]*temp_spin_multiple;
-         }
-      }
-      else if (vartype == cimod::Vartype::BINARY) {
-         zero_count_binary_.resize(interacted_spins.size());
-         for (std::size_t i = 0; i < interacted_spins.size(); ++i) {
-            std::size_t temp_zero_count = 0;
-            uint32_t    temp_spin_multiple = 1;
-            for (const auto &index_spin: interacted_spins[i]) {
-               temp_spin_multiple *= spin[index_spin];
-               connected_J_term_index[index_spin].push_back(i);
-               if (spin[index_spin] == 0) {
-                  temp_zero_count++;
-               }
-            }
-            J_term_[i] = interaction[interacted_spins[i]];
-            zero_count_binary_[i] = temp_zero_count;
-         }
-      }
-      else {
-         std::stringstream ss;
-         ss << "Unknown vartype detected in " << __func__ << std::endl;
-         throw std::runtime_error(ss.str());
-      }
-   }
-   
-   //! @brief Set "crs_row" and "crs_col". If "vartype" is cimod::SPIN, "crs_val_p_spin" is also set, else if "vartype" is cimod::BINARY, "crs_val_binary" and "zero_count_p_binary" are also set.
+   //! @brief Set "crs_row", "crs_col", "crs_val", and "crs_sign_p" (spin variable cases) or "crs_zero_count_p" (binary variable cases).
    //! @details These std::vector constitute a sparse matrix (Compressed Row Storage), which is used to update "dE".
    //! @param interacted_spins std::vector<std::vector<graph::Index>>&
    void SetUpdateMatrix(std::vector<std::vector<graph::Index>> &interacted_spins) {
       crs_col.clear();
       crs_row.clear();
+      crs_val.clear();
       crs_row.push_back(0);
       if (vartype == cimod::Vartype::SPIN) {
-         crs_val_p_spin.clear();
+         crs_sign_p.clear();
          for (graph::Index index_spin_row = 0; index_spin_row < num_spins; ++index_spin_row) {
-            std::unordered_set<graph::Index>     temp_set;
-            std::vector<std::vector<FloatType*>> temp_val(num_spins);
-            for (const auto &index_spin_term: connected_J_term_index[index_spin_row]) {
+            std::vector<graph::Index> temp_vec;
+            std::vector<std::vector<FloatType>> temp_vec_val(num_spins);
+            std::vector<std::vector<int8_t*>>  temp_vec_sign(num_spins);
+            for (const auto &index_spin_term: connected_J_term_index_[index_spin_row]) {
+               auto temp_J_term = J_term_[index_spin_term];
+               auto temp_sign_p = &sign_[index_spin_term];
                for (const auto &index_spin_col: interacted_spins[index_spin_term]) {
                   if (index_spin_row != index_spin_col) {
-                     temp_set.emplace(index_spin_col);
-                     temp_val[index_spin_col].push_back(&J_term_[index_spin_term]);
+                     temp_vec.push_back(index_spin_col);
+                     temp_vec_val[index_spin_col].push_back(4*temp_J_term);
+                     temp_vec_sign[index_spin_col].push_back(temp_sign_p);
                   }
                }
             }
-            std::vector<std::size_t> temp_vec(temp_set.begin(), temp_set.end());
             std::sort(temp_vec.begin(), temp_vec.end());
+            temp_vec.erase(std::unique(temp_vec.begin(), temp_vec.end()), temp_vec.end());
             for (const auto &it: temp_vec) {
-               for (const auto &it2: temp_val[it]) {
+               for (std::size_t i = 0; i < temp_vec_val[it].size(); ++i) {
                   crs_col.push_back(it);
-                  crs_val_p_spin.push_back(it2);
+                  crs_val.push_back(temp_vec_val[it][i]);
+                  crs_sign_p.push_back(temp_vec_sign[it][i]);
                }
             }
             crs_row.push_back(crs_col.size());
          }
       }
       else if (vartype == cimod::Vartype::BINARY) {
-         crs_val_binary.clear();
-         zero_count_p_binary.clear();
+         crs_zero_count_p.clear();
          for (graph::Index index_spin_row = 0; index_spin_row < num_spins; ++index_spin_row) {
-            std::unordered_set<graph::Index>    temp_set;
-            std::vector<std::vector<FloatType>> temp_val(num_spins);
-            std::vector<std::vector<std::size_t*>> temp_zero(num_spins);
-            for (const auto &index_spin_term: connected_J_term_index[index_spin_row]) {
+            std::vector<graph::Index> temp_vec;
+            std::vector<std::vector<FloatType>> temp_vec_val(num_spins);
+            std::vector<std::vector<uint64_t*>> temp_vec_zero_count(num_spins);
+            for (const auto &index_spin_term: connected_J_term_index_[index_spin_row]) {
+               auto temp_J_term       = J_term_[index_spin_term];
+               auto temp_zero_count_p = &zero_count_[index_spin_term];
                for (const auto &index_spin_col: interacted_spins[index_spin_term]) {
                   if (index_spin_row != index_spin_col) {
-                     temp_set.emplace(index_spin_col);
-                     temp_val[index_spin_col].push_back(J_term_[index_spin_term]);
-                     temp_zero[index_spin_col].push_back(&zero_count_binary_[index_spin_term]);
+                     temp_vec.push_back(index_spin_col);
+                     temp_vec_val[index_spin_col].push_back(temp_J_term);
+                     temp_vec_zero_count[index_spin_col].push_back(temp_zero_count_p);
                   }
                }
             }
-            std::vector<std::size_t> temp_vec(temp_set.begin(), temp_set.end());
             std::sort(temp_vec.begin(), temp_vec.end());
+            temp_vec.erase(std::unique(temp_vec.begin(), temp_vec.end()), temp_vec.end());
             for (const auto &it: temp_vec) {
-               for (std::size_t i = 0; i < temp_val[it].size(); ++i) {
+               for (std::size_t i = 0; i < temp_vec_val[it].size(); ++i) {
                   crs_col.push_back(it);
-                  crs_val_binary.push_back(temp_val[it][i]);
-                  zero_count_p_binary.push_back(temp_zero[it][i]);
+                  crs_val.push_back(temp_vec_val[it][i]);
+                  crs_zero_count_p.push_back(temp_vec_zero_count[it][i]);
                }
             }
             crs_row.push_back(crs_col.size());
@@ -346,26 +282,29 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
       return vartype;
    }
    
-   //! @brief Flip J_term_. This function is used only when" vartype" is cimod::Vartype::SPIN
+   //! @brief Update "zero_count_" and "spin".  This function is used only when" vartype" is cimod::Vartype::BINARY
    //! @param index const std::size_t
-   void FlipJTerm(const std::size_t index) {
-      J_term_[index] *= -1;
-   }
-   
-   //! @brief Update "zero_count_binary_" and "spin".  This function is used only when" vartype" is cimod::Vartype::BINARY
-   //! @param index const std::size_t
-   void UpdateZeroCountBinaryAndSpin(const std::size_t index) {
+   inline void UpdateZeroCountAndSpin(const std::size_t index) {
       if (spin[index] == 0) {
          spin[index] = 1;
-         for (const auto &index_interaction: connected_J_term_index[index]) {
-            zero_count_binary_[index_interaction]--;
+         for (const auto &index_interaction: connected_J_term_index_[index]) {
+            zero_count_[index_interaction]--;
          }
       }
       else {
          spin[index] = 0;
-         for (const auto &index_interaction: connected_J_term_index[index]) {
-            zero_count_binary_[index_interaction]++;
+         for (const auto &index_interaction: connected_J_term_index_[index]) {
+            zero_count_[index_interaction]++;
          }
+      }
+   }
+   
+   //! @brief Update "sign_" and "spin".  This function is used only when" vartype" is cimod::Vartype::SPIN
+   //! @param index const std::size_t
+   inline void UpdateSignAndSpin(const std::size_t index) {
+      spin[index] *= -1;
+      for (const auto &index_interaction: connected_J_term_index_[index]) {
+         sign_[index_interaction] *= -1;
       }
    }
    
@@ -375,10 +314,16 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
       return J_term_;
    }
    
-   //! @brief Return "zero_count_binary_", which stores the information about the number of the variables taking zero
-   //! @return zero_count_binary_
-   const std::vector<std::size_t> &GetZeroCountBinary() const {
-      return zero_count_binary_;
+   //! @brief Return the interactes spins/binaries stored in "interacted_spins_"
+   //! @return Interacted spins
+   const std::vector<std::vector<graph::Index>> &GetInteractedSpins() const {
+      return interacted_spins_;
+   }
+   
+   //! @brief Return "connected_J_term_index_"
+   //! @return "connected_J_term_index_"
+   const std::vector<std::vector<graph::Index>> &GetConnectedJTermIndex() const {
+      return connected_J_term_index_;
    }
    
    //! @brief Spin/binary configurations
@@ -390,42 +335,132 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
    //! @brief The model's type. cimod::vartype::SPIN or  cimod::vartype::BINARY
    const cimod::Vartype vartype;
    
-   //! @brief Store the information about the indices of "J_term_" and "zero_count_binary_" in accordance with the index of spin/binary
-   std::vector<std::vector<std::size_t>> connected_J_term_index;
-   
    //! @brief Store the information about the energy difference when flipping a spin/binary
-   std::vector<FloatType>    dE;
+   std::vector<FloatType> dE;
    
    //! @brief Row of a sparse matrix (Compressed Row Storage) to update "dE".
-   std::vector<std::size_t>  crs_row;
+   std::vector<std::size_t> crs_row;
    
    //! @brief Column of a sparse matrix (Compressed Row Storage) to update "dE".
    std::vector<graph::Index> crs_col;
    
    //! @brief Value of a sparse matrix (Compressed Row Storage) to update "dE".
-   //! @details This is used only for spin variables, and stores the pointers for "J_term".
-   std::vector<FloatType*>   crs_val_p_spin;
+   std::vector<FloatType> crs_val;
    
    //! @brief Value of a sparse matrix (Compressed Row Storage) to update "dE".
-   //! @details This is used only for binary variables.
-   std::vector<FloatType>    crs_val_binary;
+   //! @details Note that this is used only for binary variable cases. This stores the pointers for "sign_", which stores the information about the sign of variables.
+   std::vector<int8_t*> crs_sign_p;
    
    //! @brief Value of a sparse matrix (Compressed Row Storage) to update "dE".
-   //! @details This is used only for binary variables and stores the pointers for "zero_count_binary_", which stores the information about the number of variables takeing zero.
-   std::vector<std::size_t*> zero_count_p_binary;//used only for binary variables
+   //! @details Note that this is used only for binary variable cases. This stores the pointers for "zero_count_", which stores the information about the number of variables takeing zero.
+   std::vector<uint64_t*> crs_zero_count_p;
+
    
 private:
+   //! @brief Stores the set of spins/binaries corresponding to the interactions.
+   //! @details The keys of "Interactions" (std::unordered_map<std::vector<graph::Index>, FloatType, utility::VectorHash>)
+   std::vector<std::vector<graph::Index>> interacted_spins_;
    
-   //! @brief The value of the interactions.
-   //! @details Note that the pointers of this std::vector is stored in "crs_val_p_spin" or "crs_val_binary". Do not change "J_term_".
+   //! @brief Store the values of the interactions.
+   //! @details The values of "Interactions" (std::unordered_map<std::vector<graph::Index>, FloatType, utility::VectorHash>)
    std::vector<FloatType> J_term_;
    
+   //! @brief Store the information about the indices of "J_term_".
+   std::vector<std::vector<std::size_t>> connected_J_term_index_;
+   
+   //! @brief Store the information about the sign of variables.
+   //! @details Note that this is used only for spin variable cases, and the pointers of this std::vector is stored in "crs_sign_p". Do not change this std::vector.
+   std::vector<int8_t> sign_;
+   
    //! @brief Store the information about the number of variables takeing zero.
-   //! @details This is used only for binary variables. Note that the pointers of this std::vector is stored in "zero_count_p_binary". Do not change "zero_count_binary_".
-   std::vector<std::size_t> zero_count_binary_;
+   //! @details Note that this is used only for binary variable cases, and the pointers of this std::vector is stored in "crs_zero_count_p". Do not change this std::vector.
+   std::vector<uint64_t> zero_count_;
    
    //! @brief The max variable (the max index of spin/binary configulations)
    graph::Index max_variable_ = 0;
+   
+   //! @brief Set "max_variable_". If an interaction is zero, corresponding variable is ignored.
+   //! @param interaction const Interactions&
+   void SetMaxVariable(const Interactions &interaction) {
+      for (const auto &it: interaction) {
+         if (it.first.size() > 0 && std::abs(it.second) > 0.0 && max_variable_ < it.first.back()) {
+            max_variable_ = it.first.back();
+         }
+      }
+   }
+   
+   //! @brief Set "interacted_spins_"
+   void SetInteractedSpins(const Interactions &interaction) {
+      interacted_spins_.clear();
+      interacted_spins_.reserve(interaction.size());
+      for (const auto &it: interaction) {
+         if (it.first.size() > 0 && std::abs(it.second) > 0.0) {
+            interacted_spins_.push_back(it.first);
+         }
+      }
+      
+      //nameless function to sort "interacted_spins"
+      auto comp = [](const auto &lhs, const auto &rhs) {
+         if (lhs.size() != rhs.size()) {
+            return lhs.size() < rhs.size();
+         }
+         else {
+            if (lhs[0] != rhs[0]) {
+               return lhs[0] < rhs[0];
+            }
+            else {
+               return lhs[1] < rhs[1];
+            }
+         }
+      };
+      
+      //Sort "interacted_spins" for continuous memory access
+      std::sort(interacted_spins_.begin(), interacted_spins_.end(), comp);
+   }
+   
+   //! @brief Set "connected_J_term_index" and "J_term_". If "vartype" is cimod::SPIN, "sign_" is also set, else If "vartype" is cimod::BINARY, "zero_count_binary_" is also set.
+   //! @param interaction Interactions&
+   void SetJTerm(Interactions &interaction) {
+      connected_J_term_index_.resize(num_spins);
+      J_term_.resize(interacted_spins_.size());
+      if (vartype == cimod::Vartype::SPIN) {
+         sign_.resize(interacted_spins_.size());
+         for (std::size_t i = 0; i < interacted_spins_.size(); ++i) {
+            graph::Spin temp_spin_multiple = 1;
+            if (interacted_spins_[i].size() > 0) {
+               for (const auto &index_spin: interacted_spins_[i]) {
+                  temp_spin_multiple *= spin[index_spin];
+                  connected_J_term_index_[index_spin].push_back(i);
+               }
+            }
+            J_term_[i] = interaction[interacted_spins_[i]];
+            sign_[i]   = static_cast<int8_t>(temp_spin_multiple);
+         }
+      }
+      else if (vartype == cimod::Vartype::BINARY) {
+         zero_count_.resize(interacted_spins_.size());
+         for (std::size_t i = 0; i < interacted_spins_.size(); ++i) {
+            uint64_t      temp_zero_count = 0;
+            graph::Binary temp_binary_multiple = 1;
+            if (interacted_spins_[i].size() > 0) {
+               for (const auto &index_binary: interacted_spins_[i]) {
+                  temp_binary_multiple *= spin[index_binary];
+                  connected_J_term_index_[index_binary].push_back(i);
+                  if (spin[index_binary] == 0) {
+                     temp_zero_count++;
+                  }
+               }
+            }
+            J_term_[i]     = interaction[interacted_spins_[i]];
+            zero_count_[i] = temp_zero_count;
+         }
+      }
+      else {
+         std::stringstream ss;
+         ss << "Unknown vartype detected in " << __func__ << std::endl;
+         throw std::runtime_error(ss.str());
+      }
+   }
 };
 
 //! @brief Helper function for ClassicalIsingPolynomial constructor

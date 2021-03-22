@@ -69,9 +69,11 @@ public:
    //! @param bpm cimod::BinaryPolynomialModel object
    Polynomial(const cimod::BinaryPolynomialModel<Index, FloatType> &bpm): Graph(bpm.length()), vartype_(bpm.get_vartype()) {
       for (const auto &it: bpm.get_polynomial()) {
-         auto temp = it.first;
-         std::sort(temp.begin(), temp.end());
-         J_[temp] += it.second;
+         if (std::abs(it.second) > 0.0) {
+            auto temp = it.first;
+            std::sort(temp.begin(), temp.end());
+            J_[temp] += it.second;
+         }
       }
    }
     

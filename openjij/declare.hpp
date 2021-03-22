@@ -92,6 +92,39 @@ inline void declare_Sparse(py::module& m, const std::string& suffix){
         .def("__getitem__", [](const graph::Sparse<FloatType>& self, std::size_t key){return self.h(key);}, "key"_a);
 }
 
+//Polynomial
+template<typename FloatType>
+inline void declare_Polynomial(py::module& m, const std::string& suffix){
+
+   using json = nlohmann::json;
+   using poly = graph::Polynomial<FloatType>;
+   auto  str  = std::string("Polynomial") + suffix;
+   
+   py::class_<poly, graph::Graph>(m, str.c_str())
+   .def(py::init<const std::size_t>(), "num_variables"_a)
+   .def(py::init<const std::size_t, const cimod::Vartype &>(), "num_variables"_a, "vartype"_a)
+   //.def(py::init<const json &>(), "j"_a)//dose not work
+   //.def(py::init([](py::object obj){return std::unique_ptr<graph::Polynomial<FloatType>>(new graph::Polynomial<FloatType>(static_cast<json>(obj)));}), "obj"_a)
+   .def(py::init<const cimod::BinaryPolynomialModel<graph::Index, FloatType>&>(), "bpm"_a)
+   .def("GetVartype"     , &poly::GetVartype)
+   .def("ChangeVartype"  , &poly::ChangeVartype, "vartype"_a)
+   .def("CalculateEnergy", &poly::CalculateEnergy, "spins"_a)
+   .def("__setitem__"    , [](poly& self, std::vector<graph::Index>& index, FloatType val){ self.J(index) += val;}, "index"_a, "val"_a)
+   .def("__getitem__"    , [](const poly& self, std::vector<graph::Index>& index){ return self.J(index); }, "index"_a)
+   .def("GetInteractions", [](const poly& self) {
+      py::dict py_polynomial;
+      for (const auto &it_polynomial: self.GetInteractions()) {
+         py::tuple temp;
+         for (const auto &it_variable: it_polynomial.first) {
+            temp = temp + py::make_tuple(it_variable);
+         }
+         py_polynomial[temp] = it_polynomial.second;
+      }
+      return py_polynomial;
+   });
+}
+
+
 //enum class Dir
 inline void declare_Dir(py::module& m){
     py::enum_<graph::Dir>(m, "Dir")
@@ -178,6 +211,25 @@ inline void declare_ClassicalIsing(py::module &m, const std::string& gtype_str){
     m.def(mkci_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction){
             return system::make_classical_ising(init_spin, init_interaction);
             }, "init_spin"_a, "init_interaction"_a);
+}
+
+//ClassicalIsingPolynomial
+template<typename GraphType>
+inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& gtype_str){
+   
+   using CIP = system::ClassicalIsingPolynomial<GraphType>;
+   auto  str = std::string("ClassicalIsingPolynomial") + gtype_str;
+   
+   py::class_<CIP>(m, str.c_str())
+   .def(py::init<const graph::Spins&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
+   .def("GetMaxVariable"        , &CIP::GetMaxVariable        )
+   .def("CheckVariables"        , &CIP::CheckVariables        )
+   .def("GetVartype"            , &CIP::GetVartype            )
+   .def("GetJTerm"              , &CIP::GetJTerm              )
+   .def("GetInteractedSpins"    , &CIP::GetInteractedSpins    )
+   .def("GetConnectedJTermIndex", &CIP::GetConnectedJTermIndex);
+
+   
 }
 
 

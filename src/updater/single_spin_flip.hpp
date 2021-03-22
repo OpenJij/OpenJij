@@ -293,16 +293,13 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
       for (std::size_t index = 0; index < system.num_spins; ++index) {
          
          if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
-            for (const auto &index_interaction: system.connected_J_term_index[index]) {
-               system.FlipJTerm(index_interaction);
-            }
+            system.dE[index]   *= -1;
             const std::size_t begin = system.crs_row[index];
             const std::size_t end   = system.crs_row[index + 1];
             for (std::size_t i = begin; i < end; ++i) {
-               system.dE[system.crs_col[i]] += -4*(*system.crs_val_p_spin[i]);
+               system.dE[system.crs_col[i]] += system.crs_val[i]*(*system.crs_sign_p[i]);
             }
-            system.dE[index]   *= -1;
-            system.spin[index] *= -1;
+            system.UpdateSignAndSpin(index);
          }
       }
    }
@@ -324,9 +321,9 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
             const std::size_t end   = system.crs_row[index + 1];
             for (std::size_t i = begin; i < end; ++i) {
                graph::Index col = system.crs_col[i];
-               system.dE[col] += system.Sign(system.spin[col] + system.spin[index])*(system.crs_val_binary[i])*system.ZeroOrOne(system.spin[index], system.spin[col], *system.zero_count_p_binary[i]);
+               system.dE[col] += system.Sign(system.spin[col] + system.spin[index])*(system.crs_val[i])*system.ZeroOrOne(system.spin[index], system.spin[col], *system.crs_zero_count_p[i]);
             }
-            system.UpdateZeroCountBinaryAndSpin(index);
+            system.UpdateZeroCountAndSpin(index);
          }
       }
    }
