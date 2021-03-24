@@ -291,7 +291,6 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
       
       auto urd = std::uniform_real_distribution<>(0, 1.0);
       for (std::size_t index = 0; index < system.num_spins; ++index) {
-         
          if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
             system.dE[index]   *= -1;
             const std::size_t begin = system.crs_row[index];

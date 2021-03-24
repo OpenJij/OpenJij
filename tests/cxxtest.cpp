@@ -380,7 +380,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse) {
 TEST(PolyGraph, ConstructorCimod1) {
    
    cimod::Polynomial<openjij::graph::Index, double> Polynomial {
-      {{0}, 0.0}, {{1}, 1.0}, {{2}, 2.0},
+      {{0}, 0.0}, {{1}, 1.0}, {{2}, 2.0},//{{0}, 0.0} is removed in Polynomial graph class
       {{0, 1}, 11.0}, {{0, 2}, 22.0}, {{1, 2}, 12.0},
       {{0, 1, 2}, +12}
    };
@@ -389,13 +389,15 @@ TEST(PolyGraph, ConstructorCimod1) {
    
    openjij::graph::Polynomial<double> poly_graph(bpm_cimod);
 
-   EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.GetInteractions().size());
+   EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.GetInteractions().size() + 1);
 
    for (const auto &it: Polynomial) {
-      EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(it.first), poly_graph.GetInteractions().at(it.first));
+      if (std::abs(it.second) > 0.0) {
+         EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(it.first), poly_graph.GetInteractions().at(it.first));
+      }
    }
    
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {0}   ), poly_graph.J(   {0}   ));
+   //EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {0}   ), poly_graph.J(   {0}   ));
    EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {1}   ), poly_graph.J(   {1}   ));
    EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {2}   ), poly_graph.J(   {2}   ));
    EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at( {0, 1}  ), poly_graph.J( {0, 1}  ));
@@ -403,7 +405,7 @@ TEST(PolyGraph, ConstructorCimod1) {
    EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at( {1, 2}  ), poly_graph.J( {1, 2}  ));
    EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at({0, 1, 2}), poly_graph.J({0, 1, 2}));
    
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {0}   ), poly_graph.J(0));
+   //EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {0}   ), poly_graph.J(0));
    EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {1}   ), poly_graph.J(1));
    EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {2}   ), poly_graph.J(2));
    EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at( {0, 1}  ), poly_graph.J(0,1));
@@ -427,9 +429,9 @@ TEST(PolyGraph, ConstructorCimod2) {
    
    openjij::graph::Polynomial<double> poly_graph(bpm_cimod);
 
-   EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.GetInteractions().size() + 8);
+   EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.GetInteractions().size() + 8 + 1);
    
-   EXPECT_DOUBLE_EQ(poly_graph.J(   {0}   ), bpm_cimod.get_polynomial().at(   {0}   ));
+   //EXPECT_DOUBLE_EQ(poly_graph.J(   {0}   ), bpm_cimod.get_polynomial().at(   {0}   ));
    EXPECT_DOUBLE_EQ(poly_graph.J(   {1}   ), bpm_cimod.get_polynomial().at(   {1}   ));
    EXPECT_DOUBLE_EQ(poly_graph.J(   {2}   ), bpm_cimod.get_polynomial().at(   {2}   ));
    EXPECT_DOUBLE_EQ(poly_graph.J( {0, 1}  ), bpm_cimod.get_polynomial().at( {0, 1}  )*2);
@@ -451,9 +453,9 @@ TEST(PolyGraph, ConstructorJson) {
    
    openjij::graph::Polynomial<double> poly_graph(bpm_cimod.to_serializable());
 
-   EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.GetInteractions().size());
+   EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.GetInteractions().size() + 1);
 
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {"a"}   )    , poly_graph.J(   {0}   ));
+   //EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {"a"}   )    , poly_graph.J(   {0}   ));
    EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {"b"}   )    , poly_graph.J(   {1}   ));
    EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {"c"}   )    , poly_graph.J(   {2}   ));
    EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at( {"a", "b"}  )  , poly_graph.J( {0, 1}  ));

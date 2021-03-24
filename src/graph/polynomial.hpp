@@ -88,7 +88,7 @@ public:
          std::stringstream ss;
          ss << "Too small system size. ";
          ss << "The degree of the input polynomial interaction is " << index.size();
-         ss << ". But the system size is" << Graph::size() << std::string("\n");
+         ss << ". But the system size is " << Graph::size() << std::string("\n");
          throw std::runtime_error(ss.str());
       }
       return J_[index];
@@ -105,7 +105,7 @@ public:
          std::stringstream ss;
          ss << "Too small system size. ";
          ss << "The degree of the input polynomial interaction is " << index.size();
-         ss << ". But the system size is" << Graph::size() << std::string("\n");
+         ss << ". But the system size is " << Graph::size() << std::string("\n");
          throw std::runtime_error(ss.str());
       }
       return J_[index];

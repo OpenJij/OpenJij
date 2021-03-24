@@ -111,74 +111,6 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
       }
    }
    
-   //! @brief Set delta E (dE), which is used to determine whether to flip the spin/binary or not.
-   void SetdE() {
-      dE.resize(num_spins);
-      if (vartype == cimod::Vartype::SPIN) {
-//#pragma omp parallel for //Maybe OK but afraid so comment out for now
-         for (graph::Index i = 0; i < num_spins; ++i) {
-            FloatType temp_energy = 0.0;
-            for (const auto &it: connected_J_term_index_[i]) {
-               temp_energy += J_term_[it]*sign_[it];
-            }
-            dE[i] = -2*temp_energy;
-         }
-      }
-      else if (vartype == cimod::Vartype::BINARY) {
-//#pragma omp parallel for //Maybe OK but afraid so comment out for now
-         for (graph::Index i = 0; i < num_spins; ++i) {
-            FloatType temp_energy = 0.0;
-            auto temp_spin = spin[i];
-            for (const auto &it: connected_J_term_index_[i]) {
-               temp_energy += J_term_[it]*Sign(temp_spin)*ZeroOrOne(temp_spin, zero_count_[it]);
-            }
-            dE[i] = temp_energy;
-         }
-      }
-      else {
-         std::stringstream ss;
-         ss << "Unknown vartype detected in " << __func__ << std::endl;
-         throw std::runtime_error(ss.str());
-      }
-   }
-   
-   //! @brief Relabel interactions
-   //! @details For example, if the interaction is only J[2,3,7] = -1.0 for 3 sites system, this function relabel the interaction as J[0,1,2] = -1.0
-   //! @param input_interactions Interactions&
-   //! @return Relabeld interactions
-   Interactions RelabelInteractions(Interactions &input_interactions) {
-      //Extract variables from the keys of Interactions (std::unordered_map<std::vector<graph::Index>, FloatType, utility::VectorHash>)
-      std::unordered_set<graph::Index> variable_set;
-      for (const auto &it: input_interactions) {
-         for (const auto &index: it.first) {
-            variable_set.emplace(index);
-         }
-      }
-      
-      //Convert std::unordered_set to std::vector
-      std::vector<graph::Index> variables(variable_set.begin(), variable_set.end());
-      
-      //Sort extracted variables
-      std::sort(variables.begin(), variables.end());
-      
-      //Relabel interactions
-      std::unordered_map<graph::Index, graph::Index> relabeld_variables;
-      for (std::size_t i = 0; i < variables.size(); ++i) {
-         relabeld_variables[variables[i]] = i;
-      }
-      
-      Interactions relabeled_interactions;
-      
-      for (const auto &it: input_interactions) {
-         std::vector<graph::Index> temp_vec(it.first.size());
-         for (std::size_t i = 0; i < it.first.size(); ++i) {
-            temp_vec[i] = relabeld_variables[it.first[i]];
-         }
-         relabeled_interactions[temp_vec] = it.second;
-      }
-      return relabeled_interactions;
-   }
-   
    //! @brief Return -1 or +1 in accordance with the input binary
    //! @param binary graph::Binary
    //! @return -1 if binary is odd number, otherwise +1
@@ -306,6 +238,12 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
       for (const auto &index_interaction: connected_J_term_index_[index]) {
          sign_[index_interaction] *= -1;
       }
+   }
+   
+   void ResetSpins(const graph::Spins& init_spin) {
+      spin = init_spin;
+      CheckVariables();
+      SetdE();
    }
    
    //! @brief Return the interactions stored in "J_term_"
@@ -461,6 +399,75 @@ private:
          throw std::runtime_error(ss.str());
       }
    }
+   
+   //! @brief Relabel interactions
+   //! @details For example, if the interaction is only J[2,3,7] = -1.0 for 3 sites system, this function relabel the interaction as J[0,1,2] = -1.0
+   //! @param input_interactions Interactions&
+   //! @return Relabeld interactions
+   Interactions RelabelInteractions(Interactions &input_interactions) {
+      //Extract variables from the keys of Interactions (std::unordered_map<std::vector<graph::Index>, FloatType, utility::VectorHash>)
+      std::unordered_set<graph::Index> variable_set;
+      for (const auto &it: input_interactions) {
+         for (const auto &index: it.first) {
+            variable_set.emplace(index);
+         }
+      }
+      
+      //Convert std::unordered_set to std::vector
+      std::vector<graph::Index> variables(variable_set.begin(), variable_set.end());
+      
+      //Sort extracted variables
+      std::sort(variables.begin(), variables.end());
+      
+      //Relabel interactions
+      std::unordered_map<graph::Index, graph::Index> relabeld_variables;
+      for (std::size_t i = 0; i < variables.size(); ++i) {
+         relabeld_variables[variables[i]] = i;
+      }
+      
+      Interactions relabeled_interactions;
+      
+      for (const auto &it: input_interactions) {
+         std::vector<graph::Index> temp_vec(it.first.size());
+         for (std::size_t i = 0; i < it.first.size(); ++i) {
+            temp_vec[i] = relabeld_variables[it.first[i]];
+         }
+         relabeled_interactions[temp_vec] = it.second;
+      }
+      return relabeled_interactions;
+   }
+   
+   //! @brief Set delta E (dE), which is used to determine whether to flip the spin/binary or not.
+   void SetdE() {
+      dE.resize(num_spins);
+      if (vartype == cimod::Vartype::SPIN) {
+//#pragma omp parallel for //Maybe OK but afraid so comment out for now
+         for (graph::Index i = 0; i < num_spins; ++i) {
+            FloatType temp_energy = 0.0;
+            for (const auto &it: connected_J_term_index_[i]) {
+               temp_energy += J_term_[it]*sign_[it];
+            }
+            dE[i] = -2*temp_energy;
+         }
+      }
+      else if (vartype == cimod::Vartype::BINARY) {
+//#pragma omp parallel for //Maybe OK but afraid so comment out for now
+         for (graph::Index i = 0; i < num_spins; ++i) {
+            FloatType temp_energy = 0.0;
+            auto temp_spin = spin[i];
+            for (const auto &it: connected_J_term_index_[i]) {
+               temp_energy += J_term_[it]*Sign(temp_spin)*ZeroOrOne(temp_spin, zero_count_[it]);
+            }
+            dE[i] = temp_energy;
+         }
+      }
+      else {
+         std::stringstream ss;
+         ss << "Unknown vartype detected in " << __func__ << std::endl;
+         throw std::runtime_error(ss.str());
+      }
+   }
+   
 };
 
 //! @brief Helper function for ClassicalIsingPolynomial constructor
@@ -468,7 +475,7 @@ private:
 //! @param init_spin const graph::Spins&. The initial spins/binaries.
 //! @param init_interaction GraphType&. The initial interactions.
 template<typename GraphType>
-auto make_classical_ising_polynomial(const graph::Spins &init_spin, GraphType &init_interaction) {
+auto make_classical_ising_polynomial(const graph::Spins &init_spin, const GraphType &init_interaction) {
    return ClassicalIsingPolynomial<GraphType>(init_spin, init_interaction);
 }
 

@@ -88,7 +88,7 @@ PYBIND11_MODULE(cxxjij, m){
     //singlespinflip
     ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Dense<FloatType>>,    RandomEngine>(m_algorithm, "SingleSpinFlip");
     ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Sparse<FloatType>>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
-    //::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsingPolynomial<graph::Polynomial<FloatType>>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsingPolynomial<graph::Polynomial<FloatType>>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
     ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Dense<FloatType>>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
     ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Sparse<FloatType>>,  RandomEngine>(m_algorithm, "SingleSpinFlip");
 
@@ -137,7 +137,7 @@ PYBIND11_MODULE(cxxjij, m){
 
     ::declare_get_solution<system::ClassicalIsing<graph::Dense<FloatType>>>(m_result);
     ::declare_get_solution<system::ClassicalIsing<graph::Sparse<FloatType>>>(m_result);
-    //::declare_get_solution<system::ClassicalIsingPolynomial<graph::Polynomial<FloatType>>>(m_result);
+    ::declare_get_solution<system::ClassicalIsingPolynomial<graph::Polynomial<FloatType>>>(m_result);
     ::declare_get_solution<system::TransverseIsing<graph::Dense<FloatType>>>(m_result);
     ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>>>(m_result);
     ::declare_get_solution<system::ContinuousTimeIsing<graph::Sparse<FloatType>>>(m_result);

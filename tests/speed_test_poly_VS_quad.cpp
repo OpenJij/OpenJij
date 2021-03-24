@@ -117,7 +117,7 @@ TEST(SpeedTestPolyVsQuad, QuadraticSparseInteractions) {
    }
    
    //Quadratic Sparse
-   std::cout << "##Quadratic Dense" << std::endl;
+   std::cout << "##Quadratic Sparse" << std::endl;
    for (auto total_loop = 100000; total_loop <= 1000000; total_loop += 100000) {
       int system_size = 2000;
       auto engine_for_interaction = std::mt19937(1);
