@@ -82,10 +82,12 @@ class SASampler(BaseSampler):
 
         self._make_system = {
             'singlespinflip': cxxjij.system.make_classical_ising,
+            'singlespinflippolynomial': cxxjij.system.make_classical_ising_polynomial,
             'swendsenwang': cxxjij.system.make_classical_ising
         }
         self._algorithm = {
             'singlespinflip': cxxjij.algorithm.Algorithm_SingleSpinFlip_run,
+            'singlespinflippolynomial': cxxjij.algorithm.Algorithm_SingleSpinFlip_run,
             'swendsenwang': cxxjij.algorithm.Algorithm_SwendsenWang_run
         }
 
@@ -330,6 +332,37 @@ class SASampler(BaseSampler):
             init_state=init_state, seed=seed
         )
         return response
+
+    def sample_pubo(self, J, var_type = openjij.SPIN, 
+                    beta_min = None, beta_max = None, schedule = None,
+                    num_sweeps = None, num_reads = 1,
+                    initial_state = None, updater='single spin flip polynomial', seed = None):
+
+        bhom = openjij.BinaryPolynomialModel(interactions = J, var_type = var_type)
+
+        beta_min = beta_min if beta_min else 0.1
+        beta_max = beta_max if beta_max else 100
+
+        if var_type == "SPIN":
+            var_type = openjij.SPIN
+        elif var_type == "BINARY":
+            var_type = openjij.BINARY
+
+        ising_graph = bhom.get_cxxjij_ising_graph()
+
+        if initial_state is None:
+            if var_type == openjij.SPIN:
+                initial_state = ising_graph.gen_spin()
+            elif var_type == openjij.BINARY:
+                initial_state = ising_graph.gen_binary()
+            else:
+                raise ValueError("Unknown var_type detected")
+
+        return self._sampling(bhom, beta_min, beta_max,
+                              num_sweeps, num_reads, schedule,
+                              initial_state, updater, seed=seed)
+        
+
 
 
 def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,

@@ -35,17 +35,25 @@ using namespace openjij;
 
 //graph
 inline void declare_Graph(py::module& m){
-    py::class_<graph::Graph>(m, "Graph")
-        .def(py::init<std::size_t>(), "num_spins"_a)
-        .def("gen_spin", [](const graph::Graph& self, std::size_t seed){
-                RandomEngine rng(seed);
-                return self.gen_spin(rng);
-                }, "seed"_a)
-    .def("gen_spin", [](const graph::Graph& self){
-            RandomEngine rng(std::random_device{}());
-            return self.gen_spin(rng);
-            })
-    .def("size", &graph::Graph::size);
+   py::class_<graph::Graph>(m, "Graph")
+   .def(py::init<std::size_t>(), "num_spins"_a)
+   .def("gen_spin", [](const graph::Graph& self, std::size_t seed){
+      RandomEngine rng(seed);
+      return self.gen_spin(rng);
+   }, "seed"_a)
+   .def("gen_spin", [](const graph::Graph& self){
+      RandomEngine rng(std::random_device{}());
+      return self.gen_spin(rng);
+   })
+   .def("gen_binary", [](const graph::Graph& self, std::size_t seed){
+      RandomEngine rng(seed);
+      return self.gen_binary(rng);
+   }, "seed"_a)
+   .def("gen_binary", [](const graph::Graph& self){
+      RandomEngine rng(std::random_device{}());
+      return self.gen_binary(rng);
+   })
+   .def("size", &graph::Graph::size);
 }
 
 //dense
@@ -225,7 +233,7 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
    .def_readonly("spins"        , &CIP::spin            )
    .def_readonly("dE"           , &CIP::dE              )
    .def_readonly("num_spins"    , &CIP::num_spins       )
-   .def("ResetSpins"            , &CIP::ResetSpins, "init_spin"_a)
+   .def("reset_spins"            , &CIP::ResetSpins, "init_spin"_a)
    .def("GetMaxVariable"        , &CIP::GetMaxVariable           )
    .def("GetJTerm"              , &CIP::GetJTerm                 )
    .def("GetInteractedSpins"    , &CIP::GetInteractedSpins       )

@@ -264,11 +264,11 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
       return connected_J_term_index_;
    }
    
-   //! @brief Spin/binary configurations
-   graph::Spins spin;
-   
    //! @brief The number of spins/binaries
    const graph::Index num_spins;
+   
+   //! @brief Spin/binary configurations
+   graph::Spins spin;
    
    //! @brief The model's type. cimod::vartype::SPIN or  cimod::vartype::BINARY
    const cimod::Vartype vartype;
