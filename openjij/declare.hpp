@@ -237,7 +237,9 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
    .def("GetMaxVariable"        , &CIP::GetMaxVariable           )
    .def("GetJTerm"              , &CIP::GetJTerm                 )
    .def("GetInteractedSpins"    , &CIP::GetInteractedSpins       )
-   .def("GetConnectedJTermIndex", &CIP::GetConnectedJTermIndex   );
+   .def("GetConnectedJTermIndex", &CIP::GetConnectedJTermIndex   )
+   .def("GetMaxDE"              , &CIP::GetMaxDE)
+   .def("GetMinDE"              , &CIP::GetMinDE);
    
    //make_classical_ising_polynomial
    auto mkci_str = std::string("make_classical_ising_polynomial");

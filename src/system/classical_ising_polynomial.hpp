@@ -47,6 +47,9 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
       //Check if the number of the initial spins/binaries is equal to num_spins defined from the Polynomial graph class.
       assert(init_spins.size() == num_spins);
       
+      //Check if the number of interactions is larger than 0
+      assert(init_interaction.GetInteractions().size() > 0);
+      
       //Check if the initial spin/binary configurations are valid for vartype defined from the Polynomial graph class.
       CheckVariables();
       
@@ -264,6 +267,18 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
       return connected_J_term_index_;
    }
    
+   //! @brief Return "max_dE"
+   //! @return "max_dE"
+   FloatType GetMaxDE() const {
+      return max_dE;
+   }
+   
+   //! @brief Return "min_dE"
+   //! @return "min_dE"
+   FloatType GetMinDE() const {
+      return min_dE;
+   }
+   
    //! @brief The number of spins/binaries
    const graph::Index num_spins;
    
@@ -295,6 +310,13 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
 
    
 private:
+   
+   //! @brief The maximal energy difference between any two neighboring solutions
+   FloatType max_dE;
+   
+   //! @brief The minimal energy difference between any two neighboring solutions
+   FloatType min_dE;
+   
    //! @brief Stores the set of spins/binaries corresponding to the interactions.
    //! @details The keys of "Interactions" (std::unordered_map<std::vector<graph::Index>, FloatType, utility::VectorHash>)
    std::vector<std::vector<graph::Index>> interacted_spins_;
@@ -440,25 +462,43 @@ private:
    //! @brief Set delta E (dE), which is used to determine whether to flip the spin/binary or not.
    void SetdE() {
       dE.resize(num_spins);
+      max_dE = J_term_[0];//Initialize
+      min_dE = J_term_[0];//Initialize
       if (vartype == cimod::Vartype::SPIN) {
 //#pragma omp parallel for //Maybe OK but afraid so comment out for now
          for (graph::Index i = 0; i < num_spins; ++i) {
             FloatType temp_energy = 0.0;
+            FloatType temp_abs    = 0.0;
             for (const auto &it: connected_J_term_index_[i]) {
                temp_energy += J_term_[it]*sign_[it];
+               temp_abs    += std::abs(J_term_[it]);
             }
             dE[i] = -2*temp_energy;
+            if (max_dE < temp_abs) {
+               max_dE = temp_abs;
+            }
+            if (min_dE > temp_abs) {
+               min_dE = temp_abs;
+            }
          }
       }
       else if (vartype == cimod::Vartype::BINARY) {
 //#pragma omp parallel for //Maybe OK but afraid so comment out for now
          for (graph::Index i = 0; i < num_spins; ++i) {
             FloatType temp_energy = 0.0;
+            FloatType temp_abs    = 0.0;
             auto temp_spin = spin[i];
             for (const auto &it: connected_J_term_index_[i]) {
                temp_energy += J_term_[it]*Sign(temp_spin)*ZeroOrOne(temp_spin, zero_count_[it]);
+               temp_abs    += std::abs(J_term_[it]);
             }
             dE[i] = temp_energy;
+            if (max_dE < temp_abs) {
+               max_dE = temp_abs;
+            }
+            if (min_dE > temp_abs) {
+               min_dE = temp_abs;
+            }
          }
       }
       else {
