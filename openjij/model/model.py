@@ -218,10 +218,3 @@ BinaryPolynomialModel.from_ising = \
 
 BinaryPolynomialModel.from_serializable = \
         lambda obj: make_BinaryPolynomialModel_from_JSON(obj).from_serializable(obj)
-
-
-
-
-
-
-

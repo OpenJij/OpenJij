@@ -76,7 +76,7 @@ TEST(SpeedTestPolyVsQuad, QuadraticSparseInteractions) {
       openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_polynomial, random_numder_engine, schedule_list);
       end = std::chrono::high_resolution_clock::now();
       std::cout << "  " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
-      std::cout << "  " << interaction.CalculateEnergy(openjij::result::get_solution(classical_ising_polynomial)) << std::endl;
+      std::cout << "  " << interaction.calc_energy(openjij::result::get_solution(classical_ising_polynomial)) << std::endl;
    }
 
    //Quadratic Dense
@@ -186,7 +186,7 @@ TEST(SpeedTestPolyVsQuad, QuadraticDenseInteractions) {
       openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
       end = std::chrono::high_resolution_clock::now();
       std::cout << "  " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
-      std::cout << "  " << interaction.CalculateEnergy(openjij::result::get_solution(classical_ising)) << std::endl;
+      std::cout << "  " << interaction.calc_energy(openjij::result::get_solution(classical_ising)) << std::endl;
    }
    
    std::cout << "##Quadratic Dense" << std::endl;
@@ -285,7 +285,7 @@ TEST(SpeedTestPoly, FullyConnectedDense) {
       openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
       end = std::chrono::high_resolution_clock::now();
       std::cout << "  " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
-      std::cout << "  " << interaction.CalculateEnergy(openjij::result::get_solution(classical_ising)) << std::endl;
+      std::cout << "  " << interaction.calc_energy(openjij::result::get_solution(classical_ising)) << std::endl;
    }
    
 }

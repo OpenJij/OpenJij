@@ -13,12 +13,10 @@
 
 import numpy as np
 import openjij
+import openjij.model
 from openjij.sampler import BaseSampler
 from openjij.utils.decorator import deprecated_alias
 from openjij.utils.graph_utils import qubo_to_ising
-from openjij.model import BinaryHigherOrderModel
-from .hubo_simulated_annealing import hubo_sa_sampling
-from .hubo_simulated_annealing import default_schedule
 import cxxjij
 
 """
@@ -277,6 +275,7 @@ class SASampler(BaseSampler):
 
         ising_graph = model.get_cxxjij_ising_graph()
 
+        # make init state generator --------------------------------
         if initial_state is None:
             if model.vartype == openjij.SPIN:
                 def _generate_init_state(): return ising_graph.gen_spin(seed)   if seed != None else ising_graph.gen_spin()
@@ -303,15 +302,15 @@ class SASampler(BaseSampler):
                 _init_state = temp_state
 
             def _generate_init_state(): return np.array(_init_state)
-
+        # -------------------------------- make init state generator
 
         sa_system = self._make_system['singlespinflippolynomial'](_generate_init_state(), ising_graph)
-        max_delta_energy = sa_system.GetMaxDE()
-        min_delta_energy = sa_system.GetMinDE()
+        max_delta_energy = sa_system.get_max_dE()
+        min_delta_energy = sa_system.get_min_dE()
 
-        beta_min = np.log(2) / max_delta_energy if beta_min is None else beta_min   
+        beta_min = np.log(2)   / max_delta_energy if beta_min is None else beta_min   
         beta_max = np.log(100) / min_delta_energy if beta_max is None else beta_max
-
+            
         self._setting_overwrite(
             beta_min=beta_min, beta_max=beta_max,
             num_sweeps=num_sweeps, num_reads=num_reads
@@ -348,73 +347,34 @@ class SASampler(BaseSampler):
 
         return response
 
-    def sample_hubo(self, interactions: list, var_type,
-                    beta_min=None, beta_max=None, schedule=None,
-                    num_sweeps=100, num_reads=1,
-                    init_state=None, seed=None):
+    def sample_hubo(self, J, var_type = openjij.SPIN, 
+                    beta_min = None, beta_max = None, schedule = None,
+                    num_sweeps = None, num_reads = 1,
+                    initial_state = None, reinitialize_state=True, seed = None):
+
         """sampling from higher order unconstrainted binary optimization.
 
         Args:
-            interactions (list): ordered by degree of interaction.
-            var_type (str, openjij.VarType): "SPIN" or "BINARY"
+            J (dict): Interactions.
+            var_type (str, openjij.VarType): "SPIN" or "BINARY". Defaults to "SPIN".
             beta_min (float, optional): Minimum beta (initial inverse temperature). Defaults to None.
             beta_max (float, optional): Maximum beta (final inverse temperature). Defaults to None.
             schedule (list, optional): schedule list. Defaults to None.
-            num_sweeps (int, optional): number of sweeps. Defaults to 100.
+            num_sweeps (int, optional): number of sweeps. Defaults to None.
             num_reads (int, optional): number of reads. Defaults to 1.
             init_state (list, optional): initial state. Defaults to None.
-            seed (int, optional): [description]. Defaults to None.
+            reinitialize_state (bool): if true reinitialize state for each run
+            seed (int, optional): seed for Monte Carlo algorithm. Defaults to None.
 
         Returns:
             :class:`openjij.sampler.response.Response`: results
 
         Examples::
-
             >>> sampler = oj.SASampler()
-            >>> h = {0: -1}
-            >>> J = {(0, 1): -1}
-            >>> K = {(0, 1, 2): 1}
-            >>> response = sampler.sample_hubo([h, J, K], var_type="SPIN")
+            >>> J = {(0,): -1, (0, 1): -1, (0, 1, 2): 1}
+            >>> response = sampler.sample_hubo(J, var_type="SPIN")
 
         """
-
-        self._setting_overwrite(
-            beta_min=beta_min, beta_max=beta_max,
-            num_sweeps=num_sweeps, num_reads=num_reads
-        )
-
-        bhom = BinaryHigherOrderModel(interactions)
-
-        if schedule or self.schedule:
-            self._schedule = self._convert_validation_schedule(
-                schedule if schedule else self.schedule
-            )
-            self.schedule_info = {'schedule': 'custom schedule'}
-        else:
-            schedule = default_schedule(
-                bhom,
-                beta_min=self._schedule_setting['beta_min'],
-                beta_max=self._schedule_setting['beta_max'],
-                num_sweeps=self._schedule_setting['num_sweeps'])
-            self.schedule_info = {
-                'beta_max': schedule[-1][0],
-                'beta_min': schedule[0][0],
-                'num_sweeps': self._schedule_setting['num_sweeps']
-            }
-
-        response = hubo_sa_sampling(
-            bhom, var_type,
-            schedule=schedule, schedule_info=self.schedule_info,
-            num_sweeps=self._schedule_setting['num_sweeps'],
-            num_reads=self._schedule_setting['num_reads'],
-            init_state=init_state, seed=seed
-        )
-        return response
-
-    def sample_pubo(self, J, var_type = openjij.SPIN, 
-                    beta_min = None, beta_max = None, schedule = None,
-                    num_sweeps = None, num_reads = 1,
-                    initial_state = None, reinitialize_state=True, seed = None):
 
         if var_type == "SPIN":
             var_type = openjij.SPIN

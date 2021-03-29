@@ -42,51 +42,51 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
    //! @param init_spins graph::Spins&. The initial spin/binary configurations.
    //! @param init_interaction graph::Polynomial<FloatType>& (Polynomial graph class). The initial interacrtions.
    ClassicalIsingPolynomial(const graph::Spins &init_spins, const graph::Polynomial<FloatType> &init_interaction):
-   num_spins(init_interaction.get_num_spins()), spin(init_spins), vartype(init_interaction.GetVartype()) {
+   num_spins(init_interaction.get_num_spins()), spin(init_spins), vartype(init_interaction.get_vartype()) {
       
       //Check if the number of the initial spins/binaries is equal to num_spins defined from the Polynomial graph class.
       assert(init_spins.size() == num_spins);
       
       //Check if the number of interactions is larger than 0
-      assert(init_interaction.GetInteractions().size() > 0);
+      assert(init_interaction.get_interactions().size() > 0);
       
       //Check if the initial spin/binary configurations are valid for vartype defined from the Polynomial graph class.
-      CheckVariables();
+      check_variables();
       
       //Set max_variable_, which is the max index of the std::vector representing the initial spin/binary configurations.
-      SetMaxVariable(init_interaction.GetInteractions());
+      set_max_variable(init_interaction.get_interactions());
       
       //Receive the interactions from the Polynomial graph class.
       //If the "max_variable_" is larger than or equal to num_spins,
       //which means that the index of the spin/binary variables does not start at zero, relabel interactions.
       //"const_cast" is used here to have access to the interactions through operator[]. Note that "init_interaction" should not be changed.
-      auto &&interaction = (GetMaxVariable() < num_spins) ?
-      const_cast<Interactions&>(init_interaction.GetInteractions()) :
-      RelabelInteractions(const_cast<Interactions&>(init_interaction.GetInteractions()));
+      auto &&interaction = (get_max_variable() < num_spins) ?
+      const_cast<Interactions&>(init_interaction.get_interactions()) :
+      relabel_interactions(const_cast<Interactions&>(init_interaction.get_interactions()));
       
       //Set "interacted_spins_", which stores the set of spins/binaries corresponding to the interactions.
-      SetInteractedSpins(interaction);
+      set_interacted_spins(interaction);
       
       //Set "connected_J_term_index_" and "J_term_".
       //If "vartype" is cimod::SPIN, "sign_" is also set, else if "vartype" is cimod::BINARY, "zero_count_" is also set.
-      SetJTerm(interaction);
+      set_J_term(interaction);
       
       //Set "crs_row", "crs_col", and "crs_val". If "vartype" is cimod::SPIN, "crs_sign_p" is also set,
       //else if "vartype" is cimod::BINARY, "crs_zero_count_p" is also set.
-      SetUpdateMatrix(interacted_spins_);
+      set_update_matrix(interacted_spins_);
       
       //Set "dE"
-      SetdE();
+      reset_dE();
    }
    
    //! @brief Return "max_variable_"
    //! @return The max variable (the max index of spins/binaries)
-   graph::Index GetMaxVariable() const {
+   graph::Index get_max_variable() const {
       return max_variable_;
    }
    
    //! @brief Check if spin/binary configurations are valid for "vartype"
-   void CheckVariables() {
+   void check_variables() {
       if (vartype == cimod::Vartype::SPIN) {
          for (std::size_t i = 0; i < spin.size(); ++i) {
             if (spin[i] != -1 && spin[i] != 1) {
@@ -125,7 +125,7 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
    //! @param binary graph::Binary
    //! @param zero_count std::size_t
    //! @return 1 if zero_count == 1 - binary, otherwise 0
-   int ZeroOrOne(graph::Binary binary, std::size_t zero_count) {
+   int zero_or_one(graph::Binary binary, std::size_t zero_count) {
       return (zero_count == static_cast<std::size_t>(1 - binary)) ? 1 : 0;
    }
    
@@ -134,14 +134,14 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
    //! @param binary2 graph::Binary
    //! @param zero_count std::size_t
    //! @return 1 if zero_count == 2 - binary1 - binary2, otherwise 0
-   int ZeroOrOne(graph::Binary binary1, graph::Binary binary2, std::size_t zero_count) {
+   int zero_or_one(graph::Binary binary1, graph::Binary binary2, std::size_t zero_count) {
       return (zero_count == static_cast<std::size_t>(2 - binary1 - binary2)) ? 1 : 0;
    }
    
    //! @brief Set "crs_row", "crs_col", "crs_val", and "crs_sign_p" (spin variable cases) or "crs_zero_count_p" (binary variable cases).
    //! @details These std::vector constitute a sparse matrix (Compressed Row Storage), which is used to update "dE".
    //! @param interacted_spins std::vector<std::vector<graph::Index>>&
-   void SetUpdateMatrix(std::vector<std::vector<graph::Index>> &interacted_spins) {
+   void set_update_matrix(std::vector<std::vector<graph::Index>> &interacted_spins) {
       crs_col.clear();
       crs_row.clear();
       crs_val.clear();
@@ -213,13 +213,13 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
    
    //! @brief Return vartype
    //! @return vartype
-   const cimod::Vartype &GetVartype() const {
+   const cimod::Vartype &get_vartype() const {
       return vartype;
    }
    
    //! @brief Update "zero_count_" and "spin".  This function is used only when" vartype" is cimod::Vartype::BINARY
    //! @param index const std::size_t
-   inline void UpdateZeroCountAndSpin(const std::size_t index) {
+   inline void update_zero_count_and_spin(const std::size_t index) {
       if (spin[index] == 0) {
          spin[index] = 1;
          for (const auto &index_interaction: connected_J_term_index_[index]) {
@@ -236,46 +236,46 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
    
    //! @brief Update "sign_" and "spin".  This function is used only when" vartype" is cimod::Vartype::SPIN
    //! @param index const std::size_t
-   inline void UpdateSignAndSpin(const std::size_t index) {
+   inline void update_sign_and_spin(const std::size_t index) {
       spin[index] *= -1;
       for (const auto &index_interaction: connected_J_term_index_[index]) {
          sign_[index_interaction] *= -1;
       }
    }
    
-   void ResetSpins(const graph::Spins& init_spin) {
+   void reset_spins(const graph::Spins& init_spin) {
       spin = init_spin;
-      CheckVariables();
-      SetdE();
+      check_variables();
+      reset_dE();
    }
    
    //! @brief Return the interactions stored in "J_term_"
    //! @return Interactions
-   const std::vector<FloatType> &GetJTerm() const {
+   const std::vector<FloatType> &get_J_term() const {
       return J_term_;
    }
    
    //! @brief Return the interactes spins/binaries stored in "interacted_spins_"
    //! @return Interacted spins
-   const std::vector<std::vector<graph::Index>> &GetInteractedSpins() const {
+   const std::vector<std::vector<graph::Index>> &get_interacted_spins() const {
       return interacted_spins_;
    }
    
    //! @brief Return "connected_J_term_index_"
    //! @return "connected_J_term_index_"
-   const std::vector<std::vector<graph::Index>> &GetConnectedJTermIndex() const {
+   const std::vector<std::vector<graph::Index>> &get_connected_J_term_index() const {
       return connected_J_term_index_;
    }
    
    //! @brief Return "max_dE"
    //! @return "max_dE"
-   FloatType GetMaxDE() const {
+   FloatType get_max_dE() const {
       return max_dE;
    }
    
    //! @brief Return "min_dE"
    //! @return "min_dE"
-   FloatType GetMinDE() const {
+   FloatType get_min_dE() const {
       return min_dE;
    }
    
@@ -341,7 +341,7 @@ private:
    
    //! @brief Set "max_variable_". If an interaction is zero, corresponding variable is ignored.
    //! @param interaction const Interactions&
-   void SetMaxVariable(const Interactions &interaction) {
+   void set_max_variable(const Interactions &interaction) {
       for (const auto &it: interaction) {
          if (it.first.size() > 0 && std::abs(it.second) > 0.0 && max_variable_ < it.first.back()) {
             max_variable_ = it.first.back();
@@ -350,7 +350,7 @@ private:
    }
    
    //! @brief Set "interacted_spins_"
-   void SetInteractedSpins(const Interactions &interaction) {
+   void set_interacted_spins(const Interactions &interaction) {
       interacted_spins_.clear();
       interacted_spins_.reserve(interaction.size());
       for (const auto &it: interaction) {
@@ -380,7 +380,7 @@ private:
    
    //! @brief Set "connected_J_term_index" and "J_term_". If "vartype" is cimod::SPIN, "sign_" is also set, else If "vartype" is cimod::BINARY, "zero_count_binary_" is also set.
    //! @param interaction Interactions&
-   void SetJTerm(Interactions &interaction) {
+   void set_J_term(Interactions &interaction) {
       connected_J_term_index_.resize(num_spins);
       J_term_.resize(interacted_spins_.size());
       if (vartype == cimod::Vartype::SPIN) {
@@ -426,7 +426,7 @@ private:
    //! @details For example, if the interaction is only J[2,3,7] = -1.0 for 3 sites system, this function relabel the interaction as J[0,1,2] = -1.0
    //! @param input_interactions Interactions&
    //! @return Relabeld interactions
-   Interactions RelabelInteractions(Interactions &input_interactions) {
+   Interactions relabel_interactions(Interactions &input_interactions) {
       //Extract variables from the keys of Interactions (std::unordered_map<std::vector<graph::Index>, FloatType, utility::VectorHash>)
       std::unordered_set<graph::Index> variable_set;
       for (const auto &it: input_interactions) {
@@ -460,12 +460,11 @@ private:
    }
    
    //! @brief Set delta E (dE), which is used to determine whether to flip the spin/binary or not.
-   void SetdE() {
+   void reset_dE() {
       dE.resize(num_spins);
       max_dE = J_term_[0];//Initialize
       min_dE = J_term_[0];//Initialize
       if (vartype == cimod::Vartype::SPIN) {
-//#pragma omp parallel for //Maybe OK but afraid so comment out for now
          for (graph::Index i = 0; i < num_spins; ++i) {
             FloatType temp_energy = 0.0;
             FloatType temp_abs    = 0.0;
@@ -474,22 +473,21 @@ private:
                temp_abs    += std::abs(J_term_[it]);
             }
             dE[i] = -2*temp_energy;
-            if (max_dE < temp_abs) {
-               max_dE = temp_abs;
+            if (max_dE < 2*temp_abs) {
+               max_dE = 2*temp_abs;
             }
-            if (min_dE > temp_abs) {
-               min_dE = temp_abs;
+            if (min_dE > 2*temp_abs) {
+               min_dE = 2*temp_abs;
             }
          }
       }
       else if (vartype == cimod::Vartype::BINARY) {
-//#pragma omp parallel for //Maybe OK but afraid so comment out for now
          for (graph::Index i = 0; i < num_spins; ++i) {
             FloatType temp_energy = 0.0;
             FloatType temp_abs    = 0.0;
             auto temp_spin = spin[i];
             for (const auto &it: connected_J_term_index_[i]) {
-               temp_energy += J_term_[it]*Sign(temp_spin)*ZeroOrOne(temp_spin, zero_count_[it]);
+               temp_energy += J_term_[it]*Sign(temp_spin)*zero_or_one(temp_spin, zero_count_[it]);
                temp_abs    += std::abs(J_term_[it]);
             }
             dE[i] = temp_energy;
@@ -518,7 +516,6 @@ template<typename GraphType>
 auto make_classical_ising_polynomial(const graph::Spins &init_spin, const GraphType &init_interaction) {
    return ClassicalIsingPolynomial<GraphType>(init_spin, init_interaction);
 }
-
 
 
 } //namespace system

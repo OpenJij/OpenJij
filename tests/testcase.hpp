@@ -447,7 +447,7 @@ FloatType PolynomialExactGroundStateEnergy(openjij::graph::Polynomial<FloatType>
    for (std::size_t i = 0; i < loop; ++i) {
       std::vector<openjij::graph::Spin> temp_spin = PolynomialGetSpinState(i, system_size, vartype);
       FloatType temp_energy = 0.0;
-      for (const auto &it: polynomial.GetInteractions()) {
+      for (const auto &it: polynomial.get_interactions()) {
          openjij::graph::Spin temp_spin_multiple = 1;
          for (const auto &index: it.first) {
             temp_spin_multiple *= temp_spin[index];

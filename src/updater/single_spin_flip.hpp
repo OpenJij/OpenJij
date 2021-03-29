@@ -266,12 +266,12 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
                              ) {
       
       //If "vartype" is cimod::Vartype::SPIN, call "UpdatePolyIsing()"
-      if (system.GetVartype() == cimod::Vartype::SPIN) {
-         UpdatePolyIsing<RandomNumberEngine>(system, random_number_engine, parameter);
+      if (system.get_vartype() == cimod::Vartype::SPIN) {
+         update_poly_ising<RandomNumberEngine>(system, random_number_engine, parameter);
       }
       //If "vartype" is cimod::Vartype::BINARY, call "UpdatePolyPubo()"
-      else if (system.GetVartype() == cimod::Vartype::BINARY) {
-         UpdatePolyPubo<RandomNumberEngine>(system, random_number_engine, parameter);
+      else if (system.get_vartype() == cimod::Vartype::BINARY) {
+         update_poly_pubo<RandomNumberEngine>(system, random_number_engine, parameter);
       }
       else {
          std::stringstream ss;
@@ -285,7 +285,7 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
    //! @param random_number_engine RandomNumberEngine&. Eandom number engine.
    //! @param parameter const utility::ClassicalUpdaterParameter&. Parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f.
    template<typename RandomNumberEngine>
-   inline static void UpdatePolyIsing(ClPIsing &system,
+   inline static void update_poly_ising(ClPIsing &system,
                                       RandomNumberEngine& random_number_engine,
                                       const utility::ClassicalUpdaterParameter& parameter) {
       
@@ -298,7 +298,7 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
             for (std::size_t i = begin; i < end; ++i) {
                system.dE[system.crs_col[i]] += system.crs_val[i]*(*system.crs_sign_p[i]);
             }
-            system.UpdateSignAndSpin(index);
+            system.update_sign_and_spin(index);
          }
       }
    }
@@ -308,7 +308,7 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
    //! @param random_number_engine RandomNumberEngine&. Eandom number engine.
    //! @param parameter const utility::ClassicalUpdaterParameter&. Parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f.
    template<typename RandomNumberEngine>
-   inline static void UpdatePolyPubo(ClPIsing &system,
+   inline static void update_poly_pubo(ClPIsing &system,
                                      RandomNumberEngine& random_number_engine,
                                      const utility::ClassicalUpdaterParameter& parameter) {
       
@@ -320,9 +320,9 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
             const std::size_t end   = system.crs_row[index + 1];
             for (std::size_t i = begin; i < end; ++i) {
                graph::Index col = system.crs_col[i];
-               system.dE[col] += system.Sign(system.spin[col] + system.spin[index])*(system.crs_val[i])*system.ZeroOrOne(system.spin[index], system.spin[col], *system.crs_zero_count_p[i]);
+               system.dE[col] += system.Sign(system.spin[col] + system.spin[index])*(system.crs_val[i])*system.zero_or_one(system.spin[index], system.spin[col], *system.crs_zero_count_p[i]);
             }
-            system.UpdateZeroCountAndSpin(index);
+            system.update_zero_count_and_spin(index);
          }
       }
    }

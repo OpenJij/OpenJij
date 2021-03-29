@@ -114,13 +114,13 @@ inline void declare_Polynomial(py::module& m, const std::string& suffix){
    .def(py::init([](py::object obj){return std::unique_ptr<graph::Polynomial<FloatType>>(new graph::Polynomial<FloatType>(static_cast<json>(obj)));}), "obj"_a)
    .def(py::init<const graph::Polynomial<FloatType>&>(), "other"_a)
    .def(py::init<const cimod::BinaryPolynomialModel<graph::Index, FloatType>&>(), "bpm"_a)
-   .def_property("vartype", &poly::GetVartype, &poly::ChangeVartype)
-   .def("CalculateEnergy", &poly::CalculateEnergy, "spins"_a)
+   .def_property("vartype", &poly::get_vartype, &poly::change_vartype)
+   .def("calc_energy", &poly::calc_energy, "spins"_a)
    .def("__setitem__"    , [](poly& self, std::vector<graph::Index>& index, FloatType val){ self.J(index) += val;}, "index"_a, "val"_a)
    .def("__getitem__"    , [](const poly& self, std::vector<graph::Index>& index){ return self.J(index); }, "index"_a)
-   .def("GetInteractions", [](const poly& self) {
+   .def("get_interactions", [](const poly& self) {
       py::dict py_polynomial;
-      for (const auto &it_polynomial: self.GetInteractions()) {
+      for (const auto &it_polynomial: self.get_interactions()) {
          py::tuple temp;
          for (const auto &it_variable: it_polynomial.first) {
             temp = temp + py::make_tuple(it_variable);
@@ -229,17 +229,17 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
    
    py::class_<CIP>(m, str.c_str())
    .def(py::init<const graph::Spins&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
-   .def_readonly("vartype"      , &CIP::vartype         )
-   .def_readonly("spins"        , &CIP::spin            )
-   .def_readonly("dE"           , &CIP::dE              )
-   .def_readonly("num_spins"    , &CIP::num_spins       )
-   .def("reset_spins"            , &CIP::ResetSpins, "init_spin"_a)
-   .def("GetMaxVariable"        , &CIP::GetMaxVariable           )
-   .def("GetJTerm"              , &CIP::GetJTerm                 )
-   .def("GetInteractedSpins"    , &CIP::GetInteractedSpins       )
-   .def("GetConnectedJTermIndex", &CIP::GetConnectedJTermIndex   )
-   .def("GetMaxDE"              , &CIP::GetMaxDE)
-   .def("GetMinDE"              , &CIP::GetMinDE);
+   .def_readonly("vartype"          , &CIP::vartype                   )
+   .def_readonly("spins"            , &CIP::spin                      )
+   .def_readonly("dE"               , &CIP::dE                        )
+   .def_readonly("num_spins"        , &CIP::num_spins                 )
+   .def("reset_spins"               , &CIP::reset_spins, "init_spin"_a)
+   .def("get_max_variable"          , &CIP::get_max_variable          )
+   .def("get_J_term"                , &CIP::get_J_term                )
+   .def("get_interacted_spins"      , &CIP::get_interacted_spins      )
+   .def("get_connected_J_term_index", &CIP::get_connected_J_term_index)
+   .def("get_max_dE"                , &CIP::get_max_dE                )
+   .def("get_min_dE"                , &CIP::get_min_dE                );
    
    //make_classical_ising_polynomial
    auto mkci_str = std::string("make_classical_ising_polynomial");

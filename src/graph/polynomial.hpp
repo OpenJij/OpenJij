@@ -167,26 +167,26 @@ public:
    
    //! @brief Return the interactions.
    //! @return The interactions
-   const Interactions &GetInteractions() const {
+   const Interactions &get_interactions() const {
       return J_;
    }
    
    //! @brief Return the vartype
    //! @return The vartype
-   const cimod::Vartype &GetVartype() const {
+   const cimod::Vartype &get_vartype() const {
       return vartype_;
    }
    
    //! @brief Change vartype
    //! @param vartype cimod::Vartype
-   void ChangeVartype(const cimod::Vartype &vartype) {
+   void change_vartype(const cimod::Vartype &vartype) {
       vartype_ = vartype;
    }
    
    //! @brief Return the total energy corresponding to the input variables, Spins or Binaries.
    //! @param spins const Spins& or const Binaries& (both are the same type)
    //! @return The total energy
-   FloatType CalculateEnergy(const Spins& spins) const {
+   FloatType calc_energy(const Spins& spins) const {
       if(spins.size() != Graph::size()){
          throw std::out_of_range("Out of range in CalclateEnergy in Polynomial graph.");
       }

@@ -6,8 +6,6 @@ class HUBOTest(unittest.TestCase):
         sampler = oj.SASampler()
 
         # make HUBO
-        h = {0: -1}
-        J = {(0, 1): -1}
         K = {(0, 1, 2): 1}
 
-        response = sampler.sample_hubo([h, J, K], var_type="SPIN")
+        response = sampler.sample_hubo(K, var_type="SPIN")
