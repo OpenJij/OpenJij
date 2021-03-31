@@ -262,13 +262,13 @@ class CXXTest(unittest.TestCase):
         self.polynomial = G.Polynomial(system_size)
         self.polynomial = self.gen_testcase_polynomial(self.polynomial)
         #classial ising (Polynomial)
-        system = S.make_classical_ising_polynomial(self.polynomial.gen_spin(self.seed_for_spin), self.polynomial)
+        system = S.make_classical_ising_polynomial(self.polynomial.gen_spin(), self.polynomial)
 
         #schedulelist
         schedule_list = U.make_classical_schedule_list(0.1, 100.0, 200, 200)
 
         #anneal
-        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+        A.Algorithm_SingleSpinFlip_run(system, schedule_list)
 
         #result spin
         result_spin = R.get_solution(system)

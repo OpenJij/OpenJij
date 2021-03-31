@@ -11,6 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License
 
+import random
+import sys
 import numpy as np
 import openjij
 import openjij.model
@@ -375,6 +377,9 @@ class SASampler(BaseSampler):
             >>> response = sampler.sample_hubo(J, var_type="SPIN")
 
         """
+        if seed is None:
+            random.seed
+            seed = random.randint(0, sys.maxsize)
 
         if var_type == "SPIN":
             var_type = openjij.SPIN
@@ -383,7 +388,7 @@ class SASampler(BaseSampler):
 
         bhom = openjij.BinaryPolynomialModel(interactions = J, var_type = var_type)
 
-        return self._sampling_hubo(bhom, beta_min, beta_max,num_sweeps, num_reads, schedule, initial_state, reinitialize_state, seed=seed)
+        return self._sampling_hubo(bhom, beta_min, beta_max,num_sweeps, num_reads, schedule, initial_state, reinitialize_state, seed)
 
 
 def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,

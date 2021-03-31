@@ -401,7 +401,6 @@ inline void declare_Algorithm_run(py::module &m, const std::string& updater_str)
     m.def(str.c_str(), [](System& system, const TupleList& tuplelist,
                 const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
             py::gil_scoped_release release;
-
             using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(std::random_device{}());
             algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist),
