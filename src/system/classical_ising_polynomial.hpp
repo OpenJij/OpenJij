@@ -219,7 +219,7 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
    
    //! @brief Update "zero_count_" and "spin".  This function is used only when" vartype" is cimod::Vartype::BINARY
    //! @param index const std::size_t
-   inline void update_zero_count_and_spin(const std::size_t index) {
+   inline void update_zero_count_and_binary(const std::size_t index) {
       if (spin[index] == 0) {
          spin[index] = 1;
          for (const auto &index_interaction: connected_J_term_index_[index]) {
@@ -243,10 +243,55 @@ struct ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
       }
    }
    
-   void reset_spins(const graph::Spins& init_spin) {
-      spin = init_spin;
+   void update_dE_for_spin(std::size_t index) {
+      dE[index] *= -1;
+      const std::size_t begin = crs_row[index];
+      const std::size_t end   = crs_row[index + 1];
+      for (std::size_t i = begin; i < end; ++i) {
+         dE[crs_col[i]] += crs_val[i]*(*crs_sign_p[i]);
+      }
+   }
+   
+   void update_dE_for_binary(std::size_t index) {
+      dE[index] *= -1;
+      const std::size_t begin = crs_row[index];
+      const std::size_t end   = crs_row[index + 1];
+      for (std::size_t i = begin; i < end; ++i) {
+         graph::Index col = crs_col[i];
+         dE[col] += Sign(spin[col] + spin[index])*(crs_val[i])*zero_or_one(spin[index], spin[col], *crs_zero_count_p[i]);
+      }
+   }
+   
+   void reset_spins(const graph::Spins& init_spins) {
+      assert(init_spins.size() == num_spins);
       check_variables();
-      reset_dE();
+      
+      if (vartype == cimod::Vartype::SPIN) {
+         for (std::size_t index = 0; index < init_spins.size(); ++index) {
+            if (spin[index] != init_spins[index]) {
+               update_dE_for_spin(index);
+               update_sign_and_spin(index);
+            }
+         }
+      }
+      else if (vartype == cimod::Vartype::BINARY) {
+         for (std::size_t index = 0; index < init_spins.size(); ++index) {
+            if (spin[index] != init_spins[index]) {
+               update_dE_for_binary(index);
+               update_zero_count_and_binary(index);
+            }
+         }
+      }
+      else {
+         std::stringstream ss;
+         ss << "Unknown vartype detected in " << __func__ << std::endl;
+         throw std::runtime_error(ss.str());
+      }
+   
+      for (std::size_t index = 0; index < init_spins.size(); ++index) {
+         assert(spin[index] == init_spins[index]);
+      }
+      
    }
    
    //! @brief Return the interactions stored in "J_term_"
@@ -462,8 +507,8 @@ private:
    //! @brief Set delta E (dE), which is used to determine whether to flip the spin/binary or not.
    void reset_dE() {
       dE.resize(num_spins);
-      max_dE = J_term_[0];//Initialize
-      min_dE = J_term_[0];//Initialize
+      max_dE = std::abs(J_term_[0]);//Initialize
+      min_dE = std::abs(J_term_[0]);//Initialize
       if (vartype == cimod::Vartype::SPIN) {
          for (graph::Index i = 0; i < num_spins; ++i) {
             FloatType temp_energy = 0.0;

@@ -264,7 +264,6 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
                              RandomNumberEngine& random_number_engine,
                              const utility::ClassicalUpdaterParameter& parameter
                              ) {
-      
       //If "vartype" is cimod::Vartype::SPIN, call "UpdatePolyIsing()"
       if (system.get_vartype() == cimod::Vartype::SPIN) {
          update_poly_ising<RandomNumberEngine>(system, random_number_engine, parameter);
@@ -288,16 +287,11 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
    inline static void update_poly_ising(ClPIsing &system,
                                       RandomNumberEngine& random_number_engine,
                                       const utility::ClassicalUpdaterParameter& parameter) {
-      
+
       auto urd = std::uniform_real_distribution<>(0, 1.0);
       for (std::size_t index = 0; index < system.num_spins; ++index) {
          if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
-            system.dE[index]   *= -1;
-            const std::size_t begin = system.crs_row[index];
-            const std::size_t end   = system.crs_row[index + 1];
-            for (std::size_t i = begin; i < end; ++i) {
-               system.dE[system.crs_col[i]] += system.crs_val[i]*(*system.crs_sign_p[i]);
-            }
+            system.update_dE_for_spin(index);
             system.update_sign_and_spin(index);
          }
       }
@@ -305,7 +299,7 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
    
    //! @brief Operate single spin flip when the system is composed of binary variables.
    //! @param system ClPIsing&. ClassicalIsingPolynomial system.
-   //! @param random_number_engine RandomNumberEngine&. Eandom number engine.
+   //! @param random_number_engine RandomNumberEngine&. Random number engine.
    //! @param parameter const utility::ClassicalUpdaterParameter&. Parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f.
    template<typename RandomNumberEngine>
    inline static void update_poly_pubo(ClPIsing &system,
@@ -315,14 +309,8 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
       auto urd = std::uniform_real_distribution<>(0, 1.0);
       for (std::size_t index = 0; index < system.num_spins; ++index) {
          if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
-            system.dE[index] *= -1;
-            const std::size_t begin = system.crs_row[index];
-            const std::size_t end   = system.crs_row[index + 1];
-            for (std::size_t i = begin; i < end; ++i) {
-               graph::Index col = system.crs_col[i];
-               system.dE[col] += system.Sign(system.spin[col] + system.spin[index])*(system.crs_val[i])*system.zero_or_one(system.spin[index], system.spin[col], *system.crs_zero_count_p[i]);
-            }
-            system.update_zero_count_and_spin(index);
+            system.update_dE_for_binary(index);
+            system.update_zero_count_and_binary(index);
          }
       }
    }

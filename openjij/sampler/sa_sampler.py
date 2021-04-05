@@ -270,84 +270,6 @@ class SASampler(BaseSampler):
 
         return response
 
-    def _sampling_hubo(self, model, beta_min=None, beta_max=None,
-                     num_sweeps=None, num_reads=1, schedule=None,
-                     initial_state=None,
-                     reinitialize_state=True, seed=None, structure=None):
-
-        ising_graph = model.get_cxxjij_ising_graph()
-
-        # make init state generator --------------------------------
-        if initial_state is None:
-            if model.vartype == openjij.SPIN:
-                def _generate_init_state(): return ising_graph.gen_spin(seed)   if seed != None else ising_graph.gen_spin()
-            elif model.vartype == openjij.BINARY:
-                def _generate_init_state(): return ising_graph.gen_binary(seed) if seed != None else ising_graph.gen_binary()
-            else:
-                raise ValueError("Unknown var_type detected")
-        else:
-            if isinstance(initial_state, dict):
-                initial_state = [initial_state[k] for k in model.indices]
-            _init_state = np.array(initial_state)
-
-            if structure == None:
-                # validate initial_state size
-                if len(initial_state) != ising_graph.size():
-                    raise ValueError(
-                        "the size of the initial state should be {}"
-                        .format(ising_graph.size()))
-            else:
-                # resize _initial_state
-                temp_state = [1]*int(structure['size'])
-                for k,ind in enumerate(model.indices):
-                    temp_state[structure['dict'][ind]] = _init_state[k]
-                _init_state = temp_state
-
-            def _generate_init_state(): return np.array(_init_state)
-        # -------------------------------- make init state generator
-
-        sa_system = self._make_system['singlespinflippolynomial'](_generate_init_state(), ising_graph)
-        max_delta_energy = sa_system.get_max_dE()
-        min_delta_energy = sa_system.get_min_dE()
-
-        beta_min = np.log(2)   / max_delta_energy if beta_min is None else beta_min   
-        beta_max = np.log(100) / min_delta_energy if beta_max is None else beta_max
-            
-        self._setting_overwrite(
-            beta_min=beta_min, beta_max=beta_max,
-            num_sweeps=num_sweeps, num_reads=num_reads
-        )
-
-        # set annealing schedule -------------------------------
-        if schedule or self.schedule:
-            self._schedule = self._convert_validation_schedule(
-                schedule if schedule else self.schedule
-            )
-            self.schedule_info = {'schedule': 'custom schedule'}
-        else:
-            self._schedule, beta_range = geometric_ising_beta_schedule(
-                model=model,
-                beta_max=self._schedule_setting['beta_max'],
-                beta_min=self._schedule_setting['beta_min'],
-                num_sweeps=self._schedule_setting['num_sweeps']
-            )
-            self.schedule_info = {
-                'beta_max': beta_range[0],
-                'beta_min': beta_range[1],
-                'num_sweeps': self._schedule_setting['num_sweeps']
-            }
-        # ------------------------------- set annealing schedule
-
-        algorithm = self._algorithm['singlespinflippolynomial']
-        response = self._cxxjij_sampling(
-            model, _generate_init_state,
-            algorithm, sa_system,
-            reinitialize_state, seed, structure
-        )
-
-        response.info['schedule'] = self.schedule_info
-
-        return response
 
     def sample_hubo(self, J, var_type = openjij.SPIN, 
                     beta_min = None, beta_max = None, schedule = None,
@@ -372,14 +294,19 @@ class SASampler(BaseSampler):
             :class:`openjij.sampler.response.Response`: results
 
         Examples::
-            >>> sampler = oj.SASampler()
-            >>> J = {(0,): -1, (0, 1): -1, (0, 1, 2): 1}
-            >>> response = sampler.sample_hubo(J, var_type="SPIN")
+            for Ising case::
+                >>> sampler = oj.SASampler()
+                >>> J = {(0,): -1, (0, 1): -1, (0, 1, 2): 1}
+                >>> response = sampler.sample_hubo(J)
 
+            for Binary case::
+                >>> sampler = oj.SASampler()
+                >>> J = {(0,): -1, (0, 1): -1, (0, 1, 2): 1}
+                >>> response = sampler.sample_hubo(J, var_type = "BINARY")
         """
-        if seed is None:
-            random.seed
-            seed = random.randint(0, sys.maxsize)
+        #if seed is None:
+            #random.seed
+            #seed = random.randint(0, sys.maxsize)
 
         if var_type == "SPIN":
             var_type = openjij.SPIN
@@ -389,6 +316,67 @@ class SASampler(BaseSampler):
         bhom = openjij.BinaryPolynomialModel(interactions = J, var_type = var_type)
 
         return self._sampling_hubo(bhom, beta_min, beta_max,num_sweeps, num_reads, schedule, initial_state, reinitialize_state, seed)
+
+    def _sampling_hubo(self, model, beta_min=None, beta_max=None,
+                     num_sweeps=None, num_reads=1, schedule=None,
+                     initial_state=None,
+                     reinitialize_state=True, seed=None):
+
+        ising_graph = model.get_cxxjij_ising_graph()
+
+        # make init state generator --------------------------------
+        if initial_state is None:
+            if model.vartype == openjij.SPIN:
+                def _generate_init_state(): return ising_graph.gen_spin(seed)   if seed != None else ising_graph.gen_spin()
+            elif model.vartype == openjij.BINARY:
+                def _generate_init_state(): return ising_graph.gen_binary(seed) if seed != None else ising_graph.gen_binary()
+            else:
+                raise ValueError("Unknown var_type detected")
+        else:
+            if isinstance(initial_state, dict):
+                initial_state = [initial_state[k] for k in model.indices]
+            _init_state = np.array(initial_state)
+            def _generate_init_state(): return _init_state
+        # -------------------------------- make init state generator
+        
+        sa_system = self._make_system['singlespinflippolynomial'](_generate_init_state(), ising_graph)
+        
+        self._setting_overwrite(
+            beta_min=beta_min, beta_max=beta_max,
+            num_sweeps=num_sweeps, num_reads=num_reads
+        )
+
+        # set annealing schedule -------------------------------
+        if schedule or self.schedule:
+            self._schedule = self._convert_validation_schedule(
+                schedule if schedule else self.schedule
+            )
+            self.schedule_info = {'schedule': 'custom schedule'}
+        else:
+            self._schedule, beta_range = geometric_hubo_beta_schedule(
+                sa_system=sa_system,
+                model=model,
+                beta_max=self._schedule_setting['beta_max'],
+                beta_min=self._schedule_setting['beta_min'],
+                num_sweeps=self._schedule_setting['num_sweeps']
+            )
+            self.schedule_info = {
+                'beta_max': beta_range[0],
+                'beta_min': beta_range[1],
+                'num_sweeps': self._schedule_setting['num_sweeps']
+            }
+        # ------------------------------- set annealing schedule
+
+        algorithm = self._algorithm['singlespinflippolynomial']
+        response = self._cxxjij_sampling(
+            model, _generate_init_state,
+            algorithm, sa_system,
+            reinitialize_state, seed
+        )
+
+        response.info['schedule'] = self.schedule_info
+
+        return response
 
 
 def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
@@ -434,3 +422,28 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
     )
 
     return schedule, [beta_max, beta_min]
+
+def geometric_hubo_beta_schedule(sa_system: cxxjij.system.make_classical_ising_polynomial,
+                                model: openjij.model.BinaryPolynomialModel,
+                                beta_max=None, beta_min=None,
+                                num_sweeps=1000,
+                                ):
+
+    max_delta_energy = sa_system.get_max_dE()
+    min_delta_energy = sa_system.get_min_dE()
+
+    beta_min = np.log(2)   / max_delta_energy if beta_min is None else beta_min   
+    beta_max = np.log(100) / min_delta_energy if beta_max is None else beta_max
+
+    num_sweeps_per_beta = max(1, num_sweeps // 1000)
+
+    schedule = cxxjij.utility.make_classical_schedule_list(
+        beta_min=beta_min, beta_max=beta_max,
+        one_mc_step=num_sweeps_per_beta,
+        num_call_updater=num_sweeps//num_sweeps_per_beta
+    )
+
+    return schedule, [beta_max, beta_min]
+
+
+

@@ -268,7 +268,7 @@ class CXXTest(unittest.TestCase):
         schedule_list = U.make_classical_schedule_list(0.1, 100.0, 200, 200)
 
         #anneal
-        A.Algorithm_SingleSpinFlip_run(system, schedule_list)
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
 
         #result spin
         result_spin = R.get_solution(system)
