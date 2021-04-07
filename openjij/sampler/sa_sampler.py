@@ -355,7 +355,6 @@ class SASampler(BaseSampler):
         else:
             self._schedule, beta_range = geometric_hubo_beta_schedule(
                 sa_system=sa_system,
-                model=model,
                 beta_max=self._schedule_setting['beta_max'],
                 beta_min=self._schedule_setting['beta_min'],
                 num_sweeps=self._schedule_setting['num_sweeps']
@@ -424,7 +423,6 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
     return schedule, [beta_max, beta_min]
 
 def geometric_hubo_beta_schedule(sa_system: cxxjij.system.make_classical_ising_polynomial,
-                                model: openjij.model.BinaryPolynomialModel,
                                 beta_max=None, beta_min=None,
                                 num_sweeps=1000,
                                 ):
