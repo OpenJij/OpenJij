@@ -62,7 +62,7 @@ class HUBOTest(unittest.TestCase):
 
     def test_zero_interaction(self):
         sampler = oj.SASampler()
-        response = sampler.sample_hubo({(1,2,3):0.0})
+        response = sampler.sample_hubo({(1,2,3):0.0, (1,2):1})
 
 
 

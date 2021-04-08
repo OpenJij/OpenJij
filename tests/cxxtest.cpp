@@ -82,7 +82,7 @@ static openjij::utility::TransverseFieldScheduleList generate_tfm_schedule_list(
 //    end = std::chrono::high_resolution_clock::now();
 //    std::cout << "time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << std::endl;
 //}
-/*
+
 TEST(Graph, DenseGraphCheck){
     using namespace openjij::graph;
     using namespace openjij;
@@ -987,7 +987,7 @@ TEST(PolyUpdater, PolynomialFullyConnectedSpin) {
    EXPECT_DOUBLE_EQ(energy_spin_poly, energy_spin_exact);
    
 }
-*/
+
 TEST(PolyUpdater, PolynomialZeroInteractions) {
    
    //Check the polynomial updater work properly by comparing the exact ground state energy
