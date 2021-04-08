@@ -82,7 +82,7 @@ static openjij::utility::TransverseFieldScheduleList generate_tfm_schedule_list(
 //    end = std::chrono::high_resolution_clock::now();
 //    std::cout << "time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << std::endl;
 //}
-
+/*
 TEST(Graph, DenseGraphCheck){
     using namespace openjij::graph;
     using namespace openjij;
@@ -376,7 +376,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse) {
     EXPECT_EQ(get_true_groundstate(), result::get_solution(transverse_ising));
 }
 
-/* Single spin update for polynomial model tests */
+// Single spin update for polynomial model tests
 TEST(PolyGraph, ConstructorCimod1) {
    
    cimod::Polynomial<openjij::graph::Index, double> Polynomial {
@@ -972,6 +972,31 @@ TEST(PolyUpdater, PolynomialFullyConnectedSpin) {
    for (auto &it: PolynomialGenerateCombinations(temp_vec)) {
       interaction_poly.J(it) = urd_poly(engin_for_interaction_poly);
    }
+
+   auto engine_for_spin_poly = std::mt19937(seed);
+   const auto spin_poly = interaction_poly.gen_spin(engine_for_spin_poly);
+   auto classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, interaction_poly);
+   auto random_numder_engine_poly = std::mt19937(seed);
+   const auto schedule_list_poly = generate_schedule_list();
+   openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_poly, random_numder_engine_poly, schedule_list_poly);
+   
+   //Check both equal
+   const auto energy_spin_poly  = interaction_poly.calc_energy(openjij::result::get_solution(classical_ising_poly));
+   const auto energy_spin_exact = PolynomialExactGroundStateEnergy(interaction_poly, interaction_poly.get_vartype());
+   
+   EXPECT_DOUBLE_EQ(energy_spin_poly, energy_spin_exact);
+   
+}
+*/
+TEST(PolyUpdater, PolynomialZeroInteractions) {
+   
+   //Check the polynomial updater work properly by comparing the exact ground state energy
+   const int seed = 1;
+   const int system_size = 3;
+   
+   //generate classical polynomial system
+   auto interaction_poly = openjij::graph::Polynomial<double>(system_size);
+   interaction_poly.J({1,2,3}) = 0.0;
 
    auto engine_for_spin_poly = std::mt19937(seed);
    const auto spin_poly = interaction_poly.gen_spin(engine_for_spin_poly);

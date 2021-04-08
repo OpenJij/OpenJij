@@ -404,6 +404,12 @@ private:
          }
       }
       
+      if (interacted_spins_.size() <= 0) {
+         std::stringstream ss;
+         ss << "The input interactions of non-zero value are 0." << std::endl;
+         throw std::runtime_error(ss.str());
+      }
+      
       //nameless function to sort "interacted_spins"
       auto comp = [](const auto &lhs, const auto &rhs) {
          if (lhs.size() != rhs.size()) {
@@ -513,15 +519,16 @@ private:
          for (graph::Index i = 0; i < num_spins; ++i) {
             FloatType temp_energy = 0.0;
             FloatType temp_abs    = 0.0;
+            bool flag = false;
             for (const auto &it: connected_J_term_index_[i]) {
                temp_energy += J_term_[it]*sign_[it];
                temp_abs    += std::abs(J_term_[it]);
             }
             dE[i] = -2*temp_energy;
-            if (max_dE < 2*temp_abs) {
+            if (flag && max_dE < 2*temp_abs) {
                max_dE = 2*temp_abs;
             }
-            if (min_dE > 2*temp_abs) {
+            if (flag && min_dE > 2*temp_abs) {
                min_dE = 2*temp_abs;
             }
          }
@@ -530,16 +537,18 @@ private:
          for (graph::Index i = 0; i < num_spins; ++i) {
             FloatType temp_energy = 0.0;
             FloatType temp_abs    = 0.0;
+            bool flag = false;
             auto temp_spin = spin[i];
             for (const auto &it: connected_J_term_index_[i]) {
                temp_energy += J_term_[it]*Sign(temp_spin)*zero_or_one(temp_spin, zero_count_[it]);
                temp_abs    += std::abs(J_term_[it]);
+               flag = true;
             }
             dE[i] = temp_energy;
-            if (max_dE < temp_abs) {
+            if (flag && max_dE < temp_abs) {
                max_dE = temp_abs;
             }
-            if (min_dE > temp_abs) {
+            if (flag && min_dE > temp_abs) {
                min_dE = temp_abs;
             }
          }

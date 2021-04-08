@@ -60,6 +60,11 @@ class HUBOTest(unittest.TestCase):
         hubo_binary = oj.BinaryPolynomialModel(self.Q_quad, "BINARY")
         self.assertEqual(hubo_binary.vartype, oj.BINARY)
 
+    def test_zero_interaction(self):
+        sampler = oj.SASampler()
+        response = sampler.sample_hubo({(1,2,3):0.0})
+
+
 
 if __name__ == '__main__':
     unittest.main()
