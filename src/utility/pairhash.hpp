@@ -38,8 +38,8 @@ namespace openjij {
              */
             template<class T1, class T2>
             inline size_t operator()(const std::pair<T1, T2> & p) const{
-                unsigned int lhs = std::hash<T1>()(p.first);
-                unsigned int rhs = std::hash<T2>()(p.second);
+                size_t lhs = std::hash<T1>()(p.first);
+                size_t rhs = std::hash<T2>()(p.second);
                 return lhs^(rhs+0x9e3779b9+(lhs<<6)+(lhs>>2));
             }
         };

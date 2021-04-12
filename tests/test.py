@@ -31,159 +31,194 @@ class CXXTest(unittest.TestCase):
         
 
     def gen_testcase(self, J):
-        J[0,0]=-0.1;
-        J[0,1]=-0.9;
-        J[0,2]=0.2;
-        J[0,3]=0.1;
-        J[0,4]=1.3;
-        J[0,5]=0.8;
-        J[0,6]=0.9;
-        J[0,7]=0.4;
-        J[1,1]=-0.7;
-        J[1,2]=-1.6;
-        J[1,3]=1.5;
-        J[1,4]=1.5;
-        J[1,5]=1.2;
-        J[1,6]=-1.5;
-        J[1,7]=-1.7;
-        J[2,2]=-0.6;
-        J[2,3]=1.2;
-        J[2,4]=-1.3;
-        J[2,5]=-0.5;
-        J[2,6]=-1.9;
-        J[2,7]=1.2;
-        J[3,3]=0.8;
-        J[3,4]=-0.5;
-        J[3,5]=-0.4;
-        J[3,6]=-1.8;
-        J[3,7]=-2.0;
-        J[4,4]=0.6;
-        J[4,5]=-2.0;
-        J[4,6]=-1.9;
-        J[4,7]=0.5;
-        J[5,5]=-1.8;
-        J[5,6]=-1.2;
-        J[5,7]=1.8;
-        J[6,6]=0.3;
-        J[6,7]=1.4;
-        J[7,7]=1.8;
-
+        J[0,0]=-0.1
+        J[0,1]=-0.9
+        J[0,2]=0.2
+        J[0,3]=0.1
+        J[0,4]=1.3
+        J[0,5]=0.8
+        J[0,6]=0.9
+        J[0,7]=0.4
+        J[1,1]=-0.7
+        J[1,2]=-1.6
+        J[1,3]=1.5
+        J[1,4]=1.5
+        J[1,5]=1.2
+        J[1,6]=-1.5
+        J[1,7]=-1.7
+        J[2,2]=-0.6
+        J[2,3]=1.2
+        J[2,4]=-1.3
+        J[2,5]=-0.5
+        J[2,6]=-1.9
+        J[2,7]=1.2
+        J[3,3]=0.8
+        J[3,4]=-0.5
+        J[3,5]=-0.4
+        J[3,6]=-1.8
+        J[3,7]=-2.0
+        J[4,4]=0.6
+        J[4,5]=-2.0
+        J[4,6]=-1.9
+        J[4,7]=0.5
+        J[5,5]=-1.8
+        J[5,6]=-1.2
+        J[5,7]=1.8
+        J[6,6]=0.3
+        J[6,7]=1.4
+        J[7,7]=1.8
 
         self.true_groundstate = [-1, -1, 1, 1, 1, 1, 1, -1]
         return J
 
+    def gen_testcase_polynomial(self, J):
+        J[0, 1, 2, 3, 4] = 0.0686616367121328
+        J[0, 2, 3, 4] = 0.0682112165613232
+        J[2, 3, 4] = -0.1763027211493039
+        J[0, 1, 3, 4] = -0.0907800090462850
+        J[1, 3, 4] = 0.1318413458843757
+        J[0, 3, 4] = 0.1316587643599703
+        J[3, 4] = 0.1460080982070779
+        J[4,] = -0.0171180762893237
+        J[1, 2, 3] = 0.0137655628870602
+        J[0, 2, 4] = 0.1211030013829714
+        J[1,] = -0.1487502208910776
+        J[0, 1, 2] = 0.0678984161788189
+        J[0, 1, 2, 3] = 0.1655848090229992
+        J[1, 2, 4] = -0.1628796758769616
+        J[3,] = 0.1742156290818721
+        J[0, 2, 3] = -0.1081691119002069
+        J[1, 4] = 0.1756511179861042
+        J[0, 1, 3] = 0.0098192651462946
+        J[1, 3] = -0.0746905947645014
+        J[0, 3] = 0.1385243673379363
+        J[0, 4] = -0.0277205719092218
+        J[0, 1, 4] = 0.1113556942155680
+        J[0, 2] = -0.0413677095349563
+        J[0, 1, 2, 4] = 0.0072610193576964
+        J[2,] = -0.1055644094807323
+        J[0, 1] = 0.1996162061861095
+        J[2, 3] = -0.0226188424784269
+        J[1, 2, 3, 4] = 0.0372262067253093
+        J[0,] = 0.1730229445472662
+        J[2, 4] = 0.0863882044144668
+        J[1, 2] = -0.0448357038957756
+        J[[]]=0.198873923292106
+        self.true_energy = -1.3422641349549371
+        return J
+
     def gen_chimera_testcase(self, J):
-        J[0,0,0,G.ChimeraDir.IN_0or4] = +0.25;
-        J[0,0,0,G.ChimeraDir.IN_1or5] = +0.25;
-        J[0,0,0,G.ChimeraDir.IN_2or6] = +0.25;
-        J[0,0,0,G.ChimeraDir.IN_3or7] = +0.25;
-        J[0,0,1,G.ChimeraDir.IN_0or4] = +0.25;
-        J[0,0,1,G.ChimeraDir.IN_1or5] = +0.25;
-        J[0,0,1,G.ChimeraDir.IN_2or6] = +0.25;
-        J[0,0,1,G.ChimeraDir.IN_3or7] = +0.25;
-        J[0,0,2,G.ChimeraDir.IN_0or4] = +0.25;
-        J[0,0,2,G.ChimeraDir.IN_1or5] = +0.25;
-        J[0,0,2,G.ChimeraDir.IN_2or6] = +0.25;
-        J[0,0,2,G.ChimeraDir.IN_3or7] = +0.25;
-        J[0,0,3,G.ChimeraDir.IN_0or4] = +0.25;
-        J[0,0,3,G.ChimeraDir.IN_1or5] = +0.25;
-        J[0,0,3,G.ChimeraDir.IN_2or6] = +0.25;
-        J[0,0,3,G.ChimeraDir.IN_3or7] = +0.25;
+        J[0,0,0,G.ChimeraDir.IN_0or4] = +0.25
+        J[0,0,0,G.ChimeraDir.IN_1or5] = +0.25
+        J[0,0,0,G.ChimeraDir.IN_2or6] = +0.25
+        J[0,0,0,G.ChimeraDir.IN_3or7] = +0.25
+        J[0,0,1,G.ChimeraDir.IN_0or4] = +0.25
+        J[0,0,1,G.ChimeraDir.IN_1or5] = +0.25
+        J[0,0,1,G.ChimeraDir.IN_2or6] = +0.25
+        J[0,0,1,G.ChimeraDir.IN_3or7] = +0.25
+        J[0,0,2,G.ChimeraDir.IN_0or4] = +0.25
+        J[0,0,2,G.ChimeraDir.IN_1or5] = +0.25
+        J[0,0,2,G.ChimeraDir.IN_2or6] = +0.25
+        J[0,0,2,G.ChimeraDir.IN_3or7] = +0.25
+        J[0,0,3,G.ChimeraDir.IN_0or4] = +0.25
+        J[0,0,3,G.ChimeraDir.IN_1or5] = +0.25
+        J[0,0,3,G.ChimeraDir.IN_2or6] = +0.25
+        J[0,0,3,G.ChimeraDir.IN_3or7] = +0.25
 
-        J[0,1,0,G.ChimeraDir.IN_0or4] = +0.25;
-        J[0,1,0,G.ChimeraDir.IN_1or5] = +0.25;
-        J[0,1,0,G.ChimeraDir.IN_2or6] = +0.25;
-        J[0,1,0,G.ChimeraDir.IN_3or7] = +0.25;
-        J[0,1,1,G.ChimeraDir.IN_0or4] = +0.25;
-        J[0,1,1,G.ChimeraDir.IN_1or5] = +0.25;
-        J[0,1,1,G.ChimeraDir.IN_2or6] = +0.25;
-        J[0,1,1,G.ChimeraDir.IN_3or7] = +0.25;
-        J[0,1,2,G.ChimeraDir.IN_0or4] = +0.25;
-        J[0,1,2,G.ChimeraDir.IN_1or5] = +0.25;
-        J[0,1,2,G.ChimeraDir.IN_2or6] = +0.25;
-        J[0,1,2,G.ChimeraDir.IN_3or7] = +0.25;
-        J[0,1,3,G.ChimeraDir.IN_0or4] = +0.25;
-        J[0,1,3,G.ChimeraDir.IN_1or5] = +0.25;
-        J[0,1,3,G.ChimeraDir.IN_2or6] = +0.25;
-        J[0,1,3,G.ChimeraDir.IN_3or7] = +0.25;
+        J[0,1,0,G.ChimeraDir.IN_0or4] = +0.25
+        J[0,1,0,G.ChimeraDir.IN_1or5] = +0.25
+        J[0,1,0,G.ChimeraDir.IN_2or6] = +0.25
+        J[0,1,0,G.ChimeraDir.IN_3or7] = +0.25
+        J[0,1,1,G.ChimeraDir.IN_0or4] = +0.25
+        J[0,1,1,G.ChimeraDir.IN_1or5] = +0.25
+        J[0,1,1,G.ChimeraDir.IN_2or6] = +0.25
+        J[0,1,1,G.ChimeraDir.IN_3or7] = +0.25
+        J[0,1,2,G.ChimeraDir.IN_0or4] = +0.25
+        J[0,1,2,G.ChimeraDir.IN_1or5] = +0.25
+        J[0,1,2,G.ChimeraDir.IN_2or6] = +0.25
+        J[0,1,2,G.ChimeraDir.IN_3or7] = +0.25
+        J[0,1,3,G.ChimeraDir.IN_0or4] = +0.25
+        J[0,1,3,G.ChimeraDir.IN_1or5] = +0.25
+        J[0,1,3,G.ChimeraDir.IN_2or6] = +0.25
+        J[0,1,3,G.ChimeraDir.IN_3or7] = +0.25
 
-        J[1,0,0,G.ChimeraDir.IN_0or4] = +0.25;
-        J[1,0,0,G.ChimeraDir.IN_1or5] = +0.25;
-        J[1,0,0,G.ChimeraDir.IN_2or6] = +0.25;
-        J[1,0,0,G.ChimeraDir.IN_3or7] = +0.25;
-        J[1,0,1,G.ChimeraDir.IN_0or4] = +0.25;
-        J[1,0,1,G.ChimeraDir.IN_1or5] = +0.25;
-        J[1,0,1,G.ChimeraDir.IN_2or6] = +0.25;
-        J[1,0,1,G.ChimeraDir.IN_3or7] = +0.25;
-        J[1,0,2,G.ChimeraDir.IN_0or4] = +0.25;
-        J[1,0,2,G.ChimeraDir.IN_1or5] = +0.25;
-        J[1,0,2,G.ChimeraDir.IN_2or6] = +0.25;
-        J[1,0,2,G.ChimeraDir.IN_3or7] = +0.25;
-        J[1,0,3,G.ChimeraDir.IN_0or4] = +0.25;
-        J[1,0,3,G.ChimeraDir.IN_1or5] = +0.25;
-        J[1,0,3,G.ChimeraDir.IN_2or6] = +0.25;
-        J[1,0,3,G.ChimeraDir.IN_3or7] = +0.25;
+        J[1,0,0,G.ChimeraDir.IN_0or4] = +0.25
+        J[1,0,0,G.ChimeraDir.IN_1or5] = +0.25
+        J[1,0,0,G.ChimeraDir.IN_2or6] = +0.25
+        J[1,0,0,G.ChimeraDir.IN_3or7] = +0.25
+        J[1,0,1,G.ChimeraDir.IN_0or4] = +0.25
+        J[1,0,1,G.ChimeraDir.IN_1or5] = +0.25
+        J[1,0,1,G.ChimeraDir.IN_2or6] = +0.25
+        J[1,0,1,G.ChimeraDir.IN_3or7] = +0.25
+        J[1,0,2,G.ChimeraDir.IN_0or4] = +0.25
+        J[1,0,2,G.ChimeraDir.IN_1or5] = +0.25
+        J[1,0,2,G.ChimeraDir.IN_2or6] = +0.25
+        J[1,0,2,G.ChimeraDir.IN_3or7] = +0.25
+        J[1,0,3,G.ChimeraDir.IN_0or4] = +0.25
+        J[1,0,3,G.ChimeraDir.IN_1or5] = +0.25
+        J[1,0,3,G.ChimeraDir.IN_2or6] = +0.25
+        J[1,0,3,G.ChimeraDir.IN_3or7] = +0.25
 
-        J[1,1,0,G.ChimeraDir.IN_0or4] = +0.25;
-        J[1,1,0,G.ChimeraDir.IN_1or5] = +0.25;
-        J[1,1,0,G.ChimeraDir.IN_2or6] = +0.25;
-        J[1,1,0,G.ChimeraDir.IN_3or7] = +0.25;
-        J[1,1,1,G.ChimeraDir.IN_0or4] = +0.25;
-        J[1,1,1,G.ChimeraDir.IN_1or5] = +0.25;
-        J[1,1,1,G.ChimeraDir.IN_2or6] = +0.25;
-        J[1,1,1,G.ChimeraDir.IN_3or7] = +0.25;
-        J[1,1,2,G.ChimeraDir.IN_0or4] = +0.25;
-        J[1,1,2,G.ChimeraDir.IN_1or5] = +0.25;
-        J[1,1,2,G.ChimeraDir.IN_2or6] = +0.25;
-        J[1,1,2,G.ChimeraDir.IN_3or7] = +0.25;
-        J[1,1,3,G.ChimeraDir.IN_0or4] = +0.25;
-        J[1,1,3,G.ChimeraDir.IN_1or5] = +0.25;
-        J[1,1,3,G.ChimeraDir.IN_2or6] = +0.25;
-        J[1,1,3,G.ChimeraDir.IN_3or7] = +0.25;
+        J[1,1,0,G.ChimeraDir.IN_0or4] = +0.25
+        J[1,1,0,G.ChimeraDir.IN_1or5] = +0.25
+        J[1,1,0,G.ChimeraDir.IN_2or6] = +0.25
+        J[1,1,0,G.ChimeraDir.IN_3or7] = +0.25
+        J[1,1,1,G.ChimeraDir.IN_0or4] = +0.25
+        J[1,1,1,G.ChimeraDir.IN_1or5] = +0.25
+        J[1,1,1,G.ChimeraDir.IN_2or6] = +0.25
+        J[1,1,1,G.ChimeraDir.IN_3or7] = +0.25
+        J[1,1,2,G.ChimeraDir.IN_0or4] = +0.25
+        J[1,1,2,G.ChimeraDir.IN_1or5] = +0.25
+        J[1,1,2,G.ChimeraDir.IN_2or6] = +0.25
+        J[1,1,2,G.ChimeraDir.IN_3or7] = +0.25
+        J[1,1,3,G.ChimeraDir.IN_0or4] = +0.25
+        J[1,1,3,G.ChimeraDir.IN_1or5] = +0.25
+        J[1,1,3,G.ChimeraDir.IN_2or6] = +0.25
+        J[1,1,3,G.ChimeraDir.IN_3or7] = +0.2
 
-        J[0,0,0] = +1;
+        J[0,0,0] = +1
 
-        J[0,0,6,G.ChimeraDir.PLUS_C] = +1;
-        J[0,0,3,G.ChimeraDir.PLUS_R] = -1;
-        J[1,0,5,G.ChimeraDir.PLUS_C] = +1;
+        J[0,0,6,G.ChimeraDir.PLUS_C] = +1
+        J[0,0,3,G.ChimeraDir.PLUS_R] = -1
+        J[1,0,5,G.ChimeraDir.PLUS_C] = +1
 
         self.true_chimera_spin = [0] * J.size()
         
-        self.true_chimera_spin[J.to_ind(0,0,0)] = -1;
-        self.true_chimera_spin[J.to_ind(0,0,1)] = -1;
-        self.true_chimera_spin[J.to_ind(0,0,2)] = -1;
-        self.true_chimera_spin[J.to_ind(0,0,3)] = -1;
-        self.true_chimera_spin[J.to_ind(0,0,4)] = +1;
-        self.true_chimera_spin[J.to_ind(0,0,5)] = +1;
-        self.true_chimera_spin[J.to_ind(0,0,6)] = +1;
-        self.true_chimera_spin[J.to_ind(0,0,7)] = +1;
+        self.true_chimera_spin[J.to_ind(0,0,0)] = -1
+        self.true_chimera_spin[J.to_ind(0,0,1)] = -1
+        self.true_chimera_spin[J.to_ind(0,0,2)] = -1
+        self.true_chimera_spin[J.to_ind(0,0,3)] = -1
+        self.true_chimera_spin[J.to_ind(0,0,4)] = +1
+        self.true_chimera_spin[J.to_ind(0,0,5)] = +1
+        self.true_chimera_spin[J.to_ind(0,0,6)] = +1
+        self.true_chimera_spin[J.to_ind(0,0,7)] = +1
 
-        self.true_chimera_spin[J.to_ind(0,1,0)] = +1;
-        self.true_chimera_spin[J.to_ind(0,1,1)] = +1;
-        self.true_chimera_spin[J.to_ind(0,1,2)] = +1;
-        self.true_chimera_spin[J.to_ind(0,1,3)] = +1;
-        self.true_chimera_spin[J.to_ind(0,1,4)] = -1;
-        self.true_chimera_spin[J.to_ind(0,1,5)] = -1;
-        self.true_chimera_spin[J.to_ind(0,1,6)] = -1;
-        self.true_chimera_spin[J.to_ind(0,1,7)] = -1;
+        self.true_chimera_spin[J.to_ind(0,1,0)] = +1
+        self.true_chimera_spin[J.to_ind(0,1,1)] = +1
+        self.true_chimera_spin[J.to_ind(0,1,2)] = +1
+        self.true_chimera_spin[J.to_ind(0,1,3)] = +1
+        self.true_chimera_spin[J.to_ind(0,1,4)] = -1
+        self.true_chimera_spin[J.to_ind(0,1,5)] = -1
+        self.true_chimera_spin[J.to_ind(0,1,6)] = -1
+        self.true_chimera_spin[J.to_ind(0,1,7)] = -1
 
-        self.true_chimera_spin[J.to_ind(1,0,0)] = -1;
-        self.true_chimera_spin[J.to_ind(1,0,1)] = -1;
-        self.true_chimera_spin[J.to_ind(1,0,2)] = -1;
-        self.true_chimera_spin[J.to_ind(1,0,3)] = -1;
-        self.true_chimera_spin[J.to_ind(1,0,4)] = +1;
-        self.true_chimera_spin[J.to_ind(1,0,5)] = +1;
-        self.true_chimera_spin[J.to_ind(1,0,6)] = +1;
-        self.true_chimera_spin[J.to_ind(1,0,7)] = +1;
+        self.true_chimera_spin[J.to_ind(1,0,0)] = -1
+        self.true_chimera_spin[J.to_ind(1,0,1)] = -1
+        self.true_chimera_spin[J.to_ind(1,0,2)] = -1
+        self.true_chimera_spin[J.to_ind(1,0,3)] = -1
+        self.true_chimera_spin[J.to_ind(1,0,4)] = +1
+        self.true_chimera_spin[J.to_ind(1,0,5)] = +1
+        self.true_chimera_spin[J.to_ind(1,0,6)] = +1
+        self.true_chimera_spin[J.to_ind(1,0,7)] = +1
 
-        self.true_chimera_spin[J.to_ind(1,1,0)] = +1;
-        self.true_chimera_spin[J.to_ind(1,1,1)] = +1;
-        self.true_chimera_spin[J.to_ind(1,1,2)] = +1;
-        self.true_chimera_spin[J.to_ind(1,1,3)] = +1;
-        self.true_chimera_spin[J.to_ind(1,1,4)] = -1;
-        self.true_chimera_spin[J.to_ind(1,1,5)] = -1;
-        self.true_chimera_spin[J.to_ind(1,1,6)] = -1;
-        self.true_chimera_spin[J.to_ind(1,1,7)] = -1;
+        self.true_chimera_spin[J.to_ind(1,1,0)] = +1
+        self.true_chimera_spin[J.to_ind(1,1,1)] = +1
+        self.true_chimera_spin[J.to_ind(1,1,2)] = +1
+        self.true_chimera_spin[J.to_ind(1,1,3)] = +1
+        self.true_chimera_spin[J.to_ind(1,1,4)] = -1
+        self.true_chimera_spin[J.to_ind(1,1,5)] = -1
+        self.true_chimera_spin[J.to_ind(1,1,6)] = -1
+        self.true_chimera_spin[J.to_ind(1,1,7)] = -1
 
         return J
 
@@ -221,6 +256,45 @@ class CXXTest(unittest.TestCase):
 
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_SingleSpinFlip_ClassicalIsing_Polynomial_Polynomial_Interactions(self):
+        system_size = 5
+        self.polynomial = G.Polynomial(system_size)
+        self.polynomial = self.gen_testcase_polynomial(self.polynomial)
+        #classial ising (Polynomial)
+        system = S.make_classical_ising_polynomial(self.polynomial.gen_spin(), self.polynomial)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 200, 200)
+
+        #anneal
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertAlmostEqual(self.true_energy, self.polynomial.calc_energy(result_spin))
+    
+    def test_SingleSpinFlip_ClassicalIsing_Polynomial_Quadratic_Interactions(self):
+        self.polynomial = G.Polynomial(self.size)
+        self.polynomial = self.gen_testcase(self.polynomial)
+        #classial ising (Polynomial)
+        system = S.make_classical_ising_polynomial(self.polynomial.gen_spin(self.seed_for_spin), self.polynomial)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 100)
+
+        #anneal
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+    
+
 
     def test_SingleSpinFlip_TransverseIsing_Dense(self):
 

@@ -20,43 +20,61 @@
 #include <nlohmann/json.hpp>
 #include <exception>
 #include <graph/cimod/src/binary_quadratic_model.hpp>
+#include <graph/cimod/src/binary_polynomial_model.hpp>
 #include <numeric>
 
 namespace openjij {
-    namespace graph {
+namespace graph {
 
-        using json = nlohmann::json;
+using json = nlohmann::json;
 
-        /**
-         * @brief parse json object from bqm.to_serializable
-         *
-         * @tparam FloatType
-         * @param obj JSON object
-         * @param relabel re-label variable_labels. Disable the option if the model has specified topology (such as square lattice or chimera model). if the option is disabled, IndexType of JSON must be an integer.
-         *
-         * @return BinaryQuadraticModel with IndexType=size_t
-         * 
-         */
-        template<typename FloatType>
-        inline auto json_parse(const json& obj, bool relabel=true){
+/**
+ * @brief parse json object from bqm.to_serializable
+ *
+ * @tparam FloatType
+ * @param obj JSON object
+ * @param relabel re-label variable_labels. Disable the option if the model has specified topology (such as square lattice or chimera model). if the option is disabled, IndexType of JSON must be an integer.
+ *
+ * @return BinaryQuadraticModel with IndexType=size_t
+ *
+ */
+template<typename FloatType>
+inline auto json_parse(const json& obj, bool relabel=true){
+   
+   using namespace cimod;
+   //convert variable_labels
+   json temp = obj;
+   temp["type"] = "BinaryQuadraticModel";
+   if(relabel){
+      //re-labeling
+      std::size_t num_variables = temp["num_variables"];
+      std::vector<size_t> variables(num_variables);
+      //generate sequence numbers
+      std::iota(variables.begin(), variables.end(), 0);
+      temp["variable_labels"] = variables;
+   }
+   //make cimod object and apply to_serializable function
+   auto bqm = BinaryQuadraticModel<size_t, FloatType>::from_serializable(temp);
+   return bqm.change_vartype(Vartype::SPIN);
+}
 
-            using namespace cimod;
-            //convert variable_labels
-            json temp = obj;
-            temp["type"] = "BinaryQuadraticModel";
-            if(relabel){
-                //re-labeling
-                std::size_t num_variables = temp["num_variables"];
-                std::vector<size_t> variables(num_variables);
-                //generate sequence numbers
-                std::iota(variables.begin(), variables.end(), 0);
-                temp["variable_labels"] = variables;
-            }
-            //make cimod object and apply to_serializable function
-            auto bqm = BinaryQuadraticModel<size_t, FloatType>::from_serializable(temp);
-            return bqm.change_vartype(Vartype::SPIN);
-        }
-    } // namespace graph
+template<typename FloatType>
+inline auto json_parse_polynomial(const json& obj, bool relabel = true) {
+   
+   if (relabel) {
+      json temp = obj;
+      std::size_t num_variables = temp["num_variables"];
+      std::vector<size_t> variables(num_variables);
+      std::iota(variables.begin(), variables.end(), 0);
+      temp["variable_labels"] = variables;
+      return cimod::BinaryPolynomialModel<size_t, FloatType>::from_serializable(temp);
+   }
+   else {
+      return cimod::BinaryPolynomialModel<size_t, FloatType>::from_serializable(obj);
+   }
+
+}
+} // namespace graph
 } // namespace openjij
 
 #endif
