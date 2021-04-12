@@ -15,10 +15,12 @@ var searchData=
   ['expd_147',['expd',['../namespacefmath.html#a7219b7939e337daebb32955ad7a31c36',1,'fmath']]],
   ['expd_5ftable_5fsize_148',['EXPD_TABLE_SIZE',['../namespacefmath_1_1local.html#a1ede62469f663c4b1736f925ae2f5fdf',1,'fmath::local']]],
   ['expd_5fv_149',['expd_v',['../namespacefmath.html#aca7b2a26214601204474ba7d5c546934',1,'fmath']]],
-  ['expdvar_150',['expdVar',['../structfmath_1_1local_1_1_c.html#a12cfecf7377b29bb5e9d11eb9d1cd974',1,'fmath::local::C']]],
-  ['expdvar_151',['ExpdVar',['../structfmath_1_1local_1_1_expd_var.html#a1551bbb086c6e4defb5f6841c25934d7',1,'fmath::local::ExpdVar::ExpdVar()'],['../structfmath_1_1local_1_1_expd_var.html',1,'fmath::local::ExpdVar&lt; sbit_ &gt;']]],
-  ['expdvar_3c_20expd_5ftable_5fsize_20_3e_152',['ExpdVar&lt; EXPD_TABLE_SIZE &gt;',['../structfmath_1_1local_1_1_expd_var.html',1,'fmath::local']]],
-  ['expvar_153',['expVar',['../structfmath_1_1local_1_1_c.html#ad9a9c8958d9238f7185120e897cffd7e',1,'fmath::local::C']]],
-  ['expvar_154',['ExpVar',['../structfmath_1_1local_1_1_exp_var.html#a0aa33b1704c2a8638b30670fc8fc4202',1,'fmath::local::ExpVar::ExpVar()'],['../structfmath_1_1local_1_1_exp_var.html',1,'fmath::local::ExpVar&lt; N &gt;']]],
-  ['expvar_3c_20exp_5ftable_5fsize_20_3e_155',['ExpVar&lt; EXP_TABLE_SIZE &gt;',['../structfmath_1_1local_1_1_exp_var.html',1,'fmath::local']]]
+  ['expdvar_150',['ExpdVar',['../structfmath_1_1local_1_1_expd_var.html#a1551bbb086c6e4defb5f6841c25934d7',1,'fmath::local::ExpdVar']]],
+  ['expdvar_151',['expdVar',['../structfmath_1_1local_1_1_c.html#a12cfecf7377b29bb5e9d11eb9d1cd974',1,'fmath::local::C']]],
+  ['expdvar_152',['ExpdVar',['../structfmath_1_1local_1_1_expd_var.html',1,'fmath::local']]],
+  ['expdvar_3c_20expd_5ftable_5fsize_20_3e_153',['ExpdVar&lt; EXPD_TABLE_SIZE &gt;',['../structfmath_1_1local_1_1_expd_var.html',1,'fmath::local']]],
+  ['expvar_154',['ExpVar',['../structfmath_1_1local_1_1_exp_var.html#a0aa33b1704c2a8638b30670fc8fc4202',1,'fmath::local::ExpVar']]],
+  ['expvar_155',['expVar',['../structfmath_1_1local_1_1_c.html#ad9a9c8958d9238f7185120e897cffd7e',1,'fmath::local::C']]],
+  ['expvar_156',['ExpVar',['../structfmath_1_1local_1_1_exp_var.html',1,'fmath::local']]],
+  ['expvar_3c_20exp_5ftable_5fsize_20_3e_157',['ExpVar&lt; EXP_TABLE_SIZE &gt;',['../structfmath_1_1local_1_1_exp_var.html',1,'fmath::local']]]
 ];
