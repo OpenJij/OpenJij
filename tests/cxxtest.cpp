@@ -992,12 +992,12 @@ TEST(PolyUpdater, PolynomialZeroInteractions) {
    
    //Check the polynomial updater work properly by comparing the exact ground state energy
    const int seed = 1;
-   const int system_size = 3;
+   const int system_size = 4;
    
    //generate classical polynomial system
    auto interaction_poly = openjij::graph::Polynomial<double>(system_size);
-   interaction_poly.J({1,2,3}) = 0.0;
-
+   interaction_poly.J({0,1,2}) = 0.0;
+   interaction_poly.J({0,1,2,3}) = 1.0;
    auto engine_for_spin_poly = std::mt19937(seed);
    const auto spin_poly = interaction_poly.gen_spin(engine_for_spin_poly);
    auto classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, interaction_poly);
