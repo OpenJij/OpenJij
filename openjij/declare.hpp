@@ -35,17 +35,25 @@ using namespace openjij;
 
 //graph
 inline void declare_Graph(py::module& m){
-    py::class_<graph::Graph>(m, "Graph")
-        .def(py::init<std::size_t>(), "num_spins"_a)
-        .def("gen_spin", [](const graph::Graph& self, std::size_t seed){
-                RandomEngine rng(seed);
-                return self.gen_spin(rng);
-                }, "seed"_a)
-    .def("gen_spin", [](const graph::Graph& self){
-            RandomEngine rng(std::random_device{}());
-            return self.gen_spin(rng);
-            })
-    .def("size", &graph::Graph::size);
+   py::class_<graph::Graph>(m, "Graph")
+   .def(py::init<std::size_t>(), "num_spins"_a)
+   .def("gen_spin", [](const graph::Graph& self, std::size_t seed){
+      RandomEngine rng(seed);
+      return self.gen_spin(rng);
+   }, "seed"_a)
+   .def("gen_spin", [](const graph::Graph& self){
+      RandomEngine rng(std::random_device{}());
+      return self.gen_spin(rng);
+   })
+   .def("gen_binary", [](const graph::Graph& self, std::size_t seed){
+      RandomEngine rng(seed);
+      return self.gen_binary(rng);
+   }, "seed"_a)
+   .def("gen_binary", [](const graph::Graph& self){
+      RandomEngine rng(std::random_device{}());
+      return self.gen_binary(rng);
+   })
+   .def("size", &graph::Graph::size);
 }
 
 //dense
@@ -91,6 +99,38 @@ inline void declare_Sparse(py::module& m, const std::string& suffix){
         .def("__setitem__", [](graph::Sparse<FloatType>& self, std::size_t key, FloatType val){self.h(key) = val;}, "key"_a, "val"_a)
         .def("__getitem__", [](const graph::Sparse<FloatType>& self, std::size_t key){return self.h(key);}, "key"_a);
 }
+
+//Polynomial
+template<typename FloatType>
+inline void declare_Polynomial(py::module& m, const std::string& suffix){
+
+   using json = nlohmann::json;
+   using poly = graph::Polynomial<FloatType>;
+   auto  str  = std::string("Polynomial") + suffix;
+   
+   py::class_<poly, graph::Graph>(m, str.c_str())
+   .def(py::init<const std::size_t>(), "num_variables"_a)
+   .def(py::init<const std::size_t, const cimod::Vartype &>(), "num_variables"_a, "vartype"_a)
+   .def(py::init([](py::object obj){return std::unique_ptr<graph::Polynomial<FloatType>>(new graph::Polynomial<FloatType>(static_cast<json>(obj)));}), "obj"_a)
+   .def(py::init<const graph::Polynomial<FloatType>&>(), "other"_a)
+   .def(py::init<const cimod::BinaryPolynomialModel<graph::Index, FloatType>&>(), "bpm"_a)
+   .def_property("vartype", &poly::get_vartype, &poly::change_vartype)
+   .def("calc_energy", &poly::calc_energy, "spins"_a)
+   .def("__setitem__"    , [](poly& self, std::vector<graph::Index>& index, FloatType val){ self.J(index) += val;}, "index"_a, "val"_a)
+   .def("__getitem__"    , [](const poly& self, std::vector<graph::Index>& index){ return self.J(index); }, "index"_a)
+   .def("get_interactions", [](const poly& self) {
+      py::dict py_polynomial;
+      for (const auto &it_polynomial: self.get_interactions()) {
+         py::tuple temp;
+         for (const auto &it_variable: it_polynomial.first) {
+            temp = temp + py::make_tuple(it_variable);
+         }
+         py_polynomial[temp] = it_polynomial.second;
+      }
+      return py_polynomial;
+   });
+}
+
 
 //enum class Dir
 inline void declare_Dir(py::module& m){
@@ -178,6 +218,35 @@ inline void declare_ClassicalIsing(py::module &m, const std::string& gtype_str){
     m.def(mkci_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction){
             return system::make_classical_ising(init_spin, init_interaction);
             }, "init_spin"_a, "init_interaction"_a);
+}
+
+//ClassicalIsingPolynomial
+template<typename GraphType>
+inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& gtype_str){
+   
+   using CIP = system::ClassicalIsingPolynomial<GraphType>;
+   auto  str = std::string("ClassicalIsing") + gtype_str;
+   
+   py::class_<CIP>(m, str.c_str())
+   .def(py::init<const graph::Spins&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
+   .def_readonly("vartype"          , &CIP::vartype                   )
+   .def_readonly("spins"            , &CIP::spin                      )
+   .def_readonly("dE"               , &CIP::dE                        )
+   .def_readonly("num_spins"        , &CIP::num_spins                 )
+   .def("reset_spins"               , &CIP::reset_spins, "init_spin"_a)
+   .def("get_max_variable"          , &CIP::get_max_variable          )
+   .def("get_J_term"                , &CIP::get_J_term                )
+   .def("get_interacted_spins"      , &CIP::get_interacted_spins      )
+   .def("get_connected_J_term_index", &CIP::get_connected_J_term_index)
+   .def("get_max_dE"                , &CIP::get_max_dE                )
+   .def("get_min_dE"                , &CIP::get_min_dE                );
+   
+   //make_classical_ising_polynomial
+   auto mkci_str = std::string("make_classical_ising_polynomial");
+   m.def(mkci_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction){
+           return system::make_classical_ising_polynomial(init_spin, init_interaction);
+           }, "init_spin"_a, "init_interaction"_a);
+
 }
 
 
@@ -332,7 +401,6 @@ inline void declare_Algorithm_run(py::module &m, const std::string& updater_str)
     m.def(str.c_str(), [](System& system, const TupleList& tuplelist,
                 const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
             py::gil_scoped_release release;
-
             using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(std::random_device{}());
             algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist),
@@ -360,6 +428,41 @@ inline std::string repr_impl(const utility::UpdaterParameter<system::classical_c
 template<>
 inline std::string repr_impl(const utility::UpdaterParameter<system::transverse_field_system>& obj){
     return "(beta: " + std::to_string(obj.beta) + ", s: " + std::to_string(obj.s) + ")";
+}
+
+
+inline void declare_ClassicalUpdaterParameter(py::module& m){
+    py::class_<utility::ClassicalUpdaterParameter>(m, "ClassicalUpdaterParameter")
+        .def(py::init<>())
+        .def(py::init<double>(), "beta"_a)
+        .def_readwrite("beta", &utility::ClassicalUpdaterParameter::beta)
+        .def("__repr__", [](const utility::ClassicalUpdaterParameter& self){
+                return repr_impl(self);
+                });
+}
+
+inline void declare_ClassicalConstraintUpdaterParameter(py::module& m){
+    py::class_<utility::ClassicalConstraintUpdaterParameter>(m, "ClassicalConstraintUpdaterParameter")
+        .def(py::init<>())
+        .def(py::init<double, double>(), "beta"_a, "lambda"_a)
+        .def(py::init<const std::pair<double, double>&>(), "obj"_a)
+        .def_readwrite("beta", &utility::ClassicalConstraintUpdaterParameter::beta)
+        .def_readwrite("lambda", &utility::ClassicalConstraintUpdaterParameter::lambda)
+        .def("__repr__", [](const utility::ClassicalConstraintUpdaterParameter& self){
+                return repr_impl(self);
+                });
+}
+
+inline void declare_TransverseFieldUpdaterParameter(py::module& m){
+    py::class_<utility::TransverseFieldUpdaterParameter>(m, "TransverseFieldUpdaterParameter")
+        .def(py::init<>())
+        .def(py::init<double, double>(), "beta"_a, "s"_a)
+        .def(py::init<const std::pair<double, double>&>(), "obj"_a)
+        .def_readwrite("beta", &utility::TransverseFieldUpdaterParameter::beta)
+        .def_readwrite("s", &utility::TransverseFieldUpdaterParameter::s)
+        .def("__repr__", [](const utility::TransverseFieldUpdaterParameter& self){
+                return repr_impl(self);
+                });
 }
 
 template<typename SystemType>

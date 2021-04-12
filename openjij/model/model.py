@@ -182,17 +182,39 @@ BinaryQuadraticModel.from_serializable = \
         lambda obj: make_BinaryQuadraticModel_from_JSON(obj).from_serializable(obj)
 
 
+def make_BinaryPolynomialModel(interactions: dict):
 
+    class BinaryPolynomialModel(cimod.make_BinaryPolynomialModel(interactions)):
 
+        def __init__(self, interactions: dict, var_type = openjij.SPIN, **kwargs):
+            super().__init__(interactions, var_type, **kwargs)
 
+        def get_cxxjij_ising_graph(self):
+            return cxxjij.graph.Polynomial(self.to_serializable())
 
+        def calc_energy(self, sample, **kwargs):
+            return self.energy(sample, **kwargs)
 
+    return BinaryPolynomialModel
 
+def make_BinaryPolynomialModel_from_JSON(obj: dict):
+    label = obj['variable_labels'][0]
+    if isinstance(label, list):
+        #convert to tuple
+        label = tuple(label)
+    mock_linear = {label:1.0}
+    return make_BinaryPolynomialModel(mock_linear, {})
 
+def BinaryPolynomialModel(interactions: dict, var_type = openjij.SPIN, **kwargs):
+    Model = make_BinaryPolynomialModel(interactions)
+    return Model(interactions, var_type, **kwargs)
 
+#classmethods
+BinaryPolynomialModel.from_pubo = \
+        lambda P, **kwargs: make_BinaryPolynomialModel({}, P).from_pubo(P, **kwargs)
 
+BinaryPolynomialModel.from_ising = \
+        lambda polynomial, **kwargs: make_BinaryPolynomialModel(polynomial).from_ising(polynomial, **kwargs)
 
-
-
-
-
+BinaryPolynomialModel.from_serializable = \
+        lambda obj: make_BinaryPolynomialModel_from_JSON(obj).from_serializable(obj)

@@ -89,7 +89,7 @@
 #include "vartypes.hpp"
 #include "hash.hpp"
 #include "utilities.hpp"
-#include <nlohmann/json.hpp>
+#include "json.hpp"
 
 #include <algorithm>
 #include <cstdint>
@@ -99,8 +99,11 @@
 #include <typeinfo>
 #include <set>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
+#include <functional>
+#include <Eigen/Dense>
 
 namespace cimod
 {
@@ -136,12 +139,19 @@ using Adjacency = std::unordered_map<IndexType, std::unordered_map<IndexType, Fl
 template <typename IndexType>
 using Sample = std::unordered_map<IndexType, int32_t>;
 
+
 /**
  * @brief Class for binary quadratic model.
  */
+
 template <typename IndexType, typename FloatType>
 class BinaryQuadraticModel
 {
+public:
+/**
+ * @brief Eigen Matrix
+ */
+using Matrix = Eigen::Matrix<FloatType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 protected:
     /**
      * @brief Linear biases as a dictionary.
@@ -208,7 +218,7 @@ protected:
         const IndexType &v
     )
     {
-        auto k = m_adj[u].erase(v);
+        m_adj[u].erase(v);
     };
 
 public:
@@ -258,6 +268,27 @@ public:
     BinaryQuadraticModel(BinaryQuadraticModel&&) = default;
 
     /**
+     * @brief generate indices
+     *
+     * @return generated indices
+     */
+    std::vector<IndexType> _generate_indices() const{
+        std::unordered_set<IndexType> index_set;
+        for(auto elem : m_linear){
+            index_set.insert(elem.first);
+        }
+
+        for(auto elem : m_quadratic){
+            index_set.insert(elem.first.first);
+            index_set.insert(elem.first.second);
+        }
+
+        auto ret = std::vector<IndexType>(index_set.begin(), index_set.end());
+        std::sort(ret.begin(), ret.end());
+        return ret;
+    }
+
+    /**
      * @brief Return the number of variables.
      * 
      * @return The number of variables.
@@ -274,9 +305,7 @@ public:
      * @param v
      */
     bool contains
-    (
-        const IndexType &v
-    )
+    (const IndexType &v) const
     {
         if(m_linear.count(v)!=0)
         {
@@ -350,7 +379,7 @@ public:
     }
 
     /**
-     * @brief Print informations of BinaryQuadraticModel
+     * @brief Print information of BinaryQuadraticModel
      * 
      */
     void print()
@@ -388,11 +417,14 @@ public:
         std::cout << "vartype = ";
         if(m_vartype == Vartype::SPIN)
         {
-            std::cout << "Spin" << std::endl;
+           std::cout << "Spin" << std::endl;
         }
         else if(m_vartype == Vartype::BINARY)
         {
-            std::cout << "Binary" << std::endl;
+           std::cout << "Binary" << std::endl;
+        }
+        else {
+           std::cout << "Unknown vartype" << std::endl;
         }
 
         // Print info
@@ -407,6 +439,7 @@ public:
     void empty()
     {
         m_linear = {};
+        m_adj = {};
         m_quadratic = {};
         m_offset = 0.0;
         m_vartype = Vartype::NONE;
@@ -495,10 +528,22 @@ public:
     {
         if(u == v)
         {
-            std::cerr << "No self-loops allowed, therefore (" << u << ", " << v << ") is not an allowed interaction." << std::endl;
+            std::cerr << "No self-loops allowed" << std::endl;
         }
         else
         {
+            //Check vartype when m_linear.empty() is true
+            if (m_linear.empty() && m_vartype == Vartype::NONE) {
+               if (vartype != Vartype::NONE) {
+                  m_vartype = vartype;
+               }
+               else {
+                  std::cerr << "Binary quadratic model is empty." << std::endl;
+                  std::cerr << "Please set vartype to Vartype::SPIN or Vartype::BINARY" << std::endl;
+                  return;
+               }
+            }
+           
             FloatType b = bias;
             if((vartype!=Vartype::NONE)&&(vartype!=m_vartype))
             {
@@ -620,7 +665,7 @@ public:
         auto p = std::make_pair(u, v);
         if(m_quadratic.count(p)!=0)
         {
-            auto k = m_quadratic.erase(p);
+            m_quadratic.erase(p);
             remove_adjacency(u, v);
         }
     };
@@ -693,6 +738,7 @@ public:
             if(std::find(ignored_interactions.begin(), ignored_interactions.end(), it.first) != ignored_interactions.end() || ignored_variables.empty())
             {
                 it.second *= scalar;
+                update_adjacency(it.first.first, it.first.second);
             }
         }
 
@@ -724,6 +770,9 @@ public:
         const bool ignored_offset = false
     )
     {
+        if (m_linear.empty()) {
+           return;
+        }
         // parse range
         std::pair<FloatType, FloatType> l_range = bias_range;
         std::pair<FloatType, FloatType> q_range;
@@ -819,7 +868,7 @@ public:
         // check variable
         if(m_linear.count(v)==0)
         {
-           std::cout << v << " is not a variable in the binary quadratic model." << std::endl;
+           std::cerr << "not a variable in the binary quadratic model." << std::endl;
            return;
         }
 
@@ -888,12 +937,12 @@ public:
         // check variable
         if(m_linear.count(v)==0)
         {
-            std::cerr << v << " is not a variable in the binary quadratic model." << std::endl;
+            std::cerr << "not a variable in the binary quadratic model." << std::endl;
             return;
         }
         if(m_linear.count(u)==0)
         {
-            std::cerr << u << " is not a variable in the binary quadratic model." << std::endl;
+            std::cerr << "not a variable in the binary quadratic model." << std::endl;
             return;
         }
 
@@ -952,38 +1001,46 @@ public:
      * @brief Create a binary quadratic model with the specified vartype.
      * 
      * @param vartype
+     * @param inplace
      * @return A new instance of the BinaryQuadraticModel class.
      */
     BinaryQuadraticModel change_vartype
     (
-        const Vartype &vartype
+        const Vartype &vartype,
+        bool inplace=true
     )
     {
-        // same vartype
-        if(vartype == m_vartype)
+        Linear<IndexType, FloatType> linear;
+        Quadratic<IndexType, FloatType> quadratic;
+        FloatType offset = 0.0;
+
+        if(m_vartype == Vartype::BINARY && vartype == Vartype::SPIN) // binary -> spin
         {
-            BinaryQuadraticModel bqm(m_linear, m_quadratic, m_offset, m_vartype, m_info);
-            return bqm;
+            std::tie(linear, quadratic, offset) = binary_to_spin(m_linear, m_quadratic, m_offset);                
         }
-        // different vartype
+        else if(m_vartype == Vartype::SPIN && vartype == Vartype::BINARY) // spin -> binary
+        {
+            std::tie(linear, quadratic, offset) = spin_to_binary(m_linear, m_quadratic, m_offset);
+        }
         else
         {
-            std::tuple<Linear<IndexType, FloatType>, Quadratic<IndexType, FloatType>, FloatType> t;
-            if(m_vartype == Vartype::BINARY && vartype == Vartype::SPIN) // binary -> spin
-            {
-                t = binary_to_spin(m_linear, m_quadratic, m_offset);                
-            }
-            else if(m_vartype == Vartype::SPIN && vartype == Vartype::BINARY) // spin -> binary
-            {
-                t = spin_to_binary(m_linear, m_quadratic, m_offset);
-            }
-            else
-            {
-                std::cerr << "Invalid vartype." << std::endl;
-            }
-            BinaryQuadraticModel bqm(std::get<0>(t), std::get<1>(t), std::get<2>(t), vartype, m_info);
-            return bqm;
+            std::tie(linear, quadratic, offset) = std::tie(m_linear, m_quadratic, m_offset);
         }
+
+        BinaryQuadraticModel bqm(linear, quadratic, offset, vartype, m_info);
+        
+        if(inplace == true)
+        {
+            //inplace
+            m_linear = bqm.get_linear();
+            m_quadratic = bqm.get_quadratic();
+            m_offset = bqm.get_offset();
+            m_adj = bqm.get_adjacency();
+            m_info = bqm.get_info();
+            m_vartype = bqm.get_vartype();
+        }
+
+        return bqm;
     };
     
     /* Static methods */
@@ -1077,10 +1134,7 @@ public:
      * @param sample
      * @return An energy with respect to the sample.
      */
-    FloatType energy
-    (
-        const Sample<IndexType> &sample
-    )
+    FloatType energy(const Sample<IndexType> &sample) const
     {
         FloatType en = m_offset;
         for(auto &&it : m_linear)
@@ -1106,10 +1160,7 @@ public:
      * @param samples_like
      * @return A vector including energies with respect to the samples.
      */
-    std::vector<FloatType> energies
-    (
-        const std::vector<Sample<IndexType>> &samples_like
-    )
+    std::vector<FloatType> energies(const std::vector<Sample<IndexType>> &samples_like) const
     {
         std::vector<FloatType> en_vec;
         for(auto &it : samples_like)
@@ -1128,7 +1179,7 @@ public:
     std::tuple<Quadratic<IndexType, FloatType>, FloatType> to_qubo()
     {
         // change vartype to binary
-        BinaryQuadraticModel bqm = change_vartype(Vartype::BINARY);
+        BinaryQuadraticModel bqm = change_vartype(Vartype::BINARY, false);
 
         Linear<IndexType, FloatType> linear = bqm.get_linear();
         Quadratic<IndexType, FloatType> Q = bqm.get_quadratic();
@@ -1141,6 +1192,33 @@ public:
     };
 
     /**
+     * @brief Create a binary quadratic model from a QUBO model.
+     *
+     * @param Q
+     * @param offset
+     *
+     * @return Binary quadratic model with vartype set to `.Vartype.BINARY`.
+     */
+    static BinaryQuadraticModel from_qubo(const Quadratic<IndexType, FloatType>& Q, FloatType offset=0.0)
+    {
+        Linear<IndexType, FloatType> linear;
+        Quadratic<IndexType, FloatType> quadratic;
+
+        for(auto&& elem : Q){
+            const auto& key = elem.first;
+            const auto& value = elem.second;
+            if(key.first == key.second){
+                linear[key.first] = value;
+            }
+            else{
+                quadratic[std::make_pair(key.first, key.second)] = value;
+            }
+        }
+
+        return BinaryQuadraticModel<IndexType, FloatType>(linear, quadratic, offset, Vartype::BINARY);
+    }
+
+    /**
      * @brief Convert a binary quadratic model to Ising format.
      * 
      * @return A tuple including a linear bias, a quadratic bias and an offset.
@@ -1148,13 +1226,96 @@ public:
     std::tuple<Linear<IndexType, FloatType>, Quadratic<IndexType, FloatType>, FloatType> to_ising()
     {
         // change vartype to spin
-        BinaryQuadraticModel bqm = change_vartype(Vartype::SPIN);
+        BinaryQuadraticModel bqm = change_vartype(Vartype::SPIN, false);
 
         Linear<IndexType, FloatType> linear = bqm.get_linear();
         Quadratic<IndexType, FloatType> quadratic = bqm.get_quadratic();
         FloatType offset = bqm.get_offset();
         return std::make_tuple(linear, quadratic, offset);
     };
+
+    /**
+     * @brief Create a binary quadratic model from an Ising problem.
+     *
+     * @param linear
+     * @param quadratic
+     * @param offset
+     *
+     * @return Binary quadratic model with vartype set to `.Vartype.SPIN`.
+     */
+    static BinaryQuadraticModel from_ising(const Linear<IndexType, FloatType>& linear, const Quadratic<IndexType, FloatType>& quadratic, FloatType offset=0.0)
+    {
+        return BinaryQuadraticModel<IndexType, FloatType>(linear, quadratic, offset, Vartype::SPIN);
+    }
+
+
+    /**
+     * @brief generate interaction matrix with given list of indices
+     * The generated matrix will be the following symmetric matrix:
+     * \f[
+     * \begin{pmatrix}
+     * \tilde{J}_{0,0} & \tilde{J}_{0,1} & \tilde{J}_{0,2} & \cdots \\
+     * \tilde{J}_{1,0} & \tilde{J}_{1,1} & \tilde{J}_{1,2} & \cdots \\
+     * \tilde{J}_{2,0} & \tilde{J}_{2,1} & \tilde{J}_{2,2} & \cdots \\
+     * \vdots & \vdots & \vdots & \ddots \\
+     * \end{pmatrix}
+     * \f]
+     *
+     * where in the Ising case,
+     * \f[
+     * \tilde{J}_{f(i),f(j)} = J_{ij} + J_{ji}, \\
+     * \tilde{J}_{f(i),f(i)} = h_{i},
+     * \f]
+     * and the QUBO case,
+     * \f[
+     * \tilde{J}_{f(i),f(j)} = Q_{ij} + Q_{ji}, \\
+     * \tilde{J}_{f(i),f(i)} = Q_{ii},
+     * \f]
+     * and the function \f$f\f$ denotes a mapping from index to the corresponding number specified by the argument `indices`.
+     * For instance, if `indices` is ['a', 'b', 'c'], The following equations, \f$f(a) = 0, f(b)=1, \mathrm{and} f(c)=2\f$ hold.
+     *
+     * The original Hamiltonian can be rewritten with \f$\tilde{J_{ij}}\f$ as
+     * \f[
+     * E_{\mathrm{Ising}} = \sum_{i} \tilde{J}_{f(i),f(i)} s_i + \sum_{i < j} \tilde{J}_{f(i), f(j)} s_i s_j + \delta_{\mathrm{Ising}},
+     * \f]
+     * and
+     * \f[
+     * E_{\mathrm{QUBO}} = \sum_{i} \tilde{J}_{f(i), f(i)}x_i + \sum_{i < j} \tilde{J}_{f(i), f(j)} x_i x_j + \delta_{\mathrm{QUBO}}.
+     * \f]
+     *
+     * @param indices
+     *
+     * @return corresponding interaction matrix (Eigen)
+     */
+    Matrix interaction_matrix(const std::vector<IndexType>& indices) const {
+        // generate matrix
+        size_t system_size = indices.size();
+        Matrix _interaction_matrix = Matrix::Zero(system_size, system_size);
+        const Linear<IndexType, FloatType>& linear = m_linear; 
+        const Quadratic<IndexType, FloatType>& quadratic = m_quadratic; 
+
+        for(size_t i=0; i<indices.size(); i++){
+            const IndexType& i_index = indices[i];
+            _interaction_matrix(i, i) = (linear.find(i_index) != linear.end()) ? linear.at(i_index): 0;
+            for(size_t j=i+1; j<indices.size(); j++){
+                const IndexType& j_index = indices[j];
+                FloatType jval = 0.0;
+
+                if(quadratic.find(std::make_pair(i_index, j_index)) != quadratic.end()){
+                    jval += quadratic.at(std::make_pair(i_index, j_index));
+                }
+                if(quadratic.find(std::make_pair(j_index, i_index)) != quadratic.end()){
+                    jval += quadratic.at(std::make_pair(j_index, i_index));
+                }
+
+                _interaction_matrix(i, j) = jval;
+                _interaction_matrix(j, i) = jval;
+            }
+        }
+
+        return _interaction_matrix;
+    }
+
 
     using json = nlohmann::json;
 

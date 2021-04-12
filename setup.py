@@ -16,7 +16,7 @@ NAME = 'openjij'
 DESCRIPTION = 'Framework for the Ising model and QUBO'
 EMAIL = 'openjij@j-ij.com'
 AUTHOR = 'Jij Inc.'
-VERSION = '0.1.1'
+VERSION = '0.2.0'
 
 
 class CMakeExtension(Extension):
@@ -63,6 +63,10 @@ class CMakeBuild(build_ext):
         else:
             cmake_kwargs += ['-DCMAKE_BUILD_TYPE=' + cfg]
             build_kwargs += ['--', '-j2']
+
+        # disable macos openmp since addtional dependency is needed.
+        if platform.system() != "Windows" and platform.system() != "Linux":
+            cmake_kwargs += ['-DUSE_OMP=No']
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
@@ -128,7 +132,7 @@ setup(
     description='Framework for the Ising model and QUBO',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    install_requires=['dimod >= 0.9.1', 'numpy >= 1.18.4', 'scipy', 'requests', 'jij-cimod >= 1.0.5'],
+    install_requires=['dimod >= 0.9.1', 'numpy >= 1.18.4', 'scipy', 'requests', 'jij-cimod >= 1.1.0'],
     ext_modules=[CMakeExtension('cxxjij')],
     cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
                   pytest=PyTestCommand),

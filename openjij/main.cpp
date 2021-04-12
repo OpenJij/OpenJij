@@ -41,6 +41,7 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_Sparse<FloatType>(m_graph, "");
     ::declare_Square<FloatType>(m_graph, "");
     ::declare_Chimera<FloatType>(m_graph, "");
+    ::declare_Polynomial<FloatType>(m_graph, "");
 
     //GPU version (GPUFloatType)
     if(!std::is_same<FloatType, GPUFloatType>::value){
@@ -63,6 +64,7 @@ PYBIND11_MODULE(cxxjij, m){
     //ClassicalIsing
     ::declare_ClassicalIsing<graph::Dense<FloatType>>(m_system, "_Dense");
     ::declare_ClassicalIsing<graph::Sparse<FloatType>>(m_system, "_Sparse");
+    ::declare_ClassicalIsingPolynomial<graph::Polynomial<FloatType>>(m_system, "_Polynomial");
 
     //TransverselIsing
     ::declare_TransverseIsing<graph::Dense<FloatType>>(m_system, "_Dense");
@@ -86,6 +88,7 @@ PYBIND11_MODULE(cxxjij, m){
     //singlespinflip
     ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Dense<FloatType>>,    RandomEngine>(m_algorithm, "SingleSpinFlip");
     ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Sparse<FloatType>>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsingPolynomial<graph::Polynomial<FloatType>>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
     ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Dense<FloatType>>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
     ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Sparse<FloatType>>,  RandomEngine>(m_algorithm, "SingleSpinFlip");
 
@@ -107,39 +110,19 @@ PYBIND11_MODULE(cxxjij, m){
     py::module m_utility = m.def_submodule("utility", "cxxjij module for utility");
 
     //schedule_list
-    py::class_<utility::ClassicalUpdaterParameter>(m_utility, "ClassicalUpdaterParameter")
-        .def(py::init<>())
-        .def(py::init<double>(), "beta"_a)
-        .def_readwrite("beta", &utility::ClassicalUpdaterParameter::beta)
-        .def("__repr__", [](const utility::ClassicalUpdaterParameter& self){
-                return repr_impl(self);
-                });
-
-    py::class_<utility::ClassicalConstraintUpdaterParameter>(m_utility, "ClassicalConstraintUpdaterParameter")
-        .def(py::init<>())
-        .def(py::init<double, double>(), "beta"_a, "lambda"_a)
-        .def(py::init<const std::pair<double, double>&>(), "obj"_a)
-        .def_readwrite("beta", &utility::ClassicalConstraintUpdaterParameter::beta)
-        .def_readwrite("lambda", &utility::ClassicalConstraintUpdaterParameter::lambda)
-        .def("__repr__", [](const utility::ClassicalConstraintUpdaterParameter& self){
-                return repr_impl(self);
-                });
-
-    py::class_<utility::TransverseFieldUpdaterParameter>(m_utility, "TransverseFieldUpdaterParameter")
-        .def(py::init<>())
-        .def(py::init<double, double>(), "beta"_a, "s"_a)
-        .def(py::init<const std::pair<double, double>&>(), "obj"_a)
-        .def_readwrite("beta", &utility::TransverseFieldUpdaterParameter::beta)
-        .def_readwrite("s", &utility::TransverseFieldUpdaterParameter::s)
-        .def("__repr__", [](const utility::TransverseFieldUpdaterParameter& self){
-                return repr_impl(self);
-                });
+    ::declare_ClassicalUpdaterParameter(m_utility);
+    ::declare_ClassicalConstraintUpdaterParameter(m_utility);
+    ::declare_TransverseFieldUpdaterParameter(m_utility);
 
     ::declare_Schedule<system::classical_system>(m_utility, "Classical");
+    ::declare_Schedule<system::classical_constraint_system>(m_utility, "ClassicalConstraint");
     ::declare_Schedule<system::transverse_field_system>(m_utility, "TransverseField");
 
     m_utility.def("make_classical_schedule_list", &utility::make_classical_schedule_list,
             "beta_min"_a, "beta_max"_a, "one_mc_step"_a, "num_call_updater"_a);
+
+    m_utility.def("make_classical_constraint_schedule_list", &utility::make_classical_constraint_schedule_list,
+            "lambda"_a, "beta_min"_a, "beta_max"_a, "one_mc_step"_a, "num_call_updater"_a);
 
     m_utility.def("make_transverse_field_schedule_list", &utility::make_transverse_field_schedule_list,
             "beta"_a, "one_mc_step"_a, "num_call_updater"_a);
@@ -154,6 +137,7 @@ PYBIND11_MODULE(cxxjij, m){
 
     ::declare_get_solution<system::ClassicalIsing<graph::Dense<FloatType>>>(m_result);
     ::declare_get_solution<system::ClassicalIsing<graph::Sparse<FloatType>>>(m_result);
+    ::declare_get_solution<system::ClassicalIsingPolynomial<graph::Polynomial<FloatType>>>(m_result);
     ::declare_get_solution<system::TransverseIsing<graph::Dense<FloatType>>>(m_result);
     ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>>>(m_result);
     ::declare_get_solution<system::ContinuousTimeIsing<graph::Sparse<FloatType>>>(m_result);

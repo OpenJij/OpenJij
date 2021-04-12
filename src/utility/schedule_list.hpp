@@ -152,6 +152,11 @@ namespace openjij {
         using TransverseFieldScheduleList = ScheduleList<system::transverse_field_system>;
 
         /**
+         * @brief ClassicalConstraintScheduleList alias
+         */
+        using ClassicalConstraintScheduleList = ScheduleList<system::classical_constraint_system>;
+
+        /**
          * @brief helper function for making classical schedule list with geometric series of inverse temperatures.
          *
          * @param beta_min initial (minimal) value of beta 
@@ -193,6 +198,31 @@ namespace openjij {
                 schedule.one_mc_step = one_mc_step;
                 schedule.updater_parameter = TransverseFieldUpdaterParameter(beta, s);
                 s += ds;
+            }
+
+            return schedule_list;
+        }
+
+        /**
+         * @brief helper function for making classical constraint schedule list with geometric series of inverse temperatures (with constraint parameter fixed).
+         *
+         * @param lambda constraint paraemeters
+         * @param beta_min
+         * @param beta_max
+         * @param one_mc_step
+         * @param num_call_updater
+         *
+         * @return generated schedule list
+         */
+        ClassicalConstraintScheduleList make_classical_constraint_schedule_list(double lambda, double beta_min, double beta_max, std::size_t one_mc_step, std::size_t num_call_updater) {
+            double r_beta = std::pow(beta_max/beta_min, 1.0/static_cast<double>(num_call_updater - 1));
+            double beta = beta_min;
+
+            auto schedule_list = ClassicalConstraintScheduleList(num_call_updater);
+            for (auto& schedule : schedule_list) {
+                schedule.one_mc_step = one_mc_step;
+                schedule.updater_parameter = ClassicalConstraintUpdaterParameter(beta, lambda);
+                beta *= r_beta;
             }
 
             return schedule_list;
