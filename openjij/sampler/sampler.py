@@ -58,7 +58,7 @@ class BaseSampler(dimod.Sampler):
             if value is not None:
                 self._schedule_setting[key] = value
 
-        self.num_reads = kwargs['num_reads'] if kwargs['num_reads'] > 0\
+        self.num_reads = kwargs['num_reads'] if kwargs['num_reads'] > 1\
             else self.num_reads
 
     def _sampling(self, **kwargs):
