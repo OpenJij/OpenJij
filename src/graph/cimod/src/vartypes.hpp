@@ -49,7 +49,7 @@ enum class Vartype
  * @param vartype 
  * @return true or false
  */
-bool check_vartype
+inline bool check_vartype
 (
     const int32_t &var,
     const Vartype &vartype

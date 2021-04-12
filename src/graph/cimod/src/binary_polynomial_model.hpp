@@ -112,13 +112,13 @@
  */
 
 /**
- * @file binary_polynomial_model.hpp
- * @author Kohei Suzuki
- * @brief BinaryPolynomialModel class
+ * @file binary_quadratic_model.hpp
+ * @author Fumiya Watanabe
+ * @brief BinaryQuadraticModel class
  * @version 1.0.0
- * @date 2021-02-10
+ * @date 2020-03-24
  *
- * @copyright Copyright (c) Jij Inc. 2021
+ * @copyright Copyright (c) Jij Inc. 2020
  *
  */
 
@@ -193,7 +193,7 @@ public:
    
    //! @brief Generate variable list associated with the input interactions.
    //! @return Sorted variable list as std::vector<IndexType>.
-   std::vector<IndexType> generate_variables() const {
+   std::vector<IndexType> _generate_indices() const {
       std::vector<IndexType> ret;
       for (const auto &it_variables: m_variables) {
          ret.push_back(it_variables);
@@ -252,7 +252,7 @@ public:
    //! @brief Print information of binary polynomial model.
    void print() {
       
-      std::vector<IndexType> variables = generate_variables();
+      std::vector<IndexType> variables = _generate_indices();
       
       std::cout << "[BinaryPolynomialModel]" << std::endl;
       
@@ -576,11 +576,12 @@ public:
    json to_serializable() const {
       std::string schema_version = "3.0.0";
       //set variables (sorted)
-      std::vector<IndexType> variables = generate_variables();
+      std::vector<IndexType> variables = _generate_indices();
       size_t num_variables = variables.size();
    
       size_t num_interactions =  m_polynomial.size();
    
+      //set polynomial index and biases
       std::vector<std::vector<size_t>> p_index;
       std::vector<FloatType> p_bias;
       for (const auto &it_polynomial: m_polynomial) {
@@ -592,7 +593,7 @@ public:
          }
          p_bias.push_back(it_polynomial.second);
       }
-
+ 
       //set index_dtype
       std::string index_dtype = num_variables <= 65536UL ? "uint16" : "uint32";
 
@@ -666,15 +667,16 @@ public:
       else {
           throw std::runtime_error("variable_type must be SPIN or BINARY.");
       }
-     
+      
       //extract polynomial biases
       std::vector<IndexType_serial>    variables = input["variable_labels"];
       std::vector<std::vector<size_t>> p_index   = input["polynomial_interactions"];
       std::vector<FloatType_serial>    p_bias    = input["polynomial_biases"];
       Polynomial<IndexType_serial, FloatType_serial> polynomial;
-      for (size_t i = 0; i < p_bias.size(); ++i) {
+
+      for (std::size_t i = 0; i < p_bias.size(); ++i) {
          std::vector<IndexType_serial> temp_index;
-         for (size_t j = 0; j < p_index[i].size(); ++j) {
+         for (std::size_t j = 0; j < p_index[i].size(); ++j) {
             temp_index.push_back(variables[p_index[i][j]]);
          }
          if (i < p_index.size()) {
@@ -682,7 +684,6 @@ public:
          }
       }
       
-
       //extract info
       std::string info = (input["info"].empty())?"":input["info"];
       

@@ -89,7 +89,7 @@
 #include "vartypes.hpp"
 #include "hash.hpp"
 #include "utilities.hpp"
-#include <nlohmann/json.hpp>
+#include "json.hpp"
 
 #include <algorithm>
 #include <cstdint>
@@ -1492,7 +1492,7 @@ public:
         //construct a BinaryQuadraticModel instance
         BinaryQuadraticModel<IndexType_serial, FloatType_serial> bqm(linear, quadratic, offset, vartype, info);
         return bqm;
-    }
+    };
 
 };
 }
