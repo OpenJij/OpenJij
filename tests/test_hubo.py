@@ -1,6 +1,15 @@
 import unittest
 import openjij as oj
 
+def calculate_bpm_energy(polynomial, variables):
+    energy = 0.0
+    for (index, val) in polynomial.items():
+        temp = 1
+        for site in index:
+            temp *= variables[site]
+        energy += temp*val
+    return energy
+
 class HUBOTest(unittest.TestCase):
 
     def setUp(self):
@@ -64,6 +73,305 @@ class HUBOTest(unittest.TestCase):
         sampler = oj.SASampler()
         response = sampler.sample_hubo({(1,2,3):0.0, (1,2):1})
 
+class PolynomialModelTest(unittest.TestCase):
+    def setUp(self):
+        self.poly     = {(1,):1.0, (3,):3.0, (1,2):12.0, (1,3):13.0, (2,3,4):234.0, (3,5):35.0}
+        self.spins    = {1:+1, 2:-1, 3:+1, 4:-1, 5:+1} 
+        self.binaries = {1: 1, 2: 0, 3: 1, 4: 0, 5: 1}
+
+        self.poly_str     = {("a",):1.0, ("c",):3.0, ("a","b"):12.0, ("a","c"):13.0, ("b","c","d"):234.0, ("c","e"):35.0}
+        self.spins_str    = {"a":+1, "b":-1, "c":+1, "d":-1, "e":+1} 
+        self.binaries_str = {"a": 1, "b": 0, "c": 1, "d": 0, "e": 1}
+
+        self.poly_tuple2     = {((1,1),):1.0, ((3,3),):3.0, ((1,1),(2,2)):12.0, ((1,1),(3,3)):13.0, ((2,2),(3,3),(4,4)):234.0, ((3,3),(5,5)):35.0}
+        self.spins_tuple2    = {(1,1):+1, (2,2):-1, (3,3):+1, (4,4):-1, (5,5):+1} 
+        self.binaries_tuple2 = {(1,1): 1, (2,2): 0, (3,3): 1, (4,4): 0, (5,5): 1}
+
+        self.poly_tuple3     = {((1,1,1),):1.0, ((3,3,3),):3.0, ((1,1,1),(2,2,2)):12.0, ((1,1,1),(3,3,3)):13.0, ((2,2,2),(3,3,3),(4,4,4)):234.0, ((3,3,3),(5,5,5)):35.0}
+        self.spins_tuple3    = {(1,1,1):+1, (2,2,2):-1, (3,3,3):+1, (4,4,4):-1, (5,5,5):+1} 
+        self.binaries_tuple3 = {(1,1,1): 1, (2,2,2): 0, (3,3,3): 1, (4,4,4): 0, (5,5,5): 1}
+
+        self.poly_tuple4     = {(((1,1,1,1)),):1.0, (((3,3,3,3)),):3.0, (((1,1,1,1)),((2,2,2,2))):12.0, \
+                                    (((1,1,1,1)),((3,3,3,3))):13.0, (((2,2,2,2)),((3,3,3,3)),((4,4,4,4))):234.0, (((3,3,3,3)),((5,5,5,5))):35.0}
+        self.spins_tuple4    = {((1,1,1,1)):+1, ((2,2,2,2)):-1, ((3,3,3,3)):+1, ((4,4,4,4)):-1, ((5,5,5,5)):+1} 
+        self.binaries_tuple4 = {((1,1,1,1)): 1, ((2,2,2,2)): 0, ((3,3,3,3)): 1, ((4,4,4,4)): 0, ((5,5,5,5)): 1}
+
+
+
+    # Test BinaryPolynomialModel constructor
+    def test_bpm_constructor(self):
+        #IntegerType
+        bpm = oj.BinaryPolynomialModel(self.poly)
+        temp_poly = {(2,):0.0, (5,): 0.0, (4,): 0.0}
+        self.assertEqual    (bpm.vartype        , oj.SPIN)  #vartype
+        self.assertEqual    (bpm.get_length()   , 5)           #get_length()
+        self.assertSetEqual (bpm.variables      , {1,2,3,4,5}) #variables
+        self.assertSetEqual (bpm.get_variables(), {1,2,3,4,5}) #get_variables()
+        self.assertDictEqual(bpm.polynomial      , {**self.poly, **temp_poly}) #polynomial
+        self.assertDictEqual(bpm.get_polynomial(), {**self.poly, **temp_poly}) #get_polynomial()
+        self.assertDictEqual(bpm.adj             , {1:{(1,2):12.0, (1,3):13.0}, 2:{(2,3,4):234.0}, 3:{(3,5):35.0}}) #adj
+        self.assertDictEqual(bpm.get_adjacency() , {1:{(1,2):12.0, (1,3):13.0}, 2:{(2,3,4):234.0}, 3:{(3,5):35.0}}) #get_adjacency()
+
+        #StringType
+        bpm = oj.BinaryPolynomialModel(self.poly_str)
+        temp_poly = {("b",):0.0, ("e",): 0.0, ("d",): 0.0}
+        self.assertEqual    (bpm.vartype        , oj.SPIN)  #vartype
+        self.assertEqual    (bpm.get_length()   , 5)           #get_length()
+        self.assertSetEqual (bpm.variables      , {"a","b","c","d","e"}) #variables
+        self.assertSetEqual (bpm.get_variables(), {"a","b","c","d","e"}) #get_variables()
+        self.assertDictEqual(bpm.polynomial      , {**self.poly_str, **temp_poly}) #polynomial
+        self.assertDictEqual(bpm.get_polynomial(), {**self.poly_str, **temp_poly}) #get_polynomial()
+        self.assertDictEqual(bpm.adj             , {"a":{("a","b"):12.0, ("a","c"):13.0}, "b":{("b","c","d"):234.0}, "c":{("c","e"):35.0}}) #adj
+        self.assertDictEqual(bpm.get_adjacency() , {"a":{("a","b"):12.0, ("a","c"):13.0}, "b":{("b","c","d"):234.0}, "c":{("c","e"):35.0}}) #get_adjacency()
+        
+        #IntegerTypeTuple2
+        bpm = oj.BinaryPolynomialModel(self.poly_tuple2) 
+        temp_poly = {((2,2),):0.0, ((5,5),): 0.0, ((4,4),): 0.0}
+        self.assertEqual    (bpm.vartype        , oj.SPIN)  #vartype
+        self.assertEqual    (bpm.get_length()   , 5)           #get_length()
+        self.assertSetEqual (bpm.variables      , {(1,1),(2,2),(3,3),(4,4),(5,5)}) #variables
+        self.assertSetEqual (bpm.get_variables(), {(1,1),(2,2),(3,3),(4,4),(5,5)}) #get_variables()
+        self.assertDictEqual(bpm.polynomial      , {**self.poly_tuple2, **temp_poly}) #polynomial
+        self.assertDictEqual(bpm.get_polynomial(), {**self.poly_tuple2, **temp_poly}) #get_polynomial()
+        self.assertDictEqual(bpm.adj             , {(1,1):{((1,1),(2,2)):12.0, ((1,1),(3,3)):13.0}, (2,2):{((2,2),(3,3),(4,4)):234.0}, (3,3):{((3,3),(5,5)):35.0}}) #adj
+        self.assertDictEqual(bpm.get_adjacency() , {(1,1):{((1,1),(2,2)):12.0, ((1,1),(3,3)):13.0}, (2,2):{((2,2),(3,3),(4,4)):234.0}, (3,3):{((3,3),(5,5)):35.0}}) #get_adjacency()
+
+        #IntegerTypeTuple3
+        bpm = oj.BinaryPolynomialModel(self.poly_tuple3) 
+        temp_poly = {((2,2,2),):0.0, ((5,5,5),): 0.0, ((4,4,4),): 0.0}
+        self.assertEqual    (bpm.vartype        , oj.SPIN)  #vartype
+        self.assertEqual    (bpm.get_length()   , 5)           #get_length()
+        self.assertSetEqual (bpm.variables      , {(1,1,1),(2,2,2),(3,3,3),(4,4,4),(5,5,5)}) #variables
+        self.assertSetEqual (bpm.get_variables(), {(1,1,1),(2,2,2),(3,3,3),(4,4,4),(5,5,5)}) #get_variables()
+        self.assertDictEqual(bpm.polynomial      , {**self.poly_tuple3, **temp_poly}) #polynomial
+        self.assertDictEqual(bpm.get_polynomial(), {**self.poly_tuple3, **temp_poly}) #get_polynomial()
+        self.assertDictEqual(bpm.adj             , {(1,1,1):{((1,1,1),(2,2,2)):12.0, ((1,1,1),(3,3,3)):13.0}, (2,2,2):{((2,2,2),(3,3,3),(4,4,4)):234.0}, (3,3,3):{((3,3,3),(5,5,5)):35.0}}) #adj
+        self.assertDictEqual(bpm.get_adjacency() , {(1,1,1):{((1,1,1),(2,2,2)):12.0, ((1,1,1),(3,3,3)):13.0}, (2,2,2):{((2,2,2),(3,3,3),(4,4,4)):234.0}, (3,3,3):{((3,3,3),(5,5,5)):35.0}}) #get_adjacency()
+
+        #StringTypeTuple4
+        bpm = oj.BinaryPolynomialModel(self.poly_tuple4)
+        temp_poly = {(((2,2,2,2)),):0.0, (((5,5,5,5)),): 0.0, (((4,4,4,4)),): 0.0}
+        self.assertEqual    (bpm.vartype        , oj.SPIN)  #vartype
+        self.assertEqual    (bpm.get_length()   , 5)           #get_length()
+        self.assertSetEqual (bpm.variables      , {((1,1,1,1)),((2,2,2,2)),((3,3,3,3)),((4,4,4,4)),((5,5,5,5))}) #variables
+        self.assertSetEqual (bpm.get_variables(), {((1,1,1,1)),((2,2,2,2)),((3,3,3,3)),((4,4,4,4)),((5,5,5,5))}) #get_variables()
+        self.assertDictEqual(bpm.polynomial      , {**self.poly_tuple4, **temp_poly}) #polynomial
+        self.assertDictEqual(bpm.get_polynomial(), {**self.poly_tuple4, **temp_poly}) #get_polynomial()
+        self.assertDictEqual(bpm.adj             , {((1,1,1,1)):{(((1,1,1,1)),((2,2,2,2))):12.0, (((1,1,1,1)),((3,3,3,3))):13.0}, \
+                                                    ((2,2,2,2)):{(((2,2,2,2)),((3,3,3,3)),((4,4,4,4))):234.0}, ((3,3,3,3)):{(((3,3,3,3)),((5,5,5,5))):35.0}}) #adj
+        self.assertDictEqual(bpm.get_adjacency() , {((1,1,1,1)):{(((1,1,1,1)),((2,2,2,2))):12.0, (((1,1,1,1)),((3,3,3,3))):13.0}, \
+                                                    ((2,2,2,2)):{(((2,2,2,2)),((3,3,3,3)),((4,4,4,4))):234.0}, ((3,3,3,3)):{(((3,3,3,3)),((5,5,5,5))):35.0}}) #get_adjacency()
+
+    #Tese energy calculations
+    def test_bpm_calc_energy(self):
+        #Spin
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly).energy(self.spins)              , calculate_bpm_energy(self.poly, self.spins))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_str).energy(self.spins_str)      , calculate_bpm_energy(self.poly_str, self.spins_str))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_tuple2).energy(self.spins_tuple2), calculate_bpm_energy(self.poly_tuple2, self.spins_tuple2))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_tuple3).energy(self.spins_tuple3), calculate_bpm_energy(self.poly_tuple3, self.spins_tuple3))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_tuple4).energy(self.spins_tuple4), calculate_bpm_energy(self.poly_tuple4, self.spins_tuple4))
+
+        #Binary
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly, oj.BINARY).energy(self.binaries)        , calculate_bpm_energy(self.poly, self.binaries))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_str, oj.BINARY).energy(self.binaries_str), calculate_bpm_energy(self.poly_str, self.binaries_str))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_tuple2, oj.BINARY).energy(self.binaries_tuple2), calculate_bpm_energy(self.poly_tuple2, self.binaries_tuple2))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_tuple3, oj.BINARY).energy(self.binaries_tuple3), calculate_bpm_energy(self.poly_tuple3, self.binaries_tuple3))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_tuple4, oj.BINARY).energy(self.binaries_tuple4), calculate_bpm_energy(self.poly_tuple4, self.binaries_tuple4))
+
+        #PUBO == Ising
+        temp_spins        = {**self.spins}
+        temp_spins_str    = {**self.spins_str}
+        temp_spins_tuple2 = {**self.spins_tuple2}
+        temp_spins_tuple3 = {**self.spins_tuple3}
+        temp_spins_tuple4 = {**self.spins_tuple4}
+
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly, oj.BINARY).energy(temp_spins, convert_sample=True), calculate_bpm_energy(self.poly, self.binaries))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_str, oj.BINARY).energy(temp_spins_str, convert_sample=True), calculate_bpm_energy(self.poly_str, self.binaries_str))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_tuple2, oj.BINARY).energy(temp_spins_tuple2, convert_sample=True), calculate_bpm_energy(self.poly_tuple2, self.binaries_tuple2))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_tuple3, oj.BINARY).energy(temp_spins_tuple3, convert_sample=True), calculate_bpm_energy(self.poly_tuple3, self.binaries_tuple3))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_tuple4, oj.BINARY).energy(temp_spins_tuple4, convert_sample=True), calculate_bpm_energy(self.poly_tuple4, self.binaries_tuple4))
+
+        #Ising == PUBO
+        temp_binaries        = {**self.binaries}
+        temp_binaries_str    = {**self.binaries_str}
+        temp_binaries_tuple2 = {**self.binaries_tuple2}
+        temp_binaries_tuple3 = {**self.binaries_tuple3}
+        temp_binaries_tuple4 = {**self.binaries_tuple4}
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly       ).energy(temp_binaries, convert_sample=True),        calculate_bpm_energy(self.poly,        self.spins))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_str   ).energy(temp_binaries_str, convert_sample=True),    calculate_bpm_energy(self.poly_str,    self.spins_str))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_tuple2).energy(temp_binaries_tuple2, convert_sample=True), calculate_bpm_energy(self.poly_tuple2, self.spins_tuple2))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_tuple3).energy(temp_binaries_tuple3, convert_sample=True), calculate_bpm_energy(self.poly_tuple3, self.spins_tuple3))
+        self.assertEqual(oj.BinaryPolynomialModel(self.poly_tuple4).energy(temp_binaries_tuple4, convert_sample=True), calculate_bpm_energy(self.poly_tuple4, self.spins_tuple4))
+
+    # Test BinaryPolynomialModel from_pubo function
+    def test_bpm_from_pubo(self):
+        bpm = oj.BinaryPolynomialModel(self.poly, oj.BINARY)
+        bpm_from_pubo = oj.BinaryPolynomialModel.from_pubo(self.poly)
+        self.assertEqual    (bpm_from_pubo.vartype         , bpm.vartype)         #vartype
+        self.assertEqual    (bpm_from_pubo.get_length()    , bpm.get_length())    #get_length()
+        self.assertSetEqual (bpm_from_pubo.variables       , bpm.variables)       #variables
+        self.assertSetEqual (bpm_from_pubo.get_variables() , bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm_from_pubo.polynomial      , bpm.polynomial)      #polynomial
+        self.assertDictEqual(bpm_from_pubo.get_polynomial(), bpm.get_polynomial())#get_polynomial()
+        self.assertDictEqual(bpm_from_pubo.adj             , bpm.adj)             #adj
+        self.assertDictEqual(bpm_from_pubo.get_adjacency() , bpm.get_adjacency()) #get_adjacency()
+        
+        bpm = oj.BinaryPolynomialModel(self.poly_str, oj.BINARY)
+        bpm_from_pubo = oj.BinaryPolynomialModel.from_pubo(self.poly_str)
+        self.assertEqual    (bpm_from_pubo.vartype         , bpm.vartype)         #vartype
+        self.assertEqual    (bpm_from_pubo.get_length()    , bpm.get_length())    #get_length()
+        self.assertSetEqual (bpm_from_pubo.variables       , bpm.variables)       #variables
+        self.assertSetEqual (bpm_from_pubo.get_variables() , bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm_from_pubo.polynomial      , bpm.polynomial)      #polynomial
+        self.assertDictEqual(bpm_from_pubo.get_polynomial(), bpm.get_polynomial())#get_polynomial()
+        self.assertDictEqual(bpm_from_pubo.adj             , bpm.adj)             #adj
+        self.assertDictEqual(bpm_from_pubo.get_adjacency() , bpm.get_adjacency()) #get_adjacency()
+
+        bpm = oj.BinaryPolynomialModel(self.poly_tuple2, oj.BINARY)
+        bpm_from_pubo = oj.BinaryPolynomialModel.from_pubo(self.poly_tuple2)
+        self.assertEqual    (bpm_from_pubo.vartype         , bpm.vartype)         #vartype
+        self.assertEqual    (bpm_from_pubo.get_length()    , bpm.get_length())    #get_length()
+        self.assertSetEqual (bpm_from_pubo.variables       , bpm.variables)       #variables
+        self.assertSetEqual (bpm_from_pubo.get_variables() , bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm_from_pubo.polynomial      , bpm.polynomial)      #polynomial
+        self.assertDictEqual(bpm_from_pubo.get_polynomial(), bpm.get_polynomial())#get_polynomial()
+        self.assertDictEqual(bpm_from_pubo.adj             , bpm.adj)             #adj
+        self.assertDictEqual(bpm_from_pubo.get_adjacency() , bpm.get_adjacency()) #get_adjacency()
+
+        bpm = oj.BinaryPolynomialModel(self.poly_tuple3, oj.BINARY)
+        bpm_from_pubo = oj.BinaryPolynomialModel.from_pubo(self.poly_tuple3)
+        self.assertEqual    (bpm_from_pubo.vartype         , bpm.vartype)         #vartype
+        self.assertEqual    (bpm_from_pubo.get_length()    , bpm.get_length())    #get_length()
+        self.assertSetEqual (bpm_from_pubo.variables       , bpm.variables)       #variables
+        self.assertSetEqual (bpm_from_pubo.get_variables() , bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm_from_pubo.polynomial      , bpm.polynomial)      #polynomial
+        self.assertDictEqual(bpm_from_pubo.get_polynomial(), bpm.get_polynomial())#get_polynomial()
+        self.assertDictEqual(bpm_from_pubo.adj             , bpm.adj)             #adj
+        self.assertDictEqual(bpm_from_pubo.get_adjacency() , bpm.get_adjacency()) #get_adjacency()
+
+        bpm = oj.BinaryPolynomialModel(self.poly_tuple4, oj.BINARY)
+        bpm_from_pubo = oj.BinaryPolynomialModel.from_pubo(self.poly_tuple4)
+        self.assertEqual    (bpm_from_pubo.vartype         , bpm.vartype)         #vartype
+        self.assertEqual    (bpm_from_pubo.get_length()    , bpm.get_length())    #get_length()
+        self.assertSetEqual (bpm_from_pubo.variables       , bpm.variables)       #variables
+        self.assertSetEqual (bpm_from_pubo.get_variables() , bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm_from_pubo.polynomial      , bpm.polynomial)      #polynomial
+        self.assertDictEqual(bpm_from_pubo.get_polynomial(), bpm.get_polynomial())#get_polynomial()
+        self.assertDictEqual(bpm_from_pubo.adj             , bpm.adj)             #adj
+        self.assertDictEqual(bpm_from_pubo.get_adjacency() , bpm.get_adjacency()) #get_adjacency()
+
+    # Test BinaryPolynomialModel from_ising function
+    def test_bpm_from_ising(self):
+        bpm = oj.BinaryPolynomialModel(self.poly)
+        bpm_from_pubo = oj.BinaryPolynomialModel.from_ising(self.poly)
+        self.assertEqual    (bpm_from_pubo.vartype         , bpm.vartype)         #vartype
+        self.assertEqual    (bpm_from_pubo.get_length()    , bpm.get_length())    #get_length()
+        self.assertSetEqual (bpm_from_pubo.variables       , bpm.variables)       #variables
+        self.assertSetEqual (bpm_from_pubo.get_variables() , bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm_from_pubo.polynomial      , bpm.polynomial)      #polynomial
+        self.assertDictEqual(bpm_from_pubo.get_polynomial(), bpm.get_polynomial())#get_polynomial()
+        self.assertDictEqual(bpm_from_pubo.adj             , bpm.adj)             #adj
+        self.assertDictEqual(bpm_from_pubo.get_adjacency() , bpm.get_adjacency()) #get_adjacency()
+        
+        bpm = oj.BinaryPolynomialModel(self.poly_str)
+        bpm_from_pubo = oj.BinaryPolynomialModel.from_ising(self.poly_str)
+        self.assertEqual    (bpm_from_pubo.vartype         , bpm.vartype)         #vartype
+        self.assertEqual    (bpm_from_pubo.get_length()    , bpm.get_length())    #get_length()
+        self.assertSetEqual (bpm_from_pubo.variables       , bpm.variables)       #variables
+        self.assertSetEqual (bpm_from_pubo.get_variables() , bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm_from_pubo.polynomial      , bpm.polynomial)      #polynomial
+        self.assertDictEqual(bpm_from_pubo.get_polynomial(), bpm.get_polynomial())#get_polynomial()
+        self.assertDictEqual(bpm_from_pubo.adj             , bpm.adj)             #adj
+        self.assertDictEqual(bpm_from_pubo.get_adjacency() , bpm.get_adjacency()) #get_adjacency()
+
+        bpm = oj.BinaryPolynomialModel(self.poly_tuple2)
+        bpm_from_pubo = oj.BinaryPolynomialModel.from_ising(self.poly_tuple2)
+        self.assertEqual    (bpm_from_pubo.vartype         , bpm.vartype)         #vartype
+        self.assertEqual    (bpm_from_pubo.get_length()    , bpm.get_length())    #get_length()
+        self.assertSetEqual (bpm_from_pubo.variables       , bpm.variables)       #variables
+        self.assertSetEqual (bpm_from_pubo.get_variables() , bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm_from_pubo.polynomial      , bpm.polynomial)      #polynomial
+        self.assertDictEqual(bpm_from_pubo.get_polynomial(), bpm.get_polynomial())#get_polynomial()
+        self.assertDictEqual(bpm_from_pubo.adj             , bpm.adj)             #adj
+        self.assertDictEqual(bpm_from_pubo.get_adjacency() , bpm.get_adjacency()) #get_adjacency()
+
+        bpm = oj.BinaryPolynomialModel(self.poly_tuple3)
+        bpm_from_pubo = oj.BinaryPolynomialModel.from_ising(self.poly_tuple3)
+        self.assertEqual    (bpm_from_pubo.vartype         , bpm.vartype)         #vartype
+        self.assertEqual    (bpm_from_pubo.get_length()    , bpm.get_length())    #get_length()
+        self.assertSetEqual (bpm_from_pubo.variables       , bpm.variables)       #variables
+        self.assertSetEqual (bpm_from_pubo.get_variables() , bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm_from_pubo.polynomial      , bpm.polynomial)      #polynomial
+        self.assertDictEqual(bpm_from_pubo.get_polynomial(), bpm.get_polynomial())#get_polynomial()
+        self.assertDictEqual(bpm_from_pubo.adj             , bpm.adj)             #adj
+        self.assertDictEqual(bpm_from_pubo.get_adjacency() , bpm.get_adjacency()) #get_adjacency()
+
+        bpm = oj.BinaryPolynomialModel(self.poly_tuple4)
+        bpm_from_pubo = oj.BinaryPolynomialModel.from_ising(self.poly_tuple4)
+        self.assertEqual    (bpm_from_pubo.vartype         , bpm.vartype)         #vartype
+        self.assertEqual    (bpm_from_pubo.get_length()    , bpm.get_length())    #get_length()
+        self.assertSetEqual (bpm_from_pubo.variables       , bpm.variables)       #variables
+        self.assertSetEqual (bpm_from_pubo.get_variables() , bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm_from_pubo.polynomial      , bpm.polynomial)      #polynomial
+        self.assertDictEqual(bpm_from_pubo.get_polynomial(), bpm.get_polynomial())#get_polynomial()
+        self.assertDictEqual(bpm_from_pubo.adj             , bpm.adj)             #adj
+        self.assertDictEqual(bpm_from_pubo.get_adjacency() , bpm.get_adjacency()) #get_adjacency()
+
+    def test_bpm_serializable(self):
+        bpm = oj.BinaryPolynomialModel(self.poly)
+        decode_bpm = oj.BinaryPolynomialModel.from_serializable(bpm.to_serializable())
+        self.assertEqual    (bpm.vartype         , decode_bpm.vartype)  #vartype
+        self.assertEqual    (bpm.get_length()    , decode_bpm.get_length())           #get_length()
+        self.assertSetEqual (bpm.variables       , decode_bpm.variables) #variables
+        self.assertSetEqual (bpm.get_variables() , decode_bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm.polynomial      , decode_bpm.polynomial) #polynomial
+        self.assertDictEqual(bpm.get_polynomial(), decode_bpm.get_polynomial()) #get_polynomial()
+        self.assertDictEqual(bpm.adj             , decode_bpm.adj ) #adj
+        self.assertDictEqual(bpm.get_adjacency() , decode_bpm.get_adjacency()) #get_adjacency()
+
+        bpm = oj.BinaryPolynomialModel(self.poly_str)
+        decode_bpm = oj.BinaryPolynomialModel.from_serializable(bpm.to_serializable())
+        self.assertEqual    (bpm.vartype         , decode_bpm.vartype)  #vartype
+        self.assertEqual    (bpm.get_length()    , decode_bpm.get_length())           #get_length()
+        self.assertSetEqual (bpm.variables       , decode_bpm.variables) #variables
+        self.assertSetEqual (bpm.get_variables() , decode_bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm.polynomial      , decode_bpm.polynomial) #polynomial
+        self.assertDictEqual(bpm.get_polynomial(), decode_bpm.get_polynomial()) #get_polynomial()
+        self.assertDictEqual(bpm.adj             , decode_bpm.adj ) #adj
+        self.assertDictEqual(bpm.get_adjacency() , decode_bpm.get_adjacency()) #get_adjacency()
+
+        bpm = oj.BinaryPolynomialModel(self.poly_tuple2)
+        decode_bpm = oj.BinaryPolynomialModel.from_serializable(bpm.to_serializable())
+        self.assertEqual    (bpm.vartype         , decode_bpm.vartype)  #vartype
+        self.assertEqual    (bpm.get_length()    , decode_bpm.get_length())           #get_length()
+        self.assertSetEqual (bpm.variables       , decode_bpm.variables) #variables
+        self.assertSetEqual (bpm.get_variables() , decode_bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm.polynomial      , decode_bpm.polynomial) #polynomial
+        self.assertDictEqual(bpm.get_polynomial(), decode_bpm.get_polynomial()) #get_polynomial()
+        self.assertDictEqual(bpm.adj             , decode_bpm.adj ) #adj
+        self.assertDictEqual(bpm.get_adjacency() , decode_bpm.get_adjacency()) #get_adjacency()
+
+        bpm = oj.BinaryPolynomialModel(self.poly_tuple3)
+        decode_bpm = oj.BinaryPolynomialModel.from_serializable(bpm.to_serializable())
+        self.assertEqual    (bpm.vartype         , decode_bpm.vartype)  #vartype
+        self.assertEqual    (bpm.get_length()    , decode_bpm.get_length())           #get_length()
+        self.assertSetEqual (bpm.variables       , decode_bpm.variables) #variables
+        self.assertSetEqual (bpm.get_variables() , decode_bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm.polynomial      , decode_bpm.polynomial) #polynomial
+        self.assertDictEqual(bpm.get_polynomial(), decode_bpm.get_polynomial()) #get_polynomial()
+        self.assertDictEqual(bpm.adj             , decode_bpm.adj ) #adj
+        self.assertDictEqual(bpm.get_adjacency() , decode_bpm.get_adjacency()) #get_adjacency()
+
+        bpm = oj.BinaryPolynomialModel(self.poly_tuple4)
+        decode_bpm = oj.BinaryPolynomialModel.from_serializable(bpm.to_serializable())
+        self.assertEqual    (bpm.vartype         , decode_bpm.vartype)  #vartype
+        self.assertEqual    (bpm.get_length()    , decode_bpm.get_length())           #get_length()
+        self.assertSetEqual (bpm.variables       , decode_bpm.variables) #variables
+        self.assertSetEqual (bpm.get_variables() , decode_bpm.get_variables()) #get_variables()
+        self.assertDictEqual(bpm.polynomial      , decode_bpm.polynomial) #polynomial
+        self.assertDictEqual(bpm.get_polynomial(), decode_bpm.get_polynomial()) #get_polynomial()
+        self.assertDictEqual(bpm.adj             , decode_bpm.adj ) #adj
+        self.assertDictEqual(bpm.get_adjacency() , decode_bpm.get_adjacency()) #get_adjacency()
 
 
 if __name__ == '__main__':
