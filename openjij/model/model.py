@@ -202,8 +202,8 @@ def make_BinaryPolynomialModel_from_JSON(obj: dict):
     if isinstance(label, list):
         #convert to tuple
         label = tuple(label)
-    mock_linear = {label:1.0}
-    return make_BinaryPolynomialModel(mock_linear, {})
+    mock_linear = {(label,):1.0}
+    return make_BinaryPolynomialModel(mock_linear)
 
 def BinaryPolynomialModel(interactions: dict, var_type = openjij.SPIN, **kwargs):
     Model = make_BinaryPolynomialModel(interactions)
@@ -211,7 +211,7 @@ def BinaryPolynomialModel(interactions: dict, var_type = openjij.SPIN, **kwargs)
 
 #classmethods
 BinaryPolynomialModel.from_pubo = \
-        lambda P, **kwargs: make_BinaryPolynomialModel({}, P).from_pubo(P, **kwargs)
+        lambda P, **kwargs: make_BinaryPolynomialModel(P).from_pubo(P, **kwargs)
 
 BinaryPolynomialModel.from_ising = \
         lambda polynomial, **kwargs: make_BinaryPolynomialModel(polynomial).from_ising(polynomial, **kwargs)
