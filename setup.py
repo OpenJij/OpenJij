@@ -1,15 +1,16 @@
 import os
-import re
-import sys
 import platform
-import sysconfig
+import re
 import subprocess
+import sys
+import sysconfig
+from distutils.version import LooseVersion
+from importlib.util import find_spec
+from multiprocessing import cpu_count
 
-from setuptools import setup, Extension, find_packages
+from setuptools import Extension, find_packages
 from setuptools.command.build_ext import build_ext
 from setuptools.command.test import test as TestCommand
-from distutils.version import LooseVersion
-
 
 # Package meta-data.
 NAME = 'openjij'
@@ -17,6 +18,19 @@ DESCRIPTION = 'Framework for the Ising model and QUBO'
 EMAIL = 'openjij@j-ij.com'
 AUTHOR = 'Jij Inc.'
 VERSION = '0.2.1'
+
+if platform.system() == "Windows":
+    from setuptools import setup
+elif find_spec('skbuild'):
+    from skbuild import setup
+elif os.getenv('NOT_USE_SKBUILD'):
+    from setuptools import setup
+elif os.getenv('READTHEDOCS'):
+    from skbuild import setup
+else:
+    from setuptools import setup
+
+CPU_COUNT = "-j" + str(cpu_count() + 1)
 
 
 class CMakeExtension(Extension):
@@ -56,13 +70,18 @@ class CMakeBuild(build_ext):
 
         if platform.system() == "Windows":
             cmake_kwargs += [
-                '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
-            if sys.maxsize > 2**32:
+                    '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
+            if sys.maxsize > 2 ** 32:
                 cmake_kwargs += ['-A', 'x64']
             build_kwargs += ['--', '/m']
+        elif platform.system() == 'Darwin':
+            cmake_kwargs += ['-DCMAKE_BUILD_TYPE=' + cfg]
+            cmake_kwargs += ['-DCMAKE_MAKE_PROGRAM=' + '\"make -j ' + str(CPU_COUNT) + '\"']
+            build_kwargs += ['--', '-j ' + str(CPU_COUNT)]
         else:
             cmake_kwargs += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_kwargs += ['--', '-j2']
+            cmake_kwargs += ['-DCMAKE_MAKE_PROGRAM=' + '\"make -j ' + str(CPU_COUNT) + '\"']
+            build_kwargs += ['--', '-j ' + str(CPU_COUNT)]
 
         # disable macos openmp since addtional dependency is needed.
         if platform.system() != "Windows" and platform.system() != "Linux":
@@ -123,25 +142,43 @@ if not VERSION:
 else:
     about['__version__'] = VERSION
 
+install_requires = [
+        'numpy>=1.17.3, <=1.20.0',
+        'dimod>=0.9.14, <=0.10.0',
+        'jij-cimod >= 1.1.0',
+        'scipy >= 1.6.2',
+        'requests >= 2.25.1'
+        ]
+
+setup_requires = [
+        'numpy>=1.17.3, <=1.20.0',
+        'scikit-build> =0.11.1',
+        'wheel >=0.36.2',
+        'Cython >=0.29.21'
+        'cmake>=3.18.4',
+        'setuptools',
+        ]
+
 setup(
-    name=NAME,
-    version=about['__version__'],
-    author='Jij Inc.',
-    author_email='openjij@j-ij.com',
-    url='https://openjij.github.io/OpenJij/',
-    description='Framework for the Ising model and QUBO',
-    long_description=open('README.md').read(),
-    long_description_content_type="text/markdown",
-    install_requires=['dimod >= 0.9.1', 'numpy >= 1.18.4', 'scipy', 'requests', 'jij-cimod >= 1.1.0'],
-    ext_modules=[CMakeExtension('cxxjij')],
-    cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
-                  pytest=PyTestCommand),
-    packages=find_packages(exclude=('tests', 'docs', 'examples')),
-    license='Apache License 2.0',
-    classifiers=[
-        'License :: OSI Approved :: Apache Software License',
-        'Intended Audience :: Science/Research',
-        'Programming Language :: Python',
-    ],
+        name=NAME,
+        version=about['__version__'],
+        author='Jij Inc.',
+        author_email='openjij@j-ij.com',
+        url='https://openjij.github.io/OpenJij/',
+        description='Framework for the Ising model and QUBO',
+        long_description=open('README.md').read(),
+        long_description_content_type="text/markdown",
+        install_requires=install_requires,
+        setup_requires=setup_requires,
+        ext_modules=[CMakeExtension('cxxjij')],
+        cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
+                      pytest=PyTestCommand),
+        packages=find_packages(exclude=('tests', 'docs', 'examples')),
+        license='Apache License 2.0',
+        classifiers=[
+                'License :: OSI Approved :: Apache Software License',
+                'Intended Audience :: Science/Research',
+                'Programming Language :: Python',
+                ],
     zip_safe=False
 )

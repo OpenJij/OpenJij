@@ -16,6 +16,8 @@ if(NOT eigen_POPULATED)
     add_subdirectory(${eigen_SOURCE_DIR})
 endif()
 
+FetchContent_MakeAvailable(eigen)
+
 add_library(eigen_lib INTERFACE)
 target_include_directories(eigen_lib INTERFACE ${eigen_SOURCE_DIR})
 # use MPL2-only libraries

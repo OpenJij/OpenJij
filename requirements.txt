@@ -1,0 +1,15 @@
+certifi==2020.12.5
+chardet==4.0.0
+cmake==3.18.4.post1
+Cython==0.29.23
+dimod==0.9.14
+distro==1.5.0
+idna==2.10
+jij-cimod==1.1.0
+numpy==1.20.0
+packaging==20.9
+pyparsing==2.4.7
+requests==2.25.1
+scikit-build==0.11.1
+scipy==1.6.2
+urllib3==1.26.4
