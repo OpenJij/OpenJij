@@ -16,7 +16,7 @@ NAME = 'openjij'
 DESCRIPTION = 'Framework for the Ising model and QUBO'
 EMAIL = 'openjij@j-ij.com'
 AUTHOR = 'Jij Inc.'
-VERSION = '0.2.1'
+VERSION = '0.2.2'
 
 
 class CMakeExtension(Extension):
