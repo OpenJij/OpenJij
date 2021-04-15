@@ -81,7 +81,7 @@ class CMakeBuild(build_ext):
         else:
             cmake_kwargs += ['-DCMAKE_BUILD_TYPE=' + cfg]
             cmake_kwargs += ['-DCMAKE_MAKE_PROGRAM=' + '\"make -j ' + str(CPU_COUNT) + '\"']
-            build_kwargs += ['--', '-j ' + str(CPU_COUNT)]
+            build_kwargs += ['--', str(CPU_COUNT)]
 
         # disable macos openmp since addtional dependency is needed.
         if platform.system() != "Windows" and platform.system() != "Linux":
