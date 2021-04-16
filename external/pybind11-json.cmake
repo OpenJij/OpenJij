@@ -4,7 +4,7 @@ include(FetchContent)
 FetchContent_Declare(
     pybind11_json
     GIT_REPOSITORY  https://github.com/pybind/pybind11_json
-    GIT_TAG         0.2.4
+    GIT_TAG         0.2.9
 )
 
 FetchContent_GetProperties(pybind11_json)
