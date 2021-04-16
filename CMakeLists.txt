@@ -136,7 +136,7 @@ endif()
 if(Linux)
 	include(${CMAKE_SOURCE_DIR}/external/boost.cmake)
 	find_package(Boost)
-else()
+endif()
 
 include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
 find_package(pybind11 CONFIG)
