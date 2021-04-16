@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12.2)
-project(openjij C CXX Fortran)
+project(openjij)
 
 set(BOOST_ENABLE_CMAKE ON)
 
@@ -133,8 +133,10 @@ else()
 	message(STATUS "Skip downloding googletest")
 endif()
 
-include(${CMAKE_SOURCE_DIR}/external/boost.cmake)
-find_package(Boost)
+if(Linux)
+	include(${CMAKE_SOURCE_DIR}/external/boost.cmake)
+	find_package(Boost)
+else()
 
 include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
 find_package(pybind11 CONFIG)
