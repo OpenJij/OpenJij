@@ -14,5 +14,5 @@ if(NOT pybind11_fetch_POPULATED)
     add_subdirectory(${pybind11_SOURCE_DIR})
 endif()
 
-set(PYBIND11_FINDPYTHON ON)
-set(PYBIND11_CPP_STANDARD -std=c++17)
+#set(PYBIND11_FINDPYTHON ON)
+#set(PYBIND11_CPP_STANDARD -std=c++17)
