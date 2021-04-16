@@ -1,5 +1,19 @@
 add_library(cxxjij MODULE main.cpp)
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT result)
+if(result)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION True)
+  set_property(cxjij ... PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
+find_library(LOMP NAMES libomp.a, libomp.dylib)
+message(STATUS "LOMP  : ${LOMP}")
+link_directories(${LOMP}/lib)
+find_path(OMP NAMES  omp.h)
+message(STATUS "OMP  : ${OMP}")
+set(INCLUDE_DIRECTORIES ${OMP})
+
 if(USE_CUDA)
     set_target_properties(cxxjij PROPERTIES
         CXX_VISIBILITY_PRESET "hidden"
