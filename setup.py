@@ -77,7 +77,7 @@ class CMakeBuild(build_ext):
         elif platform.system() == 'Darwin':
             cmake_kwargs += ['-DCMAKE_BUILD_TYPE=' + cfg]
             #cmake_kwargs += ['-DCMAKE_MAKE_PROGRAM=' + '\"make ' + str(CPU_COUNT) + '\"']
-            build_kwargs += ['--', '-j ' + str(CPU_COUNT)]
+            build_kwargs += ['--',   str(CPU_COUNT)]
         else:
             cmake_kwargs += ['-DCMAKE_BUILD_TYPE=' + cfg]
             build_kwargs += ['--', str(CPU_COUNT)]
