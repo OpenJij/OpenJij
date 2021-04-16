@@ -16,7 +16,10 @@ if(NOT eigen_POPULATED)
     add_subdirectory(${eigen_SOURCE_DIR})
 endif()
 
-#FetchContent_MakeAvailable(eigen)
+FetchContent_MakeAvailable(eigen)
+
+set(CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD 17)
 
 add_library(eigen_lib INTERFACE)
 target_include_directories(eigen_lib INTERFACE ${eigen_SOURCE_DIR})
