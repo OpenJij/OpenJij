@@ -25,7 +25,7 @@ if(result)
 endif()
 
 set(CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
 # Set default compile flags for GCC
 if(CMAKE_COMPILER_IS_GNUCXX)
     message(STATUS "GCC detected, adding compile flags")
