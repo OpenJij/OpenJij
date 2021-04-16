@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.12.2)
 project(openjij C CXX Fortran)
 
-find_package(Python3 REQUIRED)
+set(BOOST_ENABLE_CMAKE ON)
+
+find_package(Python3 COMPONENTS Interpreter Development)
 find_package(PythonExtensions)
 find_package(NumPy)
-find_package(Boost)
+
 find_package(BLAS)
 find_package(LAPACK)
 find_package(MPI)
@@ -130,8 +132,14 @@ if(USE_TEST)
 else()
 	message(STATUS "Skip downloding googletest")
 endif()
-#include(${CMAKE_SOURCE_DIR}/external/boost.cmake)
+
+include(${CMAKE_SOURCE_DIR}/external/boost.cmake)
+find_package(Boost)
+
 include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
+find_package(pybind11 CONFIG)
+
+
 include(${CMAKE_SOURCE_DIR}/external/eigen.cmake)
 include(${CMAKE_SOURCE_DIR}/external/json.cmake)
 include(${CMAKE_SOURCE_DIR}/external/pybind11-json.cmake)
