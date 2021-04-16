@@ -13,7 +13,7 @@ if(USE_OMP)
     message(STATUS "OMP  : ${OMP}")
     set(INCLUDE_DIRECTORIES ${OMP})
     target_include_directories(cxxjij PUBLIC ${OMP})
-   endinf()
+   endnf()
 endif()
 
 if(USE_CUDA)
