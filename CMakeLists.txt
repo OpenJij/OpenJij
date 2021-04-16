@@ -139,7 +139,6 @@ if(Linux)
 endif()
 
 include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
-find_package(pybind11 CONFIG)
 
 
 include(${CMAKE_SOURCE_DIR}/external/eigen.cmake)
