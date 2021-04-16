@@ -4,7 +4,7 @@ include(FetchContent)
 FetchContent_Declare(
     eigen
     GIT_REPOSITORY  https://gitlab.com/libeigen/eigen
-    GIT_TAG         3.3.7
+    GIT_TAG         3.3.9
     )
 
 FetchContent_GetProperties(eigen)
@@ -16,7 +16,7 @@ if(NOT eigen_POPULATED)
     add_subdirectory(${eigen_SOURCE_DIR})
 endif()
 
-FetchContent_MakeAvailable(eigen)
+#FetchContent_MakeAvailable(eigen)
 
 add_library(eigen_lib INTERFACE)
 target_include_directories(eigen_lib INTERFACE ${eigen_SOURCE_DIR})
