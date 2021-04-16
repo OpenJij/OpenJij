@@ -4,7 +4,7 @@ include(CheckIPOSupported)
 check_ipo_supported(RESULT result)
 if(result)
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION True)
-  set_property(cxjij ... PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+  set_property(TARGET ... PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
 if(USE_OMP)
