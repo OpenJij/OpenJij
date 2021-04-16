@@ -13,5 +13,11 @@ FetchContent_Declare(
 )
 
 FetchContent_GetProperties(Boost)
+
+if (NOT boostorg_POPULATED)
+    FetchContent_Populate(boostorg)
+    add_subdirectory(${boostorg_SOURCE_DIR} ${boostorg_BINARY_DIR})
+endif ()
+
 FetchContent_Populate(Boost)
 
