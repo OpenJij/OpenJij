@@ -59,21 +59,27 @@ inline auto json_parse(const json& obj, bool relabel=true){
 }
 
 template<typename FloatType>
-inline auto json_parse_polynomial(const json& obj, bool relabel = true) {
+inline auto json_parse_polynomial(nlohmann::json& obj, const bool relabel = true) {
+   
+   if(obj["type"] != "BinaryPolynomialModel") {
+      throw std::runtime_error("Type must be \"BinaryPolynomialModel\".\n");
+   }
    
    if (relabel) {
-      json temp = obj;
-      std::size_t num_variables = temp["num_variables"];
-      std::vector<size_t> variables(num_variables);
-      std::iota(variables.begin(), variables.end(), 0);
-      temp["variable_labels"] = variables;
-      return cimod::BinaryPolynomialModel<size_t, FloatType>::from_serializable(temp);
+      std::size_t num_variables = obj["variables"].size();
+      std::vector<std::size_t>  sorted_variables_relabeld(num_variables);
+      std::iota(sorted_variables_relabeld.begin(), sorted_variables_relabeld.end(), 0);
+      obj["variables"] = sorted_variables_relabeld;
    }
-   else {
-      return cimod::BinaryPolynomialModel<size_t, FloatType>::from_serializable(obj);
-   }
-
+   return cimod::BinaryPolynomialModel<std::size_t, FloatType>::from_serializable(obj);
 }
+
+template<typename FloatType>
+inline auto json_parse_polynomial(const nlohmann::json& obj, const bool relabel = true) {
+   nlohmann::json temp = obj;
+   return json_parse_polynomial<FloatType>(temp, relabel);
+}
+
 } // namespace graph
 } // namespace openjij
 

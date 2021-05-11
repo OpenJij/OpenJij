@@ -28,189 +28,184 @@
 #include <unordered_map>
 #include <graph/json/parse.hpp>
 #include <graph/graph.hpp>
-#include <utility/vectorhash.hpp>
+#include "cimod/src/hash.hpp"
 
 namespace openjij {
 namespace graph {
 
-
-//! @brief Polynomial graph class, which can treat many-body interactions.
-//! The Hamiltonian is like
-//! \f[
-//! H=\sum_{i \neq j} Q_{ij} x_i x_j +  \sum_{i \neq j \neq k} Q_{ijk} x_i x_j x_k + \ldots
-//! \f]
-//! Note here that \f$ x_i \in \{0, 1\} \f$ or \f$ x_i \in \{-1, +1\} \f$.
-//! @tparam FloatType floating-point type
 template<typename FloatType>
 class Polynomial: public Graph {
    static_assert(std::is_floating_point<FloatType>::value, "FloatType must be floating-point type.");
    
 public:
-   //! @brief Interaction type
-   using Interactions = std::unordered_map<std::vector<Index>, FloatType, utility::VectorHash>;
    
    //! @brief Floating-point type
    using value_type = FloatType;
-      
-   //! @brief Constructor of Polynomial class to initialize variables and vartype.
-   //! @param num_variables std::size_t
-   //! @param vartype cimod::Vartype
+   
    Polynomial(const std::size_t num_variables, const cimod::Vartype &vartype): Graph(num_variables), vartype_(vartype) {}
    
-   //! @brief Constructor of Polynomial class to initialize variables. Note that vartype is initialized with the cimod::Vartype::SPIN.
-   //! @param num_variables std::size_t
-   Polynomial(const std::size_t num_variables): Graph(num_variables), vartype_(cimod::Vartype::SPIN) {}
+   explicit Polynomial(const std::size_t num_variables): Graph(num_variables), vartype_(cimod::Vartype::SPIN) {}
    
-   //! @brief Constructor of Polynomial class to initialize num_variables, vartype, and interactions from json by using a delegating constructor.
-   //! @param j JSON object
-   Polynomial(const json &j): Polynomial(json_parse_polynomial<FloatType>(j)) {}
+   explicit Polynomial(const nlohmann::json &j): Polynomial(json_parse_polynomial<FloatType>(j)) {}
    
-   //! @brief Constructor of Polynomial class to initialize num_variables, vartype, and interactions from cimod.
-   //! @param bpm cimod::BinaryPolynomialModel object
-   Polynomial(const cimod::BinaryPolynomialModel<Index, FloatType> &bpm): Graph(bpm.length()), vartype_(bpm.get_vartype()) {
-      for (const auto &it: bpm.get_polynomial()) {
-         if (std::abs(it.second) > 0.0) {
-            auto temp = it.first;
-            std::sort(temp.begin(), temp.end());
-            J_[temp] += it.second;
-         }
+   explicit Polynomial(nlohmann::json &j): Polynomial(json_parse_polynomial<FloatType>(j)) {}
+      
+   explicit Polynomial(const cimod::BinaryPolynomialModel<Index, FloatType> &bpm):
+   Graph(bpm.get_num_variables()), poly_key_list_(bpm._get_keys()), poly_value_list_(bpm._get_values()), poly_key_inv_(bpm.GetKeysInv()), vartype_(bpm.get_vartype()) {
+      if (poly_key_list_.size() != poly_value_list_.size() || poly_key_list_.size() != poly_key_inv_.size()) {
+         throw std::runtime_error("The sizes of key_list and value_list must match each other");
+      }
+      for (const auto &it: bpm.GetVariables()) {
+         UpdateMaxVariable(it);
       }
    }
-    
-   //! @brief Access the interaction corresponding to the input argument "std::vector<Index>&& index" (rvalue references) to set an interaction.
-   //! @details The input argument is sorted and duplicate values are removed.
-   //! @param index std::vector<Index>&&
-   //! @return The interaction corresponding to "std::vector<Index>&& index", i.e., J[index]
-   FloatType &J(std::vector<Index>&& index) {
-      std::sort(index.begin(), index.end());
-      index.erase(std::unique(index.begin(), index.end()), index.end());
-      if (index.size() > Graph::size()) {
-         std::stringstream ss;
-         ss << "Too small system size. ";
-         ss << "The degree of the input polynomial interaction is " << index.size();
-         ss << ". But the system size is " << Graph::size() << std::string("\n");
-         throw std::runtime_error(ss.str());
+
+   
+   FloatType &J(std::vector<Index> &key) {
+      std::sort(key.begin(), key.end());
+      CheckKeyValid(key);
+      if (poly_key_inv_.count(key) == 0) {
+         poly_key_inv_[key] = poly_value_list_.size();
+         poly_key_list_.push_back(key);
+         poly_value_list_.push_back(0.0);
       }
-      return J_[index];
+      return poly_value_list_[poly_key_inv_[key]];
    }
-   
-   //! @brief Access the interaction corresponding to the input argument "std::vector<Index>& index" (lvalue references) to set an interaction.
-   //! @details The input argument is sorted and duplicate values are removed.
-   //! @param index std::vector<Index>&
-   //! @return The interaction corresponding to "std::vector<Index>& index", i.e., J[index]
-   FloatType &J(std::vector<Index>& index) {
-      std::sort(index.begin(), index.end());
-      index.erase(std::unique(index.begin(), index.end()), index.end());
-      if (index.size() > Graph::size()) {
-         std::stringstream ss;
-         ss << "Too small system size. ";
-         ss << "The degree of the input polynomial interaction is " << index.size();
-         ss << ". But the system size is " << Graph::size() << std::string("\n");
-         throw std::runtime_error(ss.str());
+      
+   const FloatType &J(std::vector<Index> &key) const {
+      std::sort(key.begin(), key.end());
+      CheckKeyValid(key);
+      if (poly_key_inv_.count(key) == 0) {
+         poly_key_inv_[key] = poly_value_list_.size();
+         poly_key_list_.push_back(key);
+         poly_value_list_.push_back(0.0);
       }
-      return J_[index];
+      return poly_value_list_[poly_key_inv_[key]];
    }
    
-   //! @brief Access the interaction corresponding to the input argument "const std::vector<Index>& index" (lvalue references) to set an interaction.
-   //! @details The temporary object is generated from the input argument and is passed to "FloatType &J(std::vector<Index>&& index)".
-   //! @param index const std::vector<Index>&
-   //! @return The interaction corresponding to "const std::vector<Index>& index", i.e., J[index]
-   FloatType &J(const std::vector<Index>& index) {
-      return J(std::vector<Index>{index});//Access J(std::vector<Index>&& index)
+   FloatType &J(const std::vector<Index> &key) {
+      std::vector<Index> copied_key = key;
+      return J(copied_key);
+   }
+      
+   const FloatType &J(const std::vector<Index> &key) const {
+      std::vector<Index> copied_key = key;
+      return J(copied_key);
    }
    
-   //! @brief Access the interaction corresponding to the input argument "args" (parameter pack) to set an interaction.
-   //! @details The temporary object is generated from the input argument "args" and is passed to "FloatType &J(std::vector<Index>&& index)".
-   //! @param args parameter pack
-   //! @return The interaction corresponding to "args", i.e., J[args]
    template<typename... Args>
    FloatType &J(Args... args) {
-      return J(std::vector<Index>{(Index)args...});//Access J(std::vector<Index>&& index)
+      std::vector<Index> copied_key{(Index)args...};
+      return J(copied_key);
    }
    
-   //! @brief Return the interaction corresponding to the input argument "std::vector<Index> &&index" (rvalue references).
-   //! @details The input argument is sorted and duplicate values are removed. This function does not change the interaction.
-   //! @param index std::vector<Index>&&
-   //! @return The interaction corresponding to "std::vector<Index>&& index", i.e., J.at(index)
-   FloatType J(std::vector<Index> &&index) const {
-      std::sort(index.begin(), index.end());
-      index.erase(std::unique(index.begin(), index.end()), index.end());
-      return J_.at(index);
-   }
-   
-   //! @brief Return the interaction corresponding to the input argument "std::vector<Index> &index" (lvalue references).
-   //! @details The input argument is sorted and duplicate values are removed. This function does not change the interaction.
-   //! @param index std::vector<Index>&
-   //! @return The interaction corresponding to "std::vector<Index>& index", i.e., J.at(index)
-   const FloatType &J(std::vector<Index> &index) const {
-      std::sort(index.begin(), index.end());
-      index.erase(std::unique(index.begin(), index.end()), index.end());
-      return J_.at(index);
-   }
-   
-   //! @brief Return the interaction corresponding to the input argument "const std::vector<Index> &index".
-   //! @details The temporary object is generated from the input argument and is passed to "FloatType &J(std::vector<Index>&& index) const".
-   //! @param index const std::vector<Index>&
-   //! @return The interaction corresponding to "const std::vector<Index>& index", i.e., J.at(index)
-   const FloatType &J(const std::vector<Index> &index) const {
-      return J(std::vector<Index>{index});//Access J(std::vector<Index>&& index) const
-   }
-   
-   //! @brief Return the interaction corresponding to the input argument "args" (parameter pack).
-   //! @details The temporary object is generated from the input argument "args" and is passed to "FloatType &J(std::vector<Index>&& index) const".
-   //! @param args parameter pack
-   //! @return The interaction corresponding to "args", i.e., J[args]
    template<typename... Args>
    const FloatType &J(Args... args) const {
-      return J(std::vector<Index>{(Index)args...});//Access J(std::vector<Index>&& index) const
+      std::vector<Index> copied_key{(Index)args...};
+      return J(copied_key);
    }
    
-   //! @brief Return the interactions.
-   //! @return The interactions
-   const Interactions &get_interactions() const {
-      return J_;
+   cimod::Polynomial<Index, FloatType> get_polynomial() const {
+      cimod::Polynomial<Index, FloatType> poly_map;
+      for (std::size_t i = 0; i < poly_key_list_.size(); ++i) {
+         poly_map[poly_key_list_[i]] = poly_value_list_[i];
+      }
+      return poly_map;
    }
    
-   //! @brief Return the vartype
-   //! @return The vartype
-   const cimod::Vartype &get_vartype() const {
+   const cimod::PolynomialKeyList<Index> &get_keys() const {
+      return poly_key_list_;
+   }
+   
+   const cimod::PolynomialValueList<FloatType> &get_values() const {
+      return poly_value_list_;
+   }
+   
+   cimod::Vartype get_vartype() const {
       return vartype_;
    }
    
-   //! @brief Change vartype
-   //! @param vartype cimod::Vartype
-   void change_vartype(const cimod::Vartype &vartype) {
-      vartype_ = vartype;
+   Index get_max_variable() const {
+      return max_variable_;
    }
    
-   //! @brief Return the total energy corresponding to the input variables, Spins or Binaries.
-   //! @param spins const Spins& or const Binaries& (both are the same type)
-   //! @return The total energy
-   FloatType calc_energy(const Spins& spins) const {
+   FloatType calc_energy(const Spins& spins, bool omp_flag = true) const {
       if(spins.size() != Graph::size()){
-         throw std::out_of_range("Out of range in CalclateEnergy in Polynomial graph.");
+         throw std::out_of_range("Out of range in calc_energy in Polynomial graph.");
       }
+      
       FloatType energy = 0.0;
-      for (const auto &it: J_) {
-         Spin temp_spin_multiple = 1;
-         for (const auto &index: it.first) {
-            temp_spin_multiple *= spins[index];
+      std::size_t num_interactions = poly_key_list_.size();
+      
+      if (omp_flag) {
+#pragma omp parallel for reduction (+: energy)
+         for (std::size_t i = 0; i < num_interactions; ++i) {
+            Spin spin_multiple = 1;
+            for (const auto &index: poly_key_list_[i]) {
+               spin_multiple *= spins[index];
+               if (spin_multiple == 0.0) {
+                  break;
+               }
+            }
+            energy += spin_multiple*poly_value_list_[i];
          }
-         energy += temp_spin_multiple*it.second;
+      }
+      else {
+         for (std::size_t i = 0; i < num_interactions; ++i) {
+            Spin spin_multiple = 1;
+            for (const auto &index: poly_key_list_[i]) {
+               spin_multiple *= spins[index];
+               if (spin_multiple == 0.0) {
+                  break;
+               }
+            }
+            energy += spin_multiple*poly_value_list_[i];
+         }
       }
       return energy;
    }
    
 private:
-   //! @brief Polynomial interactions as std::unordered_map<std::vector<Index>, FloatType, utility::VectorHash>
-   Interactions J_;
+   cimod::PolynomialKeyList<Index> poly_key_list_;
    
-   //! @brief The model's type. SPIN or BINARY
+   cimod::PolynomialValueList<FloatType> poly_value_list_;
+   
+   std::unordered_map<std::vector<Index>, std::size_t, cimod::vector_hash> poly_key_inv_;
+   
    cimod::Vartype vartype_ = cimod::Vartype::NONE;
    
+   Index max_variable_ = 0;
+   
+   void CheckKeyValid(const std::vector<Index> &key) const {
+      if (0 < key.size()) {
+         //key is assumed to be sorted
+         for (std::size_t i = 0; i < key.size() - 1; ++i) {
+            if (key[i] == key[i + 1]) {
+               throw std::runtime_error("No self-loops allowed");
+            }
+         }
+      }
+      if (key.size() > Graph::size()) {
+         std::stringstream ss;
+         ss << "Too small system size. ";
+         ss << "The degree of the input polynomial interaction is " << key.size();
+         ss << ". But the system size is " << Graph::size() << std::string("\n");
+         throw std::runtime_error(ss.str());
+      }
+   }
+   
+   void UpdateMaxVariable(Index variable) {
+      if (max_variable_ < variable) {
+         max_variable_ = variable;
+      }
+   }
+   
+
+   
 };
-}
-}
+ 
+} //graph
+} //openjij
 
 
 #endif /* polynomial_hpp */
