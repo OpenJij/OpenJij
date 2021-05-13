@@ -59,25 +59,49 @@ inline auto json_parse(const json& obj, bool relabel=true){
 }
 
 template<typename FloatType>
-inline auto json_parse_polynomial(nlohmann::json& obj, const bool relabel = true) {
+inline auto json_parse_polynomial(const nlohmann::json& obj, const bool relabel = true) {
    
-   if(obj["type"] != "BinaryPolynomialModel") {
+   if(obj.at("type") != "BinaryPolynomialModel") {
       throw std::runtime_error("Type must be \"BinaryPolynomialModel\".\n");
    }
    
-   if (relabel) {
-      std::size_t num_variables = obj["variables"].size();
-      std::vector<std::size_t>  sorted_variables_relabeld(num_variables);
-      std::iota(sorted_variables_relabeld.begin(), sorted_variables_relabeld.end(), 0);
-      obj["variables"] = sorted_variables_relabeld;
+   if (obj.at("poly_key_distance_list").size() != obj.at("poly_value_list").size()) {
+      throw std::runtime_error("The sizes of key_list and value_list must match each other");
    }
-   return cimod::BinaryPolynomialModel<std::size_t, FloatType>::from_serializable(obj);
-}
-
-template<typename FloatType>
-inline auto json_parse_polynomial(const nlohmann::json& obj, const bool relabel = true) {
-   nlohmann::json temp = obj;
-   return json_parse_polynomial<FloatType>(temp, relabel);
+   
+   std::size_t num_variables    = obj["variables"].size();
+   std::size_t num_interactions = obj["poly_value_list"].size();
+   const cimod::PolynomialKeyList<std::size_t> &poly_key_distance_list = obj["poly_key_distance_list"];
+   const cimod::PolynomialValueList<FloatType> &poly_value_list        = obj["poly_value_list"];
+   cimod::PolynomialKeyList<Index> poly_key_list(num_interactions);
+   
+   if (relabel) {
+      std::vector<std::size_t> sorted_variables;
+      sorted_variables.resize(num_variables);
+      std::iota(sorted_variables.begin(), sorted_variables.end(), 0);
+#pragma omp parallel for
+      for (std::size_t i = 0; i < num_interactions; ++i) {
+         std::vector<Index> temp;
+         for (const auto &it: poly_key_distance_list[i]) {
+            temp.push_back(sorted_variables[it]);
+         }
+         std::sort(temp.begin(), temp.end());
+         poly_key_list[i] = temp;
+      }
+   }
+   else {
+      const std::vector<Index> &variables = obj["variables"];
+#pragma omp parallel for
+      for (std::size_t i = 0; i < num_interactions; ++i) {
+         std::vector<Index> temp;
+         for (const auto &it: poly_key_distance_list[i]) {
+            temp.push_back(variables[it]);
+         }
+         std::sort(temp.begin(), temp.end());
+         poly_key_list[i] = temp;
+      }
+   }
+   return std::tuple<std::size_t, cimod::PolynomialKeyList<Index>, cimod::PolynomialValueList<FloatType>>(num_variables, poly_key_list, poly_value_list);
 }
 
 } // namespace graph

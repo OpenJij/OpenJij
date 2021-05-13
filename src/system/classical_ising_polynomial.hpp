@@ -17,8 +17,9 @@
 
 #include <vector>
 #include <algorithm>
-#include <unordered_map>
 #include <graph/all.hpp>
+#include <nlohmann/json.hpp>
+#include <graph/json/parse.hpp>
 
 namespace openjij {
 namespace system {
@@ -33,26 +34,35 @@ public:
    
    using system_type = classical_system;
 
-   ClassicalIsingPolynomial(const graph::Spins &initial_spins,
-                            const graph::Polynomial<FloatType> &poly_graph): num_spins(poly_graph.size()), vartype_(poly_graph.get_vartype()), spin(initial_spins) {
-            
-      if (poly_graph.get_max_variable() != num_spins - 1) {
-         std::vector<graph::Index> sorted_variables;
-         for (const auto &it: poly_graph.get_keys()) {
-            for (const auto &index: it) {
-               sorted_variables.push_back(index);
-            }
-         }
-         std::sort(sorted_variables.begin(), sorted_variables.end());
-         sorted_variables.erase(std::unique(sorted_variables.begin(), sorted_variables.end()), sorted_variables.end());
-         poly_key_list_   = RelabelKeys(poly_graph.get_keys(), sorted_variables);
-         poly_value_list_ = poly_graph.get_values();
+   ClassicalIsingPolynomial(const graph::Spins &initial_spins, const graph::Polynomial<FloatType> &poly_graph): num_spins(poly_graph.size()), vartype_(poly_graph.get_vartype()), spin(initial_spins) {
+      SetPolyKeysAndValues(poly_graph.get_keys(), poly_graph.get_values(), (poly_graph.get_max_variable() != num_spins - 1));
+      CheckInitialConditions();
+      SetPolynomialIndex();
+      SetUpdateMatrix();
+      reset_dE();
+   }
+   
+   ClassicalIsingPolynomial(const graph::Spins &initial_spins, const nlohmann::json &j): spin(initial_spins), vartype_(j.at("vartype") == "SPIN" ? cimod::Vartype::SPIN : cimod::Vartype::BINARY) {
+      const auto &v_k_v = graph::json_parse_polynomial<FloatType>(j);
+      const auto &poly_key_list   = std::get<1>(v_k_v);
+      const auto &poly_value_list = std::get<2>(v_k_v);      
+      
+      if (j.at("vartype") != "SPIN" && j.at("vartype") != "BINARY" ) {
+         throw std::runtime_error("Unknown vartype detected");
       }
-      else {
-         poly_key_list_   = poly_graph.get_keys();
-         poly_value_list_ = poly_graph.get_values();
+      
+      if (poly_key_list.size() != poly_value_list.size()) {
+         throw std::runtime_error("The sizes of key_list and value_list must match each other");
       }
-      RemoveZeroValues(poly_key_list_, poly_value_list_);
+      
+      poly_key_list_.resize(poly_key_list.size());
+      poly_value_list_.resize(poly_value_list.size());
+      
+#pragma omp parallel for
+      for (std::size_t i = 0; i < poly_key_list.size(); ++i) {
+         poly_key_list_[i]   = poly_key_list[i];
+         poly_value_list_[i] = poly_value_list[i];
+      }
       num_interactions_ = poly_key_list_.size();
       CheckInitialConditions();
       SetPolynomialIndex();
@@ -60,6 +70,22 @@ public:
       reset_dE();
    }
    
+   ClassicalIsingPolynomial(const graph::Spins &initial_spins, const cimod::BinaryPolynomialModel<graph::Index, FloatType> &bpm): num_spins(bpm.GetVariables().size()), vartype_(bpm.get_vartype()), spin(initial_spins) {
+      poly_key_list_.resize(bpm._get_keys().size());
+      poly_value_list_.resize(bpm._get_values().size());
+      
+#pragma omp parallel for
+      for (std::size_t i = 0; i < bpm._get_keys().size(); ++i) {
+         poly_key_list_[i]   = bpm._get_keys()[i];
+         poly_value_list_[i] = bpm._get_values()[i];
+      }
+      num_interactions_ = poly_key_list_.size();
+      CheckInitialConditions();
+      SetPolynomialIndex();
+      SetUpdateMatrix();
+      reset_dE();
+   }
+         
    //! @brief Return vartype
    //! @return vartype
    cimod::Vartype get_vartype() const {
@@ -205,12 +231,44 @@ public:
       }
    }
    
+   void reset_spins(const graph::Spins& init_spins) {
+      assert(init_spins.size() == num_spins);
+      CheckInitialConditions();
+      
+      if (vartype_ == cimod::Vartype::SPIN) {
+         for (std::size_t index = 0; index < init_spins.size(); ++index) {
+            if (spin[index] != init_spins[index]) {
+               update_dE_for_spin(index);
+               update_sign_and_spin(index);
+            }
+         }
+      }
+      else if (vartype_ == cimod::Vartype::BINARY) {
+         for (std::size_t index = 0; index < init_spins.size(); ++index) {
+            if (spin[index] != init_spins[index]) {
+               update_dE_for_binary(index);
+               update_zero_count_and_binary(index);
+            }
+         }
+      }
+      else {
+         std::stringstream ss;
+         ss << "Unknown vartype detected in " << __func__ << std::endl;
+         throw std::runtime_error(ss.str());
+      }
+      
+      for (std::size_t index = 0; index < init_spins.size(); ++index) {
+         assert(spin[index] == init_spins[index]);
+      }
+      
+   }
+   
    const std::size_t num_spins;
+   const cimod::Vartype vartype_;
    std::vector<FloatType> dE;
    graph::Spins spin;
       
 private:
-   const cimod::Vartype vartype_;
    std::size_t num_interactions_;
    std::vector<std::size_t>  crs_row_;
    std::vector<graph::Index> crs_col_;
@@ -219,7 +277,7 @@ private:
    std::vector<std::size_t*> crs_zero_count_p_;
    cimod::PolynomialKeyList<graph::Index> poly_key_list_;
    cimod::PolynomialValueList<FloatType>  poly_value_list_;
-   std::vector<std::vector<std::size_t>>        connected_J_term_index_;
+   std::vector<std::vector<std::size_t>>  connected_J_term_index_;
    std::vector<int8_t>      spin_sign_poly_;
    std::vector<std::size_t> binary_zero_count_poly_;
    FloatType max_dE_;
@@ -352,21 +410,51 @@ private:
       }
    }
    
-   void RemoveZeroValues(cimod::PolynomialKeyList<graph::Index> &poly_key_list, cimod::PolynomialValueList<FloatType> &poly_value_list) {
-      std::vector<std::size_t> index_to_be_removed;
-      for (std::size_t i = 0; i < poly_key_list.size(); ++i) {
-         if (poly_value_list[i] == 0.0) {
-            index_to_be_removed.push_back(i);
+   void SetPolyKeysAndValues(const cimod::PolynomialKeyList<graph::Index> &input_keys, const cimod::PolynomialValueList<FloatType> &input_values, const bool relabel_flag) {
+      if (input_keys.size() != input_values.size()) {
+         throw std::runtime_error("The sizes of key_list and value_list must match each other");
+      }
+      
+      poly_key_list_  .clear();
+      poly_value_list_.clear();
+      
+      if (relabel_flag) {
+         std::unordered_set<graph::Index> variables;
+         for (std::size_t i = 0; i < input_keys.size(); ++i) {
+            if (input_values[i] != 0.0) {
+               for (const auto &it: input_keys[i]) {
+                  variables.emplace(it);
+               }
+            }
+         }
+         std::vector<graph::Index> sorted_variables(variables.begin(), variables.end());
+         std::sort(sorted_variables.begin(), sorted_variables.end());
+         
+         std::unordered_map<graph::Index, graph::Index> relabeld_variables;
+         for (std::size_t i = 0; i < sorted_variables.size(); ++i) {
+            relabeld_variables[sorted_variables[i]] = i;
+         }
+
+         for (std::size_t i = 0; i < input_keys.size(); ++i) {
+            if (input_values[i] != 0) {
+               std::vector<graph::Index> temp;
+               for (const auto &it: input_keys[i]) {
+                  temp.push_back(relabeld_variables[it]);
+               }
+               poly_key_list_.push_back(temp);
+               poly_value_list_.push_back(input_values[i]);
+            }
          }
       }
-      
-      for (const auto &it: index_to_be_removed) {
-         std::swap(poly_key_list[it], poly_key_list.back());
-         poly_key_list.pop_back();
-         std::swap(poly_value_list[it], poly_value_list.back());
-         poly_value_list.pop_back();
+      else {
+         for (std::size_t i = 0; i < input_keys.size(); ++i) {
+            if (input_values[i] != 0) {
+               poly_key_list_.push_back(input_keys[i]);
+               poly_value_list_.push_back(input_values[i]);
+            }
+         }
       }
-      
+      num_interactions_ = poly_key_list_.size();
    }
    
    void CheckInitialConditions() const {
@@ -404,25 +492,6 @@ private:
       }
    }
    
-   cimod::PolynomialKeyList<graph::Index> RelabelKeys(const cimod::PolynomialKeyList<graph::Index> &poly_key_list, const std::vector<graph::Index> &sorted_variables) {
-      std::unordered_map<graph::Index, graph::Index> relabeld_variables;
-      for (std::size_t i = 0; i < sorted_variables.size(); ++i) {
-         relabeld_variables[sorted_variables[i]] = i;
-      }
-      
-      cimod::PolynomialKeyList<graph::Index> relabeld_poly_key_list(poly_key_list.size());
-      
-#pragma omp parallel for
-      for (std::size_t i = 0; i < poly_key_list.size(); ++i) {
-         std::vector<graph::Index> temp;
-         for (const auto &it: poly_key_list[i]) {
-            temp.push_back(relabeld_variables[it]);
-         }
-         relabeld_poly_key_list[i] = temp;
-      }
-      return relabeld_poly_key_list;
-   }
-   
 };
 
 //! @brief Helper function for ClassicalIsingPolynomial constructor
@@ -432,6 +501,24 @@ private:
 template<typename GraphType>
 auto make_classical_ising_polynomial(const graph::Spins &init_spin, const GraphType &init_interaction) {
    return ClassicalIsingPolynomial<GraphType>(init_spin, init_interaction);
+}
+
+//! @brief Helper function for ClassicalIsingPolynomial constructor by using cimod::BinaryPolynomialModel
+//! @tparam FloatType
+//! @param init_spin const graph::Spins&. The initial spin/binaries.
+//! @param init_cimod cimod::BinaryPolynomialModel&.
+template<typename FloatType>
+auto make_classical_ising_polynomial(const graph::Spins &init_spin, const cimod::BinaryPolynomialModel<graph::Index, FloatType> &init_bpm) {
+   return ClassicalIsingPolynomial<graph::Polynomial<FloatType>>(init_spin, init_bpm);
+}
+
+//! @brief Helper function for ClassicalIsingPolynomial constructor by using nlohmann::json object
+//! @tparam FloatType
+//! @param init_spin const graph::Spins&. The initial spin/binaries.
+//! @param init_obj nlohmann::json&
+template<typename FloatType>
+auto make_classical_ising_polynomial(const graph::Spins &init_spin, nlohmann::json &init_obj) {
+   return ClassicalIsingPolynomial<graph::Polynomial<FloatType>>(init_spin, init_obj);
 }
 
 

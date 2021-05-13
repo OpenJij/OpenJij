@@ -504,21 +504,12 @@ TEST(PolyGraph, AddInteractions) {
    EXPECT_DOUBLE_EQ(poly_graph.J( {1, 2}  ), +12.0*2);
    EXPECT_DOUBLE_EQ(poly_graph.J({0, 1, 2}), +12.0*2);
    
-   poly_graph.J(0,0,0) += +0.0 ;
-   poly_graph.J(1,1,1) += +1.0 ;
-   poly_graph.J(2,2,2) += +2.0 ;
-   poly_graph.J(0,1,1) += +11.0;
-   poly_graph.J(0,2,2) += +22.0;
-   poly_graph.J(1,2,1) += +12.0;
-   poly_graph.J(0,1,2) += +12.0;
-   
-   EXPECT_DOUBLE_EQ(poly_graph.J(   {0}   ), +0.0 *3);
-   EXPECT_DOUBLE_EQ(poly_graph.J(   {1}   ), +1.0 *3);
-   EXPECT_DOUBLE_EQ(poly_graph.J(   {2}   ), +2.0 *3);
-   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 1}  ), +11.0*3);
-   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 2}  ), +22.0*3);
-   EXPECT_DOUBLE_EQ(poly_graph.J( {1, 2}  ), +12.0*3);
-   EXPECT_DOUBLE_EQ(poly_graph.J({0, 1, 2}), +12.0*3);
+   EXPECT_THROW(poly_graph.J(0,0,0) += +0.0 , std::runtime_error);
+   EXPECT_THROW(poly_graph.J(1,1,1) += +1.0 , std::runtime_error);
+   EXPECT_THROW(poly_graph.J(2,2,2) += +2.0 , std::runtime_error);
+   EXPECT_THROW(poly_graph.J(0,1,1) += +11.0, std::runtime_error);
+   EXPECT_THROW(poly_graph.J(0,2,2) += +22.0, std::runtime_error);
+   EXPECT_THROW(poly_graph.J(1,2,1) += +12.0, std::runtime_error);
 
 }
 
@@ -865,35 +856,44 @@ TEST(PolySystem, ConstructorBinary) {
    
 }
 
-TEST(PolyUpdater, CompareQuadratic1) {
+TEST(PolyUpdater, FromCimodCompareQuadratic2) {
    
    //Check the polynomial updater work properly by comparing the result of the quadratic updater
    const int seed = 1;
+   const int system_size = 9;
    
    //generate classical sparse system
-   const auto interaction = generate_interaction<openjij::graph::Sparse<double>>();
-   auto       engine_for_spin = std::mt19937(seed);
+   auto engin_for_interaction = std::mt19937(seed);
+   auto urd = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
+   auto interaction = openjij::graph::Sparse<double>(system_size);
+   for (int i = 0; i < system_size; ++i) {
+      for (int j = i + 1; j < system_size; ++j) {
+         interaction.J(i,j) = urd(engin_for_interaction);
+      }
+   }
+   auto engine_for_spin = std::mt19937(seed);
    const auto spin = interaction.gen_spin(engine_for_spin);
-   auto       classical_ising = openjij::system::make_classical_ising(spin, interaction);
-   
+   auto classical_ising = openjij::system::make_classical_ising(spin, interaction);
    auto random_numder_engine = std::mt19937(seed);
    const auto schedule_list = generate_schedule_list();
-
    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
-   
    const auto result_spin = openjij::result::get_solution(classical_ising);
    
    //generate classical polynomial system
-   auto       interaction_poly = generate_interaction<openjij::graph::Polynomial<double>>();
-   auto       engine_for_spin_poly = std::mt19937(seed);
-   const auto spin_poly = interaction.gen_spin(engine_for_spin_poly);
-   auto       classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, interaction_poly);
-   
+   auto engin_for_interaction_poly = std::mt19937(seed);
+   auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
+   auto bpm = cimod::BinaryPolynomialModel<openjij::graph::Index, double>({}, cimod::Vartype::SPIN);
+   for (int i = 0; i < system_size; ++i) {
+      for (int j = i + 1; j < system_size; ++j) {
+         bpm.add_interaction({std::size_t(i), std::size_t(j)}, urd_poly(engin_for_interaction_poly));
+      }
+   }
+   auto engine_for_spin_poly = std::mt19937(seed);
+   const auto spin_poly = openjij::graph::Graph(system_size).gen_spin(engine_for_spin_poly);
+   auto classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, bpm);
    auto random_numder_engine_poly = std::mt19937(seed);
    const auto schedule_list_poly = generate_schedule_list();
-   
    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_poly, random_numder_engine_poly, schedule_list_poly);
-   
    const auto result_spin_poly = openjij::result::get_solution(classical_ising_poly);
    
    //Check both equal
@@ -901,9 +901,8 @@ TEST(PolyUpdater, CompareQuadratic1) {
    for (std::size_t i = 0; i < result_spin_poly.size(); ++i) {
       EXPECT_EQ(result_spin_poly[i], result_spin[i]);
    }
+   EXPECT_DOUBLE_EQ(bpm.energy(result_spin_poly), interaction.calc_energy(result_spin));
    
-   EXPECT_DOUBLE_EQ(interaction_poly.calc_energy(result_spin_poly), interaction.calc_energy(result_spin));
-    
 }
 
 TEST(PolyUpdater, CompareQuadratic2) {
@@ -932,7 +931,7 @@ TEST(PolyUpdater, CompareQuadratic2) {
    //generate classical polynomial system
    auto engin_for_interaction_poly = std::mt19937(seed);
    auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
-   auto interaction_poly = openjij::graph::Polynomial<double>(system_size);
+   auto interaction_poly = openjij::graph::Polynomial<double>(system_size, cimod::Vartype::SPIN);
    for (int i = 0; i < system_size; ++i) {
       for (int j = i + 1; j < system_size; ++j) {
          interaction_poly.J(i,j) = urd_poly(engin_for_interaction_poly);
@@ -964,7 +963,7 @@ TEST(PolyUpdater, PolynomialFullyConnectedSpin) {
    //generate classical polynomial system
    auto engin_for_interaction_poly = std::mt19937(seed);
    auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
-   auto interaction_poly = openjij::graph::Polynomial<double>(system_size);
+   auto interaction_poly = openjij::graph::Polynomial<double>(system_size, cimod::Vartype::SPIN);
    std::vector<openjij::graph::Index> temp_vec(system_size);
    for (int i = 0; i < system_size; ++i) {
       temp_vec[i] = i;
@@ -995,7 +994,7 @@ TEST(PolyUpdater, PolynomialZeroInteractions) {
    const int system_size = 4;
    
    //generate classical polynomial system
-   auto interaction_poly = openjij::graph::Polynomial<double>(system_size);
+   auto interaction_poly = openjij::graph::Polynomial<double>(system_size, cimod::Vartype::SPIN);
    interaction_poly.J({0,1,2}) = 0.0;
    interaction_poly.J({0,1,2,3}) = 1.0;
    auto engine_for_spin_poly = std::mt19937(seed);

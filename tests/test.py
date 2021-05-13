@@ -67,7 +67,6 @@ class CXXTest(unittest.TestCase):
         J[6,6]=0.3
         J[6,7]=1.4
         J[7,7]=1.8
-
         self.true_groundstate = [-1, -1, 1, 1, 1, 1, 1, -1]
         return J
 
@@ -259,7 +258,7 @@ class CXXTest(unittest.TestCase):
 
     def test_SingleSpinFlip_ClassicalIsing_Polynomial_Polynomial_Interactions(self):
         system_size = 5
-        self.polynomial = G.Polynomial(system_size)
+        self.polynomial = G.Polynomial(system_size, "SPIN")
         self.polynomial = self.gen_testcase_polynomial(self.polynomial)
         #classial ising (Polynomial)
         system = S.make_classical_ising_polynomial(self.polynomial.gen_spin(), self.polynomial)
@@ -277,7 +276,7 @@ class CXXTest(unittest.TestCase):
         self.assertAlmostEqual(self.true_energy, self.polynomial.calc_energy(result_spin))
     
     def test_SingleSpinFlip_ClassicalIsing_Polynomial_Quadratic_Interactions(self):
-        self.polynomial = G.Polynomial(self.size)
+        self.polynomial = G.Polynomial(self.size, "SPIN")
         self.polynomial = self.gen_testcase(self.polynomial)
         #classial ising (Polynomial)
         system = S.make_classical_ising_polynomial(self.polynomial.gen_spin(self.seed_for_spin), self.polynomial)
