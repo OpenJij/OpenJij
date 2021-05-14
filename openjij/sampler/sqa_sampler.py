@@ -110,7 +110,7 @@ class SQASampler(BaseSampler):
     def _get_result(self, system, model):
         state, info = super()._get_result(system, model)
 
-        q_state = system.trotter_spins[:-1].T.astype(np.int)
+        q_state = system.trotter_spins[:-1].T.astype(int)
         c_energies = [model.energy(
             state, convert_sample=True) for state in q_state]
         info['trotter_state'] = q_state
@@ -167,7 +167,7 @@ class SQASampler(BaseSampler):
         """
 
         bqm = openjij.BinaryQuadraticModel(
-            linear=h, quadratic=J, var_type='SPIN'
+            linear=h, quadratic=J, vartype='SPIN'
         )
         return self._sampling(bqm, beta=beta, gamma=gamma,
                      num_sweeps=num_sweeps, schedule=schedule, trotter=trotter,

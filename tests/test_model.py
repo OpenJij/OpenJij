@@ -23,10 +23,10 @@ def calculate_qubo_energy(Q, binary):
 
 class VariableTypeTest(unittest.TestCase):
     def test_variable_type(self):
-        spin = oj.cast_var_type('SPIN')
+        spin = oj.cast_vartype('SPIN')
         self.assertEqual(spin, oj.SPIN)
 
-        binary = oj.cast_var_type('BINARY')
+        binary = oj.cast_vartype('BINARY')
         self.assertEqual(binary, oj.BINARY)
 
 
@@ -131,7 +131,7 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(qubo_energy, qubo_bqm.energy(spins, convert_sample=True))
 
     def test_energy_consistency(self):
-        bqm = oj.BinaryQuadraticModel(self.h, self.J, var_type='SPIN')
+        bqm = oj.BinaryQuadraticModel(self.h, self.J, vartype='SPIN')
         dense_ising_graph = bqm.get_cxxjij_ising_graph(sparse=False)
         sparse_ising_graph = bqm.get_cxxjij_ising_graph(sparse=True)
         spins = {0: -1, 1: -1, 2: -1, 3: -1}
@@ -148,7 +148,7 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(type(bqm.interaction_matrix()), np.ndarray)
         correct_mat = np.array([[0, -1, 0, ], [-1, 0, -3], [0, -3, 0]])
         np.testing.assert_array_equal(
-            bqm.interaction_matrix(), correct_mat.astype(np.float))
+            bqm.interaction_matrix(), correct_mat.astype(float))
 
     def test_chimera_converter(self):
         h = {}
@@ -196,7 +196,7 @@ class ModelTest(unittest.TestCase):
         king_graph = oj.KingGraph(machine_type="ASIC", linear=h, quadratic=J)
         correct_mat = np.array([[0, -1, 0, ], [-1, 0, -3], [0, -3, 0]])
         np.testing.assert_array_equal(
-            king_graph.interaction_matrix(), correct_mat.astype(np.float))
+            king_graph.interaction_matrix(), correct_mat.astype(float))
 
         self.assertCountEqual(king_interaction, king_graph._ising_king_graph)
     

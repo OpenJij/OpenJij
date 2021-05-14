@@ -161,7 +161,7 @@ class SASampler(BaseSampler):
         """
 
         model = openjij.BinaryQuadraticModel(
-            linear=h, quadratic=J, var_type='SPIN'
+            linear=h, quadratic=J, vartype='SPIN'
         )
         return self._sampling(model, beta_min, beta_max,
                               num_sweeps, num_reads, schedule,
@@ -334,7 +334,7 @@ class SASampler(BaseSampler):
                 raise ValueError("Unknown vartype detected")
         else:
             if isinstance(initial_state, dict):
-                initial_state = [initial_state[k] for k in model.variables]
+                initial_state = [initial_state[k] for k in model.indices]
             _init_state = np.array(initial_state)
             def _generate_init_state(): return _init_state
         # -------------------------------- make init state generator

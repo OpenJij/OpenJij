@@ -520,7 +520,7 @@ class CXXTest(unittest.TestCase):
 #
 #    def test_ising_dict(self):
 #        Q = {(0,4): -1.0, (6,2): -3.0}
-#        bqm = oj.ChimeraModel(Q=Q, var_type='BINARY', unit_num_L=3)
+#        bqm = oj.ChimeraModel(Q=Q, vartype='BINARY', unit_num_L=3)
 #
 #    def test_king_graph(self):
 #        h = {}
@@ -536,7 +536,7 @@ class CXXTest(unittest.TestCase):
 #        np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
 #
 #
-#        king_graph = oj.KingGraph(machine_type="ASIC", Q={(0,1): -1}, var_type="BINARY")
+#        king_graph = oj.KingGraph(machine_type="ASIC", Q={(0,1): -1}, vartype="BINARY")
 #        king_interaction = [[0, 0, 0, 0, -0.25], [0,0,1,0,-0.25], [1,0,1,0,-0.25]]
 #        np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
 #
@@ -585,7 +585,7 @@ class CXXTest(unittest.TestCase):
 #    def test_chimera_validate(self):
 #        L = 4
 #        Q = self.full_chimera_qubo(L=L)
-#        chimera = oj.ChimeraModel(Q=Q, unit_num_L=L, var_type='BINARY')
+#        chimera = oj.ChimeraModel(Q=Q, unit_num_L=L, vartype='BINARY')
 #
 #        self.assertTrue(chimera._validate((0,0,0),(0,0,4),L))
 #        self.assertFalse(chimera._validate((0,0,0),(96,0,0),L))
@@ -594,11 +594,11 @@ class CXXTest(unittest.TestCase):
 #
 #    def test_chimera_connect(self):
 #        Q = self.full_chimera_qubo(L=2)
-#        chimera = oj.ChimeraModel(Q=Q, unit_num_L=2, var_type='BINARY')
+#        chimera = oj.ChimeraModel(Q=Q, unit_num_L=2, vartype='BINARY')
 #        self.assertTrue(chimera.validate_chimera())
 #
 #        Q = self.full_chimera_qubo(L=4)
-#        chimera = oj.ChimeraModel(Q=Q, unit_num_L=4, var_type='BINARY')
+#        chimera = oj.ChimeraModel(Q=Q, unit_num_L=4, vartype='BINARY')
 #        self.assertTrue(chimera.validate_chimera())
 #
 #

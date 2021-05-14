@@ -7,7 +7,7 @@ import unittest
 
 class TestUtils(unittest.TestCase):
 
-    def test_var_type(self):
+    def test_vartype(self):
         #self.assertTrue(dimod.BINARY == oj.BINARY)
         #self.assertTrue(dimod.SPIN == oj.SPIN)
 
@@ -28,7 +28,7 @@ class TestUtils(unittest.TestCase):
         # logger setting
         ground_state = [-1, -1, -1]
         ground_energy = oj.BinaryQuadraticModel(h, J).calc_energy(ground_state)
-        step_num_list = np.linspace(1, 9, 9, dtype=np.int)
+        step_num_list = np.linspace(1, 9, 9, dtype=int)
         bm_res = oj.solver_benchmark(
             solver=solver,
             time_list=step_num_list,

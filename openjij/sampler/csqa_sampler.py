@@ -98,7 +98,7 @@ class CSQASampler(SQASampler):
         """
 
         bqm = openjij.BinaryQuadraticModel(
-            linear=h, quadratic=J, var_type='SPIN'
+            linear=h, quadratic=J, vartype='SPIN'
         )
 
         #Continuous time ising system only supports sparse ising graph
