@@ -168,9 +168,6 @@ public:
    //! @param poly_map
    //! @param vartype
    BinaryPolynomialModel(const Polynomial<IndexType, FloatType> &poly_map, const Vartype vartype): vartype_(vartype) {
-      if (vartype_ == Vartype::NONE) {
-         throw std::runtime_error("Please set vartype to Vartype::SPIN or Vartype::BINARY");
-      }
       add_interactions_from(poly_map);
       UpdateVariablesToIntegers();
    }
@@ -180,9 +177,6 @@ public:
    //! @param value_list
    //! @param vartype
    BinaryPolynomialModel(PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list, const Vartype vartype): vartype_(vartype) {
-      if (vartype_ == Vartype::NONE) {
-         throw std::runtime_error("Please set vartype to Vartype::SPIN or Vartype::BINARY");
-      }
       add_interactions_from(key_list, value_list);
       UpdateVariablesToIntegers();
    }
@@ -192,9 +186,6 @@ public:
    //! @param value_list
    //! @param vartype
    BinaryPolynomialModel(const PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list, const Vartype vartype): vartype_(vartype) {
-      if (vartype_ == Vartype::NONE) {
-         throw std::runtime_error("Please set vartype to Vartype::SPIN or Vartype::BINARY");
-      }
       add_interactions_from(key_list, value_list);
       UpdateVariablesToIntegers();
    }
@@ -211,10 +202,6 @@ public:
                          const Vartype vartype
                          ): vartype_(vartype) {
 
-      if (vartype_ == Vartype::NONE) {
-         throw std::runtime_error("Please set vartype to Vartype::SPIN or Vartype::BINARY");
-      }
-
       if (poly_key_distance_list.size() != poly_value_list.size()) {
          throw std::runtime_error("The sizes of key_list and value_list must match each other");
       }
@@ -230,7 +217,7 @@ public:
       poly_value_list_.resize(num_interactions);
       
 #pragma omp parallel for
-      for (std::size_t i = 0; i < num_interactions; ++i) {
+      for (int64_t i = 0; i < num_interactions; ++i) {
          std::vector<IndexType> temp;
          for (const auto &it: poly_key_distance_list[i]) {
             temp.push_back(variables[it]);
@@ -599,7 +586,7 @@ public:
       
       if (omp_flag) {
 #pragma omp parallel for reduction (+: val)
-         for (std::size_t i = 0; i < num_interactions; ++i) {
+         for (int64_t i = 0; i < num_interactions; ++i) {
             int32_t spin_multiple = 1;
             for (const auto &index: poly_key_list_[i]) {
                spin_multiple *= sample.at(index);
@@ -648,7 +635,7 @@ public:
       
       if (omp_flag) {
 #pragma omp parallel for reduction (+: val)
-         for (std::size_t i = 0; i < num_interactions; ++i) {
+         for (int64_t i = 0; i < num_interactions; ++i) {
             int32_t spin_multiple = 1;
             for (const auto &index: poly_key_list_[i]) {
                spin_multiple *= sample_vec[variables_to_integers_.at(index)];
@@ -680,7 +667,7 @@ public:
    PolynomialValueList<FloatType> energies(const std::vector<Sample<IndexType>> &samples) const {
       PolynomialValueList<FloatType> val_list(samples.size());
 #pragma omp parallel for
-      for (std::size_t i = 0; i < samples.size(); ++i) {
+      for (int64_t i = 0; i < samples.size(); ++i) {
          val_list[i] = energy(samples[i], false);
       }
       return val_list;
@@ -692,7 +679,7 @@ public:
    PolynomialValueList<FloatType> energies(const std::vector<std::vector<int32_t>> &samples_vec) {
       PolynomialValueList<FloatType> val_list(samples_vec.size());
 #pragma omp parallel for
-      for (std::size_t i = 0; i < samples_vec.size(); ++i) {
+      for (int64_t i = 0; i < samples_vec.size(); ++i) {
          val_list[i] = energy(samples_vec[i], false);
       }
       return val_list;
@@ -881,7 +868,7 @@ public:
       std::vector<IndexType> sorted_variables = get_sorted_variables();
       
 #pragma omp parallel for
-      for (std::size_t i = 0; i < num_interactions; ++i) {
+      for (int64_t i = 0; i < num_interactions; ++i) {
          std::vector<std::size_t> temp;
          for (const auto &it: poly_key_list_[i]) {
             auto it_index = std::lower_bound(sorted_variables.begin(), sorted_variables.end(), it);

@@ -40,47 +40,45 @@ from functools import singledispatch
 import warnings
 import sys
 
-def make_BinaryQuadraticModel(linear: dict, quadratic: dict):
+def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
     """BinaryQuadraticModel factory.
 
     Returns:
         generated BinaryQuadraticModel class
     """
 
-    class BinaryQuadraticModel(cimod.make_BinaryQuadraticModel(linear, quadratic)):
+    class BinaryQuadraticModel(cimod.make_BinaryQuadraticModel(linear, quadratic, sparse)):
         """Represents Binary quadratic model. 
            Indices are listed in self.indices.
         Attributes:
-            var_type (dimod.Vartype): variable type SPIN or BINARY
+            vartype (cimod.VariableType): variable type SPIN or BINARY
             linear (dict): represents linear term
             quadratic (dict): represents quadratic term
-            adj (dict): represents adjacency
-            indices (list): labels of each variables sorted by results variables
             offset (float): represents constant energy term when convert to SPIN from BINARY
+            num_variables (int): represents constant energy term when convert to SPIN from BINARY
+            variables (list): represents constant energy term when convert to SPIN from BINARY
         """
     
-        def __init__(self, linear: dict, quadratic: dict, offset: float=0.0,
-                var_type=openjij.SPIN, gpu: bool=False, **kwargs):
+        def __init__(self, *args, **kwargs):
             """BinaryQuadraticModel constructor.
 
             Args:
                 linear (dict): linear biases.
                 quadratic (dict): quadratic biases
                 offset (float): offset
-                var_type (openjij.variable_type.Vartype): var_type
+                vartype (openjij.variable_type.Vartype): vartype
                 gpu (bool): if true, this can be used for gpu samplers.
                 kwargs:
             """
-    
-            super().__init__(linear, quadratic, offset, var_type, **kwargs)
+            # extract gpu keyword
+            gpu = kwargs.pop('gpu', False)
+            super().__init__(*args, **kwargs)
             self.gpu = gpu
     
     
-        def get_cxxjij_ising_graph(self, sparse: bool=False):
+        def get_cxxjij_ising_graph(self):
             """generate cxxjij Ising graph from the interactions.
 
-            Args:
-                sparse (bool): if true, this function returns cxxjij.graph.Sparse. Otherwise it returns cxxjij.graph.Dense.
             Returns:
                 cxxjij.graph.Dense or cxxjij.graph.Sparse: 
             """
@@ -92,24 +90,7 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict):
                 GraphClass = cxxjij.graph.Dense if self.gpu == False else cxxjij.graph.DenseGPU
                 # initialize with interaction matrix.
                 mat = self.interaction_matrix()
-
-                if (self.vartype == openjij.BINARY):
-                    # convert to ising matrix
-                    qubo_to_ising(mat)
-
-                size = mat.shape[0]
-                dense = GraphClass(size)
-                # graph type is dense.
-                # reshape matrix
-                temp = np.zeros((size+1, size+1))
-                temp[:size, :size] = mat
-                temp[:size, size] = np.diag(mat)
-                temp[size, :size] = np.diag(mat)
-                np.fill_diagonal(temp, 0)
-                temp[size, size] = 1
-    
-                dense.set_interaction_matrix(temp)
-    
+                dense.set_interaction_matrix(mat)
                 return dense
     
     
@@ -125,7 +106,6 @@ def make_BinaryQuadraticModel_from_JSON(obj: dict):
     Returns:
         corresponding BinaryQuadraticModel type
     """
-
     label = obj['variable_labels'][0]
     if isinstance(label, list):
         #convert to tuple
@@ -133,24 +113,30 @@ def make_BinaryQuadraticModel_from_JSON(obj: dict):
 
     mock_linear = {label:1.0}
 
-    return make_BinaryQuadraticModel(mock_linear, {})
+    if obj['version']['bqm_schema'] == '3.0.0-dense':
+        sparse = False
+    elif obj['version']['bqm_schema'] == '3.0.0':
+        sparse = True 
+    else:
+        raise TypeError("Invalid bqm_schema")
 
-def BinaryQuadraticModel(linear: dict, quadratic: dict, offset: float=0.0,
-        var_type=dimod.SPIN, gpu: bool=False, **kwargs):
+    return make_BinaryQuadraticModel(mock_linear, {}, sparse)
+
+def BinaryQuadraticModel(linear, quadratic, *args, **kwargs):
     """generate BinaryQuadraticModel object.
 
     Attributes:
-        var_type (dimod.Vartype): variable type SPIN or BINARY
+        vartype (cimod.VariableType): variable type SPIN or BINARY
         linear (dict): represents linear term
         quadratic (dict): represents quadratic term
-        adj (dict): represents adjacency
-        indices (list): labels of each variables sorted by results variables.
         offset (float): represents constant energy term when convert to SPIN from BINARY
+        num_variables (int): represents constant energy term when convert to SPIN from BINARY
+        variables (list): represents constant energy term when convert to SPIN from BINARY
     Args:
         linear (dict): linear biases
         quadratic (dict): quadratic biases
         offset (float): offset
-        var_type (openjij.variable_type.Vartype): vartype ('SPIN' or 'BINARY')
+        vartype (openjij.variable_type.Vartype): vartype ('SPIN' or 'BINARY')
         gpu (bool): if true, this can be used for gpu samplers.
         kwargs:
     Returns:
@@ -171,17 +157,46 @@ def BinaryQuadraticModel(linear: dict, quadratic: dict, offset: float=0.0,
 
     Model = make_BinaryQuadraticModel(linear, quadratic)
 
-    return Model(linear, quadratic, offset, var_type, gpu, **kwargs)
+    # offset and vartype
+    if len(args) == 2:
+        [offset, vartype] = args
+        return Model(linear, quadratic, offset, vartype, **kwargs)
+    elif len(args) == 1 and 'vartype' in kwargs:
+        [offset] = args
+        vartype = kwargs.pop('vartype')
+        return Model(linear, quadratic, offset, vartype, **kwargs)
+    elif len(args) == 1:
+        [vartype] = args
+        return Model(linear, quadratic, 0.0, vartype, **kwargs)
+    elif len(args) == 0 and 'vartype' in kwargs:
+        vartype = kwargs.pop('vartype')
+        return Model(linear, quadratic, 0.0, vartype, **kwargs)
+    else:
+        raise TypeError("invalid args for BinaryQuadraticModel. please check arguments")
+
 
 #classmethods
+def bqm_from_numpy_matrix(mat, variables: list=None, offset=0.0, vartype='BINARY', **kwargs):
+    if variables is None:
+        # generate array
+        num_variables = mat.shape[0]
+        variables = list(range(num_variables))
+
+    return make_BinaryQuadraticModel({variables[0]: 1.0}, {}, kwargs.pop('sparse', False)).from_numpy_matrix(mat, variables, offset, to_cxxcimod(vartype), True, **kwargs)
+
+BinaryQuadraticModel.from_numpy_matrix = bqm_from_numpy_matrix
+
 BinaryQuadraticModel.from_qubo = \
-        lambda Q, offset=0.0, **kwargs: make_BinaryQuadraticModel({}, Q).from_qubo(Q, offset, **kwargs)
+lambda Q, offset=0.0, **kwargs: make_BinaryQuadraticModel({}, Q, kwargs.pop('sparse', False)).from_qubo(Q, offset, **kwargs)
+
+BinaryQuadraticModel.from_qubo = \
+lambda Q, offset=0.0, **kwargs: make_BinaryQuadraticModel({}, Q, kwargs.pop('sparse', False)).from_qubo(Q, offset, **kwargs)
 
 BinaryQuadraticModel.from_ising = \
-        lambda linear, quadratic, offset=0.0, **kwargs: make_BinaryQuadraticModel(linear, quadratic).from_ising(linear, quadratic, offset, **kwargs)
+lambda linear, quadratic, offset=0.0, **kwargs: make_BinaryQuadraticModel(linear, quadratic, kwargs.pop('sparse', False)).from_ising(linear, quadratic, offset, **kwargs)
 
 BinaryQuadraticModel.from_serializable = \
-        lambda obj: make_BinaryQuadraticModel_from_JSON(obj).from_serializable(obj)
+lambda obj, **kwargs: make_BinaryQuadraticModel_from_JSON(obj).from_serializable(obj, **kwargs)
 
 
 def make_BinaryPolynomialModel(polynomial, index_type = None, tuple_size = 0):

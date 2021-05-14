@@ -20,6 +20,7 @@
 #include <nlohmann/json.hpp>
 #include <exception>
 #include <graph/cimod/src/binary_quadratic_model.hpp>
+#include <graph/cimod/src/binary_quadratic_model_dict.hpp>
 #include <graph/cimod/src/binary_polynomial_model.hpp>
 #include <numeric>
 
@@ -32,13 +33,14 @@ using json = nlohmann::json;
  * @brief parse json object from bqm.to_serializable
  *
  * @tparam FloatType
+ * @tparam CimodDataType DataType of cimod (cimod::Dense, cimod::Sparse, or cimod::Dict)
  * @param obj JSON object
  * @param relabel re-label variable_labels. Disable the option if the model has specified topology (such as square lattice or chimera model). if the option is disabled, IndexType of JSON must be an integer.
  *
  * @return BinaryQuadraticModel with IndexType=size_t
  *
  */
-template<typename FloatType>
+template<typename FloatType, typename CimodDataType>
 inline auto json_parse(const json& obj, bool relabel=true){
    
    using namespace cimod;
@@ -54,7 +56,7 @@ inline auto json_parse(const json& obj, bool relabel=true){
       temp["variable_labels"] = variables;
    }
    //make cimod object and apply to_serializable function
-   auto bqm = BinaryQuadraticModel<size_t, FloatType>::from_serializable(temp);
+   auto bqm = BinaryQuadraticModel<size_t, FloatType, CimodDataType>::from_serializable(temp);
    return bqm.change_vartype(Vartype::SPIN);
 }
 

@@ -29,6 +29,7 @@
 #include <utility>
 #include <cstdint>
 #include <iostream>
+#include <vector>
 
 template<typename T>
     inline void hash_combine(std::size_t& seed, const T& val)

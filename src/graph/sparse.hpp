@@ -135,20 +135,47 @@ namespace openjij {
                      * @param num_edges number of edges
                      */
                     Sparse(const json& j, std::size_t num_edges) : Sparse(static_cast<std::size_t>(j["num_variables"]), num_edges){
+
+                        //define SparseMatrix and iterator
+                        using SparseMatrix  = Eigen::SparseMatrix<FloatType, Eigen::RowMajor>;
+                        using SpIter        = typename SparseMatrix::InnerIterator;
+
                         //define bqm with ising variables
-                        auto bqm = json_parse<FloatType>(j);
+                        auto bqm = json_parse<FloatType, cimod::Sparse>(j);
                         //interactions
-                        for(auto&& elem : bqm.get_quadratic()){
-                            const auto& key = elem.first;
-                            const auto& val = elem.second;
-                            J(key.first, key.second) += val;
-                        }
+                        //for(auto&& elem : bqm.get_quadratic()){
+                        //    const auto& key = elem.first;
+                        //    const auto& val = elem.second;
+                        //    J(key.first, key.second) += val;
+                        //}
                         //local field
-                        for(auto&& elem : bqm.get_linear()){
-                            const auto& key = elem.first;
-                            const auto& val = elem.second;
-                            h(key) += val;
+                        //for(auto&& elem : bqm.get_linear()){
+                        //    const auto& key = elem.first;
+                        //    const auto& val = elem.second;
+                        //    h(key) += val;
+                        //}
+
+                        //insert elements
+                        for(int k=0; k<_quadmat.outerSize(); k++){
+                            for(SpIter it(_quadmat, k); it; ++it){
+                                size_t r        = it.row();
+                                size_t c        = it.col();
+                                FloatType val   = it.value();
+
+                                if(r == num_variables && c == num_variables)
+                                    continue;
+
+                                if(c == num_variables){
+                                    //local field
+                                    h(r) += val;
+                                }
+                                else{
+                                    //quadratic
+                                    J(r, c) += val;
+                                }
+                            }
                         }
+
                     }
 
                     /**
@@ -191,15 +218,31 @@ namespace openjij {
                     }
 
                     /**
+                     * @brief calculate total energy 
+                     *
+                     * @param spins
+                     * @deprecated use energy(spins)
+                     *
+                     * @return corresponding energy
+                     */
+                    FloatType calc_energy(const Spins& spins) const{
+                        return this->energy(spins);
+                    }
+
+                    FloatType calc_energy(const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins) const{
+                        return this->energy(spins);
+                    }
+
+                    /**
                      * @brief calculate total energy
                      *
                      * @param spins
                      *
                      * @return corresponding energy
                      */
-                    FloatType calc_energy(const Spins& spins) const{
+                    FloatType energy(const Spins& spins) const{
                         if(!(spins.size() == this->get_num_spins())){
-                            std::out_of_range("Out of range in calc_energy in Sparse graph.");
+                            std::out_of_range("Out of range in energy in Sparse graph.");
                         }
 
                         FloatType ret = 0;
@@ -215,12 +258,12 @@ namespace openjij {
                         return ret;
                     }
 
-                    FloatType calc_energy(const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins) const{
+                    FloatType energy(const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins) const{
                         graph::Spins temp_spins(get_num_spins());
                         for(size_t i=0; i<temp_spins.size(); i++){
                             temp_spins[i] = spins(i);
                         }
-                        return calc_energy(temp_spins);
+                        return energy(temp_spins);
 
                     }
 
