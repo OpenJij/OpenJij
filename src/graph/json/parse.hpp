@@ -23,6 +23,7 @@
 #include <graph/cimod/src/binary_quadratic_model_dict.hpp>
 #include <graph/cimod/src/binary_polynomial_model.hpp>
 #include <numeric>
+#include <graph/graph.hpp>
 
 namespace openjij {
 namespace graph {
@@ -57,7 +58,7 @@ inline auto json_parse(const json& obj, bool relabel=true){
    }
    //make cimod object and apply to_serializable function
    auto bqm = BinaryQuadraticModel<size_t, FloatType, CimodDataType>::from_serializable(temp);
-   return bqm.change_vartype(Vartype::SPIN);
+   return bqm.change_vartype(Vartype::SPIN, false);
 }
 
 template<typename FloatType>

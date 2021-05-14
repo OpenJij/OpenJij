@@ -155,7 +155,7 @@ def BinaryQuadraticModel(linear, quadratic, *args, **kwargs):
             >>> bqm = oj.BinaryQuadraticModel(self.h, self.J)
     """
 
-    Model = make_BinaryQuadraticModel(linear, quadratic)
+    Model = make_BinaryQuadraticModel(linear, quadratic, kwargs.pop('sparse', False))
 
     # offset and vartype
     if len(args) == 2:

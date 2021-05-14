@@ -23,7 +23,7 @@ def make_ChimeraModel(linear, quadratic):
     Returns:
         generated ChimeraModel class
     """
-    class ChimeraModel(make_BinaryQuadraticModel(linear, quadratic)):
+    class ChimeraModel(make_BinaryQuadraticModel(linear, quadratic, True)):
         """Binary quadnratic model dealing with chimera graph
         This model deal with chimera graph.
         ChimeraModel provide methods to verify whether a given interaction graph matches a Chimera graph and to convert it to cxxjij.graph.Chimera.

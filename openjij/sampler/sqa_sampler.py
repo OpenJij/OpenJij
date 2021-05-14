@@ -167,7 +167,7 @@ class SQASampler(BaseSampler):
         """
 
         bqm = openjij.BinaryQuadraticModel(
-            linear=h, quadratic=J, var_type='SPIN'
+            h, J, var_type='SPIN'
         )
         return self._sampling(bqm, beta=beta, gamma=gamma,
                      num_sweeps=num_sweeps, schedule=schedule, trotter=trotter,

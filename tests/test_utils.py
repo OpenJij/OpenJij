@@ -7,7 +7,7 @@ import unittest
 
 class TestUtils(unittest.TestCase):
 
-    def test_var_type(self):
+    def test_vartype(self):
         #self.assertTrue(dimod.BINARY == oj.BINARY)
         #self.assertTrue(dimod.SPIN == oj.SPIN)
 

@@ -37,7 +37,7 @@ def make_KingGraph(linear=None, quadratic=None, king_graph=None):
         # add to linear
         mock_linear[label] = 1.0
 
-    class KingGraph(make_BinaryQuadraticModel(mock_linear, mock_quadratic)):
+    class KingGraph(make_BinaryQuadraticModel(mock_linear, mock_quadratic, True)):
         """
         BQM for king graph of HITACHI CMOS Annealer
         Attributes:

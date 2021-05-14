@@ -23,10 +23,10 @@ def calculate_qubo_energy(Q, binary):
 
 class VariableTypeTest(unittest.TestCase):
     def test_variable_type(self):
-        spin = oj.cast_var_type('SPIN')
+        spin = oj.cast_vartype('SPIN')
         self.assertEqual(spin, oj.SPIN)
 
-        binary = oj.cast_var_type('BINARY')
+        binary = oj.cast_vartype('BINARY')
         self.assertEqual(binary, oj.BINARY)
 
 
@@ -42,7 +42,7 @@ class ModelTest(unittest.TestCase):
 
     def test_bqm_constructor(self):
         # Test BinaryQuadraticModel constructor
-        bqm = oj.BinaryQuadraticModel(self.h, self.J)
+        bqm = oj.BinaryQuadraticModel(self.h, self.J, 'SPIN')
         self.assertEqual(type(bqm.interaction_matrix()), np.ndarray)
 
         self.assertEqual(bqm.vartype, oj.SPIN)
@@ -54,7 +54,7 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(bqm_qubo.vartype, oj.BINARY)
 
     def test_interaction_matrix(self):
-        bqm = oj.BinaryQuadraticModel(self.h, self.J)
+        bqm = oj.BinaryQuadraticModel(self.h, self.J, 'SPIN')
         ising_matrix = np.array([
             [1, -1,  0,  0],
             [-1, -2, -3, 0],
@@ -69,11 +69,11 @@ class ModelTest(unittest.TestCase):
         J = self.J.copy()
         J[0, 1] /= 3
         J[1, 0] = J[0, 1] * 2
-        bqm = oj.BinaryQuadraticModel(self.h, J)
+        bqm = oj.BinaryQuadraticModel(self.h, J, 'SPIN')
         np.testing.assert_array_equal(bqm.interaction_matrix(), ising_matrix)
 
     def test_transfer_to_cxxjij(self):
-        bqm = oj.BinaryQuadraticModel(self.h, self.J)
+        bqm = oj.BinaryQuadraticModel(self.h, self.J, 'SPIN')
         # to Dense
         ising_graph = bqm.get_cxxjij_ising_graph(sparse=False)
         self.assertEqual(ising_graph.size(), len(bqm.indices))
@@ -102,7 +102,7 @@ class ModelTest(unittest.TestCase):
         # Test to calculate energy
 
         # Test Ising energy
-        bqm = oj.BinaryQuadraticModel(self.h, self.J)
+        bqm = oj.BinaryQuadraticModel(self.h, self.J, 'SPIN')
         ising_energy_bqm = bqm.energy(self.spins)
         true_ising_e = calculate_ising_energy(self.h, self.J, self.spins)
         self.assertEqual(ising_energy_bqm, true_ising_e)
@@ -131,7 +131,7 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(qubo_energy, qubo_bqm.energy(spins, convert_sample=True))
 
     def test_energy_consistency(self):
-        bqm = oj.BinaryQuadraticModel(self.h, self.J, var_type='SPIN')
+        bqm = oj.BinaryQuadraticModel(self.h, self.J, vartype='SPIN')
         dense_ising_graph = bqm.get_cxxjij_ising_graph(sparse=False)
         sparse_ising_graph = bqm.get_cxxjij_ising_graph(sparse=True)
         spins = {0: -1, 1: -1, 2: -1, 3: -1}
@@ -141,7 +141,7 @@ class ModelTest(unittest.TestCase):
     def test_bqm(self):
         h = {}
         J = {(0, 1): -1.0, (1, 2): -3.0}
-        bqm = oj.BinaryQuadraticModel(h, J)
+        bqm = oj.BinaryQuadraticModel(h, J, 'SPIN')
         
         self.assertEqual(J, bqm.get_quadratic())
 

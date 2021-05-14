@@ -156,8 +156,10 @@ namespace openjij {
                         //}
 
                         //insert elements
-                        for(int k=0; k<_quadmat.outerSize(); k++){
-                            for(SpIter it(_quadmat, k); it; ++it){
+                        SparseMatrix quadmat = bqm.interaction_matrix();
+                        size_t num_variables = quadmat.rows() - 1;
+                        for(int k=0; k<quadmat.outerSize(); k++){
+                            for(SpIter it(quadmat, k); it; ++it){
                                 size_t r        = it.row();
                                 size_t c        = it.col();
                                 FloatType val   = it.value();
