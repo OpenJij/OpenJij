@@ -33,6 +33,13 @@
 namespace openjij {
 namespace graph {
 
+//! @brief Polynomial graph class, which can treat many-body interactions.
+//! The Hamiltonian is like
+//! \f[
+//! H=\sum_{i \neq j} Q_{ij} x_i x_j +  \sum_{i \neq j \neq k} Q_{ijk} x_i x_j x_k + \ldots
+//! \f]
+//! Note here that \f$ x_i \in \{0, 1\} \f$ or \f$ x_i \in \{-1, +1\} \f$.
+//! @tparam FloatType floating-point type
 template<typename FloatType>
 class Polynomial: public Graph {
    static_assert(std::is_floating_point<FloatType>::value, "FloatType must be floating-point type.");
@@ -42,8 +49,14 @@ public:
    //! @brief Floating-point type
    using value_type = FloatType;
    
+   //! @brief Constructor of Polynomial class to initialize variables and vartype.
+   //! @param num_variables std::size_t
+   //! @param vartype cimod::Vartype
    Polynomial(const std::size_t num_variables, const cimod::Vartype &vartype): Graph(num_variables), vartype_(vartype) {}
 
+   //! @brief Constructor of Polynomial class to initialize variables and vartype.
+   //! @param num_variables std::size_t
+   //! @param vartype SPIN or BINARY (std::string)
    Polynomial(const std::size_t num_variables, const std::string vartype): Graph(num_variables) {
       if (vartype == "SPIN") {
          vartype_ = cimod::Vartype::SPIN;
@@ -55,7 +68,9 @@ public:
          throw std::runtime_error("Unknown vartype detected");
       }
    }
-      
+    
+   //! @brief Constructor of Polynomial class to initialize num_variables, vartype, and interactions from json by using a delegating constructor.
+   //! @param j JSON object
    explicit Polynomial(const nlohmann::json &j): Graph(j.at("variables").size()) {
       const auto &v_k_v = json_parse_polynomial<FloatType>(j);
       const auto &num_variable    = std::get<0>(v_k_v);
@@ -94,7 +109,9 @@ public:
       }
       
    }
-         
+   
+   //! @brief Constructor of Polynomial class to initialize num_variables, vartype, and interactions from cimod.
+   //! @param bpm cimod::BinaryPolynomialModel object
    explicit Polynomial(const cimod::BinaryPolynomialModel<Index, FloatType> &bpm): Graph(bpm.get_num_variables()), poly_key_inv_(bpm.GetKeysInv()), vartype_(bpm.get_vartype()) {
       
       if (bpm._get_keys().size() != bpm._get_values().size() || bpm._get_keys().size() != poly_key_inv_.size()) {
@@ -114,6 +131,9 @@ public:
       }
    }
    
+   //! @brief Access the interaction corresponding to the input argument "std::vector<Index>& index" (lvalue references) to set an interaction.
+   //! @param index std::vector<Index>&
+   //! @return The interaction corresponding to "std::vector<Index>& index", i.e., J[index]
    FloatType &J(std::vector<Index> &key) {
       std::sort(key.begin(), key.end());
       CheckKeyValid(key);
@@ -127,7 +147,10 @@ public:
       }
       return poly_value_list_[poly_key_inv_.at(key)];
    }
-      
+   
+   //! @brief Return the interaction corresponding to the input argument "std::vector<Index> &index" (lvalue references).
+   //! @param index std::vector<Index>&
+   //! @return The interaction corresponding to "std::vector<Index>& index", i.e., J.at(index)
    FloatType J(std::vector<Index> &key) const {
       std::sort(key.begin(), key.end());
       CheckKeyValid(key);
@@ -139,28 +162,42 @@ public:
       }
    }
    
+   //! @brief Access the interaction corresponding to the input argument "const std::vector<Index>& index" (lvalue references) to set an interaction.
+   //! @param index const std::vector<Index>&
+   //! @return The interaction corresponding to "const std::vector<Index>& index", i.e., J[index]
    FloatType &J(const std::vector<Index> &key) {
       std::vector<Index> copied_key = key;
       return J(copied_key);
    }
-      
+   
+   //! @brief Return the interaction corresponding to the input argument "const std::vector<Index> &index".
+   //! @param index const std::vector<Index>&
+   //! @return The interaction corresponding to "const std::vector<Index>& index", i.e., J.at(index)
    FloatType J(const std::vector<Index> &key) const {
       std::vector<Index> copied_key = key;
       return J(copied_key);
    }
    
+   //! @brief Access the interaction corresponding to the input argument "args" (parameter pack) to set an interaction.
+   //! @param args parameter pack
+   //! @return The interaction corresponding to "args", i.e., J[args]
    template<typename... Args>
    FloatType &J(Args... args) {
       std::vector<Index> copied_key{(Index)args...};
       return J(copied_key);
    }
    
+   //! @brief Return the interaction corresponding to the input argument "args" (parameter pack).
+   //! @param args parameter pack
+   //! @return The interaction corresponding to "args", i.e., J[args]
    template<typename... Args>
    FloatType J(Args... args) const {
       std::vector<Index> copied_key{(Index)args...};
       return J(copied_key);
    }
    
+   //! @brief Return the polynomial interactions.
+   //! @return The interactions
    cimod::Polynomial<Index, FloatType> get_polynomial() const {
       cimod::Polynomial<Index, FloatType> poly_map;
       for (std::size_t i = 0; i < poly_key_list_.size(); ++i) {
@@ -169,26 +206,40 @@ public:
       return poly_map;
    }
    
+   //! @brief Get the PolynomialKeyList object.
+   //! @return PolynomialKeyList object as std::vector<std::vector>>.
    const cimod::PolynomialKeyList<Index> &get_keys() const {
       return poly_key_list_;
    }
    
+   //! @brief Get the PolynomialValueList object.
+   //! @return PolynomialValueList object as std::vector.
    const cimod::PolynomialValueList<FloatType> &get_values() const {
       return poly_value_list_;
    }
    
+   //! @brief Return the vartype.
+   //! @return The vartype
    cimod::Vartype get_vartype() const {
       return vartype_;
    }
    
+   //! @brief Set vartype.
+   //! @param vartype
    void set_vartype(cimod::Vartype vartype) {
       vartype_ = vartype;
    }
    
+   //! @brief Return the max index of the variables
+   //! @return The max index of the variables
    Index get_max_variable() const {
       return max_variable_;
    }
    
+   //! @brief Return the total energy corresponding to the input variables, Spins or Binaries.
+   //! @param spins const Spins& or const Binaries& (both are the same type)
+   //! @param omp_flag if true OpenMP is enabled.
+   //! @return The total energy
    FloatType calc_energy(const Spins& spins, bool omp_flag = true) const {
       if(spins.size() != Graph::size()){
          throw std::out_of_range("Out of range in calc_energy in Polynomial graph.");
@@ -226,16 +277,22 @@ public:
    }
    
 private:
+   //! @brief The list of the indices of the polynomial interactions (namely, the list of keys of the polynomial interactions as std::unordered_map) as std::vector<std::vector>>.
    cimod::PolynomialKeyList<Index> poly_key_list_;
    
+   //! @brief The list of the values of the polynomial interactions (namely, the list of values of the polynomial interactions as std::unordered_map) as std::vector.
    cimod::PolynomialValueList<FloatType> poly_value_list_;
    
+   //! @brief The inverse key list, which indicates the index of the poly_key_list_ and poly_value_list_
    std::unordered_map<std::vector<Index>, std::size_t, cimod::vector_hash> poly_key_inv_;
    
+   //! @brief The model's type. SPIN or BINARY
    cimod::Vartype vartype_ = cimod::Vartype::NONE;
    
+   //! @brief The max index of the variables
    Index max_variable_ = 0;
    
+   //! @brief Check if the input keys are valid
    void CheckKeyValid(const std::vector<Index> &key) const {
       if (0 < key.size()) {
          //key is assumed to be sorted
@@ -254,6 +311,8 @@ private:
       }
    }
    
+   //! @brief Update max_variable_
+   //! @param variable
    void UpdateMaxVariable(Index variable) {
       if (max_variable_ < variable) {
          max_variable_ = variable;
