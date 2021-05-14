@@ -118,17 +118,17 @@ class BaseSampler(dimod.Sampler):
                 # resize result_state if structure is not None.
                 if structure is not None:
                     temp_state = {}
-                    for ind in model.indices:
+                    for ind in model.variables:
                         temp_state[ind] = result_state[structure['dict'][ind]]
 
                     result_state = temp_state
 
                 else:
                     # no structure
-                    # replace indices
+                    # replace variables
                     temp_state = {}
-                    for num in range(len(model.indices)):
-                        temp_state[model.indices[num]] = result_state[num]
+                    for num in range(len(model.variables)):
+                        temp_state[model.variables[num]] = result_state[num]
                     result_state = temp_state
 
                 # store result (state and energy)
@@ -144,7 +144,7 @@ class BaseSampler(dimod.Sampler):
 
         # construct response instance
         response = openjij.Response.from_samples(
-            (states, model.indices), model.vartype, energies,
+            (states, model.variables), model.vartype, energies,
             info=system_info
         )
 

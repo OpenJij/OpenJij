@@ -275,6 +275,7 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertAlmostEqual(self.true_energy, self.polynomial.calc_energy(result_spin))
     
+    """
     def test_SingleSpinFlip_ClassicalIsing_Polynomial_Quadratic_Interactions(self):
         self.polynomial = G.Polynomial(self.size, "SPIN")
         self.polynomial = self.gen_testcase(self.polynomial)
@@ -292,7 +293,7 @@ class CXXTest(unittest.TestCase):
 
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
-    
+    """
 
 
     def test_SingleSpinFlip_TransverseIsing_Dense(self):

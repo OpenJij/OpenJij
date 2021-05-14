@@ -168,6 +168,9 @@ public:
    //! @param poly_map
    //! @param vartype
    BinaryPolynomialModel(const Polynomial<IndexType, FloatType> &poly_map, const Vartype vartype): vartype_(vartype) {
+      if (vartype_ == Vartype::NONE) {
+         throw std::runtime_error("Please set vartype to Vartype::SPIN or Vartype::BINARY");
+      }
       add_interactions_from(poly_map);
       UpdateVariablesToIntegers();
    }
@@ -177,6 +180,9 @@ public:
    //! @param value_list
    //! @param vartype
    BinaryPolynomialModel(PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list, const Vartype vartype): vartype_(vartype) {
+      if (vartype_ == Vartype::NONE) {
+         throw std::runtime_error("Please set vartype to Vartype::SPIN or Vartype::BINARY");
+      }
       add_interactions_from(key_list, value_list);
       UpdateVariablesToIntegers();
    }
@@ -186,6 +192,9 @@ public:
    //! @param value_list
    //! @param vartype
    BinaryPolynomialModel(const PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list, const Vartype vartype): vartype_(vartype) {
+      if (vartype_ == Vartype::NONE) {
+         throw std::runtime_error("Please set vartype to Vartype::SPIN or Vartype::BINARY");
+      }
       add_interactions_from(key_list, value_list);
       UpdateVariablesToIntegers();
    }
@@ -201,6 +210,10 @@ public:
                          const PolynomialValueList<FloatType> &poly_value_list,
                          const Vartype vartype
                          ): vartype_(vartype) {
+
+      if (vartype_ == Vartype::NONE) {
+         throw std::runtime_error("Please set vartype to Vartype::SPIN or Vartype::BINARY");
+      }
 
       if (poly_key_distance_list.size() != poly_value_list.size()) {
          throw std::runtime_error("The sizes of key_list and value_list must match each other");

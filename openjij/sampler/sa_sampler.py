@@ -271,7 +271,7 @@ class SASampler(BaseSampler):
         return response
 
 
-    def sample_hubo(self, J, var_type = openjij.SPIN, 
+    def sample_hubo(self, J, vartype, 
                     beta_min = None, beta_max = None, schedule = None,
                     num_sweeps = None, num_reads = 1,
                     initial_state = None, reinitialize_state=True, seed = None):
@@ -280,7 +280,7 @@ class SASampler(BaseSampler):
 
         Args:
             J (dict): Interactions.
-            var_type (str, openjij.VarType): "SPIN" or "BINARY". Defaults to "SPIN".
+            vartype (str, openjij.VarType): "SPIN" or "BINARY". Defaults to "SPIN".
             beta_min (float, optional): Minimum beta (initial inverse temperature). Defaults to None.
             beta_max (float, optional): Maximum beta (final inverse temperature). Defaults to None.
             schedule (list, optional): schedule list. Defaults to None.
@@ -302,18 +302,18 @@ class SASampler(BaseSampler):
             for Binary case::
                 >>> sampler = oj.SASampler()
                 >>> J = {(0,): -1, (0, 1): -1, (0, 1, 2): 1}
-                >>> response = sampler.sample_hubo(J, var_type = "BINARY")
+                >>> response = sampler.sample_hubo(J, vartype = "BINARY")
         """
         #if seed is None:
             #random.seed
             #seed = random.randint(0, sys.maxsize)
 
-        if var_type == "SPIN":
-            var_type = openjij.SPIN
-        elif var_type == "BINARY":
-            var_type = openjij.BINARY
+        if vartype == "SPIN":
+            vartype = openjij.SPIN
+        elif vartype == "BINARY":
+            vartype = openjij.BINARY
 
-        bhom = openjij.BinaryPolynomialModel(interactions = J, var_type = var_type)
+        bhom = openjij.BinaryPolynomialModel(J, vartype)
 
         return self._sampling_hubo(bhom, beta_min, beta_max,num_sweeps, num_reads, schedule, initial_state, reinitialize_state, seed)
 
@@ -331,10 +331,10 @@ class SASampler(BaseSampler):
             elif model.vartype == openjij.BINARY:
                 def _generate_init_state(): return ising_graph.gen_binary(seed) if seed != None else ising_graph.gen_binary()
             else:
-                raise ValueError("Unknown var_type detected")
+                raise ValueError("Unknown vartype detected")
         else:
             if isinstance(initial_state, dict):
-                initial_state = [initial_state[k] for k in model.indices]
+                initial_state = [initial_state[k] for k in model.variables]
             _init_state = np.array(initial_state)
             def _generate_init_state(): return _init_state
         # -------------------------------- make init state generator
