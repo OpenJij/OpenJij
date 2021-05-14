@@ -42,10 +42,10 @@ public:
       reset_dE();
    }
    
-   ClassicalIsingPolynomial(const graph::Spins &initial_spins, const nlohmann::json &j): spin(initial_spins), vartype_(j.at("vartype") == "SPIN" ? cimod::Vartype::SPIN : cimod::Vartype::BINARY) {
+   ClassicalIsingPolynomial(const graph::Spins &initial_spins, const nlohmann::json &j):num_spins(initial_spins.size()), spin(initial_spins), vartype_(j.at("vartype") == "SPIN" ? cimod::Vartype::SPIN : cimod::Vartype::BINARY) {
       const auto &v_k_v = graph::json_parse_polynomial<FloatType>(j);
       const auto &poly_key_list   = std::get<1>(v_k_v);
-      const auto &poly_value_list = std::get<2>(v_k_v);      
+      const auto &poly_value_list = std::get<2>(v_k_v);
       
       if (j.at("vartype") != "SPIN" && j.at("vartype") != "BINARY" ) {
          throw std::runtime_error("Unknown vartype detected");
@@ -503,22 +503,12 @@ auto make_classical_ising_polynomial(const graph::Spins &init_spin, const GraphT
    return ClassicalIsingPolynomial<GraphType>(init_spin, init_interaction);
 }
 
-//! @brief Helper function for ClassicalIsingPolynomial constructor by using cimod::BinaryPolynomialModel
-//! @tparam FloatType
-//! @param init_spin const graph::Spins&. The initial spin/binaries.
-//! @param init_cimod cimod::BinaryPolynomialModel&.
-template<typename FloatType>
-auto make_classical_ising_polynomial(const graph::Spins &init_spin, const cimod::BinaryPolynomialModel<graph::Index, FloatType> &init_bpm) {
-   return ClassicalIsingPolynomial<graph::Polynomial<FloatType>>(init_spin, init_bpm);
-}
-
 //! @brief Helper function for ClassicalIsingPolynomial constructor by using nlohmann::json object
 //! @tparam FloatType
 //! @param init_spin const graph::Spins&. The initial spin/binaries.
 //! @param init_obj nlohmann::json&
-template<typename FloatType>
-auto make_classical_ising_polynomial(const graph::Spins &init_spin, nlohmann::json &init_obj) {
-   return ClassicalIsingPolynomial<graph::Polynomial<FloatType>>(init_spin, init_obj);
+auto make_classical_ising_polynomial(const graph::Spins &init_spin, const nlohmann::json &init_obj) {
+   return ClassicalIsingPolynomial<graph::Polynomial<double>>(init_spin, init_obj);
 }
 
 

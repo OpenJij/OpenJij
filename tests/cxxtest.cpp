@@ -890,7 +890,7 @@ TEST(PolyUpdater, FromCimodCompareQuadratic2) {
    }
    auto engine_for_spin_poly = std::mt19937(seed);
    const auto spin_poly = openjij::graph::Graph(system_size).gen_spin(engine_for_spin_poly);
-   auto classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, bpm);
+   auto classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, bpm.to_serializable());
    auto random_numder_engine_poly = std::mt19937(seed);
    const auto schedule_list_poly = generate_schedule_list();
    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_poly, random_numder_engine_poly, schedule_list_poly);

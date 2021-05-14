@@ -322,14 +322,14 @@ class SASampler(BaseSampler):
                      initial_state=None,
                      reinitialize_state=True, seed=None):
 
-        ising_graph = model.get_cxxjij_ising_graph()
+        #ising_graph = model.get_cxxjij_ising_graph()
 
         # make init state generator --------------------------------
         if initial_state is None:
             if model.vartype == openjij.SPIN:
-                def _generate_init_state(): return ising_graph.gen_spin(seed)   if seed != None else ising_graph.gen_spin()
+                def _generate_init_state(): return cxxjij.graph.Polynomial(model.num_variables, "SPIN").gen_spin(seed) if seed != None else cxxjij.graph.Polynomial(model.num_variables, "SPIN").gen_spin()
             elif model.vartype == openjij.BINARY:
-                def _generate_init_state(): return ising_graph.gen_binary(seed) if seed != None else ising_graph.gen_binary()
+                def _generate_init_state(): return cxxjij.graph.Polynomial(model.num_variables, "BINARY").gen_binary(seed) if seed != None else cxxjij.graph.Polynomial(model.num_variables, "BINARY").gen_binary()
             else:
                 raise ValueError("Unknown vartype detected")
         else:
@@ -339,7 +339,7 @@ class SASampler(BaseSampler):
             def _generate_init_state(): return _init_state
         # -------------------------------- make init state generator
         
-        sa_system = self._make_system['singlespinflippolynomial'](_generate_init_state(), ising_graph)
+        sa_system = self._make_system['singlespinflippolynomial'](_generate_init_state(), model.to_serializable())
         
         self._setting_overwrite(
             beta_min=beta_min, beta_max=beta_max,
