@@ -27,7 +27,7 @@ class TestUtils(unittest.TestCase):
 
         # logger setting
         ground_state = [-1, -1, -1]
-        ground_energy = oj.BinaryQuadraticModel(h, J).calc_energy(ground_state)
+        ground_energy = oj.BinaryQuadraticModel(h, J, 'SPIN').energy(ground_state)
         step_num_list = np.linspace(1, 9, 9, dtype=np.int)
         bm_res = oj.solver_benchmark(
             solver=solver,

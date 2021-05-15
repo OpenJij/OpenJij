@@ -20,7 +20,7 @@ import cxxjij
 import openjij
 import dimod
 from dimod.core.sampler import samplemixinmethod
-import cimod
+from cimod.utils import get_state_and_energy
 
 import time
 
@@ -67,7 +67,7 @@ class BaseSampler(dimod.Sampler):
     def _cxxjij_sampling(self, model, init_generator,
                          algorithm, system,
                          reinitialize_state=None,
-                         seed=None, structure=None):
+                         seed=None, offset=0):
         """Basic sampling function: for cxxjij sampling
 
         Args:
@@ -77,7 +77,7 @@ class BaseSampler(dimod.Sampler):
             system (:obj:): [description]
             reinitialize_state (bool, optional): [description]. Defaults to None.
             seed (int, optional): seed for algorithm. Defaults to None.
-            structure (dict): structure dictionary that must have keys "size" and "dict"
+            offset (float): an offset which is added to the calculated energy
 
         Returns:
             :class:`openjij.sampler.response.Response`: results 
@@ -115,25 +115,12 @@ class BaseSampler(dimod.Sampler):
                 # ex. _sys_info save trotterized quantum state.
                 result_state, _sys_info = self._get_result(system, model)
 
-                # resize result_state if structure is not None.
-                if structure is not None:
-                    temp_state = {}
-                    for ind in model.variables:
-                        temp_state[ind] = result_state[structure['dict'][ind]]
-
-                    result_state = temp_state
-
-                else:
-                    # no structure
-                    # replace variables
-                    temp_state = {}
-                    for num in range(len(model.variables)):
-                        temp_state[model.variables[num]] = result_state[num]
-                    result_state = temp_state
+                # convert result_state to cimod style
+                result_state, energy = get_state_and_energy(model, result_state, offset)
 
                 # store result (state and energy)
                 states.append(result_state)
-                energies.append(model.energy(result_state))
+                energies.append(energy)
 
                 if _sys_info:
                     system_info['system'].append(_sys_info)
@@ -215,7 +202,7 @@ class BaseSampler(dimod.Sampler):
         Returns:
             :class:`openjij.sampler.response.Response`: results 
         """
-        bqm = openjij.BinaryQuadraticModel.from_ising(h, J)
+        bqm = openjij.BinaryQuadraticModel.from_ising(h, J, sparse=parameters.get('sparse', False))
         return self.sample(bqm, **parameters)
 
 
@@ -229,6 +216,6 @@ class BaseSampler(dimod.Sampler):
         Returns:
             :class:`openjij.sampler.response.Response`: results 
         """
-        bqm = openjij.BinaryQuadraticModel.from_qubo(Q)
+        bqm = openjij.BinaryQuadraticModel.from_qubo(Q, sparse=parameters.get('sparse', False))
         return self.sample(bqm, **parameters)
 

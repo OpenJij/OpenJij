@@ -19,11 +19,11 @@ BINARY = dimod.BINARY
 
 Vartype = dimod.Vartype
 
-def cast_var_type(var_type):
-    if isinstance(var_type, dimod.Vartype):
-        return var_type
-    elif isinstance(var_type, str):
-        if var_type.upper() == 'SPIN':
+def cast_vartype(vartype):
+    if isinstance(vartype, dimod.Vartype):
+        return vartype
+    elif isinstance(vartype, str):
+        if vartype.upper() == 'SPIN':
             return SPIN
-        elif var_type.upper() == 'BINARY':
+        elif vartype.upper() == 'BINARY':
             return BINARY

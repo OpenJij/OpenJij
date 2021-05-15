@@ -81,17 +81,33 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
 
             Returns:
                 cxxjij.graph.Dense or cxxjij.graph.Sparse: 
+                offset (float): offset of the energy due to qubo->ising transformation
             """
-    
+
             if sparse:
+                old_vartype = self.vartype
+                self.change_vartype('SPIN')
+
                 GraphClass = cxxjij.graph.Sparse if self.gpu == False else cxxjij.graph.SparseGPU
-                return GraphClass(self.to_serializable())
+                offset = self.offset
+                serialized = self.to_serializable()
+
+                self.change_vartype(old_vartype)
+                return GraphClass(serialized), offset
             else:
+                old_vartype = self.vartype
+                self.change_vartype('SPIN')
+                
                 GraphClass = cxxjij.graph.Dense if self.gpu == False else cxxjij.graph.DenseGPU
                 # initialize with interaction matrix.
                 mat = self.interaction_matrix()
+                num_variables = mat.shape[0] - 1
+                dense = GraphClass(num_variables)
                 dense.set_interaction_matrix(mat)
-                return dense
+                offset = self.offset
+
+                self.change_vartype(old_vartype)
+                return dense, offset
     
     
         # compatible with the previous version
@@ -172,7 +188,7 @@ def BinaryQuadraticModel(linear, quadratic, *args, **kwargs):
         vartype = kwargs.pop('vartype')
         return Model(linear, quadratic, 0.0, vartype, **kwargs)
     else:
-        raise TypeError("invalid args for BinaryQuadraticModel. please check arguments")
+        raise TypeError("Offset or vartype is configured incorrectly, offset must not be a keyword variable and vartype must be set.")
 
 
 #classmethods
@@ -182,7 +198,7 @@ def bqm_from_numpy_matrix(mat, variables: list=None, offset=0.0, vartype='BINARY
         num_variables = mat.shape[0]
         variables = list(range(num_variables))
 
-    return make_BinaryQuadraticModel({variables[0]: 1.0}, {}, kwargs.pop('sparse', False)).from_numpy_matrix(mat, variables, offset, to_cxxcimod(vartype), True, **kwargs)
+    return make_BinaryQuadraticModel({variables[0]: 1.0}, {}, kwargs.pop('sparse', False)).from_numpy_matrix(mat, variables, offset, vartype, True, **kwargs)
 
 BinaryQuadraticModel.from_numpy_matrix = bqm_from_numpy_matrix
 

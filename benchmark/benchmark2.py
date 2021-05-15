@@ -21,7 +21,7 @@ ONE_MCSTEP = 1
 NUM_CALL_UPDATER = 1000
 
 
-bqm = oj.BinaryQuadraticModel(h, J, var_type='SPIN')
+bqm = oj.BinaryQuadraticModel(h, J, vartype='SPIN')
 
 graph = bqm.get_cxxjij_ising_graph(sparse=False)
 

@@ -120,7 +120,7 @@ class SASampler(BaseSampler):
 
         return cxxjij_schedule
 
-    def sample_ising(self, h, J, beta_min=None, beta_max=None,
+    def sample(self, bqm, beta_min=None, beta_max=None,
                      num_sweeps=None, num_reads=1, schedule=None,
                      initial_state=None, updater='single spin flip',
                      sparse=False,
@@ -129,8 +129,7 @@ class SASampler(BaseSampler):
         """sample Ising model.
 
         Args:
-            h (dict): linear biases
-            J (dict): quadratic biases
+            bqm (oj.BinaryQuadraticModel) binary quadratic model
             beta_min (float): minimal value of inverse temperature
             beta_max (float): maximum value of inverse temperature
             num_sweeps (int): number of sweeps
@@ -160,46 +159,21 @@ class SASampler(BaseSampler):
             
         """
 
-        model = openjij.BinaryQuadraticModel(
-            h, J, var_type='SPIN'
-        )
-        return self._sampling(model, beta_min, beta_max,
-                              num_sweeps, num_reads, schedule,
-                              initial_state, updater,
-                              sparse=sparse,
-                              reinitialize_state=reinitialize_state, 
-                              seed=seed)
-
-    def _sampling(self, model, beta_min=None, beta_max=None,
-                     num_sweeps=None, num_reads=1, schedule=None,
-                     initial_state=None, updater='single spin flip',
-                     sparse=False,
-                     reinitialize_state=True, seed=None, structure=None, 
-                     ):
-        """sampling by using specified model
-        Args:
-            model (openjij.BinaryQuadraticModel): BinaryQuadraticModel
-            beta_min (float): minimal value of inverse temperature
-            beta_max (float): maximum value of inverse temperature
-            num_sweeps (int): number of sweeps
-            num_reads (int): number of reads
-            schedule (list): list of inverse temperature
-            initial_state (dict): initial state
-            updater(str): updater algorithm
-            reinitialize_state (bool): if true reinitialize state for each run
-            seed (int): seed for Monte Carlo algorithm
-            structure (dict): specify the structure. 
-            This argument is necessary if the model has a specific structure (e.g. Chimera graph) and the updater algorithm is structure-dependent.
-            structure must have two types of keys, namely "size" which shows the total size of spins and "dict" which is the map from model index (elements in model.indices) to the number.
-        Returns:
-            :class:`openjij.sampler.response.Response`: results
-        """
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         # swendsen wang algorithm runs only on sparse ising graphs.
         if _updater_name == 'swendsenwang' or sparse:
-            ising_graph = model.get_cxxjij_ising_graph(sparse=True)
+            sparse = True
         else:
-            ising_graph = model.get_cxxjij_ising_graph()
+            sparse = False
+
+        if sparse and bqm.sparse == False:
+            # convert to sparse bqm
+            bqm = openjij.BinaryQuadraticModel(bqm.linear, bqm.quadratic, bqm.offset, bqm.vartype, sparse=True)
+
+        # alias 
+        model = bqm
+
+        ising_graph, offset = model.get_cxxjij_ising_graph()
 
 
         self._setting_overwrite(
@@ -233,22 +207,14 @@ class SASampler(BaseSampler):
             def _generate_init_state(): return ising_graph.gen_spin(seed) if seed != None else ising_graph.gen_spin()
         else:
             if isinstance(initial_state, dict):
-                initial_state = [initial_state[k] for k in model.indices]
+                initial_state = [initial_state[k] for k in model.variables]
             _init_state = np.array(initial_state)
 
-            if structure == None:
-                # validate initial_state size
-                if len(initial_state) != ising_graph.size():
-                    raise ValueError(
-                        "the size of the initial state should be {}"
-                        .format(ising_graph.size()))
-            else:
-                # resize _initial_state
-                temp_state = [1]*int(structure['size'])
-                for k,ind in enumerate(model.indices):
-                    temp_state[structure['dict'][ind]] = _init_state[k]
-                _init_state = temp_state
-
+            # validate initial_state size
+            if len(initial_state) != ising_graph.size():
+                raise ValueError(
+                    "the size of the initial state should be {}"
+                    .format(ising_graph.size()))
 
             def _generate_init_state(): return np.array(_init_state)
         # -------------------------------- make init state generator
@@ -263,7 +229,7 @@ class SASampler(BaseSampler):
         response = self._cxxjij_sampling(
             model, _generate_init_state,
             algorithm, sa_system,
-            reinitialize_state, seed, structure
+            reinitialize_state, seed
         )
 
         response.info['schedule'] = self.schedule_info
