@@ -230,6 +230,7 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
    
    py::class_<CIP>(m, str.c_str())
    .def(py::init<const graph::Spins&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
+   .def(py::init([](const graph::Spins& init_spins, const py::object& obj){return std::unique_ptr<CIP>(new CIP(init_spins, static_cast<nlohmann::json>(obj)));}),"init_spin"_a, "obj"_a)
    .def(py::init<const graph::Spins&, const cimod::BinaryPolynomialModel<graph::Index, FloatType>&>(), "init_spin"_a, "init_bpm"_a)
    .def_readonly("vartype"          , &CIP::vartype_                  )
    .def_readonly("spins"            , &CIP::spin                      )
@@ -249,10 +250,10 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
            }, "init_spin"_a, "init_interaction"_a);
    
    //make_classical_ising_polynomial
-   auto mkcip_cimod_str = std::string("make_classical_ising_polynomial");
-   m.def(mkcip_cimod_str.c_str(), [](const graph::Spins& init_spin, const cimod::BinaryPolynomialModel<graph::Index, FloatType> &init_bpm){
-           return system::make_classical_ising_polynomial(init_spin, init_bpm);
-           }, "init_spin"_a, "init_bpm"_a);
+   auto mkcip_json_str = std::string("make_classical_ising_polynomial");
+   m.def(mkcip_json_str.c_str(), [](const graph::Spins& init_spin, const py::object& obj){
+           return system::make_classical_ising_polynomial(init_spin, static_cast<nlohmann::json>(obj));
+           }, "init_spin"_a, "obj"_a);
 
 }
 

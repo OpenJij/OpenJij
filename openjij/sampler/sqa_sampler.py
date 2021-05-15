@@ -111,7 +111,7 @@ class SQASampler(BaseSampler):
     def _get_result(self, system, model):
         state, info = super()._get_result(system, model)
 
-        q_state = system.trotter_spins[:-1].T.astype(np.int)
+        q_state = system.trotter_spins[:-1].T.astype(int)
         c_energies = [get_state_and_energy(model, state)[1] for state in q_state]
         info['trotter_state'] = q_state
         info['trotter_energies'] = c_energies

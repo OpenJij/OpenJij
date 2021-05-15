@@ -150,7 +150,7 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(type(bqm.interaction_matrix()), np.ndarray)
         correct_mat = np.array([[0, -1, 0, 0], [0, 0, -3, 0], [0, 0, 0, 0], [0, 0, 0, 1]])
         np.testing.assert_array_equal(
-            bqm.interaction_matrix(), correct_mat.astype(np.float))
+            bqm.interaction_matrix(), correct_mat.astype(float))
 
 if __name__ == '__main__':
     unittest.main()

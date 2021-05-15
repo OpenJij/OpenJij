@@ -168,6 +168,9 @@ public:
    //! @param poly_map
    //! @param vartype
    BinaryPolynomialModel(const Polynomial<IndexType, FloatType> &poly_map, const Vartype vartype): vartype_(vartype) {
+      if (vartype_ == Vartype::NONE) {
+         throw std::runtime_error("Unknown vartype detected");
+      }
       add_interactions_from(poly_map);
       UpdateVariablesToIntegers();
    }
@@ -177,6 +180,9 @@ public:
    //! @param value_list
    //! @param vartype
    BinaryPolynomialModel(PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list, const Vartype vartype): vartype_(vartype) {
+      if (vartype_ == Vartype::NONE) {
+         throw std::runtime_error("Unknown vartype detected");
+      }
       add_interactions_from(key_list, value_list);
       UpdateVariablesToIntegers();
    }
@@ -186,6 +192,9 @@ public:
    //! @param value_list
    //! @param vartype
    BinaryPolynomialModel(const PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list, const Vartype vartype): vartype_(vartype) {
+      if (vartype_ == Vartype::NONE) {
+         throw std::runtime_error("Unknown vartype detected");
+      }
       add_interactions_from(key_list, value_list);
       UpdateVariablesToIntegers();
    }
@@ -201,7 +210,10 @@ public:
                          const PolynomialValueList<FloatType> &poly_value_list,
                          const Vartype vartype
                          ): vartype_(vartype) {
-
+      if (vartype_ == Vartype::NONE) {
+         throw std::runtime_error("Unknown vartype detected");
+      }
+      
       if (poly_key_distance_list.size() != poly_value_list.size()) {
          throw std::runtime_error("The sizes of key_list and value_list must match each other");
       }
@@ -217,7 +229,7 @@ public:
       poly_value_list_.resize(num_interactions);
       
 #pragma omp parallel for
-      for (int64_t i = 0; i < num_interactions; ++i) {
+      for (int64_t i = 0; i < (int64_t)num_interactions; ++i) {
          std::vector<IndexType> temp;
          for (const auto &it: poly_key_distance_list[i]) {
             temp.push_back(variables[it]);
@@ -336,25 +348,53 @@ public:
       return poly_value_list_;
    }
 
-   //! @brief Get the
-   //! @return PolynomialValueList object as std::vector.
+   //! @brief Get The inverse key list, which indicates the index of the poly_key_list_ and poly_value_list_.
+   //! @return The inverse key list.
    const std::unordered_map<std::vector<IndexType>, std::size_t, vector_hash> &GetKeysInv() const {
       return poly_key_inv_;
    }
    
    //! @brief Return the variables as std::unordered_set.
+   //! @return variables
    const std::unordered_set<IndexType> &GetVariables() const {
       return variables_;
    }
+      
+   //! @brief Return the sorted variables as std::vector.
+   //! @details This function may need O(N) calculation time (N is the number of the variables).
+   //! @return sorted variables as std::vector.
+   //! @deprecated Please use get_sorted_variables()
+   const std::vector<IndexType> &indices() {
+      if (relabel_flag_for_variables_to_integers_) {
+         UpdateVariablesToIntegers();
+      }
+      return sorted_variables_;
+   }
    
    //! @brief Return the sorted variables as std::vector.
+   //! @details This function may need O(N) calculation time (N is the number of the variables).
+   //! @return sorted variables as std::vector.
+   const std::vector<IndexType> &get_sorted_variables() {
+      if (relabel_flag_for_variables_to_integers_) {
+         UpdateVariablesToIntegers();
+      }
+      return sorted_variables_;
+   }
+   
+   //! @brief Return the sorted variables as std::vector.
+   //! @details This function may need O(N) calculation time (N is the number of the variables).
+   //! @return sorted variables as std::vector.
    std::vector<IndexType> get_sorted_variables() const {
-      std::vector<IndexType> sorted_variables(variables_.begin(), variables_.end());
-      std::sort(sorted_variables.begin(), sorted_variables.end());
-      return sorted_variables;
+      if (relabel_flag_for_variables_to_integers_) {
+         return GenerateSortedVariables();
+      }
+      else {
+         return sorted_variables_;
+      }
    }
    
    //! @brief Return the maximum degree of interaction.
+   //! @return degree
    std::size_t get_degree() const {
       std::size_t degree = 0;
       for (const auto &it: poly_key_list_) {
@@ -366,27 +406,32 @@ public:
    }
    
    //! @brief Return the offset.
+   //! @return The offset
    FloatType get_offset() const {
       return get_polynomial(std::vector<IndexType>{});
    }
    
    //! @brief Return the vartype.
+   //! @return The vartype
    Vartype get_vartype() const {
       return vartype_;
    }
    
    //! @brief Return the number of the interactions.
+   //! @return The number of the interactions.
    std::size_t get_num_interactions() const {
       return poly_key_list_.size();
    }
    
    //! @brief Return the number of variables.
+   //! @return The number of the variables.
    std::size_t get_num_variables() const {
       return variables_.size();
    }
    
    //! @brief Create an empty BinaryPolynomialModel.
    //! @param vartype
+   //! @return The empty BinaryPolynomialModel.
    BinaryPolynomialModel empty(const Vartype vartype) const {
       return BinaryPolynomialModel({}, vartype);
    }
@@ -586,7 +631,7 @@ public:
       
       if (omp_flag) {
 #pragma omp parallel for reduction (+: val)
-         for (int64_t i = 0; i < num_interactions; ++i) {
+         for (int64_t i = 0; i < (int64_t)num_interactions; ++i) {
             int32_t spin_multiple = 1;
             for (const auto &index: poly_key_list_[i]) {
                spin_multiple *= sample.at(index);
@@ -635,7 +680,7 @@ public:
       
       if (omp_flag) {
 #pragma omp parallel for reduction (+: val)
-         for (int64_t i = 0; i < num_interactions; ++i) {
+         for (int64_t i = 0; i < (int64_t)num_interactions; ++i) {
             int32_t spin_multiple = 1;
             for (const auto &index: poly_key_list_[i]) {
                spin_multiple *= sample_vec[variables_to_integers_.at(index)];
@@ -667,7 +712,7 @@ public:
    PolynomialValueList<FloatType> energies(const std::vector<Sample<IndexType>> &samples) const {
       PolynomialValueList<FloatType> val_list(samples.size());
 #pragma omp parallel for
-      for (int64_t i = 0; i < samples.size(); ++i) {
+      for (int64_t i = 0; i < (int64_t)samples.size(); ++i) {
          val_list[i] = energy(samples[i], false);
       }
       return val_list;
@@ -679,7 +724,7 @@ public:
    PolynomialValueList<FloatType> energies(const std::vector<std::vector<int32_t>> &samples_vec) {
       PolynomialValueList<FloatType> val_list(samples_vec.size());
 #pragma omp parallel for
-      for (int64_t i = 0; i < samples_vec.size(); ++i) {
+      for (int64_t i = 0; i < (int64_t)samples_vec.size(); ++i) {
          val_list[i] = energy(samples_vec[i], false);
       }
       return val_list;
@@ -868,7 +913,7 @@ public:
       std::vector<IndexType> sorted_variables = get_sorted_variables();
       
 #pragma omp parallel for
-      for (int64_t i = 0; i < num_interactions; ++i) {
+      for (int64_t i = 0; i < (int64_t)num_interactions; ++i) {
          std::vector<std::size_t> temp;
          for (const auto &it: poly_key_list_[i]) {
             auto it_index = std::lower_bound(sorted_variables.begin(), sorted_variables.end(), it);
@@ -966,6 +1011,9 @@ protected:
    
    //! @brief The correspondence from variables to the integer numbers.
    std::unordered_map<IndexType, int64_t> variables_to_integers_;
+   
+   //! @brief Sorted variables is represents the correspondence from integer numbers.to the variables.
+   std::vector<IndexType> sorted_variables_;
    
    //! @brief If true variable_to_index must be relabeled.
    bool relabel_flag_for_variables_to_integers_ = true;
@@ -1104,23 +1152,34 @@ protected:
       }
       return BinaryPolynomialModel(new_key_list, new_value_list, Vartype::BINARY);
    }
-   
+
+   //! @brief Update sorted_variables_ and variables_to_integers_
    void UpdateVariablesToIntegers() {
-      std::vector<IndexType> sorted_variables = get_sorted_variables();
+      sorted_variables_ = GenerateSortedVariables();
       variables_to_integers_.clear();
-      for (std::size_t i = 0; i < sorted_variables.size(); ++i) {
-         variables_to_integers_[sorted_variables[i]] = i;
+      for (std::size_t i = 0; i < sorted_variables_.size(); ++i) {
+         variables_to_integers_[sorted_variables_[i]] = i;
       }
       relabel_flag_for_variables_to_integers_ = false;
    }
    
+   //! @brief Generate variables_to_integers
+   //! @return variables_to_integers
    std::unordered_map<IndexType, int64_t> GenerateVariablesToIntegers() const {
-      std::vector<IndexType> sorted_variables = get_sorted_variables();
+      std::vector<IndexType> sorted_variables = GenerateSortedVariables();
       std::unordered_map<IndexType, int64_t> variables_to_integers;
       for (std::size_t i = 0; i < sorted_variables.size(); ++i) {
          variables_to_integers[sorted_variables[i]] = i;
       }
       return variables_to_integers;
+   }
+   
+   //! @brief Generate sorted variables
+   //! @return sorted_variables
+   std::vector<IndexType> GenerateSortedVariables() const {
+      std::vector<IndexType> sorted_variables(variables_.begin(), variables_.end());
+      std::sort(sorted_variables.begin(), sorted_variables.end());
+      return sorted_variables;
    }
    
 };

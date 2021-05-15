@@ -36,7 +36,6 @@ from openjij.utils.graph_utils import qubo_to_ising
 import cimod
 import cxxcimod
 import dimod
-from functools import singledispatch
 import warnings
 import sys
 
@@ -51,7 +50,7 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
         """Represents Binary quadratic model. 
            Indices are listed in self.indices.
         Attributes:
-            vartype (cimod.VariableType): variable type SPIN or BINARY
+            vartype (dimod.Vartype): variable type SPIN or BINARY
             linear (dict): represents linear term
             quadratic (dict): represents quadratic term
             offset (float): represents constant energy term when convert to SPIN from BINARY
@@ -114,6 +113,11 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
         def calc_energy(self, sample, **kwargs):
             return self.energy(sample, **kwargs)
 
+        # compatible with the previous version
+        @property
+        def indices(self):
+            return self.variables
+
     return BinaryQuadraticModel
 
 def make_BinaryQuadraticModel_from_JSON(obj: dict):
@@ -142,7 +146,7 @@ def BinaryQuadraticModel(linear, quadratic, *args, **kwargs):
     """generate BinaryQuadraticModel object.
 
     Attributes:
-        vartype (cimod.VariableType): variable type SPIN or BINARY
+        vartype (dimod.Vartype): variable type SPIN or BINARY
         linear (dict): represents linear term
         quadratic (dict): represents quadratic term
         offset (float): represents constant energy term when convert to SPIN from BINARY
@@ -248,17 +252,72 @@ def make_BinaryPolynomialModel_from_JSON(obj):
         raise TypeError("Invalid types of polynomial")
     return make_BinaryPolynomialModel(mock_polynomial)
 
-@singledispatch
-def BinaryPolynomialModel(polynomial: dict, vartype):
+def BinaryPolynomialModel(*args, **kwargs):
+    if kwargs == {}:
+        if len(args) <= 1:
+            raise TypeError("Invalid argument for this function")
+        elif len(args) == 2:
+            if isinstance(args[0], dict):
+                return _BinaryPolynomialModel_from_dict(args[0], _to_cxxcimod(args[1]))
+            else:
+                raise TypeError("Invalid argument for this function")
+        elif len(args) == 3:
+            key_condition = isinstance(args[0], list) or isinstance(args[0], tuple)
+            val_condition = isinstance(args[1], list) or isinstance(args[1], tuple)
+            if key_condition and val_condition:
+                return _BinaryPolynomialModel_from_list(args[0], args[1], _to_cxxcimod(args[2]))
+            else:
+                raise TypeError("Invalid argument for this function")
+        else:
+            raise TypeError("Invalid argument for this function")
+    else:
+        if 'keys' in kwargs and 'values' in kwargs and 'vartype' in kwargs:
+            key_condition = isinstance(kwargs['keys']  , list) or isinstance(kwargs['keys']  , tuple)
+            val_condition = isinstance(kwargs['values'], list) or isinstance(kwargs['values'], tuple)
+            if key_condition and val_condition:
+                return _BinaryPolynomialModel_from_list(kwargs['keys'], kwargs['values'], _to_cxxcimod(kwargs['vartype']))
+            else:
+                raise TypeError("Invalid argument for this function")
+        elif 'polynomial' in kwargs and 'vartype' in kwargs:
+            if isinstance(kwargs['polynomial'], dict):
+                return _BinaryPolynomialModel_from_dict(kwargs['polynomial'], _to_cxxcimod(kwargs['vartype']))
+            else:
+                raise TypeError("Invalid argument for this function")
+        elif 'values' in kwargs and 'vartype' in kwargs:
+            if len(args) != 1:
+                raise TypeError("Invalid argument for this function")
+            key_condition = isinstance(args[0]         , list) or isinstance(args[0]         , tuple)
+            val_condition = isinstance(kwargs['values'], list) or isinstance(kwargs['values'], tuple)
+            if key_condition and val_condition:
+                return _BinaryPolynomialModel_from_list(args[0], kwargs['values'], _to_cxxcimod(kwargs['vartype']))
+            else:
+                raise TypeError("Invalid argument for this function")
+        elif 'vartype' in kwargs:
+            if len(args) == 1:
+                if isinstance(args[0], dict):
+                    return _BinaryPolynomialModel_from_dict(args[0], _to_cxxcimod(kwargs['vartype']))
+                else:
+                    raise TypeError("Invalid argument for this function")
+            elif len(args) == 2:
+                key_condition = isinstance(args[0], list) or isinstance(args[0], tuple)
+                val_condition = isinstance(args[1], list) or isinstance(args[1], tuple)
+                if key_condition and val_condition:
+                    return _BinaryPolynomialModel_from_list(args[0], args[1], _to_cxxcimod(kwargs['vartype']))
+                else:
+                    raise TypeError("Invalid argument for this function")
+            else:
+                raise TypeError("Invalid argument for this function")
+        else:
+            raise TypeError("Invalid argument for this function")
+        
+def _BinaryPolynomialModel_from_dict(polynomial: dict, vartype):
     Model = make_BinaryPolynomialModel(polynomial)
     return Model(polynomial, _to_cxxcimod(vartype))
 
-@BinaryPolynomialModel.register
 def _BinaryPolynomialModel_from_list(keys: list, values: list, vartype):
     if len(keys) == 0:
         Model = make_BinaryPolynomialModel({})
         return Model(keys, values, _to_cxxcimod(vartype))
-
     i = 0
     label = None
     while i < len(keys):
@@ -266,7 +325,6 @@ def _BinaryPolynomialModel_from_list(keys: list, values: list, vartype):
             label = keys[i][0]
             break
         i += 1
-
     if label == None:
         Model = make_BinaryPolynomialModel({():1.0})
         return Model(keys, values, _to_cxxcimod(vartype))
@@ -277,11 +335,55 @@ def _BinaryPolynomialModel_from_list(keys: list, values: list, vartype):
         Model = make_BinaryPolynomialModel(mock_polynomial)
         return Model(keys, values, _to_cxxcimod(vartype))
 
-@singledispatch
-def make_BinaryPolynomialModel_from_hising(polynomial: dict):
+def make_BinaryPolynomialModel_from_hising(*args, **kwargs):
+    if kwargs == {}:
+        if len(args) == 0:
+            raise TypeError("Invalid argument for this function")
+        elif len(args) == 1:
+            if isinstance(args[0], dict):
+                return _make_BinaryPolynomialModel_from_hising_from_dict(args[0])
+            else:
+                raise TypeError("Invalid argument for this function")
+        elif len(args) == 2:
+            key_condition = isinstance(args[0], list) or isinstance(args[0], tuple)
+            val_condition = isinstance(args[1], list) or isinstance(args[1], tuple)
+            if key_condition and val_condition:
+                return _make_BinaryPolynomialModel_from_hising_from_list(args[0], args[1])
+            else:
+                raise TypeError("Invalid argument for this function")
+        else:
+            raise TypeError("Invalid argument for this function")
+    else:
+        if 'keys' in kwargs and 'values' in kwargs:
+            key_condition = isinstance(kwargs['keys']  , list) or isinstance(kwargs['keys']  , tuple)
+            val_condition = isinstance(kwargs['values'], list) or isinstance(kwargs['values'], tuple) 
+            if key_condition and val_condition:
+                return _make_BinaryPolynomialModel_from_hising_from_list(kwargs['keys'], kwargs['values'])
+            else:
+                raise TypeError("Invalid argument for this function")
+        elif 'values' in kwargs:
+            if len(args) != 1:
+                raise TypeError("Invalid argument for this function")
+            key_condition = isinstance(args[0]         , list) or isinstance(args[0]         , tuple)
+            val_condition = isinstance(kwargs['values'], list) or isinstance(kwargs['values'], tuple)
+            if key_condition and val_condition:
+                return _make_BinaryPolynomialModel_from_hising_from_list(args[0], kwargs['values'])
+            else:
+                raise TypeError("Invalid argument for this function")
+        elif 'polynomial' in kwargs:
+            if len(args) != 0:
+                raise TypeError("Invalid argument for this function")
+            if isinstance(kwargs['polynomial'], dict):
+                _make_BinaryPolynomialModel_from_hising_from_dict(kwargs['polynomial'])
+            else:
+                raise TypeError("Invalid argument for this function")
+        else:
+            raise TypeError("Invalid argument for this function")
+
+
+def _make_BinaryPolynomialModel_from_hising_from_dict(polynomial: dict):
     return make_BinaryPolynomialModel(polynomial).from_hising(polynomial)
 
-@make_BinaryPolynomialModel_from_hising.register
 def _make_BinaryPolynomialModel_from_hising_from_list(keys: list, values: list):
     if len(keys) == 0:
         return make_BinaryPolynomialModel({}).from_hising(keys, values)
@@ -302,11 +404,54 @@ def _make_BinaryPolynomialModel_from_hising_from_list(keys: list, values: list):
         mock_polynomial = {(label,):1.0}
         return make_BinaryPolynomialModel(mock_polynomial).from_hising(keys, values)
 
-@singledispatch
-def make_BinaryPolynomialModel_from_hubo(polynomial: dict):
+def make_BinaryPolynomialModel_from_hubo(*args, **kwargs):
+    if kwargs == {}:
+        if len(args) == 0:
+            raise TypeError("Invalid argument for this function")
+        elif len(args) == 1:
+            if isinstance(args[0], dict):
+                return _make_BinaryPolynomialModel_from_hubo_from_dict(args[0])
+            else:
+                raise TypeError("Invalid argument for this function")
+        elif len(args) == 2:
+            key_condition = isinstance(args[0], list) or isinstance(args[0], tuple)
+            val_condition = isinstance(args[1], list) or isinstance(args[1], tuple)
+            if key_condition and val_condition:
+                return _make_BinaryPolynomialModel_from_hubo_from_list(args[0], args[1])
+            else:
+                raise TypeError("Invalid argument for this function")
+        else:
+            raise TypeError("Invalid argument for this function")
+    else:
+        if 'keys' in kwargs and 'values' in kwargs:
+            key_condition = isinstance(kwargs['keys']  , list) or isinstance(kwargs['keys']  , tuple)
+            val_condition = isinstance(kwargs['values'], list) or isinstance(kwargs['values'], tuple) 
+            if key_condition and val_condition:
+                return _make_BinaryPolynomialModel_from_hubo_from_list(kwargs['keys'], kwargs['values'])
+            else:
+                raise TypeError("Invalid argument for this function")
+        elif 'values' in kwargs:
+            if len(args) != 1:
+                raise TypeError("Invalid argument for this function")
+            key_condition = isinstance(args[0]         , list) or isinstance(args[0]         , tuple)
+            val_condition = isinstance(kwargs['values'], list) or isinstance(kwargs['values'], tuple)
+            if key_condition and val_condition:
+                return _make_BinaryPolynomialModel_from_hubo_from_list(args[0], kwargs['values'])
+            else:
+                raise TypeError("Invalid argument for this function")
+        elif 'polynomial' in kwargs:
+            if len(args) != 0:
+                raise TypeError("Invalid argument for this function")
+            if isinstance(kwargs['polynomial'], dict):
+                _make_BinaryPolynomialModel_from_hubo_from_dict(kwargs['polynomial'])
+            else:
+                raise TypeError("Invalid argument for this function")
+        else:
+            raise TypeError("Invalid argument for this function")    
+
+def _make_BinaryPolynomialModel_from_hubo_from_dict(polynomial: dict):
     return make_BinaryPolynomialModel(polynomial).from_hubo(polynomial)
 
-@make_BinaryPolynomialModel_from_hubo.register
 def _make_BinaryPolynomialModel_from_hubo_from_list(keys: list, values: list):
     if len(keys) == 0:
         return make_BinaryPolynomialModel({}).from_hubo(keys, values)

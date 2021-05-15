@@ -257,7 +257,7 @@ TEST(Graph, JSONTest){
     };
     double offset = 0.0;
     Vartype vartype = Vartype::SPIN;
-    BinaryQuadraticModel<uint32_t, double> bqm_k4(linear, quadratic, offset, vartype);
+    BinaryQuadraticModel<uint32_t, double, cimod::Sparse> bqm_k4(linear, quadratic, offset, vartype);
     auto s = graph::Chimera<double>(bqm_k4.to_serializable(), 1, 2);
     EXPECT_NEAR(s.J(0,1,3,graph::ChimeraDir::IN_0or4), 24, 1e-5);
     EXPECT_NEAR(s.J(0,0,4,graph::ChimeraDir::PLUS_C), 13, 1e-5);
@@ -890,7 +890,7 @@ TEST(PolyUpdater, FromCimodCompareQuadratic2) {
    }
    auto engine_for_spin_poly = std::mt19937(seed);
    const auto spin_poly = openjij::graph::Graph(system_size).gen_spin(engine_for_spin_poly);
-   auto classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, bpm);
+   auto classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, bpm.to_serializable());
    auto random_numder_engine_poly = std::mt19937(seed);
    const auto schedule_list_poly = generate_schedule_list();
    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_poly, random_numder_engine_poly, schedule_list_poly);
@@ -1364,7 +1364,6 @@ TEST(GPU, FindTrueGroundState_ChimeraTransverseGPU) {
     }
 
     auto chimera_quantum_gpu = system::make_chimera_transverse_gpu<1,1,1>(init_trotter_spins, interaction, 1.0); 
-    auto& info = chimera_quantum_gpu.info;
 
     auto random_number_engine = utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>(12356);
 

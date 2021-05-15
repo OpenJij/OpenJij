@@ -24,16 +24,23 @@
 namespace openjij {
 namespace system {
 
+//! @brief ClassicalIsingPolynomial structure, which is a system for classical Ising models with poynomial interactions and higher ordere unconstrained binary optimization (HUBO) models
+//! @tparam GraphType type of graph
 template<typename GraphType>
 class ClassicalIsingPolynomial;
 
+//! @brief ClassicalIsingPolynomial class
 template<typename FloatType>
 class ClassicalIsingPolynomial<graph::Polynomial<FloatType>> {
    
 public:
    
+   //! @brief system type
    using system_type = classical_system;
 
+   //! @brief Constructor of ClassicalIsingPolynomial
+   //! @param init_spins graph::Spins&. The initial spin/binary configurations.
+   //! @param poly_graph graph::Polynomial<FloatType>& (Polynomial graph class). The initial interacrtions.
    ClassicalIsingPolynomial(const graph::Spins &initial_spins, const graph::Polynomial<FloatType> &poly_graph): num_spins(poly_graph.size()), vartype_(poly_graph.get_vartype()), spin(initial_spins) {
       SetPolyKeysAndValues(poly_graph.get_keys(), poly_graph.get_values(), (poly_graph.get_max_variable() != num_spins - 1));
       CheckInitialConditions();
@@ -42,10 +49,13 @@ public:
       reset_dE();
    }
    
-   ClassicalIsingPolynomial(const graph::Spins &initial_spins, const nlohmann::json &j): spin(initial_spins), vartype_(j.at("vartype") == "SPIN" ? cimod::Vartype::SPIN : cimod::Vartype::BINARY) {
+   //! @brief Constructor of ClassicalIsingPolynomial
+   //! @param init_spins graph::Spins&. The initial spin/binary configurations.
+   //! @param j const nlohmann::json object
+   ClassicalIsingPolynomial(const graph::Spins &initial_spins, const nlohmann::json &j):num_spins(initial_spins.size()), vartype_(j.at("vartype") == "SPIN" ? cimod::Vartype::SPIN : cimod::Vartype::BINARY), spin(initial_spins) {
       const auto &v_k_v = graph::json_parse_polynomial<FloatType>(j);
       const auto &poly_key_list   = std::get<1>(v_k_v);
-      const auto &poly_value_list = std::get<2>(v_k_v);      
+      const auto &poly_value_list = std::get<2>(v_k_v);
       
       if (j.at("vartype") != "SPIN" && j.at("vartype") != "BINARY" ) {
          throw std::runtime_error("Unknown vartype detected");
@@ -59,7 +69,7 @@ public:
       poly_value_list_.resize(poly_value_list.size());
       
 #pragma omp parallel for
-      for (std::size_t i = 0; i < poly_key_list.size(); ++i) {
+      for (int64_t i = 0; i < (int64_t)poly_key_list.size(); ++i) {
          poly_key_list_[i]   = poly_key_list[i];
          poly_value_list_[i] = poly_value_list[i];
       }
@@ -70,12 +80,15 @@ public:
       reset_dE();
    }
    
+   //! @brief Constructor of ClassicalIsingPolynomial
+   //! @param init_spins graph::Spins&. The initial spin/binary configurations.
+   //! @param bpm const cimod::BinaryPolynomialModel<graph::Index, FloatType> object
    ClassicalIsingPolynomial(const graph::Spins &initial_spins, const cimod::BinaryPolynomialModel<graph::Index, FloatType> &bpm): num_spins(bpm.GetVariables().size()), vartype_(bpm.get_vartype()), spin(initial_spins) {
       poly_key_list_.resize(bpm._get_keys().size());
       poly_value_list_.resize(bpm._get_values().size());
       
 #pragma omp parallel for
-      for (std::size_t i = 0; i < bpm._get_keys().size(); ++i) {
+      for (int64_t i = 0; i < (int64_t)bpm._get_keys().size(); ++i) {
          poly_key_list_[i]   = bpm._get_keys()[i];
          poly_value_list_[i] = bpm._get_values()[i];
       }
@@ -104,39 +117,55 @@ public:
       return min_dE_;
    }
    
+   //! @brief Get the PolynomialKeyList object.
+   //! @return PolynomialKeyList object as std::vector<std::vector>>.
    const cimod::PolynomialKeyList<graph::Index> &get_keys() const {
       return poly_key_list_;
    }
    
+   //! @brief Get the PolynomialValueList object.
+   //! @return PolynomialValueList object as std::vector.
    const cimod::PolynomialValueList<FloatType> &get_values() const {
       return poly_value_list_;
    }
    
+   //! @brief Return "connected_J_term_index_"
+   //! @return "connected_J_term_index_"
    const std::vector<std::vector<std::size_t>> &get_connected_J_term_index() const {
       return connected_J_term_index_;
    }
    
+   //! @brief Return "crs_row_"
+   //! @return "crs_row_"
    const std::vector<std::size_t> &get_crs_row() const {
       return crs_row_;
    }
    
+   //! @brief Return "crs_col_"
+   //! @return "crs_col_"
    const std::vector<graph::Index> &get_crs_col() const {
       return crs_col_;
    }
    
+   //! @brief Return "crs_val_"
+   //! @return "crs_val_"
    const std::vector<FloatType> &get_crs_val() const {
       return crs_val_;
    }
    
+   //! @brief Return "crs_sign_p_"
+   //! @return "crs_sign_p_"
    const std::vector<int8_t*> &get_crs_sign_p() const {
       return crs_sign_p_;
    }
    
+   //! @brief Return "crs_zero_count_p_"
+   //! @return "crs_zero_count_p_"
    const std::vector<std::size_t*> &get_crs_zero_count_p() const {
       return crs_zero_count_p_;
    }
    
-   
+   //! @brief Set delta E (dE), which is used to determine whether to flip the spin/binary or not.
    void reset_dE() {
       dE.resize(num_spins);
       max_dE_ = std::abs(poly_value_list_[0]);//Initialize
@@ -186,7 +215,7 @@ public:
       }
    }
    
-   //! @brief Update "zero_count_" and "spin".  This function is used only when" vartype" is cimod::Vartype::BINARY
+   //! @brief Update "binary_zero_count_poly_" and "spin".  This function is used only when" vartype" is cimod::Vartype::BINARY
    //! @param index const std::size_t
    inline void update_zero_count_and_binary(const std::size_t index) {
       if (spin[index] == 0) {
@@ -203,7 +232,7 @@ public:
       }
    }
    
-   //! @brief Update "sign_" and "spin".  This function is used only when" vartype" is cimod::Vartype::SPIN
+   //! @brief Update "spin_sign_poly_" and "spin".  This function is used only when" vartype" is cimod::Vartype::SPIN
    //! @param index const std::size_t
    inline void update_sign_and_spin(const std::size_t index) {
       spin[index] *= -1;
@@ -212,6 +241,8 @@ public:
       }
    }
    
+   //! @brief Update delta E (dE) and spin for the vartype being "SPIN" case
+   //! @param index std::size_t
    void update_dE_for_spin(std::size_t index) {
       dE[index] *= -1;
       const std::size_t begin = crs_row_[index];
@@ -221,6 +252,8 @@ public:
       }
    }
    
+   //! @brief Update delta E (dE) and binary for the vartype being "BINARY" case
+   //! @param index std::size_t
    void update_dE_for_binary(std::size_t index) {
       dE[index] *= -1;
       const std::size_t begin = crs_row_[index];
@@ -231,6 +264,8 @@ public:
       }
    }
    
+   //! @brief Reset spin/binary configurations
+   //! @param init_spins const graph::Spins&
    void reset_spins(const graph::Spins& init_spins) {
       assert(init_spins.size() == num_spins);
       CheckInitialConditions();
@@ -263,24 +298,60 @@ public:
       
    }
    
+   //! @brief The number of spins/binaries
    const std::size_t num_spins;
+   
+   //! @brief The model's type. cimod::vartype::SPIN or  cimod::vartype::BINARY
    const cimod::Vartype vartype_;
+   
+   //! @brief Store the information about the energy difference when flipping a spin/binary
    std::vector<FloatType> dE;
+   
+   //! @brief Spin/binary configurations
    graph::Spins spin;
       
 private:
+   //! @brief The number of the interactions
    std::size_t num_interactions_;
+   
+   //! @brief Row of a sparse matrix (Compressed Row Storage) to update "dE".
    std::vector<std::size_t>  crs_row_;
+   
+   //! @brief Column of a sparse matrix (Compressed Row Storage) to update "dE".
    std::vector<graph::Index> crs_col_;
+   
+   //! @brief Value of a sparse matrix (Compressed Row Storage) to update "dE".
    std::vector<FloatType>    crs_val_;
+   
+   //! @brief Value of a sparse matrix (Compressed Row Storage) to update "dE".
+   //! @details Note that this is used only for binary variable cases. This stores the pointers for "spin_sign_poly_", which stores the information about the sign of variables.
    std::vector<int8_t*>      crs_sign_p_;
+   
+   //! @brief Value of a sparse matrix (Compressed Row Storage) to update "dE".
+   //! @details Note that this is used only for binary variable cases. This stores the pointers for "binary_zero_count_poly_", which stores the information about the number of variables takeing zero.
    std::vector<std::size_t*> crs_zero_count_p_;
+   
+   //! @brief The list of the indices of the polynomial interactions (namely, the list of keys of the polynomial interactions as std::unordered_map) as std::vector<std::vector>>.
    cimod::PolynomialKeyList<graph::Index> poly_key_list_;
+   
+   //! @brief The list of the values of the polynomial interactions (namely, the list of values of the polynomial interactions as std::unordered_map) as std::vector.
    cimod::PolynomialValueList<FloatType>  poly_value_list_;
+   
+   //! @brief Store the information about the indices of "poly_value_list_".
    std::vector<std::vector<std::size_t>>  connected_J_term_index_;
+   
+   //! @brief Store the information about the sign of variables.
+   //! @details Note that this is used only for spin variable cases, and the pointers of this std::vector is stored in "crs_sign_p". Do not change this std::vector.
    std::vector<int8_t>      spin_sign_poly_;
+   
+   //! @brief Store the information about the number of variables takeing zero.
+   //! @details Note that this is used only for binary variable cases, and the pointers of this std::vector is stored in "crs_zero_count_p". Do not change this std::vector.
    std::vector<std::size_t> binary_zero_count_poly_;
+   
+   //! @brief The maximal energy difference between any two neighboring solutions
    FloatType max_dE_;
+   
+   //! @brief The minimal energy difference between any two neighboring solutions
    FloatType min_dE_;
    
    //! @brief Return -1 or +1 in accordance with the input binary
@@ -308,7 +379,8 @@ private:
    }
    
    
-   
+   //! @brief Set "crs_row", "crs_col", "crs_val", and "crs_sign_p" (spin variable cases) or "crs_zero_count_p" (binary variable cases).
+   //! @details These std::vector constitute a sparse matrix (Compressed Row Storage), which is used to update "dE".
    void SetUpdateMatrix() {
       crs_col_.clear();
       crs_row_.clear();
@@ -377,6 +449,7 @@ private:
       }
    }
    
+   //! @brief Set "connected_J_term_index". If "vartype" is cimod::SPIN, "spin_sign_poly_" is also set, else If "vartype" is cimod::BINARY, "binary_zero_count_poly_" is also set.
    void SetPolynomialIndex() {
       connected_J_term_index_.resize(num_spins);
       if (vartype_ == cimod::Vartype::SPIN) {
@@ -410,6 +483,10 @@ private:
       }
    }
    
+   //! @brief Set "poly_key_list_" and "poly_value_list_".
+   //! @param input_keys
+   //! @param input_values
+   //! @param relabel_flag When true, the variables are relabeld to the non-negative integers.
    void SetPolyKeysAndValues(const cimod::PolynomialKeyList<graph::Index> &input_keys, const cimod::PolynomialValueList<FloatType> &input_values, const bool relabel_flag) {
       if (input_keys.size() != input_values.size()) {
          throw std::runtime_error("The sizes of key_list and value_list must match each other");
@@ -457,6 +534,7 @@ private:
       num_interactions_ = poly_key_list_.size();
    }
    
+   //! @brief Check the input initial conditions are valid
    void CheckInitialConditions() const {
       if (spin.size() != num_spins) {
          throw std::runtime_error("The number of variables is not equal to the size of the initial spin");
@@ -503,22 +581,12 @@ auto make_classical_ising_polynomial(const graph::Spins &init_spin, const GraphT
    return ClassicalIsingPolynomial<GraphType>(init_spin, init_interaction);
 }
 
-//! @brief Helper function for ClassicalIsingPolynomial constructor by using cimod::BinaryPolynomialModel
-//! @tparam FloatType
-//! @param init_spin const graph::Spins&. The initial spin/binaries.
-//! @param init_cimod cimod::BinaryPolynomialModel&.
-template<typename FloatType>
-auto make_classical_ising_polynomial(const graph::Spins &init_spin, const cimod::BinaryPolynomialModel<graph::Index, FloatType> &init_bpm) {
-   return ClassicalIsingPolynomial<graph::Polynomial<FloatType>>(init_spin, init_bpm);
-}
-
 //! @brief Helper function for ClassicalIsingPolynomial constructor by using nlohmann::json object
 //! @tparam FloatType
 //! @param init_spin const graph::Spins&. The initial spin/binaries.
 //! @param init_obj nlohmann::json&
-template<typename FloatType>
-auto make_classical_ising_polynomial(const graph::Spins &init_spin, nlohmann::json &init_obj) {
-   return ClassicalIsingPolynomial<graph::Polynomial<FloatType>>(init_spin, init_obj);
+auto make_classical_ising_polynomial(const graph::Spins &init_spin, const nlohmann::json &init_obj) {
+   return ClassicalIsingPolynomial<graph::Polynomial<double>>(init_spin, init_obj);
 }
 
 
