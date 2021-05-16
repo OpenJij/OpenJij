@@ -411,9 +411,9 @@ std::vector<std::vector<openjij::graph::Index>> PolynomialGenerateCombinations(c
 }
 
 template<typename FloatType>
-std::unordered_map<std::vector<openjij::graph::Index>, FloatType, openjij::utility::VectorHash>
-PolynomialSpinToBinary(const std::unordered_map<std::vector<openjij::graph::Index>, FloatType, openjij::utility::VectorHash> &J_in) {
-   std::unordered_map<std::vector<openjij::graph::Index>, FloatType, openjij::utility::VectorHash> J_out;
+std::unordered_map<std::vector<openjij::graph::Index>, FloatType, cimod::vector_hash>
+PolynomialSpinToBinary(const std::unordered_map<std::vector<openjij::graph::Index>, FloatType, cimod::vector_hash> &J_in) {
+   std::unordered_map<std::vector<openjij::graph::Index>, FloatType, cimod::vector_hash> J_out;
    for (const auto &it: J_in) {
       const auto &index_list = PolynomialGenerateCombinations(it.first);
       for (const auto &index: index_list) {
@@ -425,9 +425,9 @@ PolynomialSpinToBinary(const std::unordered_map<std::vector<openjij::graph::Inde
 }
 
 template<typename FloatType>
-std::unordered_map<std::vector<openjij::graph::Index>, FloatType, openjij::utility::VectorHash>
-PolynomialBinaryToSpin(const std::unordered_map<std::vector<openjij::graph::Index>, FloatType, openjij::utility::VectorHash> &J_in) {
-   std::unordered_map<std::vector<openjij::graph::Index>, FloatType, openjij::utility::VectorHash> J_out;
+std::unordered_map<std::vector<openjij::graph::Index>, FloatType, cimod::vector_hash>
+PolynomialBinaryToSpin(const std::unordered_map<std::vector<openjij::graph::Index>, FloatType, cimod::vector_hash> &J_in) {
+   std::unordered_map<std::vector<openjij::graph::Index>, FloatType, cimod::vector_hash> J_out;
    for (const auto &it: J_in) {
       FloatType coeef = std::pow(2.0, -static_cast<int64_t>(it.first.size()));
       const auto &index_list = PolynomialGenerateCombinations(it.first);
@@ -447,7 +447,7 @@ FloatType PolynomialExactGroundStateEnergy(openjij::graph::Polynomial<FloatType>
    for (std::size_t i = 0; i < loop; ++i) {
       std::vector<openjij::graph::Spin> temp_spin = PolynomialGetSpinState(i, system_size, vartype);
       FloatType temp_energy = 0.0;
-      for (const auto &it: polynomial.get_interactions()) {
+      for (const auto &it: polynomial.get_polynomial()) {
          openjij::graph::Spin temp_spin_multiple = 1;
          for (const auto &index: it.first) {
             temp_spin_multiple *= temp_spin[index];

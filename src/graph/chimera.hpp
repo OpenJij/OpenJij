@@ -276,7 +276,7 @@ namespace openjij {
                         throw std::runtime_error("number of system size does not match");
                     }
                     //define bqm with ising variables
-                    auto bqm = json_parse<FloatType>(j, false);
+                    auto bqm = json_parse<FloatType, cimod::Sparse>(j, false);
                     //interactions
                     for(auto&& elem : bqm.get_quadratic()){
                         const auto& key = elem.first;

@@ -128,6 +128,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8c0d5e22b44fa0c0f9cc78eb7035abf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae470427d427fee2bbcc1b47f423517cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#ae470427d427fee2bbcc1b47f423517cd">calc_energy</a> (const Eigen::Matrix&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>, Eigen::Dynamic, 1, Eigen::ColMajor &gt; &amp;spins) const</td></tr>
 <tr class="separator:ae470427d427fee2bbcc1b47f423517cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e44f0e517894774e11b46c4fec4a2c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a5e44f0e517894774e11b46c4fec4a2c3">energy</a> (const <a class="el" href="namespaceopenjij_1_1graph.html#ace188933d1719b22664ab431b0c1c85c">Spins</a> &amp;spins) const</td></tr>
+<tr class="memdesc:a5e44f0e517894774e11b46c4fec4a2c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">calculate total energy  <a href="classopenjij_1_1graph_1_1_dense.html#a5e44f0e517894774e11b46c4fec4a2c3">More...</a><br /></td></tr>
+<tr class="separator:a5e44f0e517894774e11b46c4fec4a2c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76b5bd5d350228f43d19d077cd4df4a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#a76b5bd5d350228f43d19d077cd4df4a3">energy</a> (const Eigen::Matrix&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>, Eigen::Dynamic, 1, Eigen::ColMajor &gt; &amp;spins) const</td></tr>
+<tr class="separator:a76b5bd5d350228f43d19d077cd4df4a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaec085e0666f41ce6c82fa2164043231"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1graph_1_1_dense.html#aaec085e0666f41ce6c82fa2164043231">J</a> (<a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a> i, <a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">Index</a> j)</td></tr>
 <tr class="memdesc:aaec085e0666f41ce6c82fa2164043231"><td class="mdescLeft">&#160;</td><td class="mdescRight">access J_{ij}  <a href="classopenjij_1_1graph_1_1_dense.html#aaec085e0666f41ce6c82fa2164043231">More...</a><br /></td></tr>
 <tr class="separator:aaec085e0666f41ce6c82fa2164043231"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -288,7 +293,7 @@ template&lt;typename FloatType &gt; </div>
 <p><a class="el" href="classopenjij_1_1graph_1_1_dense.html" title="two-body all-to-all interactions The Hamiltonian is like">Dense</a> constructor (from nlohmann::json) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">j</td><td>JSON object </td></tr>
+    <tr><td class="paramname">j</td><td>JSON object this object must be a serialized object of dense BQM. </td></tr>
   </table>
   </dd>
 </dl>
@@ -397,6 +402,72 @@ template&lt;typename FloatType &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> <a class="el" href="classopenjij_1_1graph_1_1_dense.html">openjij::graph::Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;::calc_energy </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceopenjij_1_1graph.html#ace188933d1719b22664ab431b0c1c85c">Spins</a> &amp;&#160;</td>
+          <td class="paramname"><em>spins</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>calculate total energy </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spins</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd>use energy(spins)</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>corresponding energy </dd></dl>
+
+</div>
+</div>
+<a id="a76b5bd5d350228f43d19d077cd4df4a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76b5bd5d350228f43d19d077cd4df4a3">&#9670;&nbsp;</a></span>energy() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FloatType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> <a class="el" href="classopenjij_1_1graph_1_1_dense.html">openjij::graph::Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;::energy </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Matrix&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>, Eigen::Dynamic, 1, Eigen::ColMajor &gt; &amp;&#160;</td>
+          <td class="paramname"><em>spins</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5e44f0e517894774e11b46c4fec4a2c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e44f0e517894774e11b46c4fec4a2c3">&#9670;&nbsp;</a></span>energy() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FloatType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> <a class="el" href="classopenjij_1_1graph_1_1_dense.html">openjij::graph::Dense</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;::energy </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespaceopenjij_1_1graph.html#ace188933d1719b22664ab431b0c1c85c">Spins</a> &amp;&#160;</td>
           <td class="paramname"><em>spins</em></td><td>)</td>

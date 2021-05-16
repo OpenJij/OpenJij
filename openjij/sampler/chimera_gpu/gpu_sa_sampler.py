@@ -100,7 +100,7 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
 
         self.unit_num_L = unit_num_L if unit_num_L else self.unit_num_L
 
-        model = openjij.ChimeraModel(linear=h, quadratic=J, var_type='SPIN', 
+        model = openjij.ChimeraModel(linear=h, quadratic=J, vartype='SPIN', 
                                    unit_num_L=self.unit_num_L, gpu=True)
 
         # define Chimera structure

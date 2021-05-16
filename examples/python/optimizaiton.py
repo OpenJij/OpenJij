@@ -40,7 +40,7 @@ class SQASampler(BaseSampler):
         energy_bias (float):
             Energy bias.
 
-        var_type (str):
+        vartype (str):
             Type of variables: 'SPIN' or 'BINARY' which mean {-1, 1} or {0, 1}.
 
         indices (int):
@@ -147,8 +147,8 @@ class SQASampler(BaseSampler):
 
         """
 
-        var_type = openjij.SPIN
-        bqm = openjij.BinaryQuadraticModel(h=h, J=J, var_type=var_type)
+        vartype = openjij.SPIN
+        bqm = openjij.BinaryQuadraticModel(h=h, J=J, vartype=vartype)
         return self.sampling(bqm,
                              initial_state=initial_state, updater=updater,
                              reinitilize_state=reinitilize_state,
@@ -185,8 +185,8 @@ class SQASampler(BaseSampler):
 
         """
 
-        var_type = openjij.BINARY
-        bqm = openjij.BinaryQuadraticModel(Q=Q, var_type=var_type)
+        vartype = openjij.BINARY
+        bqm = openjij.BinaryQuadraticModel(Q=Q, vartype=vartype)
         return self.sampling(bqm,
                              initial_state=initial_state, updater=updater,
                              reinitilize_state=reinitilize_state,
@@ -210,7 +210,7 @@ class SQASampler(BaseSampler):
             def _generate_init_state(): return [ising_graph.gen_spin()
                                                 for _ in range(self.trotter)]
         else:
-            if model.var_type == openjij.SPIN:
+            if model.vartype == openjij.SPIN:
                 trotter_init_state = [np.array(initial_state)
                                       for _ in range(self.trotter)]
             else:  # BINARY
@@ -268,7 +268,7 @@ class SQASampler(BaseSampler):
 
         sampling_time = exec_sampling()
         response = openjij.Response(
-            var_type=model.var_type, indices=self.indices)
+            vartype=model.vartype, indices=self.indices)
         response.update_trotter_ising_states_energies(q_states, q_energies)
 
         response.info['sampling_time'] = sampling_time * \
@@ -302,7 +302,7 @@ def reverse_annealing():
     sqa = oj.SASampler(schedule=reverse_schedule, iteration=20)
     res = sqa.sample_qubo(qubo, initial_state=initial_state)
     print(res.min_samples)
-    model = oj.BinaryQuadraticModel(Q=qubo, var_type='BINARY')
+    model = oj.BinaryQuadraticModel(Q=qubo, vartype='BINARY')
     print(model.calc_energy(res.min_samples['min_states'][0]))
 
     print('RQA')

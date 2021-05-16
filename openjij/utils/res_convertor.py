@@ -27,8 +27,8 @@ def convert_response(response):
     
     if isinstance(response, Response) or isinstance(response, SampleSet):
         from dimod.vartypes import BINARY, SPIN
-        var_type = 'BINARY' if response.vartype == BINARY else 'SPIN'
-        o_res = openjij.Response(var_type=var_type, indices=list(response.variables))
+        vartype = 'BINARY' if response.vartype == BINARY else 'SPIN'
+        o_res = openjij.Response(vartype=vartype, indices=list(response.variables))
         states = []
         energies = []
         for rec in response.record:
