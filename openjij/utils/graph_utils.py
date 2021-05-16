@@ -8,7 +8,7 @@ def qubo_to_ising(mat: np.ndarray):
 
     """
     mat /= 4
-    for i in range(len(mat)):
+    for i in range(mat.shape[0]):
         mat[i, i] += np.sum(mat[i, :])
     
 
