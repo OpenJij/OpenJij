@@ -17,7 +17,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
  
 
 ##### Set default behavior #####
-set(DEFAULT_USE_OMP No)
+set(DEFAULT_USE_OMP Yes)
 set(DEFAULT_USE_CUDA Yes)
 set(DEFAULT_USE_TEST No)
 option(USE_TEST "Use test code" No)
