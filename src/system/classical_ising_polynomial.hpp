@@ -52,7 +52,7 @@ public:
    //! @brief Constructor of ClassicalIsingPolynomial
    //! @param init_spins graph::Spins&. The initial spin/binary configurations.
    //! @param j const nlohmann::json object
-   ClassicalIsingPolynomial(const graph::Spins &initial_spins, const nlohmann::json &j):num_spins(initial_spins.size()), vartype_(j.at("vartype") == "SPIN" ? cimod::Vartype::SPIN : cimod::Vartype::BINARY), spin(initial_spins) {
+   ClassicalIsingPolynomial(const graph::Spins &initial_spins, const nlohmann::json &j):num_spins(initial_spins.size()), spin(initial_spins), vartype_(j.at("vartype") == "SPIN" ? cimod::Vartype::SPIN : cimod::Vartype::BINARY) {
       const auto &v_k_v = graph::json_parse_polynomial<FloatType>(j);
       const auto &poly_key_list   = std::get<1>(v_k_v);
       const auto &poly_value_list = std::get<2>(v_k_v);
