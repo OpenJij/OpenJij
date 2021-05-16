@@ -4,6 +4,7 @@ from openjij.sampler import measure_time
 from openjij.sampler import BaseSampler
 from openjij.utils.decorator import deprecated_alias
 import cxxjij
+from cimod.utils import get_state_and_energy
 class SQASampler(BaseSampler):
     """Sampler with Simulated Quantum Annealing (SQA).
 
@@ -110,26 +111,24 @@ class SQASampler(BaseSampler):
     def _get_result(self, system, model):
         state, info = super()._get_result(system, model)
 
-        q_state = system.trotter_spins[:-1].T.astype(np.int)
-        c_energies = [model.energy(
-            state, convert_sample=True) for state in q_state]
+        q_state = system.trotter_spins[:-1].T.astype(int)
+        c_energies = [get_state_and_energy(model, state)[1] for state in q_state]
         info['trotter_state'] = q_state
         info['trotter_energies'] = c_energies
 
         return state, info
 
-    def sample_ising(self, h, J,
+    def sample(self, bqm,
                      beta=None, gamma=None,
                      num_sweeps=None, schedule=None, trotter=None,
                      num_reads=1,
                      initial_state=None, updater='single spin flip',
                      sparse=False,
-                     reinitialize_state=True, seed=None, structure=None):
+                     reinitialize_state=True, seed=None):
         """Sampling from the Ising model
 
         Args:
-            h (dict): Linear term of the target Ising model. 
-            J (dict): Quadratic term of the target Ising model. 
+            bqm (oj.BinaryQuadraticModel) binary quadratic model
             beta (float, optional): inverse tempareture.
             gamma (float, optional): strangth of transverse field. Defaults to None.
             num_sweeps (int, optional): number of sweeps. Defaults to None.
@@ -140,9 +139,6 @@ class SQASampler(BaseSampler):
             updater (str, optional): update method. Defaults to 'single spin flip'.
             reinitialize_state (bool, optional): Re-initilization at each sampling. Defaults to True.
             seed (int, optional): Sampling seed. Defaults to None.
-            structure (dict): specify the structure. 
-            This argument is necessary if the model has a specific structure (e.g. Chimera graph) and the updater algorithm is structure-dependent.
-            structure must have two types of keys, namely "size" which shows the total size of spins and "dict" which is the map from model index (elements in model.indices) to the number.
 
         Raises:
             ValueError: 
@@ -166,28 +162,7 @@ class SQASampler(BaseSampler):
                 >>> res = sampler.sample_qubo(Q)
         """
 
-        bqm = openjij.BinaryQuadraticModel(
-            linear=h, quadratic=J, var_type='SPIN'
-        )
-        return self._sampling(bqm, beta=beta, gamma=gamma,
-                     num_sweeps=num_sweeps, schedule=schedule, trotter=trotter,
-                     num_reads=num_reads,
-                     initial_state=initial_state, updater=updater,
-                     sparse=sparse,
-                     reinitialize_state=reinitialize_state, seed=seed, structure=structure)
-
-    def _sampling(self, bqm, beta=None, gamma=None,
-                     num_sweeps=None, schedule=None, trotter=None,
-                     num_reads=1,
-                     initial_state=None, updater='single spin flip',
-                     sparse=False,
-                     reinitialize_state=True, seed=None, structure=None):
-
-        if sparse:
-            ising_graph = bqm.get_cxxjij_ising_graph(sparse=True)
-        else:
-            ising_graph = bqm.get_cxxjij_ising_graph()
-
+        ising_graph, offset = bqm.get_cxxjij_ising_graph()
 
         self._setting_overwrite(
             beta=beta, gamma=gamma,
@@ -206,21 +181,14 @@ class SQASampler(BaseSampler):
                                           for _ in range(self.trotter)]
         else:
             if isinstance(initial_state, dict):
-                initial_state = [initial_state[k] for k in bqm.indices]
+                initial_state = [initial_state[k] for k in bqm.variables]
             _init_state = np.array(initial_state)
 
-            if structure == None:
-                # validate initial_state size
-                if len(initial_state) != ising_graph.size():
-                    raise ValueError(
-                        "the size of the initial state should be {}"
-                        .format(ising_graph.size()))
-            else:
-                # resize _initial_state
-                temp_state = [1]*int(structure['size'])
-                for k,ind in enumerate(model.indices):
-                    temp_state[structure['dict'][ind]] = _init_state[k]
-                _init_state = temp_state
+            # validate initial_state size
+            if len(initial_state) != ising_graph.size():
+                raise ValueError(
+                    "the size of the initial state should be {}"
+                    .format(ising_graph.size()))
 
             trotter_init_state = [_init_state
                                   for _ in range(self.trotter)]
@@ -241,7 +209,7 @@ class SQASampler(BaseSampler):
         response = self._cxxjij_sampling(
             bqm, init_generator,
             algorithm, sqa_system,
-            reinitialize_state, seed, structure
+            reinitialize_state, seed
         )
 
         response.info['schedule'] = self.schedule_info

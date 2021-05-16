@@ -120,7 +120,7 @@ class SASampler(BaseSampler):
 
         return cxxjij_schedule
 
-    def sample_ising(self, h, J, beta_min=None, beta_max=None,
+    def sample(self, bqm, beta_min=None, beta_max=None,
                      num_sweeps=None, num_reads=1, schedule=None,
                      initial_state=None, updater='single spin flip',
                      sparse=False,
@@ -129,8 +129,7 @@ class SASampler(BaseSampler):
         """sample Ising model.
 
         Args:
-            h (dict): linear biases
-            J (dict): quadratic biases
+            bqm (oj.BinaryQuadraticModel) binary quadratic model
             beta_min (float): minimal value of inverse temperature
             beta_max (float): maximum value of inverse temperature
             num_sweeps (int): number of sweeps
@@ -160,46 +159,21 @@ class SASampler(BaseSampler):
             
         """
 
-        model = openjij.BinaryQuadraticModel(
-            linear=h, quadratic=J, var_type='SPIN'
-        )
-        return self._sampling(model, beta_min, beta_max,
-                              num_sweeps, num_reads, schedule,
-                              initial_state, updater,
-                              sparse=sparse,
-                              reinitialize_state=reinitialize_state, 
-                              seed=seed)
-
-    def _sampling(self, model, beta_min=None, beta_max=None,
-                     num_sweeps=None, num_reads=1, schedule=None,
-                     initial_state=None, updater='single spin flip',
-                     sparse=False,
-                     reinitialize_state=True, seed=None, structure=None, 
-                     ):
-        """sampling by using specified model
-        Args:
-            model (openjij.BinaryQuadraticModel): BinaryQuadraticModel
-            beta_min (float): minimal value of inverse temperature
-            beta_max (float): maximum value of inverse temperature
-            num_sweeps (int): number of sweeps
-            num_reads (int): number of reads
-            schedule (list): list of inverse temperature
-            initial_state (dict): initial state
-            updater(str): updater algorithm
-            reinitialize_state (bool): if true reinitialize state for each run
-            seed (int): seed for Monte Carlo algorithm
-            structure (dict): specify the structure. 
-            This argument is necessary if the model has a specific structure (e.g. Chimera graph) and the updater algorithm is structure-dependent.
-            structure must have two types of keys, namely "size" which shows the total size of spins and "dict" which is the map from model index (elements in model.indices) to the number.
-        Returns:
-            :class:`openjij.sampler.response.Response`: results
-        """
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         # swendsen wang algorithm runs only on sparse ising graphs.
         if _updater_name == 'swendsenwang' or sparse:
-            ising_graph = model.get_cxxjij_ising_graph(sparse=True)
+            sparse = True
         else:
-            ising_graph = model.get_cxxjij_ising_graph()
+            sparse = False
+
+        if sparse and bqm.sparse == False:
+            # convert to sparse bqm
+            bqm = openjij.BinaryQuadraticModel(bqm.linear, bqm.quadratic, bqm.offset, bqm.vartype, sparse=True)
+
+        # alias 
+        model = bqm
+
+        ising_graph, offset = model.get_cxxjij_ising_graph()
 
 
         self._setting_overwrite(
@@ -233,22 +207,14 @@ class SASampler(BaseSampler):
             def _generate_init_state(): return ising_graph.gen_spin(seed) if seed != None else ising_graph.gen_spin()
         else:
             if isinstance(initial_state, dict):
-                initial_state = [initial_state[k] for k in model.indices]
+                initial_state = [initial_state[k] for k in model.variables]
             _init_state = np.array(initial_state)
 
-            if structure == None:
-                # validate initial_state size
-                if len(initial_state) != ising_graph.size():
-                    raise ValueError(
-                        "the size of the initial state should be {}"
-                        .format(ising_graph.size()))
-            else:
-                # resize _initial_state
-                temp_state = [1]*int(structure['size'])
-                for k,ind in enumerate(model.indices):
-                    temp_state[structure['dict'][ind]] = _init_state[k]
-                _init_state = temp_state
-
+            # validate initial_state size
+            if len(initial_state) != ising_graph.size():
+                raise ValueError(
+                    "the size of the initial state should be {}"
+                    .format(ising_graph.size()))
 
             def _generate_init_state(): return np.array(_init_state)
         # -------------------------------- make init state generator
@@ -263,7 +229,7 @@ class SASampler(BaseSampler):
         response = self._cxxjij_sampling(
             model, _generate_init_state,
             algorithm, sa_system,
-            reinitialize_state, seed, structure
+            reinitialize_state, seed
         )
 
         response.info['schedule'] = self.schedule_info
@@ -271,7 +237,7 @@ class SASampler(BaseSampler):
         return response
 
 
-    def sample_hubo(self, J, var_type = openjij.SPIN, 
+    def sample_hubo(self, J, vartype, 
                     beta_min = None, beta_max = None, schedule = None,
                     num_sweeps = None, num_reads = 1,
                     initial_state = None, reinitialize_state=True, seed = None):
@@ -280,7 +246,7 @@ class SASampler(BaseSampler):
 
         Args:
             J (dict): Interactions.
-            var_type (str, openjij.VarType): "SPIN" or "BINARY". Defaults to "SPIN".
+            vartype (str, openjij.VarType): "SPIN" or "BINARY". Defaults to "SPIN".
             beta_min (float, optional): Minimum beta (initial inverse temperature). Defaults to None.
             beta_max (float, optional): Maximum beta (final inverse temperature). Defaults to None.
             schedule (list, optional): schedule list. Defaults to None.
@@ -302,18 +268,18 @@ class SASampler(BaseSampler):
             for Binary case::
                 >>> sampler = oj.SASampler()
                 >>> J = {(0,): -1, (0, 1): -1, (0, 1, 2): 1}
-                >>> response = sampler.sample_hubo(J, var_type = "BINARY")
+                >>> response = sampler.sample_hubo(J, vartype = "BINARY")
         """
         #if seed is None:
             #random.seed
             #seed = random.randint(0, sys.maxsize)
 
-        if var_type == "SPIN":
-            var_type = openjij.SPIN
-        elif var_type == "BINARY":
-            var_type = openjij.BINARY
+        if vartype == "SPIN":
+            vartype = openjij.SPIN
+        elif vartype == "BINARY":
+            vartype = openjij.BINARY
 
-        bhom = openjij.BinaryPolynomialModel(interactions = J, var_type = var_type)
+        bhom = openjij.BinaryPolynomialModel(J, vartype)
 
         return self._sampling_hubo(bhom, beta_min, beta_max,num_sweeps, num_reads, schedule, initial_state, reinitialize_state, seed)
 
@@ -322,16 +288,16 @@ class SASampler(BaseSampler):
                      initial_state=None,
                      reinitialize_state=True, seed=None):
 
-        ising_graph = model.get_cxxjij_ising_graph()
+        #ising_graph = model.get_cxxjij_ising_graph()
 
         # make init state generator --------------------------------
         if initial_state is None:
             if model.vartype == openjij.SPIN:
-                def _generate_init_state(): return ising_graph.gen_spin(seed)   if seed != None else ising_graph.gen_spin()
+                def _generate_init_state(): return cxxjij.graph.Polynomial(model.num_variables, "SPIN").gen_spin(seed) if seed != None else cxxjij.graph.Polynomial(model.num_variables, "SPIN").gen_spin()
             elif model.vartype == openjij.BINARY:
-                def _generate_init_state(): return ising_graph.gen_binary(seed) if seed != None else ising_graph.gen_binary()
+                def _generate_init_state(): return cxxjij.graph.Polynomial(model.num_variables, "BINARY").gen_binary(seed) if seed != None else cxxjij.graph.Polynomial(model.num_variables, "BINARY").gen_binary()
             else:
-                raise ValueError("Unknown var_type detected")
+                raise ValueError("Unknown vartype detected")
         else:
             if isinstance(initial_state, dict):
                 initial_state = [initial_state[k] for k in model.indices]
@@ -339,7 +305,7 @@ class SASampler(BaseSampler):
             def _generate_init_state(): return _init_state
         # -------------------------------- make init state generator
         
-        sa_system = self._make_system['singlespinflippolynomial'](_generate_init_state(), ising_graph)
+        sa_system = self._make_system['singlespinflippolynomial'](_generate_init_state(), model.to_serializable())
         
         self._setting_overwrite(
             beta_min=beta_min, beta_max=beta_max,

@@ -67,7 +67,6 @@ class CXXTest(unittest.TestCase):
         J[6,6]=0.3
         J[6,7]=1.4
         J[7,7]=1.8
-
         self.true_groundstate = [-1, -1, 1, 1, 1, 1, 1, -1]
         return J
 
@@ -259,7 +258,7 @@ class CXXTest(unittest.TestCase):
 
     def test_SingleSpinFlip_ClassicalIsing_Polynomial_Polynomial_Interactions(self):
         system_size = 5
-        self.polynomial = G.Polynomial(system_size)
+        self.polynomial = G.Polynomial(system_size, "SPIN")
         self.polynomial = self.gen_testcase_polynomial(self.polynomial)
         #classial ising (Polynomial)
         system = S.make_classical_ising_polynomial(self.polynomial.gen_spin(), self.polynomial)
@@ -276,8 +275,9 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertAlmostEqual(self.true_energy, self.polynomial.calc_energy(result_spin))
     
+    """
     def test_SingleSpinFlip_ClassicalIsing_Polynomial_Quadratic_Interactions(self):
-        self.polynomial = G.Polynomial(self.size)
+        self.polynomial = G.Polynomial(self.size, "SPIN")
         self.polynomial = self.gen_testcase(self.polynomial)
         #classial ising (Polynomial)
         system = S.make_classical_ising_polynomial(self.polynomial.gen_spin(self.seed_for_spin), self.polynomial)
@@ -293,7 +293,7 @@ class CXXTest(unittest.TestCase):
 
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
-    
+    """
 
 
     def test_SingleSpinFlip_TransverseIsing_Dense(self):
@@ -520,7 +520,7 @@ class CXXTest(unittest.TestCase):
 #
 #    def test_ising_dict(self):
 #        Q = {(0,4): -1.0, (6,2): -3.0}
-#        bqm = oj.ChimeraModel(Q=Q, var_type='BINARY', unit_num_L=3)
+#        bqm = oj.ChimeraModel(Q=Q, vartype='BINARY', unit_num_L=3)
 #
 #    def test_king_graph(self):
 #        h = {}
@@ -536,7 +536,7 @@ class CXXTest(unittest.TestCase):
 #        np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
 #
 #
-#        king_graph = oj.KingGraph(machine_type="ASIC", Q={(0,1): -1}, var_type="BINARY")
+#        king_graph = oj.KingGraph(machine_type="ASIC", Q={(0,1): -1}, vartype="BINARY")
 #        king_interaction = [[0, 0, 0, 0, -0.25], [0,0,1,0,-0.25], [1,0,1,0,-0.25]]
 #        np.testing.assert_array_equal(king_interaction, king_graph._ising_king_graph)
 #
@@ -585,7 +585,7 @@ class CXXTest(unittest.TestCase):
 #    def test_chimera_validate(self):
 #        L = 4
 #        Q = self.full_chimera_qubo(L=L)
-#        chimera = oj.ChimeraModel(Q=Q, unit_num_L=L, var_type='BINARY')
+#        chimera = oj.ChimeraModel(Q=Q, unit_num_L=L, vartype='BINARY')
 #
 #        self.assertTrue(chimera._validate((0,0,0),(0,0,4),L))
 #        self.assertFalse(chimera._validate((0,0,0),(96,0,0),L))
@@ -594,11 +594,11 @@ class CXXTest(unittest.TestCase):
 #
 #    def test_chimera_connect(self):
 #        Q = self.full_chimera_qubo(L=2)
-#        chimera = oj.ChimeraModel(Q=Q, unit_num_L=2, var_type='BINARY')
+#        chimera = oj.ChimeraModel(Q=Q, unit_num_L=2, vartype='BINARY')
 #        self.assertTrue(chimera.validate_chimera())
 #
 #        Q = self.full_chimera_qubo(L=4)
-#        chimera = oj.ChimeraModel(Q=Q, unit_num_L=4, var_type='BINARY')
+#        chimera = oj.ChimeraModel(Q=Q, unit_num_L=4, vartype='BINARY')
 #        self.assertTrue(chimera.validate_chimera())
 #
 #
