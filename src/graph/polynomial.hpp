@@ -99,7 +99,7 @@ public:
       poly_value_list_.resize(poly_value_list.size());
       
 #pragma omp parallel for
-      for (std::size_t i = 0; i < poly_key_list.size(); ++i) {
+      for (int64_t i = 0; i < (int64_t)poly_key_list.size(); ++i) {
          poly_key_list_[i]   = poly_key_list[i];
          poly_value_list_[i] = poly_value_list[i];
       }
@@ -122,7 +122,7 @@ public:
       poly_value_list_.resize(bpm._get_values().size());
       
 #pragma omp parallel for
-      for (std::size_t i = 0; i < bpm._get_keys().size(); ++i) {
+      for (int64_t i = 0; i < (int64_t)bpm._get_keys().size(); ++i) {
          poly_key_list_[i]   = bpm._get_keys()[i];
          poly_value_list_[i] = bpm._get_values()[i];
       }
@@ -250,7 +250,7 @@ public:
       
       if (omp_flag) {
 #pragma omp parallel for reduction (+: energy)
-         for (std::size_t i = 0; i < num_interactions; ++i) {
+         for (int64_t i = 0; i < (int64_t)num_interactions; ++i) {
             Spin spin_multiple = 1;
             for (const auto &index: poly_key_list_[i]) {
                spin_multiple *= spins[index];
