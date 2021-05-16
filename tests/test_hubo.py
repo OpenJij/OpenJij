@@ -61,8 +61,6 @@ class HUBOTest(unittest.TestCase):
         sampler = oj.SASampler()
         K, true_energy = self.gen_testcase_polynomial()
         response = sampler.sample_hubo(K, vartype="SPIN", seed = 3)
-        print(response)
-        print(response.energies[0])
         self.assertAlmostEqual(true_energy, response.energies[0])
 
     def test_hubo_constructor(self):
