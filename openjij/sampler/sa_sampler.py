@@ -168,7 +168,7 @@ class SASampler(BaseSampler):
             sparse = False
 
         if type(bqm) == dimod.BinaryQuadraticModel:
-            bqm = openjij.BinaryQuadraticModel(dict(bqm.linear), dict(bqm.quadratic), bqm.offset, bqm.vartype, sparse=spase)
+            bqm = openjij.BinaryQuadraticModel(dict(bqm.linear), dict(bqm.quadratic), bqm.offset, bqm.vartype, sparse=sparse)
 
         if sparse and bqm.sparse == False:
             # convert to sparse bqm
