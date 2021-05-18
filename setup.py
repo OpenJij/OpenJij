@@ -116,6 +116,7 @@ setup(
     name=NAME,
     version_config=True,
     setup_requires=['setuptools-git-versioning'],
+    author=AUTHOR,
     author_email='openjij@j-ij.com',
     url='https://openjij.github.io/OpenJij/',
     description='Framework for the Ising model and QUBO',
