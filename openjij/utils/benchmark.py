@@ -13,10 +13,8 @@
 # limitations under the License.
 
 import numpy as np
-import time
 import inspect
 from logging import getLogger
-import scipy as sp
 
 
 logger = getLogger(__name__)
