@@ -20,6 +20,7 @@ from openjij.sampler import BaseSampler
 from openjij.utils.decorator import deprecated_alias
 from openjij.utils.graph_utils import qubo_to_ising
 import cxxjij
+import dimod
 
 """
 This module contains Simulated Annealing sampler.
@@ -165,6 +166,9 @@ class SASampler(BaseSampler):
             sparse = True
         else:
             sparse = False
+
+        if type(bqm) == dimod.BinaryQuadraticModel:
+            bqm = openjij.BinaryQuadraticModel(dict(bqm.linear), dict(bqm.quadratic), bqm.offset, bqm.vartype, sparse=sparse)
 
         if sparse and bqm.sparse == False:
             # convert to sparse bqm

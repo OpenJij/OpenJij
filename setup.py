@@ -16,7 +16,6 @@ NAME = 'openjij'
 DESCRIPTION = 'Framework for the Ising model and QUBO'
 EMAIL = 'openjij@j-ij.com'
 AUTHOR = 'Jij Inc.'
-VERSION = '0.3.0'
 
 
 class CMakeExtension(Extension):
@@ -113,20 +112,11 @@ class PyTestCommand(TestCommand):
         super().run()
 
 
-# Load the package's __version__.py module as a dictionary.
-here = os.path.abspath(os.path.dirname(__file__))
-about = {}
-if not VERSION:
-    project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
-    with open(os.path.join(here, project_slug, '__version__.py')) as f:
-        exec(f.read(), about)
-else:
-    about['__version__'] = VERSION
-
 setup(
     name=NAME,
-    version=about['__version__'],
-    author='Jij Inc.',
+    version_config=True,
+    setup_requires=['setuptools-git-versioning'],
+    author=AUTHOR,
     author_email='openjij@j-ij.com',
     url='https://openjij.github.io/OpenJij/',
     description='Framework for the Ising model and QUBO',

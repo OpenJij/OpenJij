@@ -111,15 +111,7 @@ namespace openjij {
                      * @param num_edges number of edges
                      */
                     Sparse(std::size_t num_spins, std::size_t num_edges)
-                        : Graph(num_spins), _num_edges(std::min(num_spins, num_edges)), _list_adj_nodes(num_spins){
-                            //reserve hashtable
-                            _J.reserve(num_spins*_num_edges/2);
-                            
-                            //initialize list_adj_nodes
-                            for(auto& elem : _list_adj_nodes){
-                                elem.reserve(_num_edges); //not resize()
-                            }
-                        }
+                        : Graph(num_spins), _num_edges(std::min(num_spins, num_edges)), _list_adj_nodes(num_spins){}
 
                     /**
                      * @brief Sparse delegate constructor

@@ -5,6 +5,7 @@ from openjij.sampler import BaseSampler
 from openjij.utils.decorator import deprecated_alias
 import cxxjij
 from cimod.utils import get_state_and_energy
+import dimod
 class SQASampler(BaseSampler):
     """Sampler with Simulated Quantum Annealing (SQA).
 
@@ -161,6 +162,9 @@ class SQASampler(BaseSampler):
                 >>> sampler = oj.SQASampler()
                 >>> res = sampler.sample_qubo(Q)
         """
+
+        if type(bqm) == dimod.BinaryQuadraticModel:
+            bqm = openjij.BinaryQuadraticModel(dict(bqm.linear), dict(bqm.quadratic), bqm.offset, bqm.vartype)
 
         ising_graph, offset = bqm.get_cxxjij_ising_graph()
 
