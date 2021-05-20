@@ -177,22 +177,43 @@ def BinaryQuadraticModel(linear, quadratic, *args, **kwargs):
 
     Model = make_BinaryQuadraticModel(linear, quadratic, kwargs.pop('sparse', False))
 
-    # offset and vartype
-    if len(args) == 2:
-        [offset, vartype] = args
-        return Model(linear, quadratic, offset, vartype, **kwargs)
-    elif len(args) == 1 and 'vartype' in kwargs:
-        [offset] = args
-        vartype = kwargs.pop('vartype')
-        return Model(linear, quadratic, offset, vartype, **kwargs)
-    elif len(args) == 1:
-        [vartype] = args
-        return Model(linear, quadratic, 0.0, vartype, **kwargs)
-    elif len(args) == 0 and 'vartype' in kwargs:
-        vartype = kwargs.pop('vartype')
-        return Model(linear, quadratic, 0.0, vartype, **kwargs)
-    else:
-        raise TypeError("Offset or vartype is configured incorrectly, offset must not be a keyword variable and vartype must be set.")
+    def __extract_offset_and_vartype(*args, **kwargs):
+        if kwargs == {}:
+            if len(args) == 0:
+                raise TypeError(f"Offset or vartype is configured incorrectly. Vartype must be set.")
+            elif len(args) == 1:
+                offset = 0.0
+                [vartype] = args
+            elif len(args) == 2:
+                [offset, vartype] = args
+            else:
+                raise TypeError(f"Offset or vartype is configured incorrectly. Vartype must be set.")
+        else:
+            if 'offset' in kwargs and 'vartype' in kwargs:
+                offset  = kwargs['offset']
+                vartype = kwargs['vartype']
+            elif 'offset' in kwargs:
+                if len(args) != 1:
+                    raise TypeError(f"Offset or vartype is configured incorrectly. Vartype must be set.")
+                offset  = kwargs['offset']
+                [vartype] = args
+            elif 'vartype' in kwargs:
+                if len(args) >= 2:
+                    raise TypeError(f"Offset or vartype is configured incorrectly. Vartype must be set.")
+                elif len(args) == 0:
+                    offset = 0.0
+                elif len(args) == 1:
+                    [offset] = args
+                vartype = kwargs['vartype']
+            else:
+                raise TypeError(f"Offset or vartype is configured incorrectly. Vartype must be set.")
+                
+        return offset,vartype
+
+    offset, vartype = __extract_offset_and_vartype(*args, **kwargs)
+
+    return Model(linear, quadratic, offset, vartype)
+
 
 
 #classmethods

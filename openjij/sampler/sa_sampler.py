@@ -241,7 +241,7 @@ class SASampler(BaseSampler):
         return response
 
 
-    def sample_hubo(self, J, vartype, 
+    def sample_hubo(self, polynomial, vartype, 
                     beta_min = None, beta_max = None, schedule = None,
                     num_sweeps = None, num_reads = 1,
                     initial_state = None, reinitialize_state=True, seed = None):
@@ -283,7 +283,7 @@ class SASampler(BaseSampler):
         elif vartype == "BINARY":
             vartype = openjij.BINARY
 
-        bhom = openjij.BinaryPolynomialModel(J, vartype)
+        bhom = openjij.BinaryPolynomialModel(polynomial, vartype)
 
         return self._sampling_hubo(bhom, beta_min, beta_max,num_sweeps, num_reads, schedule, initial_state, reinitialize_state, seed)
 
