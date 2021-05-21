@@ -1104,53 +1104,16 @@ protected:
       if (vartype_ == Vartype::SPIN) {
          return *this;
       }
-      
-      PolynomialKeyList<IndexType>   new_key_list;
-      PolynomialValueList<FloatType> new_value_list;
-      std::size_t num_interactions = get_num_interactions();
-      
-      for (std::size_t i = 0; i < num_interactions; ++i) {
-         const std::vector<IndexType> &original_key = poly_key_list_[i];
-         const FloatType   original_value           = poly_value_list_[i];
-         const std::size_t original_key_size        = original_key.size();
-         const std::size_t changed_key_list_size    = IntegerPower(2, original_key_size);
-         
-         FloatType changed_value = original_value*(1.0/changed_key_list_size);
-         
-         for (std::size_t j = 0; j < changed_key_list_size; ++j) {
-            new_key_list.push_back(GenerateChangedKey(original_key , j));
-            new_value_list.push_back(changed_value);
-         }
-      }
-      return BinaryPolynomialModel(new_key_list, new_value_list, Vartype::SPIN);
+      return BinaryPolynomialModel(to_hising(), Vartype::SPIN);
    }
    
    //! @brief Generate BinaryPolynomialModel with the vartype being BINARY.
    //! @return BinaryPolynomialModel instance with the vartype being BINARY.
    BinaryPolynomialModel ToBinary() const {
-      
       if (vartype_ == Vartype::BINARY) {
          return *this;
       }
-      
-      PolynomialKeyList<IndexType>   new_key_list;
-      PolynomialValueList<FloatType> new_value_list;
-      std::size_t num_interactions = get_num_interactions();
-      
-      for (std::size_t i = 0; i < num_interactions; ++i) {
-         const std::vector<IndexType> &original_key = poly_key_list_[i];
-         const FloatType   original_value           = poly_value_list_[i];
-         const std::size_t original_key_size        = original_key.size();
-         const std::size_t changed_key_list_size    = IntegerPower(2, original_key_size);
-         
-         for (std::size_t j = 0; j < changed_key_list_size; ++j) {
-            const auto changed_key = GenerateChangedKey(original_key, j);
-            int sign = ((original_key_size - changed_key.size())%2 == 0) ? 1.0 : -1.0;
-            new_key_list.push_back(changed_key);
-            new_value_list.push_back(original_value*IntegerPower(2, changed_key.size())*sign);
-         }
-      }
-      return BinaryPolynomialModel(new_key_list, new_value_list, Vartype::BINARY);
+      return BinaryPolynomialModel(to_hubo(), Vartype::BINARY);
    }
 
    //! @brief Update sorted_variables_ and variables_to_integers_
