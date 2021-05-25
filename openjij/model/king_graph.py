@@ -52,7 +52,7 @@ def make_KingGraph(linear=None, quadratic=None, king_graph=None):
     
         def __init__(self, linear: dict=None, quadratic: dict=None, offset: float=0.0,
 
-                king_graph=None, var_type=openjij.SPIN, machine_type: str=''):
+                king_graph=None, vartype=openjij.SPIN, machine_type: str=''):
             """__init__.
 
             Args:
@@ -63,10 +63,10 @@ def make_KingGraph(linear=None, quadratic=None, king_graph=None):
                     Each spins are decided by 2-d corrdinate x, y.
                     Quadratic term [x1, y1, x2, y2, value]
                     Linear term    [x1, y1, x1, y1, value]
-                var_type: 'SPIN' or 'BINARY'
+                vartype: 'SPIN' or 'BINARY'
                 machine_type (str): choose 'ASIC' or 'FPGA'
             """
-            var_type = openjij.cast_var_type(var_type)
+            vartype = openjij.cast_vartype(vartype)
     
             # set parameter ranges
             self.machine_type = machine_type
@@ -84,11 +84,11 @@ def make_KingGraph(linear=None, quadratic=None, king_graph=None):
             # convert format h, J, Q and initilize BQM
             if king_graph is not None:
                 linear, quadratic = self._convert_to_BQM_format(
-                    king_graph, var_type)
-            super().__init__(linear, quadratic, offset=offset, var_type=var_type)
+                    king_graph, vartype)
+            super().__init__(linear, quadratic, offset=offset, vartype=vartype)
     
             # reformat to ising king graph (which is Web API format)
-            if king_graph is not None and var_type == openjij.SPIN:
+            if king_graph is not None and vartype == openjij.SPIN:
                 self._ising_king_graph = king_graph
     
             else:
@@ -107,7 +107,7 @@ def make_KingGraph(linear=None, quadratic=None, king_graph=None):
     
             self._validation_ising_king_graph()
     
-        def _convert_to_BQM_format(self, king_graph, var_type):
+        def _convert_to_BQM_format(self, king_graph, vartype):
             linear, quad = {}, {}
             for x1, y1, x2, y2, value in king_graph:
                 if (x1, y1) == (x2, y2):
@@ -173,7 +173,7 @@ def make_KingGraph_from_JSON(obj):
     return make_KingGraph(mock_linear, {})
 
 def KingGraph(linear=None, quadratic=None, offset=0.0,
-                     king_graph=None, var_type=openjij.SPIN, machine_type=''):
+                     king_graph=None, vartype=openjij.SPIN, machine_type=''):
     """generate KingGraph model.
 
     Args:
@@ -185,7 +185,7 @@ def KingGraph(linear=None, quadratic=None, offset=0.0,
             
             * Quadratic term: [x1, y1, x2, y2, value]
             * Linear term:    [x1, y1, x1, y1, value]
-        var_type: 'SPIN' or 'BINARY'
+        vartype: 'SPIN' or 'BINARY'
         machine_type (str): choose 'ASIC' or 'FPGA'
     Returns:
         generated KingGraphModel
@@ -204,7 +204,7 @@ def KingGraph(linear=None, quadratic=None, offset=0.0,
 
     Model = make_KingGraph(linear, quadratic, king_graph)
 
-    return Model(linear, quadratic, offset, king_graph, var_type, machine_type)
+    return Model(linear, quadratic, offset, king_graph, vartype, machine_type)
 
 #classmethods
 KingGraph.from_qubo = \

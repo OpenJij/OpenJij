@@ -33,7 +33,7 @@ class SASampler(BaseSampler):
         energy_bias (float):
             Energy bias.
 
-        var_type (str):
+        vartype (str):
             Type of variables: 'SPIN' or 'BINARY' which mean {-1, 1} or {0, 1}.
 
         indices (int):
@@ -144,8 +144,8 @@ class SASampler(BaseSampler):
 
         """
 
-        var_type = openjij.SPIN
-        model = openjij.BinaryQuadraticModel(h=h, J=J, var_type=var_type)
+        vartype = openjij.SPIN
+        model = openjij.BinaryQuadraticModel(h=h, J=J, vartype=vartype)
         return self.sampling(model,
                              initial_state=initial_state, updater=updater,
                              reinitilize_state=reinitilize_state,
@@ -194,8 +194,8 @@ class SASampler(BaseSampler):
 
         """
 
-        var_type = openjij.BINARY
-        model = openjij.BinaryQuadraticModel(Q=Q, var_type=var_type)
+        vartype = openjij.BINARY
+        model = openjij.BinaryQuadraticModel(Q=Q, vartype=vartype)
         return self.sampling(model,
                              initial_state=initial_state, updater=updater,
                              reinitilize_state=reinitilize_state,
@@ -218,7 +218,7 @@ class SASampler(BaseSampler):
 
             def _generate_init_state(): return ising_graph.gen_spin()
         else:
-            if model.var_type == openjij.SPIN:
+            if model.vartype == openjij.SPIN:
                 _init_state = np.array(initial_state)
             else:  # BINARY
                 _init_state = (2*np.array(initial_state)-1).astype(np.int)
@@ -276,7 +276,7 @@ class SASampler(BaseSampler):
                     need_to_convert_from_spin=True))
         sampling_time = exec_sampling()
         response = openjij.Response(
-            var_type=model.var_type, indices=self.indices)
+            vartype=model.vartype, indices=self.indices)
         response.update_ising_states_energies(states, energies)
 
         response.info['sampling_time'] = sampling_time * \

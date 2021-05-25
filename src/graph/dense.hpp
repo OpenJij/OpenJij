@@ -89,23 +89,25 @@ namespace openjij {
                     /**
                      * @brief Dense constructor (from nlohmann::json)
                      *
-                     * @param j JSON object
+                     * @param j JSON object this object must be a serialized object of dense BQM.
                      */
                     Dense(const json& j) : Dense(static_cast<size_t>(j["num_variables"])){
                         //define bqm with ising variables
-                        auto bqm = json_parse<FloatType>(j);
+                        auto bqm = json_parse<FloatType, cimod::Dense>(j);
                         //interactions
-                        for(auto&& elem : bqm.get_quadratic()){
-                            const auto& key = elem.first;
-                            const auto& val = elem.second;
-                            J(key.first, key.second) += val;
-                        }
+                        //for(auto&& elem : bqm.get_quadratic()){
+                        //    const auto& key = elem.first;
+                        //    const auto& val = elem.second;
+                        //    J(key.first, key.second) += val;
+                        //}
                         //local field
-                        for(auto&& elem : bqm.get_linear()){
-                            const auto& key = elem.first;
-                            const auto& val = elem.second;
-                            h(key) += val;
-                        }
+                        //for(auto&& elem : bqm.get_linear()){
+                        //    const auto& key = elem.first;
+                        //    const auto& val = elem.second;
+                        //    h(key) += val;
+                        //}
+                        // the above insertion is simplified as 
+                        this->_J = bqm.interaction_matrix();
                     }
 
                     /**
@@ -151,12 +153,28 @@ namespace openjij {
                      * @brief calculate total energy 
                      *
                      * @param spins
+                     * @deprecated use energy(spins)
                      *
                      * @return corresponding energy
                      */
                     FloatType calc_energy(const Spins& spins) const{
+                        return this->energy(spins);
+                    }
+
+                    FloatType calc_energy(const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins) const{
+                        return this->energy(spins);
+                    }
+
+                    /**
+                     * @brief calculate total energy 
+                     *
+                     * @param spins
+                     *
+                     * @return corresponding energy
+                     */
+                    FloatType energy(const Spins& spins) const{
                         if(spins.size() != this->get_num_spins()){
-                            std::out_of_range("Out of range in calc_energy in Dense graph.");
+                            throw std::out_of_range("Out of range in energy in Dense graph.");
                         }
 
                         using Vec = Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>;
@@ -170,12 +188,12 @@ namespace openjij {
                         return (s.transpose()*(_J.template triangularView<Eigen::Upper>()*s))(0,0)-1;
                     }
 
-                    FloatType calc_energy(const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins) const{
+                    FloatType energy(const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins) const{
                         graph::Spins temp_spins(get_num_spins());
                         for(size_t i=0; i<temp_spins.size(); i++){
                             temp_spins[i] = spins(i);
                         }
-                        return calc_energy(temp_spins);
+                        return energy(temp_spins);
 
                     }
 

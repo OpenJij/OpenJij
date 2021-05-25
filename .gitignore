@@ -171,3 +171,4 @@ project_template/tutorial
 # Xcode Projrct File
 *.xcodeproj
 *.DS_Store
+*.entitlements

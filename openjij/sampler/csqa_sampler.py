@@ -73,9 +73,6 @@ class CSQASampler(SQASampler):
             updater (str, optional): updater algorithm
             reinitialize_state (bool, optional): Re-initilization at each sampling. Defaults to True.
             seed (int, optional): Sampling seed.
-            structure (int, optional): specify the structure. 
-            This argument is necessary if the model has a specific structure (e.g. Chimera graph) and the updater algorithm is structure-dependent.
-            structure must have two types of keys, namely "size" which shows the total size of spins and "dict" which is the map from model index (elements in model.indices) to the number.
         
         Returns:
             :class:`openjij.sampler.response.Response`: results
@@ -98,12 +95,12 @@ class CSQASampler(SQASampler):
         """
 
         bqm = openjij.BinaryQuadraticModel(
-            linear=h, quadratic=J, var_type='SPIN'
+            linear=h, quadratic=J, vartype='SPIN', sparse=True
         )
 
         #Continuous time ising system only supports sparse ising graph
 
-        ising_graph = bqm.get_cxxjij_ising_graph(sparse=True)
+        ising_graph = bqm.get_cxxjij_ising_graph()
 
         self._setting_overwrite(
             beta=beta, gamma=gamma,
@@ -115,7 +112,7 @@ class CSQASampler(SQASampler):
         # make init state generator --------------------------------
         if initial_state is None:
             def init_generator():
-                spin_config = np.random.choice([1,-1], len(bqm.indices))
+                spin_config = np.random.choice([1,-1], len(bqm.variables))
                 return list(spin_config)
         else:
             def init_generator(): return initial_state

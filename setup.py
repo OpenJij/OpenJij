@@ -17,7 +17,6 @@ NAME = 'openjij'
 DESCRIPTION = 'Framework for the Ising model and QUBO'
 EMAIL = 'openjij@j-ij.com'
 AUTHOR = 'Jij Inc.'
-VERSION = '0.2.1'
 
 if platform.system() == "Windows":
     from setuptools import setup
@@ -130,17 +129,6 @@ class PyTestCommand(TestCommand):
     def run(self):
         super().run()
 
-
-# Load the package's __version__.py module as a dictionary.
-here = os.path.abspath(os.path.dirname(__file__))
-about = {}
-if not VERSION:
-    project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
-    with open(os.path.join(here, project_slug, '__version__.py')) as f:
-        exec(f.read(), about)
-else:
-    about['__version__'] = VERSION
-
 install_requires = [
         'numpy>=1.17.3, <=1.20.0',
         'dimod>=0.9.14, <=0.10.0',
@@ -155,29 +143,30 @@ setup_requires = [
         'wheel >=0.36.2',
         'Cython >=0.29.21'
         'cmake>=3.18.4',
+        'setuptools-git-versioning',
         'setuptools',
         ]
-
 setup(
-        name=NAME,
-        version=about['__version__'],
-        author='Jij Inc.',
-        author_email='openjij@j-ij.com',
-        url='https://openjij.github.io/OpenJij/',
-        description='Framework for the Ising model and QUBO',
-        long_description=open('README.md').read(),
-        long_description_content_type="text/markdown",
-        install_requires=install_requires,
-        setup_requires=setup_requires,
-        ext_modules=[CMakeExtension('cxxjij')],
-        cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
-                      pytest=PyTestCommand),
-        packages=find_packages(exclude=('tests', 'docs', 'examples')),
-        license='Apache License 2.0',
-        classifiers=[
-                'License :: OSI Approved :: Apache Software License',
-                'Intended Audience :: Science/Research',
-                'Programming Language :: Python',
-                ],
+    name=NAME,
+    version_config=True,
+    setup_requires=['setuptools-git-versioning'],
+    author=AUTHOR,
+    author_email='openjij@j-ij.com',
+    url='https://openjij.github.io/OpenJij/',
+    description='Framework for the Ising model and QUBO',
+    long_description=open('README.md').read(),
+    long_description_content_type="text/markdown",
+  　install_requires=install_requires,
+    setup_requires=setup_requires,
+    ext_modules=[CMakeExtension('cxxjij')],
+    cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
+                  pytest=PyTestCommand),
+    packages=find_packages(exclude=('tests', 'docs', 'examples')),
+    license='Apache License 2.0',
+    classifiers=[
+        'License :: OSI Approved :: Apache Software License',
+        'Intended Audience :: Science/Research',
+        'Programming Language :: Python',
+    ],
     zip_safe=False
 )

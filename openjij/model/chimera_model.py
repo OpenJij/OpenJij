@@ -36,15 +36,15 @@ def make_ChimeraModel(linear, quadratic):
         """
     
         def __init__(self, linear=None, quadratic=None,
-                     offset=0.0, var_type=openjij.SPIN,
+                     offset=0.0, vartype=openjij.SPIN,
                      unit_num_L=None, model=None,
                      gpu=False):
             self.gpu = gpu
             if model:
                 super().__init__(model.linear, model.quadratic,
-                                 model.offset, model.var_type, gpu=gpu)
+                                 model.offset, model.vartype, gpu=gpu)
             else:
-                super().__init__(linear, quadratic, offset, var_type, gpu=gpu)
+                super().__init__(linear, quadratic, offset, vartype, gpu=gpu)
             if not unit_num_L:
                 raise ValueError(
                     'Input unit_num_L which is the length of the side of the two-dimensional grid where chimera unit cells are arranged.')
@@ -281,7 +281,7 @@ def make_ChimeraModel_from_JSON(obj):
     return make_ChimeraModel(mock_linear, {})
 
 def ChimeraModel(linear: dict=None, quadratic: dict=None,
-        offset: float=0.0, var_type=openjij.SPIN,
+        offset: float=0.0, vartype=openjij.SPIN,
         unit_num_L: int=None, model=None,
         gpu: bool=False):
     """generate ChimeraModel object.
@@ -292,7 +292,7 @@ def ChimeraModel(linear: dict=None, quadratic: dict=None,
         linear (dict): linear biases
         quadratic (dict): quadratic biases
         offset (float): offset
-        var_type: vartype ('SPIN' or 'BINARY')
+        vartype: vartype ('SPIN' or 'BINARY')
         unit_num_L (int): unit_num_L
         model (BinaryQuadraticModel): if model is not None, the object is initialized by model.
         gpu (bool): if true, this can be used for gpu samplers.
@@ -311,7 +311,7 @@ def ChimeraModel(linear: dict=None, quadratic: dict=None,
 
     Model = make_ChimeraModel(linear, quadratic)
 
-    return Model(linear, quadratic, offset, var_type, unit_num_L, model, gpu)
+    return Model(linear, quadratic, offset, vartype, unit_num_L, model, gpu)
 
 #classmethods
 ChimeraModel.from_qubo = \

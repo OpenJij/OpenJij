@@ -257,7 +257,7 @@ TEST(Graph, JSONTest){
     };
     double offset = 0.0;
     Vartype vartype = Vartype::SPIN;
-    BinaryQuadraticModel<uint32_t, double> bqm_k4(linear, quadratic, offset, vartype);
+    BinaryQuadraticModel<uint32_t, double, cimod::Sparse> bqm_k4(linear, quadratic, offset, vartype);
     auto s = graph::Chimera<double>(bqm_k4.to_serializable(), 1, 2);
     EXPECT_NEAR(s.J(0,1,3,graph::ChimeraDir::IN_0or4), 24, 1e-5);
     EXPECT_NEAR(s.J(0,0,4,graph::ChimeraDir::PLUS_C), 13, 1e-5);
@@ -380,7 +380,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse) {
 TEST(PolyGraph, ConstructorCimod1) {
    
    cimod::Polynomial<openjij::graph::Index, double> Polynomial {
-      {{0}, 0.0}, {{1}, 1.0}, {{2}, 2.0},//{{0}, 0.0} is removed in Polynomial graph class
+      {{0}, 0.0}, {{1}, 1.0}, {{2}, 2.0},
       {{0, 1}, 11.0}, {{0, 2}, 22.0}, {{1, 2}, 12.0},
       {{0, 1, 2}, +12}
    };
@@ -389,11 +389,11 @@ TEST(PolyGraph, ConstructorCimod1) {
    
    openjij::graph::Polynomial<double> poly_graph(bpm_cimod);
 
-   EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.get_interactions().size() + 1);
+   EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.get_polynomial().size());
 
    for (const auto &it: Polynomial) {
       if (std::abs(it.second) > 0.0) {
-         EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(it.first), poly_graph.get_interactions().at(it.first));
+         EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(it.first), poly_graph.get_polynomial().at(it.first));
       }
    }
    
@@ -429,15 +429,15 @@ TEST(PolyGraph, ConstructorCimod2) {
    
    openjij::graph::Polynomial<double> poly_graph(bpm_cimod);
 
-   EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.get_interactions().size() + 8 + 1);
+   EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.get_polynomial().size());
    
    //EXPECT_DOUBLE_EQ(poly_graph.J(   {0}   ), bpm_cimod.get_polynomial().at(   {0}   ));
    EXPECT_DOUBLE_EQ(poly_graph.J(   {1}   ), bpm_cimod.get_polynomial().at(   {1}   ));
    EXPECT_DOUBLE_EQ(poly_graph.J(   {2}   ), bpm_cimod.get_polynomial().at(   {2}   ));
-   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 1}  ), bpm_cimod.get_polynomial().at( {0, 1}  )*2);
-   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 2}  ), bpm_cimod.get_polynomial().at( {0, 2}  )*2);
-   EXPECT_DOUBLE_EQ(poly_graph.J( {1, 2}  ), bpm_cimod.get_polynomial().at( {1, 2}  )*2);
-   EXPECT_DOUBLE_EQ(poly_graph.J({0, 1, 2}), bpm_cimod.get_polynomial().at({0, 1, 2})*6);
+   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 1}  ), bpm_cimod.get_polynomial().at( {0, 1}  ));
+   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 2}  ), bpm_cimod.get_polynomial().at( {0, 2}  ));
+   EXPECT_DOUBLE_EQ(poly_graph.J( {1, 2}  ), bpm_cimod.get_polynomial().at( {1, 2}  ));
+   EXPECT_DOUBLE_EQ(poly_graph.J({0, 1, 2}), bpm_cimod.get_polynomial().at({0, 1, 2}));
    
 }
 
@@ -453,7 +453,7 @@ TEST(PolyGraph, ConstructorJson) {
    
    openjij::graph::Polynomial<double> poly_graph(bpm_cimod.to_serializable());
 
-   EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.get_interactions().size() + 1);
+   EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.get_polynomial().size());
 
    //EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {"a"}   )    , poly_graph.J(   {0}   ));
    EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial().at(   {"b"}   )    , poly_graph.J(   {1}   ));
@@ -478,7 +478,7 @@ TEST(PolyGraph, AddInteractions) {
    poly_graph.J( {1, 2}  ) = +12.0;
    poly_graph.J({0, 1, 2}) = +12.0;
    
-   EXPECT_EQ(poly_graph.get_interactions().size(), 7);
+   EXPECT_EQ(poly_graph.get_polynomial().size(), 7);
    
    EXPECT_DOUBLE_EQ(poly_graph.J(   {0}   ), +0.0 );
    EXPECT_DOUBLE_EQ(poly_graph.J(   {1}   ), +1.0 );
@@ -504,21 +504,12 @@ TEST(PolyGraph, AddInteractions) {
    EXPECT_DOUBLE_EQ(poly_graph.J( {1, 2}  ), +12.0*2);
    EXPECT_DOUBLE_EQ(poly_graph.J({0, 1, 2}), +12.0*2);
    
-   poly_graph.J(0,0,0) += +0.0 ;
-   poly_graph.J(1,1,1) += +1.0 ;
-   poly_graph.J(2,2,2) += +2.0 ;
-   poly_graph.J(0,1,1) += +11.0;
-   poly_graph.J(0,2,2) += +22.0;
-   poly_graph.J(1,2,1) += +12.0;
-   poly_graph.J(0,1,2) += +12.0;
-   
-   EXPECT_DOUBLE_EQ(poly_graph.J(   {0}   ), +0.0 *3);
-   EXPECT_DOUBLE_EQ(poly_graph.J(   {1}   ), +1.0 *3);
-   EXPECT_DOUBLE_EQ(poly_graph.J(   {2}   ), +2.0 *3);
-   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 1}  ), +11.0*3);
-   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 2}  ), +22.0*3);
-   EXPECT_DOUBLE_EQ(poly_graph.J( {1, 2}  ), +12.0*3);
-   EXPECT_DOUBLE_EQ(poly_graph.J({0, 1, 2}), +12.0*3);
+   EXPECT_THROW(poly_graph.J(0,0,0) += +0.0 , std::runtime_error);
+   EXPECT_THROW(poly_graph.J(1,1,1) += +1.0 , std::runtime_error);
+   EXPECT_THROW(poly_graph.J(2,2,2) += +2.0 , std::runtime_error);
+   EXPECT_THROW(poly_graph.J(0,1,1) += +11.0, std::runtime_error);
+   EXPECT_THROW(poly_graph.J(0,2,2) += +22.0, std::runtime_error);
+   EXPECT_THROW(poly_graph.J(1,2,1) += +12.0, std::runtime_error);
 
 }
 
@@ -566,12 +557,12 @@ TEST(PolySystem, ConstructorSpin1) {
    }
    
    //Check J_term: set in SetJTerm()
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(0), 1.0 );
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(1), 2.0 );
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(2), 11.0);
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(3), 22.0);
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(4), 12.0);
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(5), 12.0);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(0), 1.0 );
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(1), 2.0 );
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(2), 11.0);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(3), 22.0);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(4), 12.0);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(5), 12.0);
 
    //Check connected_J_term_index_: set in SetJTerm()
    EXPECT_EQ(poly_system.get_connected_J_term_index().size(), poly_system.num_spins);
@@ -600,47 +591,47 @@ TEST(PolySystem, ConstructorSpin1) {
    EXPECT_DOUBLE_EQ(poly_system.dE[2], -2*spin[2]*(poly_graph.J(2) + poly_graph.J(0, 2)*spin[0] + poly_graph.J(1, 2)*spin[1] + poly_graph.J(0, 1, 2)*spin[0]*spin[1]));
 
    //Check UpdateMatrix: set in SetUpdateMatrix()
-   EXPECT_EQ(poly_system.crs_row.size(), poly_system.num_spins + 1);
-   EXPECT_EQ(poly_system.crs_col.size(), 12);
-   EXPECT_EQ(poly_system.crs_val.size(), 12);
-   EXPECT_EQ(poly_system.crs_sign_p.size(), 12);
+   EXPECT_EQ(poly_system.get_crs_row().size(), poly_system.num_spins + 1);
+   EXPECT_EQ(poly_system.get_crs_col().size(), 12);
+   EXPECT_EQ(poly_system.get_crs_val().size(), 12);
+   EXPECT_EQ(poly_system.get_crs_sign_p().size(), 12);
    
-   EXPECT_EQ(poly_system.crs_row[0 ], 0 );
-   EXPECT_EQ(poly_system.crs_row[1 ], 4 );
-   EXPECT_EQ(poly_system.crs_row[2 ], 8 );
-   EXPECT_EQ(poly_system.crs_row[3 ], 12);
+   EXPECT_EQ(poly_system.get_crs_row()[0 ], 0 );
+   EXPECT_EQ(poly_system.get_crs_row()[1 ], 4 );
+   EXPECT_EQ(poly_system.get_crs_row()[2 ], 8 );
+   EXPECT_EQ(poly_system.get_crs_row()[3 ], 12);
    
-   EXPECT_EQ(poly_system.crs_col[0 ], 1);
-   EXPECT_EQ(poly_system.crs_col[1 ], 1);
-   EXPECT_EQ(poly_system.crs_col[2 ], 2);
-   EXPECT_EQ(poly_system.crs_col[3 ], 2);
-   EXPECT_EQ(poly_system.crs_col[4 ], 0);
-   EXPECT_EQ(poly_system.crs_col[5 ], 0);
-   EXPECT_EQ(poly_system.crs_col[6 ], 2);
-   EXPECT_EQ(poly_system.crs_col[7 ], 2);
-   EXPECT_EQ(poly_system.crs_col[8 ], 0);
-   EXPECT_EQ(poly_system.crs_col[9 ], 0);
-   EXPECT_EQ(poly_system.crs_col[10], 1);
-   EXPECT_EQ(poly_system.crs_col[11], 1);
+   EXPECT_EQ(poly_system.get_crs_col()[0 ], 1);
+   EXPECT_EQ(poly_system.get_crs_col()[1 ], 1);
+   EXPECT_EQ(poly_system.get_crs_col()[2 ], 2);
+   EXPECT_EQ(poly_system.get_crs_col()[3 ], 2);
+   EXPECT_EQ(poly_system.get_crs_col()[4 ], 0);
+   EXPECT_EQ(poly_system.get_crs_col()[5 ], 0);
+   EXPECT_EQ(poly_system.get_crs_col()[6 ], 2);
+   EXPECT_EQ(poly_system.get_crs_col()[7 ], 2);
+   EXPECT_EQ(poly_system.get_crs_col()[8 ], 0);
+   EXPECT_EQ(poly_system.get_crs_col()[9 ], 0);
+   EXPECT_EQ(poly_system.get_crs_col()[10], 1);
+   EXPECT_EQ(poly_system.get_crs_col()[11], 1);
    
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[0 ]*poly_system.crs_val[0 ], 4.0*poly_graph.J(0, 1)   *spin[0]*spin[1]        );
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[1 ]*poly_system.crs_val[1 ], 4.0*poly_graph.J(0, 1, 2)*spin[0]*spin[1]*spin[2]);
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[2 ]*poly_system.crs_val[2 ], 4.0*poly_graph.J(0, 2)   *spin[0]*spin[2]        );
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[3 ]*poly_system.crs_val[3 ], 4.0*poly_graph.J(0, 1, 2)*spin[0]*spin[1]*spin[2]);
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[4 ]*poly_system.crs_val[4 ], 4.0*poly_graph.J(0, 1)   *spin[0]*spin[1]        );
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[5 ]*poly_system.crs_val[5 ], 4.0*poly_graph.J(0, 1, 2)*spin[0]*spin[1]*spin[2]);
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[6 ]*poly_system.crs_val[6 ], 4.0*poly_graph.J(1, 2)   *spin[1]*spin[2]        );
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[7 ]*poly_system.crs_val[7 ], 4.0*poly_graph.J(0, 1, 2)*spin[0]*spin[1]*spin[2]);
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[8 ]*poly_system.crs_val[8 ], 4.0*poly_graph.J(0, 2)   *spin[0]*spin[2]        );
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[9 ]*poly_system.crs_val[9 ], 4.0*poly_graph.J(0, 1, 2)*spin[0]*spin[1]*spin[2]);
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[10]*poly_system.crs_val[10], 4.0*poly_graph.J(1, 2)   *spin[1]*spin[2]        );
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[11]*poly_system.crs_val[11], 4.0*poly_graph.J(0, 1, 2)*spin[0]*spin[1]*spin[2]);
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[0 ]*poly_system.get_crs_val()[0 ], 4.0*poly_graph.J(0, 1)   *spin[0]*spin[1]        );
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[1 ]*poly_system.get_crs_val()[1 ], 4.0*poly_graph.J(0, 1, 2)*spin[0]*spin[1]*spin[2]);
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[2 ]*poly_system.get_crs_val()[2 ], 4.0*poly_graph.J(0, 2)   *spin[0]*spin[2]        );
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[3 ]*poly_system.get_crs_val()[3 ], 4.0*poly_graph.J(0, 1, 2)*spin[0]*spin[1]*spin[2]);
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[4 ]*poly_system.get_crs_val()[4 ], 4.0*poly_graph.J(0, 1)   *spin[0]*spin[1]        );
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[5 ]*poly_system.get_crs_val()[5 ], 4.0*poly_graph.J(0, 1, 2)*spin[0]*spin[1]*spin[2]);
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[6 ]*poly_system.get_crs_val()[6 ], 4.0*poly_graph.J(1, 2)   *spin[1]*spin[2]        );
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[7 ]*poly_system.get_crs_val()[7 ], 4.0*poly_graph.J(0, 1, 2)*spin[0]*spin[1]*spin[2]);
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[8 ]*poly_system.get_crs_val()[8 ], 4.0*poly_graph.J(0, 2)   *spin[0]*spin[2]        );
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[9 ]*poly_system.get_crs_val()[9 ], 4.0*poly_graph.J(0, 1, 2)*spin[0]*spin[1]*spin[2]);
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[10]*poly_system.get_crs_val()[10], 4.0*poly_graph.J(1, 2)   *spin[1]*spin[2]        );
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[11]*poly_system.get_crs_val()[11], 4.0*poly_graph.J(0, 1, 2)*spin[0]*spin[1]*spin[2]);
    
    //Check vartype
    EXPECT_TRUE(poly_system.get_vartype() == cimod::Vartype::SPIN);
    
    //Check variables for binary
-   EXPECT_EQ(poly_system.crs_zero_count_p.size(), 0);
+   EXPECT_EQ(poly_system.get_crs_zero_count_p().size(), 0);
    
 }
 
@@ -668,14 +659,14 @@ TEST(PolySystem, ConstructorSpin2) {
    }
    
    //Check J_term: set in SetJTerm()
-   EXPECT_EQ(poly_system.get_J_term().size(), 7);
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(0), 10.0);
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(1), 1.0 );
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(2), 2.0 );
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(3), 11.0);
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(4), 22.0);
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(5), 12.0);
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(6), 12.0);
+   EXPECT_EQ(poly_system.get_values().size(), 7);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(0), 10.0);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(1), 1.0 );
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(2), 2.0 );
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(3), 11.0);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(4), 22.0);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(5), 12.0);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(6), 12.0);
    
    //Check connected_J_term_index: set in SetJTerm()
    EXPECT_EQ(poly_system.get_connected_J_term_index().size(), poly_system.num_spins);
@@ -705,46 +696,46 @@ TEST(PolySystem, ConstructorSpin2) {
    EXPECT_DOUBLE_EQ(poly_system.dE[2], -2*spin[2]*(poly_graph.J(12) + poly_graph.J(10, 12)*spin[0] + poly_graph.J(11, 12)*spin[1] + poly_graph.J(10, 11, 12)*spin[0]*spin[1]));
 
    //Check UpdateMatrix: set in SetUpdateMatrix()
-   EXPECT_EQ(poly_system.crs_row.size(), poly_system.num_spins + 1);
-   EXPECT_EQ(poly_system.crs_col.size(), 12);
-   EXPECT_EQ(poly_system.crs_sign_p.size(), 12);
+   EXPECT_EQ(poly_system.get_crs_row().size(), poly_system.num_spins + 1);
+   EXPECT_EQ(poly_system.get_crs_col().size(), 12);
+   EXPECT_EQ(poly_system.get_crs_sign_p().size(), 12);
 
-   EXPECT_EQ(poly_system.crs_row[0 ], 0 );
-   EXPECT_EQ(poly_system.crs_row[1 ], 4 );
-   EXPECT_EQ(poly_system.crs_row[2 ], 8 );
-   EXPECT_EQ(poly_system.crs_row[3 ], 12);
+   EXPECT_EQ(poly_system.get_crs_row()[0 ], 0 );
+   EXPECT_EQ(poly_system.get_crs_row()[1 ], 4 );
+   EXPECT_EQ(poly_system.get_crs_row()[2 ], 8 );
+   EXPECT_EQ(poly_system.get_crs_row()[3 ], 12);
    
-   EXPECT_EQ(poly_system.crs_col[0 ], 1);
-   EXPECT_EQ(poly_system.crs_col[1 ], 1);
-   EXPECT_EQ(poly_system.crs_col[2 ], 2);
-   EXPECT_EQ(poly_system.crs_col[3 ], 2);
-   EXPECT_EQ(poly_system.crs_col[4 ], 0);
-   EXPECT_EQ(poly_system.crs_col[5 ], 0);
-   EXPECT_EQ(poly_system.crs_col[6 ], 2);
-   EXPECT_EQ(poly_system.crs_col[7 ], 2);
-   EXPECT_EQ(poly_system.crs_col[8 ], 0);
-   EXPECT_EQ(poly_system.crs_col[9 ], 0);
-   EXPECT_EQ(poly_system.crs_col[10], 1);
-   EXPECT_EQ(poly_system.crs_col[11], 1);
+   EXPECT_EQ(poly_system.get_crs_col()[0 ], 1);
+   EXPECT_EQ(poly_system.get_crs_col()[1 ], 1);
+   EXPECT_EQ(poly_system.get_crs_col()[2 ], 2);
+   EXPECT_EQ(poly_system.get_crs_col()[3 ], 2);
+   EXPECT_EQ(poly_system.get_crs_col()[4 ], 0);
+   EXPECT_EQ(poly_system.get_crs_col()[5 ], 0);
+   EXPECT_EQ(poly_system.get_crs_col()[6 ], 2);
+   EXPECT_EQ(poly_system.get_crs_col()[7 ], 2);
+   EXPECT_EQ(poly_system.get_crs_col()[8 ], 0);
+   EXPECT_EQ(poly_system.get_crs_col()[9 ], 0);
+   EXPECT_EQ(poly_system.get_crs_col()[10], 1);
+   EXPECT_EQ(poly_system.get_crs_col()[11], 1);
    
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[0 ]*poly_system.crs_val[0 ], 4.0*poly_graph.J(10, 11)    *spin[0]*spin[1]        );
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[1 ]*poly_system.crs_val[1 ], 4.0*poly_graph.J(10, 11, 12)*spin[0]*spin[1]*spin[2]);
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[2 ]*poly_system.crs_val[2 ], 4.0*poly_graph.J(10, 12)    *spin[0]*spin[2]        );
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[3 ]*poly_system.crs_val[3 ], 4.0*poly_graph.J(10, 11, 12)*spin[0]*spin[1]*spin[2]);
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[4 ]*poly_system.crs_val[4 ], 4.0*poly_graph.J(10, 11)    *spin[0]*spin[1]        );
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[5 ]*poly_system.crs_val[5 ], 4.0*poly_graph.J(10, 11, 12)*spin[0]*spin[1]*spin[2]);
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[6 ]*poly_system.crs_val[6 ], 4.0*poly_graph.J(11, 12)    *spin[1]*spin[2]        );
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[7 ]*poly_system.crs_val[7 ], 4.0*poly_graph.J(10, 11, 12)*spin[0]*spin[1]*spin[2]);
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[8 ]*poly_system.crs_val[8 ], 4.0*poly_graph.J(10, 12)    *spin[0]*spin[2]        );
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[9 ]*poly_system.crs_val[9 ], 4.0*poly_graph.J(10, 11, 12)*spin[0]*spin[1]*spin[2]);
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[10]*poly_system.crs_val[10], 4.0*poly_graph.J(11, 12)    *spin[1]*spin[2]        );
-   EXPECT_DOUBLE_EQ(*poly_system.crs_sign_p[11]*poly_system.crs_val[11], 4.0*poly_graph.J(10, 11, 12)*spin[0]*spin[1]*spin[2]);
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[0 ]*poly_system.get_crs_val()[0 ], 4.0*poly_graph.J(10, 11)    *spin[0]*spin[1]        );
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[1 ]*poly_system.get_crs_val()[1 ], 4.0*poly_graph.J(10, 11, 12)*spin[0]*spin[1]*spin[2]);
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[2 ]*poly_system.get_crs_val()[2 ], 4.0*poly_graph.J(10, 12)    *spin[0]*spin[2]        );
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[3 ]*poly_system.get_crs_val()[3 ], 4.0*poly_graph.J(10, 11, 12)*spin[0]*spin[1]*spin[2]);
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[4 ]*poly_system.get_crs_val()[4 ], 4.0*poly_graph.J(10, 11)    *spin[0]*spin[1]        );
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[5 ]*poly_system.get_crs_val()[5 ], 4.0*poly_graph.J(10, 11, 12)*spin[0]*spin[1]*spin[2]);
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[6 ]*poly_system.get_crs_val()[6 ], 4.0*poly_graph.J(11, 12)    *spin[1]*spin[2]        );
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[7 ]*poly_system.get_crs_val()[7 ], 4.0*poly_graph.J(10, 11, 12)*spin[0]*spin[1]*spin[2]);
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[8 ]*poly_system.get_crs_val()[8 ], 4.0*poly_graph.J(10, 12)    *spin[0]*spin[2]        );
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[9 ]*poly_system.get_crs_val()[9 ], 4.0*poly_graph.J(10, 11, 12)*spin[0]*spin[1]*spin[2]);
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[10]*poly_system.get_crs_val()[10], 4.0*poly_graph.J(11, 12)    *spin[1]*spin[2]        );
+   EXPECT_DOUBLE_EQ(*poly_system.get_crs_sign_p()[11]*poly_system.get_crs_val()[11], 4.0*poly_graph.J(10, 11, 12)*spin[0]*spin[1]*spin[2]);
    
    //Check vartype
    EXPECT_TRUE(poly_system.get_vartype() == cimod::Vartype::SPIN);
    
    //Check variables for binary
-   EXPECT_EQ(poly_system.crs_zero_count_p.size(), 0);
+   EXPECT_EQ(poly_system.get_crs_zero_count_p().size(), 0);
    
 }
 
@@ -771,14 +762,14 @@ TEST(PolySystem, ConstructorBinary) {
    }
    
    //Check J_term: set in SetJTerm()
-   EXPECT_EQ(poly_system.get_J_term().size(), 7);
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(0), 10.0);
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(1), 1.0 );
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(2), 2.0 );
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(3), 11.0);
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(4), 22.0);
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(5), 12.0);
-   EXPECT_DOUBLE_EQ(poly_system.get_J_term().at(6), 12.0);
+   EXPECT_EQ(poly_system.get_values().size(), 7);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(0), 10.0);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(1), 1.0 );
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(2), 2.0 );
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(3), 11.0);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(4), 22.0);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(5), 12.0);
+   EXPECT_DOUBLE_EQ(poly_system.get_values().at(6), 12.0);
    
    //Check connected_J_term_index: set in SetJTerm()
    EXPECT_EQ(poly_system.get_connected_J_term_index().size(), poly_system.num_spins);
@@ -808,92 +799,101 @@ TEST(PolySystem, ConstructorBinary) {
    EXPECT_DOUBLE_EQ(poly_system.dE[2], std::pow(-1, spin[2])*(poly_graph.J(2) + poly_graph.J(0, 2)*spin[0] + poly_graph.J(1, 2)*spin[1] + poly_graph.J(0, 1, 2)*spin[0]*spin[1]));
 
    //Check UpdateMatrix: set in SetUpdateMatrix()
-   EXPECT_EQ(poly_system.crs_row.size(), poly_system.num_spins + 1);
-   EXPECT_EQ(poly_system.crs_col.size(), 12);
-   EXPECT_EQ(poly_system.crs_val.size(), 12);
-   EXPECT_EQ(poly_system.crs_zero_count_p.size(), 12);
+   EXPECT_EQ(poly_system.get_crs_row().size(), poly_system.num_spins + 1);
+   EXPECT_EQ(poly_system.get_crs_col().size(), 12);
+   EXPECT_EQ(poly_system.get_crs_val().size(), 12);
+   EXPECT_EQ(poly_system.get_crs_zero_count_p().size(), 12);
 
-   EXPECT_EQ(poly_system.crs_row[0 ], 0 );
-   EXPECT_EQ(poly_system.crs_row[1 ], 4 );
-   EXPECT_EQ(poly_system.crs_row[2 ], 8 );
-   EXPECT_EQ(poly_system.crs_row[3 ], 12);
+   EXPECT_EQ(poly_system.get_crs_row()[0 ], 0 );
+   EXPECT_EQ(poly_system.get_crs_row()[1 ], 4 );
+   EXPECT_EQ(poly_system.get_crs_row()[2 ], 8 );
+   EXPECT_EQ(poly_system.get_crs_row()[3 ], 12);
    
-   EXPECT_EQ(poly_system.crs_col[0 ], 1);
-   EXPECT_EQ(poly_system.crs_col[1 ], 1);
-   EXPECT_EQ(poly_system.crs_col[2 ], 2);
-   EXPECT_EQ(poly_system.crs_col[3 ], 2);
-   EXPECT_EQ(poly_system.crs_col[4 ], 0);
-   EXPECT_EQ(poly_system.crs_col[5 ], 0);
-   EXPECT_EQ(poly_system.crs_col[6 ], 2);
-   EXPECT_EQ(poly_system.crs_col[7 ], 2);
-   EXPECT_EQ(poly_system.crs_col[8 ], 0);
-   EXPECT_EQ(poly_system.crs_col[9 ], 0);
-   EXPECT_EQ(poly_system.crs_col[10], 1);
-   EXPECT_EQ(poly_system.crs_col[11], 1);
+   EXPECT_EQ(poly_system.get_crs_col()[0 ], 1);
+   EXPECT_EQ(poly_system.get_crs_col()[1 ], 1);
+   EXPECT_EQ(poly_system.get_crs_col()[2 ], 2);
+   EXPECT_EQ(poly_system.get_crs_col()[3 ], 2);
+   EXPECT_EQ(poly_system.get_crs_col()[4 ], 0);
+   EXPECT_EQ(poly_system.get_crs_col()[5 ], 0);
+   EXPECT_EQ(poly_system.get_crs_col()[6 ], 2);
+   EXPECT_EQ(poly_system.get_crs_col()[7 ], 2);
+   EXPECT_EQ(poly_system.get_crs_col()[8 ], 0);
+   EXPECT_EQ(poly_system.get_crs_col()[9 ], 0);
+   EXPECT_EQ(poly_system.get_crs_col()[10], 1);
+   EXPECT_EQ(poly_system.get_crs_col()[11], 1);
    
-   EXPECT_DOUBLE_EQ(poly_system.crs_val[0 ], poly_graph.J(0, 1)   );
-   EXPECT_DOUBLE_EQ(poly_system.crs_val[1 ], poly_graph.J(0, 1, 2));
-   EXPECT_DOUBLE_EQ(poly_system.crs_val[2 ], poly_graph.J(0, 2)   );
-   EXPECT_DOUBLE_EQ(poly_system.crs_val[3 ], poly_graph.J(0, 1, 2));
-   EXPECT_DOUBLE_EQ(poly_system.crs_val[4 ], poly_graph.J(0, 1)   );
-   EXPECT_DOUBLE_EQ(poly_system.crs_val[5 ], poly_graph.J(0, 1, 2));
-   EXPECT_DOUBLE_EQ(poly_system.crs_val[6 ], poly_graph.J(1, 2)   );
-   EXPECT_DOUBLE_EQ(poly_system.crs_val[7 ], poly_graph.J(0, 1, 2));
-   EXPECT_DOUBLE_EQ(poly_system.crs_val[8 ], poly_graph.J(0, 2)   );
-   EXPECT_DOUBLE_EQ(poly_system.crs_val[9 ], poly_graph.J(0, 1, 2));
-   EXPECT_DOUBLE_EQ(poly_system.crs_val[10], poly_graph.J(1, 2)   );
-   EXPECT_DOUBLE_EQ(poly_system.crs_val[11], poly_graph.J(0, 1, 2));
+   EXPECT_DOUBLE_EQ(poly_system.get_crs_val()[0 ], poly_graph.J(0, 1)   );
+   EXPECT_DOUBLE_EQ(poly_system.get_crs_val()[1 ], poly_graph.J(0, 1, 2));
+   EXPECT_DOUBLE_EQ(poly_system.get_crs_val()[2 ], poly_graph.J(0, 2)   );
+   EXPECT_DOUBLE_EQ(poly_system.get_crs_val()[3 ], poly_graph.J(0, 1, 2));
+   EXPECT_DOUBLE_EQ(poly_system.get_crs_val()[4 ], poly_graph.J(0, 1)   );
+   EXPECT_DOUBLE_EQ(poly_system.get_crs_val()[5 ], poly_graph.J(0, 1, 2));
+   EXPECT_DOUBLE_EQ(poly_system.get_crs_val()[6 ], poly_graph.J(1, 2)   );
+   EXPECT_DOUBLE_EQ(poly_system.get_crs_val()[7 ], poly_graph.J(0, 1, 2));
+   EXPECT_DOUBLE_EQ(poly_system.get_crs_val()[8 ], poly_graph.J(0, 2)   );
+   EXPECT_DOUBLE_EQ(poly_system.get_crs_val()[9 ], poly_graph.J(0, 1, 2));
+   EXPECT_DOUBLE_EQ(poly_system.get_crs_val()[10], poly_graph.J(1, 2)   );
+   EXPECT_DOUBLE_EQ(poly_system.get_crs_val()[11], poly_graph.J(0, 1, 2));
    
-   EXPECT_EQ(*poly_system.crs_zero_count_p[0 ], 1);
-   EXPECT_EQ(*poly_system.crs_zero_count_p[1 ], 1);
-   EXPECT_EQ(*poly_system.crs_zero_count_p[2 ], 0);
-   EXPECT_EQ(*poly_system.crs_zero_count_p[3 ], 1);
-   EXPECT_EQ(*poly_system.crs_zero_count_p[4 ], 1);
-   EXPECT_EQ(*poly_system.crs_zero_count_p[5 ], 1);
-   EXPECT_EQ(*poly_system.crs_zero_count_p[6 ], 1);
-   EXPECT_EQ(*poly_system.crs_zero_count_p[7 ], 1);
-   EXPECT_EQ(*poly_system.crs_zero_count_p[8 ], 0);
-   EXPECT_EQ(*poly_system.crs_zero_count_p[9 ], 1);
-   EXPECT_EQ(*poly_system.crs_zero_count_p[10], 1);
-   EXPECT_EQ(*poly_system.crs_zero_count_p[11], 1);
+   EXPECT_EQ(*poly_system.get_crs_zero_count_p()[0 ], 1);
+   EXPECT_EQ(*poly_system.get_crs_zero_count_p()[1 ], 1);
+   EXPECT_EQ(*poly_system.get_crs_zero_count_p()[2 ], 0);
+   EXPECT_EQ(*poly_system.get_crs_zero_count_p()[3 ], 1);
+   EXPECT_EQ(*poly_system.get_crs_zero_count_p()[4 ], 1);
+   EXPECT_EQ(*poly_system.get_crs_zero_count_p()[5 ], 1);
+   EXPECT_EQ(*poly_system.get_crs_zero_count_p()[6 ], 1);
+   EXPECT_EQ(*poly_system.get_crs_zero_count_p()[7 ], 1);
+   EXPECT_EQ(*poly_system.get_crs_zero_count_p()[8 ], 0);
+   EXPECT_EQ(*poly_system.get_crs_zero_count_p()[9 ], 1);
+   EXPECT_EQ(*poly_system.get_crs_zero_count_p()[10], 1);
+   EXPECT_EQ(*poly_system.get_crs_zero_count_p()[11], 1);
 
    //Check vartype
    EXPECT_FALSE(poly_system.get_vartype() == cimod::Vartype::SPIN);
    
    //Check variables for binary
-   EXPECT_EQ(poly_system.crs_sign_p.size(), 0);
+   EXPECT_EQ(poly_system.get_crs_sign_p().size(), 0);
    
 }
 
-TEST(PolyUpdater, CompareQuadratic1) {
+TEST(PolyUpdater, FromCimodCompareQuadratic2) {
    
    //Check the polynomial updater work properly by comparing the result of the quadratic updater
    const int seed = 1;
+   const int system_size = 9;
    
    //generate classical sparse system
-   const auto interaction = generate_interaction<openjij::graph::Sparse<double>>();
-   auto       engine_for_spin = std::mt19937(seed);
+   auto engin_for_interaction = std::mt19937(seed);
+   auto urd = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
+   auto interaction = openjij::graph::Sparse<double>(system_size);
+   for (int i = 0; i < system_size; ++i) {
+      for (int j = i + 1; j < system_size; ++j) {
+         interaction.J(i,j) = urd(engin_for_interaction);
+      }
+   }
+   auto engine_for_spin = std::mt19937(seed);
    const auto spin = interaction.gen_spin(engine_for_spin);
-   auto       classical_ising = openjij::system::make_classical_ising(spin, interaction);
-   
+   auto classical_ising = openjij::system::make_classical_ising(spin, interaction);
    auto random_numder_engine = std::mt19937(seed);
    const auto schedule_list = generate_schedule_list();
-
    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising, random_numder_engine, schedule_list);
-   
    const auto result_spin = openjij::result::get_solution(classical_ising);
    
    //generate classical polynomial system
-   auto       interaction_poly = generate_interaction<openjij::graph::Polynomial<double>>();
-   auto       engine_for_spin_poly = std::mt19937(seed);
-   const auto spin_poly = interaction.gen_spin(engine_for_spin_poly);
-   auto       classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, interaction_poly);
-   
+   auto engin_for_interaction_poly = std::mt19937(seed);
+   auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
+   auto bpm = cimod::BinaryPolynomialModel<openjij::graph::Index, double>({}, cimod::Vartype::SPIN);
+   for (int i = 0; i < system_size; ++i) {
+      for (int j = i + 1; j < system_size; ++j) {
+         bpm.add_interaction({std::size_t(i), std::size_t(j)}, urd_poly(engin_for_interaction_poly));
+      }
+   }
+   auto engine_for_spin_poly = std::mt19937(seed);
+   const auto spin_poly = openjij::graph::Graph(system_size).gen_spin(engine_for_spin_poly);
+   auto classical_ising_poly = openjij::system::make_classical_ising_polynomial(spin_poly, bpm.to_serializable());
    auto random_numder_engine_poly = std::mt19937(seed);
    const auto schedule_list_poly = generate_schedule_list();
-   
    openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_poly, random_numder_engine_poly, schedule_list_poly);
-   
    const auto result_spin_poly = openjij::result::get_solution(classical_ising_poly);
    
    //Check both equal
@@ -901,9 +901,8 @@ TEST(PolyUpdater, CompareQuadratic1) {
    for (std::size_t i = 0; i < result_spin_poly.size(); ++i) {
       EXPECT_EQ(result_spin_poly[i], result_spin[i]);
    }
+   EXPECT_DOUBLE_EQ(bpm.energy(result_spin_poly), interaction.calc_energy(result_spin));
    
-   EXPECT_DOUBLE_EQ(interaction_poly.calc_energy(result_spin_poly), interaction.calc_energy(result_spin));
-    
 }
 
 TEST(PolyUpdater, CompareQuadratic2) {
@@ -932,7 +931,7 @@ TEST(PolyUpdater, CompareQuadratic2) {
    //generate classical polynomial system
    auto engin_for_interaction_poly = std::mt19937(seed);
    auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
-   auto interaction_poly = openjij::graph::Polynomial<double>(system_size);
+   auto interaction_poly = openjij::graph::Polynomial<double>(system_size, cimod::Vartype::SPIN);
    for (int i = 0; i < system_size; ++i) {
       for (int j = i + 1; j < system_size; ++j) {
          interaction_poly.J(i,j) = urd_poly(engin_for_interaction_poly);
@@ -964,7 +963,7 @@ TEST(PolyUpdater, PolynomialFullyConnectedSpin) {
    //generate classical polynomial system
    auto engin_for_interaction_poly = std::mt19937(seed);
    auto urd_poly = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
-   auto interaction_poly = openjij::graph::Polynomial<double>(system_size);
+   auto interaction_poly = openjij::graph::Polynomial<double>(system_size, cimod::Vartype::SPIN);
    std::vector<openjij::graph::Index> temp_vec(system_size);
    for (int i = 0; i < system_size; ++i) {
       temp_vec[i] = i;
@@ -995,7 +994,7 @@ TEST(PolyUpdater, PolynomialZeroInteractions) {
    const int system_size = 4;
    
    //generate classical polynomial system
-   auto interaction_poly = openjij::graph::Polynomial<double>(system_size);
+   auto interaction_poly = openjij::graph::Polynomial<double>(system_size, cimod::Vartype::SPIN);
    interaction_poly.J({0,1,2}) = 0.0;
    interaction_poly.J({0,1,2,3}) = 1.0;
    auto engine_for_spin_poly = std::mt19937(seed);
@@ -1065,7 +1064,7 @@ TEST(PolyUpdater, PolynomialFullyConnectedSpinToBinary) {
       interaction_spin.J(it) = urd_poly(engin_for_interaction_spin);
    }
    
-   for (const auto &it: PolynomialSpinToBinary<double>(interaction_spin.get_interactions())) {
+   for (const auto &it: PolynomialSpinToBinary<double>(interaction_spin.get_polynomial())) {
       interaction_binary.J(it.first) = it.second;
    }
 
@@ -1109,7 +1108,7 @@ TEST(PolyUpdater, PolynomialFullyConnectedBinaryToSpin) {
       interaction_binary.J(it) = urd_poly(engin_for_interaction_binary);
    }
    
-   for (const auto &it: PolynomialBinaryToSpin<double>(interaction_binary.get_interactions())) {
+   for (const auto &it: PolynomialBinaryToSpin<double>(interaction_binary.get_polynomial())) {
       interaction_spin.J(it.first) = it.second;
    }
 
@@ -1365,7 +1364,6 @@ TEST(GPU, FindTrueGroundState_ChimeraTransverseGPU) {
     }
 
     auto chimera_quantum_gpu = system::make_chimera_transverse_gpu<1,1,1>(init_trotter_spins, interaction, 1.0); 
-    auto& info = chimera_quantum_gpu.info;
 
     auto random_number_engine = utility::cuda::CurandWrapper<float, CURAND_RNG_PSEUDO_XORWOW>(12356);
 
