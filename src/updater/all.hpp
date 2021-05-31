@@ -1,4 +1,4 @@
-//    Copyright 2019 Jij Inc.
+//    Copyright 2021 Jij Inc.
 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 #include <utility/disable_eigen_warning.hpp>
 
 #include <updater/single_spin_flip.hpp>
+#include <updater/k_local.hpp>
 #include <updater/swendsen_wang.hpp>
 #include <updater/continuous_time_swendsen_wang.hpp>
 
