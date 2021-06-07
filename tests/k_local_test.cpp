@@ -53,11 +53,18 @@ TEST(KLocal, Constructor) {
    const int seed = 1;
    
    auto random_numder_engine = std::mt19937(seed);
-   const auto schedule_list = generate_schedule_list(100, 10);
+   const auto schedule_list = generate_schedule_list(100, 1);
    
    openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
-      
-   poly_system.PrintInfo();
+   
+   //openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
+
+   //poly_system.PrintInfo();
+   
+   const auto result_spin_poly = openjij::result::get_solution(poly_system);
+   for (std::size_t i = 0; i < result_spin_poly.size(); ++i) {
+      printf("spin[%ld]=%d\n", i , result_spin_poly[i]);
+   }
    
    
 }

@@ -64,6 +64,9 @@ struct KLocal<system::KLocalPolynomial<GraphType>> {
          const auto dE = system.dE_single(index);
          if (dE <= 0 || std::exp(-parameter.beta*dE) > urd(random_number_engine)) {
             system.update_system(index);
+            //system.spin[index] = -system.spin[index] + 1, system.SetAdjacency(), system.reset_dE();
+            printf("################################\n");
+            system.PrintInfo();
          }
       }
        

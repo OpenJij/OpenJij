@@ -135,8 +135,10 @@ public:
    }
    
    void reset_dE() {
-      dE_binary.resize(num_spins);
+      dE_binary.clear();
       dE_interactions.clear();
+      to_be_updated_index.clear();
+      dE_binary.resize(num_spins);
       to_be_updated_index.resize(num_interactions_);
       
       std::vector<std::unordered_set<graph::Index>> poly_key_set(num_interactions_);
@@ -197,6 +199,23 @@ public:
       }
    }
    
+   void SetAdjacency() {
+      adjacency_key_.clear();
+      binary_zero_count_poly_.clear();
+      adjacency_key_.resize(num_spins);
+      binary_zero_count_poly_.resize(num_interactions_);
+      for (int64_t i = 0; i < num_interactions_; ++i) {
+         int64_t zero_count = 0;
+         for (const auto &index: poly_key_list_[i]) {
+            adjacency_key_[index].push_back(i);
+            if (spin[index] == 0) {
+               zero_count++;
+            }
+         }
+         binary_zero_count_poly_[i] = zero_count;
+      }
+   }
+   
    FloatType dE_k_local(const std::size_t index_key) const {
       FloatType dE_out = 0.0;
       for (std::size_t i = 0; i < poly_key_list_[index_key].size(); ++i) {
@@ -216,8 +235,9 @@ public:
          FloatType val = poly_value_list_[index_interaction];
          for (const auto &include_index_binary: poly_key_list_[index_interaction]) {
             graph::Binary y          = spin[include_index_binary];
-            int64_t       zero_count = binary_zero_count_poly_[include_index_binary];
+            int64_t       zero_count = binary_zero_count_poly_[index_interaction];
             dE_binary[include_index_binary] += Sign(x + y)*val*ZeroOrOne(x, y, zero_count);
+            printf("ddE[%ld] for %lld id %d\n",include_index_binary, index_interaction, ZeroOrOne(x, y, zero_count));
             if (x == 0) {
                dE_interactions[std::vector<graph::Index>{include_index_binary}] = 0.0;
             }
@@ -226,8 +246,6 @@ public:
             }
          }
          
-   
-   
          //x will be updated to 0
          for (const auto &key: to_be_updated_index[index_interaction]) {
             graph::Binary y          = spin[key.back()];
@@ -245,13 +263,13 @@ public:
       if (x == 0) {
          spin[index_binary] = 1;
          for (const auto &index_interaction: adjacency_key_[index_binary]) {
-            binary_zero_count_poly_[index_interaction]++;
+            binary_zero_count_poly_[index_interaction]--;
          }
       }
       else if (x == 1) {
          spin[index_binary] = 0;
          for (const auto &index_interaction: adjacency_key_[index_binary]) {
-            binary_zero_count_poly_[index_interaction]--;
+            binary_zero_count_poly_[index_interaction]++;
          }
       }
       else {
@@ -341,21 +359,6 @@ private:
    
    //! @brief The list of the values of the polynomial interactions (namely, the list of values of the polynomial interactions as std::unordered_map) as std::vector.
    cimod::PolynomialValueList<FloatType>  poly_value_list_;
-   
-   void SetAdjacency() {
-      adjacency_key_.resize(num_spins);
-      binary_zero_count_poly_.resize(num_interactions_);
-      for (int64_t i = 0; i < num_interactions_; ++i) {
-         int64_t zero_count = 0;
-         for (const auto &index: poly_key_list_[i]) {
-            adjacency_key_[index].push_back(i);
-            if (spin[index] == 0) {
-               zero_count++;
-            }
-         }
-         binary_zero_count_poly_[i] = zero_count;
-      }
-   }
    
    //! @brief Return -1 or +1 in accordance with the input binary
    //! @param binary graph::Binary
