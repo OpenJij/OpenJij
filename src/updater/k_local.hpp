@@ -43,21 +43,20 @@ struct KLocal<system::KLocalPolynomial<GraphType>> {
       
       auto urd = std::uniform_real_distribution<>(0, 1.0);
       
-      /*
+      
       //Here, we check if the binary variables associated with specified interactions should be all 1.
       for (std::size_t index = 0; index < system.GetNumInteractions(); ++index) {
         const auto dE = system.dE_k_local(index);
-         if (system.GetPolyKey(index).size() > 1 && (dE <= 0 || std::exp(-parameter.beta*dE) > urd(random_number_engine))) {
+         if (system.IncludeBinaryWithZero(index) && (dE <= 0 || std::exp(-parameter.beta*dE) > urd(random_number_engine))) {
             for (const auto &index: system.GetPolyKey(index)) {
-               if (system.spin[index] == 0) {
-                  system.update_system(index);
-               }
+               system.update_dE_interactions(index);
+               system.spin[index] = 1;
             }
          }
       }
-      */
       
       
+      /*
       //Here, we implement traditional single spin flip
       //TO DO: Move to the single spin flip updater after performance check
       for (std::size_t index = 0; index < system.num_spins; ++index) {
@@ -69,7 +68,7 @@ struct KLocal<system::KLocalPolynomial<GraphType>> {
             system.PrintInfo();
          }
       }
-       
+       */
    
    }
    

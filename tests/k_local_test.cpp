@@ -63,9 +63,73 @@ TEST(KLocal, Constructor) {
    
    const auto result_spin_poly = openjij::result::get_solution(poly_system);
    for (std::size_t i = 0; i < result_spin_poly.size(); ++i) {
-      printf("spin[%ld]=%d\n", i , result_spin_poly[i]);
+      printf("Result_spin[%ld]=%d\n", i , result_spin_poly[i]);
    }
    
+   
+}
+
+TEST(KLocal, test1) {
+   
+   openjij::graph::Index num_spins = 10;
+   openjij::graph::Polynomial<double> poly_graph(num_spins, cimod::Vartype::BINARY);
+   
+   poly_graph.J({0,1,2,3,4,5,6,7,8,9}) = -1;
+   
+   openjij::graph::Spins spin = {1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
+   
+   auto poly_system = openjij::system::make_k_local_polynomial(spin, poly_graph);
+   
+   //poly_system.PrintInfo();
+   
+   const int seed = 1;
+   
+   auto random_numder_engine = std::mt19937(seed);
+   const auto schedule_list = generate_schedule_list(100, 1);
+   
+   openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
+   
+   //openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
+
+   //poly_system.PrintInfo();
+   
+   const auto result_spin_poly = openjij::result::get_solution(poly_system);
+   for (std::size_t i = 0; i < result_spin_poly.size(); ++i) {
+      printf("Result_spin[%ld]=%d\n", i , result_spin_poly[i]);
+   }
+   
+}
+
+TEST(KLocal, test2) {
+   
+   openjij::graph::Index num_spins = 3;
+   openjij::graph::Polynomial<double> poly_graph(num_spins, cimod::Vartype::BINARY);
+   
+   poly_graph.J({0,1,2}) = +1;
+   //poly_graph.J({0,2}) = -2;
+
+   
+   openjij::graph::Spins spin = {0, 0, 0};
+   
+   auto poly_system = openjij::system::make_k_local_polynomial(spin, poly_graph);
+   
+   poly_system.PrintInfo();
+   
+   const int seed = 1;
+   
+   auto random_numder_engine = std::mt19937(seed);
+   const auto schedule_list = generate_schedule_list(100, 10);
+   
+   openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
+   
+   //openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
+
+   //poly_system.PrintInfo();
+   
+   const auto result_spin_poly = openjij::result::get_solution(poly_system);
+   for (std::size_t i = 0; i < result_spin_poly.size(); ++i) {
+      printf("Result_spin[%ld]=%d\n", i , result_spin_poly[i]);
+   }
    
 }
 

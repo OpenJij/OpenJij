@@ -65,8 +65,8 @@ public:
       }
       
       SetAdjacency();
-      reset_dE();
-      
+      //reset_dE();
+      reset_dE_interactions();
    }
    
    
@@ -98,8 +98,8 @@ public:
       }
       
       SetAdjacency();
-      reset_dE();
-      
+      //reset_dE();
+      reset_dE_interactions();
    }
    
    int64_t GetNumInteractions() const {
@@ -107,7 +107,7 @@ public:
    }
    
    const std::vector<std::vector<int64_t>> &GetAdjacency() const {
-      return adjacency_key_;
+      return adj_key_;
    }
    
    const std::vector<int64_t> &GetZeroCount() const {
@@ -115,7 +115,7 @@ public:
    }
    
    const std::vector<std::vector<std::vector<graph::Index>>> &GetUpdatedIndex() const {
-      return to_be_updated_index;
+      return adj_dE_;
    }
    
    const cimod::PolynomialKeyList<graph::Index> &GetPolyKeyList() const {
@@ -133,13 +133,69 @@ public:
    inline const std::vector<std::size_t> &GetKey(const std::size_t index) const {
       return poly_key_list_[index];
    }
+      
+   inline bool IncludeBinaryWithZero(const std::size_t index_interaction) const {
+      if (num_binary_with_one_[index_interaction] == poly_key_list_[index_interaction].size()) {
+         return false;
+      }
+      else {
+         return true;
+      }
+   }
+   
+   void reset_dE_interactions() {
+      dE_interactions_.clear();
+      adj_dE_.clear();
+      adj_dE_.resize(num_interactions_);
+      
+      std::vector<std::unordered_set<graph::Index>> poly_key_set(num_interactions_);
+#pragma omp parallel for
+      for (int64_t i = 0; i < num_interactions_; ++i) {
+         poly_key_set[i] = std::unordered_set<graph::Index>(poly_key_list_[i].begin(), poly_key_list_[i].end());
+      }
+      
+      for (const auto &key: poly_key_list_) {
+                  
+         for (std::size_t i = 0; i < key.size(); ++i) {
+            std::vector<graph::Index> exclude_key;
+            const auto index_dE = std::vector<graph::Index>(key.begin(), key.begin() + i + 1);
+            if (dE_interactions_.count(index_dE) == 0) {
+               FloatType temp_energy = 0.0;
+               if (spin[index_dE.back()] == 0) {
+                  for (const auto &index_key: adj_key_[index_dE.back()]) {
+                     bool flag_exclude = true;
+                     for (const auto &index_exclude_key: exclude_key) {
+                        if (poly_key_set[index_key].count(index_exclude_key) != 0) {
+                           flag_exclude = false;
+                           break;
+                        }
+                     }
+                     
+                     printf("size - 1: %ld <-> %ld :one_count\n", poly_key_list_[index_key].size() - 1, num_binary_with_one_[index_key]);
+                     
+                     if (flag_exclude && (poly_key_list_[index_key].size() - 1 == num_binary_with_one_[index_key])) {
+                        temp_energy += poly_value_list_[index_key];
+                        printf("≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈\n");
+                     }
+                     if (flag_exclude) {
+                        adj_dE_[index_key].push_back(index_dE);
+                     }
+                  }
+               }
+               
+               dE_interactions_[index_dE] = temp_energy;
+            }
+            exclude_key.push_back(index_dE.back());
+         }
+      }
+   }
    
    void reset_dE() {
-      dE_binary.clear();
-      dE_interactions.clear();
-      to_be_updated_index.clear();
-      dE_binary.resize(num_spins);
-      to_be_updated_index.resize(num_interactions_);
+      dE_binary_.clear();
+      dE_interactions_.clear();
+      adj_dE_.clear();
+      dE_binary_.resize(num_spins);
+      adj_dE_.resize(num_interactions_);
       
       std::vector<std::unordered_set<graph::Index>> poly_key_set(num_interactions_);
 #pragma omp parallel for
@@ -152,15 +208,15 @@ public:
          FloatType temp_energy = 0.0;
          const auto temp_spin = spin[i];
          const auto sign = Sign(temp_spin);
-         for (const auto &adj_interaction_index: adjacency_key_[i]) {
+         for (const auto &adj_interaction_index: adj_key_[i]) {
             temp_energy += sign*poly_value_list_[adj_interaction_index]*ZeroOrOne(temp_spin, binary_zero_count_poly_[adj_interaction_index]);
          }
-         dE_binary[i] = temp_energy;
+         dE_binary_[i] = temp_energy;
          if (temp_spin == 0) {
-            dE_interactions[std::vector<graph::Index>{i}] = temp_energy;
+            dE_interactions_[std::vector<graph::Index>{i}] = temp_energy;
          }
          else {
-            dE_interactions[std::vector<graph::Index>{i}] = 0.0;
+            dE_interactions_[std::vector<graph::Index>{i}] = 0.0;
          }
       }
       
@@ -171,9 +227,9 @@ public:
             const auto include_index = poly_key_list_[i][j];
             const auto temp_spin = spin[include_index];
             const auto key = std::vector<graph::Index>(poly_key_list_[i].begin(), std::next(poly_key_list_[i].begin(), j + 1));
-            if (dE_interactions.count(key) == 0) {
+            if (dE_interactions_.count(key) == 0) {
                FloatType temp_energy = 0.0;
-               for (const auto &adj_interaction_index: adjacency_key_[include_index]) {
+               for (const auto &adj_interaction_index: adj_key_[include_index]) {
                   bool flag_exclude = true;
                   for (const auto &exclude_index: exclude_key) {
                      if (poly_key_set[adj_interaction_index].count(exclude_index) != 0) {
@@ -183,15 +239,16 @@ public:
                   }
                   if (flag_exclude) {
                      temp_energy += poly_value_list_[adj_interaction_index]*Sign(temp_spin)*ZeroOrOne(temp_spin, binary_zero_count_poly_[adj_interaction_index]);
-                     to_be_updated_index[adj_interaction_index].push_back(key);
+                     adj_dE_[adj_interaction_index].push_back(key);
                   }
                }
                
                if (temp_spin == 0) {
-                  dE_interactions[key] = temp_energy;
+                  printf("%lf\n", temp_energy);
+                  dE_interactions_[key] = temp_energy;
                }
                else {
-                  dE_interactions[key] = 0.0;
+                  dE_interactions_[key] = 0.0;
                }
             }
             exclude_key.push_back(include_index);
@@ -200,19 +257,26 @@ public:
    }
    
    void SetAdjacency() {
-      adjacency_key_.clear();
+      adj_key_.clear();
       binary_zero_count_poly_.clear();
-      adjacency_key_.resize(num_spins);
+      num_binary_with_one_.clear();
+      adj_key_.resize(num_spins);
       binary_zero_count_poly_.resize(num_interactions_);
+      num_binary_with_one_.resize(num_interactions_);
       for (int64_t i = 0; i < num_interactions_; ++i) {
          int64_t zero_count = 0;
+         int64_t one_count  = 0;
          for (const auto &index: poly_key_list_[i]) {
-            adjacency_key_[index].push_back(i);
+            adj_key_[index].push_back(i);
             if (spin[index] == 0) {
                zero_count++;
             }
+            else {
+               one_count++;
+            }
          }
          binary_zero_count_poly_[i] = zero_count;
+         num_binary_with_one_[i] = one_count;
       }
    }
    
@@ -220,41 +284,72 @@ public:
       FloatType dE_out = 0.0;
       for (std::size_t i = 0; i < poly_key_list_[index_key].size(); ++i) {
          const auto key = std::vector<graph::Index>(poly_key_list_[index_key].begin(), std::next(poly_key_list_[index_key].begin(), i + 1));
-         dE_out += dE_interactions.at(key);
+         dE_out += dE_interactions_.at(key);
       }
       return dE_out;
    }
    
    inline FloatType dE_single(const std::size_t index_binary) const {
-      return dE_binary[index_binary];
+      return dE_binary_[index_binary];
+   }
+    
+   void update_dE_interactions(const std::size_t index_updated_binary) {
+      
+      if (spin[index_updated_binary] == 1) {
+         return;
+      }
+      
+      dE_interactions_[std::vector<graph::Index>{index_updated_binary}] = 0.0;
+      
+      for (const auto &index_key: adj_key_[index_updated_binary]) {
+         num_binary_with_one_[index_key]++;
+         const std::size_t size_key    = poly_key_list_[index_key].size();
+         const bool        flag_active = (size_key - 1 == num_binary_with_one_[index_key]);
+         const FloatType   val         = poly_value_list_[index_key];
+         if (size_key > 1 && flag_active) {
+            for (const auto &index_binary: poly_key_list_[index_key]) {
+               if (index_binary != index_updated_binary) {
+                  dE_interactions_[std::vector<graph::Index>{index_binary}] += val*(1 - spin[index_binary]);
+               }
+            }
+         }
+         
+         if (flag_active) {
+            for (const auto &index_dE: adj_dE_[index_key]) {
+               dE_interactions_[index_dE] += val*(1 - spin[index_dE.back()]);
+            }
+         }
+
+      }
+      
    }
    
    void update_system(const std::size_t index_binary) {
       graph::Binary x = spin[index_binary];
-      for (const auto &index_interaction: adjacency_key_[index_binary]) {
+      for (const auto &index_interaction: adj_key_[index_binary]) {
          FloatType val = poly_value_list_[index_interaction];
          for (const auto &include_index_binary: poly_key_list_[index_interaction]) {
             graph::Binary y          = spin[include_index_binary];
             int64_t       zero_count = binary_zero_count_poly_[index_interaction];
-            dE_binary[include_index_binary] += Sign(x + y)*val*ZeroOrOne(x, y, zero_count);
+            dE_binary_[include_index_binary] += Sign(x + y)*val*ZeroOrOne(x, y, zero_count);
             printf("ddE[%ld] for %lld id %d\n",include_index_binary, index_interaction, ZeroOrOne(x, y, zero_count));
             if (x == 0) {
-               dE_interactions[std::vector<graph::Index>{include_index_binary}] = 0.0;
+               dE_interactions_[std::vector<graph::Index>{include_index_binary}] = 0.0;
             }
             else {
-               dE_interactions[std::vector<graph::Index>{include_index_binary}] += Sign(x + y)*val*ZeroOrOne(x, y, zero_count);
+               dE_interactions_[std::vector<graph::Index>{include_index_binary}] += Sign(x + y)*val*ZeroOrOne(x, y, zero_count);
             }
          }
          
          //x will be updated to 0
-         for (const auto &key: to_be_updated_index[index_interaction]) {
+         for (const auto &key: adj_dE_[index_interaction]) {
             graph::Binary y          = spin[key.back()];
             int64_t       zero_count = binary_zero_count_poly_[key.back()];
             if (y == 0) {
-               dE_interactions[key] += Sign(x + y)*val*ZeroOrOne(x, y, zero_count);
+               dE_interactions_[key] += Sign(x + y)*val*ZeroOrOne(x, y, zero_count);
             }
             else {
-               dE_interactions[key]  = 0.0;
+               dE_interactions_[key]  = 0.0;
             }
          }
 
@@ -262,13 +357,13 @@ public:
 
       if (x == 0) {
          spin[index_binary] = 1;
-         for (const auto &index_interaction: adjacency_key_[index_binary]) {
+         for (const auto &index_interaction: adj_key_[index_binary]) {
             binary_zero_count_poly_[index_interaction]--;
          }
       }
       else if (x == 1) {
          spin[index_binary] = 0;
-         for (const auto &index_interaction: adjacency_key_[index_binary]) {
+         for (const auto &index_interaction: adj_key_[index_binary]) {
             binary_zero_count_poly_[index_interaction]++;
          }
       }
@@ -293,9 +388,9 @@ public:
          printf("Spin[%ld]=%d\n", i, spin[i]);
       }
       
-      for (std::size_t i = 0; i < adjacency_key_.size(); ++i) {
-         for (std::size_t j = 0; j < adjacency_key_[i].size(); ++j) {
-            printf("Adj[%ld][%ld]=%lld\n", i, j, adjacency_key_[i][j]);
+      for (std::size_t i = 0; i < adj_key_.size(); ++i) {
+         for (std::size_t j = 0; j < adj_key_[i].size(); ++j) {
+            printf("Adj[%ld][%ld]=%lld\n", i, j, adj_key_[i][j]);
          }
       }
       
@@ -303,17 +398,17 @@ public:
          printf("ZeroCount[%ld]=%lld\n", i, binary_zero_count_poly_[i]);
       }
       
-      for (std::size_t i = 0; i < to_be_updated_index.size(); ++i) {
+      for (std::size_t i = 0; i < adj_dE_.size(); ++i) {
          printf("ToBeUpdatedIndex[%ld]=\n", i);
-         for (std::size_t j = 0; j < to_be_updated_index[i].size(); ++j) {
-            for (std::size_t k = 0; k < to_be_updated_index[i][j].size(); ++k) {
-               printf("%ld,", to_be_updated_index[i][j][k]);
+         for (std::size_t j = 0; j < adj_dE_[i].size(); ++j) {
+            for (std::size_t k = 0; k < adj_dE_[i][j].size(); ++k) {
+               printf("%ld,", adj_dE_[i][j][k]);
             }
             printf("\n");
          }
       }
       
-      for (const auto &it: dE_interactions) {
+      for (const auto &it: dE_interactions_) {
          printf("dE_inter[");
          for (const auto &vec: it.first) {
             printf("%ld,", vec);
@@ -321,8 +416,8 @@ public:
          printf("]=%lf\n", it.second);
       }
       
-      for (std::size_t i = 0; i < dE_binary.size(); ++i) {
-         printf("dE_binary[%ld]=%lf\n", i, dE_binary[i]);
+      for (std::size_t i = 0; i < dE_binary_.size(); ++i) {
+         printf("dE_binary_[%ld]=%lf\n", i, dE_binary_[i]);
       }
       
    }
@@ -341,18 +436,20 @@ private:
 
    
    //! @brief Store the information about the energy difference when flipping a spin/binary
-   std::unordered_map<std::vector<graph::Index>, FloatType, cimod::vector_hash> dE_interactions;
+   std::unordered_map<std::vector<graph::Index>, FloatType, cimod::vector_hash> dE_interactions_;
    
-   std::vector<FloatType> dE_binary;
+   std::vector<FloatType> dE_binary_;
    
    //! @brief The number of the interactions
    int64_t num_interactions_;
    
-   std::vector<std::vector<int64_t>> adjacency_key_;
+   std::vector<std::vector<int64_t>> adj_key_;
       
    std::vector<int64_t> binary_zero_count_poly_;
    
-   std::vector<std::vector<std::vector<graph::Index>>> to_be_updated_index;
+   std::vector<int64_t> num_binary_with_one_;
+   
+   std::vector<std::vector<std::vector<graph::Index>>> adj_dE_;
       
    //! @brief The list of the indices of the polynomial interactions (namely, the list of keys of the polynomial interactions as std::unordered_map) as std::vector<std::vector>>.
    cimod::PolynomialKeyList<graph::Index> poly_key_list_;
