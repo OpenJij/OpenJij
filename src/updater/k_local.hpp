@@ -43,32 +43,18 @@ struct KLocal<system::KLocalPolynomial<GraphType>> {
       
       auto urd = std::uniform_real_distribution<>(0, 1.0);
       
-      
-      //Here, we check if the binary variables associated with specified interactions should be all 1.
-      for (std::size_t index = 0; index < system.GetNumInteractions(); ++index) {
-        const auto dE = system.dE_k_local(index);
-         if (system.IncludeBinaryWithZero(index) && (dE <= 0 || std::exp(-parameter.beta*dE) > urd(random_number_engine))) {
-            for (const auto &index: system.GetPolyKey(index)) {
-               system.update_dE_interactions(index);
-               system.spin[index] = 1;
-            }
-         }
-      }
-      
-      
-      /*
-      //Here, we implement traditional single spin flip
-      //TO DO: Move to the single spin flip updater after performance check
-      for (std::size_t index = 0; index < system.num_spins; ++index) {
-         const auto dE = system.dE_single(index);
+      for (std::size_t index_binary = 0; index_binary < system.num_spins; ++index_binary) {
+         const auto dE = system.dE_single(index_binary);
          if (dE <= 0 || std::exp(-parameter.beta*dE) > urd(random_number_engine)) {
-            system.update_system(index);
-            //system.spin[index] = -system.spin[index] + 1, system.SetAdjacency(), system.reset_dE();
-            printf("################################\n");
-            system.PrintInfo();
+            system.update_system_single(index_binary);
+            
+            //system.spin[index_binary] = 1 - system.spin[index_binary];
+            //system.reset_spins(system.spin);
+            
          }
       }
-       */
+      
+
    
    }
    

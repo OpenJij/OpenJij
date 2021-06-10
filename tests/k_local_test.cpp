@@ -31,7 +31,7 @@ static openjij::utility::ClassicalScheduleList generate_schedule_list(double bet
    return list;
 }
 
-TEST(KLocal, Constructor) {
+TEST(KLocal, test0) {
    
    openjij::graph::Index num_spins = 3;
    openjij::graph::Polynomial<double> poly_graph(num_spins, cimod::Vartype::BINARY);
@@ -44,19 +44,22 @@ TEST(KLocal, Constructor) {
    poly_graph.J( {1, 2}  ) = -1;//5
    poly_graph.J(   {2}   ) = -1;//6
    
-   openjij::graph::Spins spin = {1, 0, 1};
+   openjij::graph::Spins spin = {0, 0, 1};
    
    auto poly_system = openjij::system::make_k_local_polynomial(spin, poly_graph);
    
-   poly_system.PrintInfo();
+//   poly_system.PrintInfo();
    
    const int seed = 1;
    
    auto random_numder_engine = std::mt19937(seed);
    const auto schedule_list = generate_schedule_list(100, 1);
-   
+   poly_system.print_adj();
+   poly_system.print_dE();
+   poly_system.print_zero_count();
    openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
-   
+   poly_system.print_dE();
+   poly_system.print_zero_count();
    //openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
 
    //poly_system.PrintInfo();
@@ -68,7 +71,7 @@ TEST(KLocal, Constructor) {
    
    
 }
-
+/*
 TEST(KLocal, test1) {
    
    openjij::graph::Index num_spins = 10;
@@ -113,7 +116,7 @@ TEST(KLocal, test2) {
    
    auto poly_system = openjij::system::make_k_local_polynomial(spin, poly_graph);
    
-   poly_system.PrintInfo();
+   //poly_system.PrintInfo();
    
    const int seed = 1;
    
@@ -132,4 +135,4 @@ TEST(KLocal, test2) {
    }
    
 }
-
+*/
