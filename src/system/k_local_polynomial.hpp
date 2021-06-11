@@ -99,14 +99,17 @@ public:
    }
    
    void reset_spins(const graph::Spins &init_spin) {
-      spin = init_spin;
+      spin    = init_spin;
+      spin_v_ = init_spin;
       ResetZeroCount();
       reset_dE();
    }
    
    void reset_dE() {
       dE_.clear();
+      dE_v_.clear();
       dE_.resize(num_spins);
+      dE_v_.resize(num_spins);
       
 #pragma omp parallel for
       for (int64_t index_binary = 0; index_binary < num_spins; ++index_binary) {
@@ -117,7 +120,8 @@ public:
                val += poly_value_list_[index_key];
             }
          }
-         dE_[index_binary] = (-2*binary + 1)*val;
+         dE_[index_binary]   = (-2*binary + 1)*val;
+         dE_v_[index_binary] = (-2*binary + 1)*val;
       }
    }
    
@@ -125,17 +129,67 @@ public:
       return dE_[index_binary];
    }
    
-   FloatType dE_k_local(const std::size_t index_key) const {
+   FloatType dE_k_local(const std::size_t index_key) {
       FloatType dE = 0.0;
       for (const auto &index_binary: poly_key_list_[index_key]) {
-         if (spin[index_binary] == 0) {
-            dE += dE_[index_binary];
-            
+         if (spin_v_[index_binary] == 0) {
+            dE += dE_v_[index_binary];
+            virtual_update_system_single(index_binary);
          }
-         
-         
       }
       return dE;
+   }
+   
+   void update_system_k_local() {
+      for (const auto &index_binary: update_index_binaries_v_) {
+         spin[index_binary] = spin_v_[index_binary];
+      }
+      for (const auto &index_zero_count: update_index_zero_count_v_) {
+         zero_count_[index_zero_count] = zero_count_v_[index_zero_count];
+      }
+      for (const auto &index_dE: update_index_dE_v_) {
+         dE_[index_dE] = dE_v_[index_dE];
+      }
+      update_index_binaries_v_.clear();
+      update_index_zero_count_v_.clear();
+      update_index_dE_v_.clear();
+   }
+   
+   void reset_virtual_system() {
+      for (const auto &index_binary: update_index_binaries_v_) {
+         spin_v_[index_binary] = spin[index_binary];
+      }
+      for (const auto &index_zero_count: update_index_zero_count_v_) {
+         zero_count_v_[index_zero_count] = zero_count_[index_zero_count];
+      }
+      for (const auto &index_dE: update_index_dE_v_) {
+         dE_v_[index_dE] = dE_[index_dE];
+      }
+      update_index_binaries_v_.clear();
+      update_index_zero_count_v_.clear();
+      update_index_dE_v_.clear();
+   }
+   
+   void virtual_update_system_single(const graph::Index index_update_binary) {
+      const graph::Binary update_binary = spin_v_[index_update_binary];
+      const int coeef = -2*update_binary + 1;
+      const int count = +2*update_binary - 1;
+      for (const auto &index_key: adj_[index_update_binary]) {
+         FloatType val = poly_value_list_[index_key];
+         for (const auto &index_binary: poly_key_list_[index_key]) {
+            const graph::Binary binary = spin_v_[index_binary];
+            if (zero_count_v_[index_key] + update_binary + binary == 2 && index_binary != index_update_binary) {
+               dE_v_[index_binary] += coeef*(-2*binary + 1)*val;
+               update_index_dE_v_.emplace(index_binary);
+            }
+         }
+         zero_count_v_[index_key] += count;
+         update_index_zero_count_v_.emplace(index_key);
+      }
+      dE_v_[index_update_binary] *= -1;
+      update_index_dE_v_.emplace(index_update_binary);
+      spin_v_[index_update_binary] = 1 - spin_v_[index_update_binary];
+      update_index_binaries_v_.push_back(index_update_binary);
    }
    
    void update_system_single(const graph::Index index_update_binary) {
@@ -147,13 +201,25 @@ public:
          for (const auto &index_binary: poly_key_list_[index_key]) {
             const graph::Binary binary = spin[index_binary];
             if (zero_count_[index_key] + update_binary + binary == 2 && index_binary != index_update_binary) {
-               dE_[index_binary] += coeef*(-2*binary + 1)*val;
+               dE_[index_binary]   += coeef*(-2*binary + 1)*val;
+               dE_v_[index_binary] += coeef*(-2*binary + 1)*val;
             }
          }
-         zero_count_[index_key] += count;
+         zero_count_[index_key]   += count;
+         zero_count_v_[index_key] += count;
       }
-      dE_[index_update_binary] *= -1;
-      spin[index_update_binary] = 1 - spin[index_update_binary];
+      dE_[index_update_binary]   *= -1;
+      dE_v_[index_update_binary] *= -1;
+      spin[index_update_binary]    = 1 - spin[index_update_binary];
+      spin_v_[index_update_binary] = 1 - spin_v_[index_update_binary];
+   }
+   
+   inline int64_t GetNumInteractions() const {
+      return num_interactions_;
+   }
+   
+   inline int64_t GetZeroCount(const std::size_t index_key) const {
+      return zero_count_[index_key];
    }
    
    void print_dE() const {
@@ -161,6 +227,8 @@ public:
          printf("dE[%2ld]=%+.15lf\n", i, dE_[i]);
       }
    }
+   
+   
    
    void print_zero_count() const {
       for (std::size_t i = 0; i < num_interactions_; ++i) {
@@ -189,13 +257,17 @@ private:
    
    std::vector<FloatType> dE_;
    
-   std::vector<FloatType> virtual_dE_;
+   std::vector<FloatType> dE_v_;
    
-   graph::Spins virtual_spin_;
+   graph::Spins spin_v_;
    
-   std::vector<std::size_t> virtual_update_count_;
+   std::unordered_set<std::size_t> update_index_dE_v_;
    
-   std::vector<int64_t> virtual_zero_count_;
+   std::unordered_set<std::size_t> update_index_zero_count_v_;
+   
+   std::vector<std::size_t> update_index_binaries_v_;
+      
+   std::vector<int64_t> zero_count_v_;
    
    std::vector<int64_t> zero_count_;
    
@@ -230,6 +302,7 @@ private:
    
    void ResetZeroCount() {
       zero_count_.resize(num_interactions_);
+      zero_count_v_.resize(num_interactions_);
 #pragma omp parallel for
       for (int64_t i = 0; i < num_interactions_; ++i) {
          int64_t zero_count = 0;
@@ -238,7 +311,8 @@ private:
                zero_count++;
             }
          }
-         zero_count_[i] = zero_count;
+         zero_count_[i]   = zero_count;
+         zero_count_v_[i] = zero_count;
       }
    }
    
