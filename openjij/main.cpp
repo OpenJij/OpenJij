@@ -65,6 +65,7 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_ClassicalIsing<graph::Dense<FloatType>>(m_system, "_Dense");
     ::declare_ClassicalIsing<graph::Sparse<FloatType>>(m_system, "_Sparse");
     ::declare_ClassicalIsingPolynomial<graph::Polynomial<FloatType>>(m_system, "_Polynomial");
+    ::declare_KLocalPolynomial<graph::Polynomial<FloatType>>(m_system, "_Polynomial");
 
     //TransverselIsing
     ::declare_TransverseIsing<graph::Dense<FloatType>>(m_system, "_Dense");
@@ -89,6 +90,7 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Dense<FloatType>>,    RandomEngine>(m_algorithm, "SingleSpinFlip");
     ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsing<graph::Sparse<FloatType>>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
     ::declare_Algorithm_run<updater::SingleSpinFlip, system::ClassicalIsingPolynomial<graph::Polynomial<FloatType>>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
+    ::declare_Algorithm_run<updater::KLocal, system::KLocalPolynomial<graph::Polynomial<FloatType>>, RandomEngine>(m_algorithm, "KLocal");
     ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Dense<FloatType>>,   RandomEngine>(m_algorithm, "SingleSpinFlip");
     ::declare_Algorithm_run<updater::SingleSpinFlip, system::TransverseIsing<graph::Sparse<FloatType>>,  RandomEngine>(m_algorithm, "SingleSpinFlip");
 

@@ -257,6 +257,32 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
 
 }
 
+template<typename GraphType>
+inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str) {
+   
+   using KLP = system::KLocalPolynomial<GraphType>;
+   auto  str = std::string("KLocal") + gtype_str;
+   
+   py::class_<KLP>(m, str.c_str())
+   .def(py::init<const graph::Spins&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
+   .def(py::init([](const graph::Spins& init_spins, const py::object& obj){return std::unique_ptr<KLP>(new KLP(init_spins, static_cast<nlohmann::json>(obj)));}),"init_spin"_a, "obj"_a)
+   .def_readonly("spins", &KLP::spin)
+   .def_readonly("num_spins", &KLP::num_spins);
+   
+   //make_classical_ising_polynomial
+   auto mkcip_str = std::string("make_k_local_polynomial");
+   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction){
+           return system::make_k_local_polynomial(init_spin, init_interaction);
+           }, "init_spin"_a, "init_interaction"_a);
+   
+   //make_classical_ising_polynomial
+   auto mkcip_json_str = std::string("make_k_local_polynomial");
+   m.def(mkcip_json_str.c_str(), [](const graph::Spins& init_spin, const py::object& obj){
+           return system::make_k_local_polynomial(init_spin, static_cast<nlohmann::json>(obj));
+           }, "init_spin"_a, "obj"_a);
+   
+}
+
 
 //TransverseIsing
 template<typename GraphType>

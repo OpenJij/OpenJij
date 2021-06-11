@@ -222,6 +222,10 @@ public:
       return zero_count_[index_key];
    }
    
+   cimod::Vartype get_vartype() const {
+      return vartype_;
+   }
+   
    void print_dE() const {
       for (std::size_t i = 0; i < dE_.size(); ++i) {
          printf("dE[%2ld]=%+.15lf\n", i, dE_[i]);
