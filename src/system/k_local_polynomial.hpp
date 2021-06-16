@@ -226,6 +226,10 @@ public:
       return poly_value_list_[index_key];
    }
    
+   inline const std::vector<graph::Index> &GetAdj(const std::size_t index_binary) const {
+      return adj_[index_binary];
+   }
+   
    cimod::Vartype get_vartype() const {
       return vartype_;
    }
@@ -235,8 +239,6 @@ public:
          printf("dE[%2ld]=%+.15lf\n", i, dE_[i]);
       }
    }
-   
-   
    
    void print_zero_count() const {
       for (std::size_t i = 0; i < num_interactions_; ++i) {
@@ -252,7 +254,7 @@ public:
       for (std::size_t i = 0; i < num_spins; ++i) {
          printf("adj[%ld]=", i);
          for (const auto &index_key: adj_[i]) {
-            printf("%ld, ", index_key);
+            printf("%ld(%+lf), ", index_key, poly_value_list_[index_key]);
          }
          printf("\n");
       }
@@ -305,6 +307,13 @@ private:
          for (const auto &index: poly_key_list_[i]) {
             adj_[index].push_back(i);
          }
+      }
+      
+      //sort
+      auto compare = [this](std::size_t i1, std::size_t i2) { return poly_value_list_[i1] < poly_value_list_[i2]; };
+#pragma omp parallel for
+      for (std::size_t i = 0; i < adj_.size(); ++i) {
+         std::sort(adj_[i].begin(), adj_[i].end(), compare);
       }
    }
    

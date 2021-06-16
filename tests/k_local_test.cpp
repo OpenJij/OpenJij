@@ -36,19 +36,19 @@ TEST(KLocal, test0) {
    openjij::graph::Index num_spins = 3;
    openjij::graph::Polynomial<double> poly_graph(num_spins, cimod::Vartype::BINARY);
    
-   poly_graph.J(   {0}   ) = -1;//0
+   poly_graph.J(   {0}   ) = -2;//0
    poly_graph.J( {0, 1}  ) = -1;//1
-   poly_graph.J( {0, 2}  ) = -1;//2
-   poly_graph.J({0, 1, 2}) = -1;//3
-   poly_graph.J(   {1}   ) = -1;//4
-   poly_graph.J( {1, 2}  ) = -1;//5
-   poly_graph.J(   {2}   ) = -1;//6
+   poly_graph.J( {0, 2}  ) = +1;//2
+   poly_graph.J({0, 1, 2}) = +3;//3
+   poly_graph.J(   {1}   ) = -2;//4
+   poly_graph.J( {1, 2}  ) = +1.5;//5
+   poly_graph.J(   {2}   ) = -6;//6
    
    openjij::graph::Spins spin = {0, 0, 1};
    
    auto poly_system = openjij::system::make_k_local_polynomial(spin, poly_graph);
    
-//   poly_system.PrintInfo();
+   poly_system.print_adj();
    
    const int seed = 1;
    
