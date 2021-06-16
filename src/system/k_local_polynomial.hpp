@@ -222,6 +222,10 @@ public:
       return zero_count_[index_key];
    }
    
+   inline FloatType GetPolyValue(const std::size_t index_key) const {
+      return poly_value_list_[index_key];
+   }
+   
    cimod::Vartype get_vartype() const {
       return vartype_;
    }

@@ -42,28 +42,31 @@ struct KLocal<system::KLocalPolynomial<GraphType>> {
                              ) {
       
       auto urd = std::uniform_real_distribution<>(0, 1.0);
-
-      for (std::size_t index_key = 0; index_key < system.GetNumInteractions(); ++index_key) {
-         if (system.GetZeroCount(index_key) != 0) {
-            const auto dE = system.dE_k_local(index_key);
-            if (dE <= 0 || std::exp(-parameter.beta*dE) > urd(random_number_engine)) {
-               system.update_system_k_local();
-            }
-            else {
-               system.reset_virtual_system();
+      static int64_t count = 0;
+      
+      if (count%10 == 0) {
+         for (std::size_t index_key = 0; index_key < system.GetNumInteractions(); ++index_key) {
+            if (system.GetZeroCount(index_key) != 0 && system.GetPolyValue(index_key) < 0) {
+               const auto dE = system.dE_k_local(index_key);
+               if (dE <= 0 || std::exp(-parameter.beta*dE) > urd(random_number_engine)) {
+                  system.update_system_k_local();
+               }
+               else {
+                  system.reset_virtual_system();
+               }
             }
          }
       }
       
       for (std::size_t index_binary = 0; index_binary < system.num_spins; ++index_binary) {
          const auto dE = system.dE_single(index_binary);
+         //if (dE == 0.0 ) {zero++;}
          if (dE <= 0 || std::exp(-parameter.beta*dE) > urd(random_number_engine)) {
             system.update_system_single(index_binary);
          }
       }
-      
-
-   
+      count++;
+       
    }
    
    

@@ -114,6 +114,7 @@ inline void declare_Polynomial(py::module& m, const std::string& suffix){
    .def(py::init([](const py::object& obj){return std::unique_ptr<graph::Polynomial<FloatType>>(new graph::Polynomial<FloatType>(static_cast<json>(obj)));}), "obj"_a)
    .def(py::init<const graph::Polynomial<FloatType>&>(), "other"_a)
    .def_property("vartype", &Poly::get_vartype, &Poly::set_vartype)
+   .def("get_num_interactions", &Poly::get_num_interactions)
    .def("calc_energy", &Poly::calc_energy, "spins"_a, "omp_flag"_a = true)
    .def("__setitem__"    , [](Poly& self, std::vector<graph::Index>& key, FloatType val){ self.J(key) += val;}, "key"_a, "val"_a)
    .def("__getitem__"    , [](const Poly& self, std::vector<graph::Index>& key){ return self.J(key); }, "key"_a)

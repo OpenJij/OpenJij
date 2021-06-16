@@ -236,6 +236,12 @@ public:
       return max_variable_;
    }
    
+   //! @brief Return the number of interactions
+   //! @return The number of interactions
+   std::size_t get_num_interactions() const {
+      return poly_key_list_.size();
+   }
+   
    //! @brief Return the total energy corresponding to the input variables, Spins or Binaries.
    //! @param spins const Spins& or const Binaries& (both are the same type)
    //! @param omp_flag if true OpenMP is enabled.
