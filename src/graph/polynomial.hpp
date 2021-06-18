@@ -119,7 +119,7 @@ public:
       std::sort(key.begin(), key.end());
       CheckKeyValid(key);
       if (poly_key_inv_.count(key) == 0) {
-         return 0;
+         return 0.0;
       }
       else {
          return poly_value_list_[poly_key_inv_.at(key)];
@@ -248,7 +248,6 @@ public:
       return energy(spins, omp_flag);
    }
    
-   
 private:
    //! @brief The list of the indices of the polynomial interactions (namely, the list of keys of the polynomial interactions as std::unordered_map) as std::vector<std::vector>>.
    cimod::PolynomialKeyList<Index> poly_key_list_;
@@ -307,10 +306,6 @@ private:
          }
       }
    }
-   
-   
-   
-
    
 };
  

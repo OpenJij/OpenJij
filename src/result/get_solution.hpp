@@ -87,7 +87,7 @@ const graph::Spins get_solution(const system::ClassicalIsingPolynomial<GraphType
 
 template<typename GraphType>
 const graph::Spins get_solution(const system::KLocalPolynomial<GraphType> &system) {
-   return system.spin;
+   return system.binaries;
 }
 
 
