@@ -57,17 +57,7 @@ public:
    //! @brief Constructor of Polynomial class to initialize variables and vartype.
    //! @param num_variables std::size_t
    //! @param vartype SPIN or BINARY (std::string)
-   Polynomial(const std::size_t num_variables, const std::string vartype): Graph(num_variables) {
-      if (vartype == "SPIN") {
-         vartype_ = cimod::Vartype::SPIN;
-      }
-      else if (vartype == "BINARY") {
-         vartype_ = cimod::Vartype::BINARY;
-      }
-      else {
-         throw std::runtime_error("Unknown vartype detected");
-      }
-   }
+   Polynomial(const std::size_t num_variables, const std::string vartype): Graph(num_variables), vartype_(ConvertVartype(vartype)) {}
     
    //! @brief Constructor of Polynomial class to initialize num_variables, vartype, and interactions from json by using a delegating constructor.
    //! @param j JSON object
@@ -81,25 +71,15 @@ public:
          throw std::runtime_error("The sizes of key_list and value_list must match each other");
       }
       
-      if (num_variable > 0) {
-         UpdateMaxVariable(num_variable - 1);
-      }
+      vartype_ = ConvertVartype(j.at("vartype"));
       
-      if (j.at("vartype") == "SPIN") {
-         vartype_ = cimod::Vartype::SPIN;
-      }
-      else if (j.at("vartype") == "BINARY") {
-         vartype_ = cimod::Vartype::BINARY;
-      }
-      else {
-         throw std::runtime_error("Unknown vartype detected");
-      }
-      
-      poly_key_list_.resize(poly_key_list.size());
-      poly_value_list_.resize(poly_value_list.size());
+      int64_t num_interactions = static_cast<int64_t>(poly_key_list.size());
+            
+      poly_key_list_.resize(num_interactions);
+      poly_value_list_.resize(num_interactions);
       
 #pragma omp parallel for
-      for (int64_t i = 0; i < (int64_t)poly_key_list.size(); ++i) {
+      for (int64_t i = 0; i < num_interactions; ++i) {
          poly_key_list_[i]   = poly_key_list[i];
          poly_value_list_[i] = poly_value_list[i];
       }
@@ -110,42 +90,26 @@ public:
       
    }
    
-   //! @brief Constructor of Polynomial class to initialize num_variables, vartype, and interactions from cimod.
-   //! @param bpm cimod::BinaryPolynomialModel object
-   explicit Polynomial(const cimod::BinaryPolynomialModel<Index, FloatType> &bpm): Graph(bpm.get_num_variables()), poly_key_inv_(bpm.GetKeysInv()), vartype_(bpm.get_vartype()) {
-      
-      if (bpm._get_keys().size() != bpm._get_values().size() || bpm._get_keys().size() != poly_key_inv_.size()) {
-         throw std::runtime_error("The sizes of key_list and value_list must match each other");
-      }
-      
-      poly_key_list_.resize(bpm._get_keys().size());
-      poly_value_list_.resize(bpm._get_values().size());
-      
-#pragma omp parallel for
-      for (int64_t i = 0; i < (int64_t)bpm._get_keys().size(); ++i) {
-         poly_key_list_[i]   = bpm._get_keys()[i];
-         poly_value_list_[i] = bpm._get_values()[i];
-      }
-      for (const auto &it: bpm.GetVariables()) {
-         UpdateMaxVariable(it);
-      }
-   }
-   
    //! @brief Access the interaction corresponding to the input argument "std::vector<Index>& index" (lvalue references) to set an interaction.
-   //! @param index std::vector<Index>&
+   //! @param key std::vector<Index>&
    //! @return The interaction corresponding to "std::vector<Index>& index", i.e., J[index]
    FloatType &J(std::vector<Index> &key) {
       std::sort(key.begin(), key.end());
       CheckKeyValid(key);
-      if (key.size() > 0) {
-         UpdateMaxVariable(key.back());
-      }
       if (poly_key_inv_.count(key) == 0) {
          poly_key_inv_[key] = poly_value_list_.size();
          poly_key_list_.push_back(key);
          poly_value_list_.push_back(0.0);
       }
       return poly_value_list_[poly_key_inv_.at(key)];
+   }
+   
+   //! @brief Access the interaction corresponding to the input argument "const std::vector<Index>& index" (lvalue references) to set an interaction.
+   //! @param index const std::vector<Index>&
+   //! @return The interaction corresponding to "const std::vector<Index>& index", i.e., J[index]
+   FloatType &J(const std::vector<Index> &key) {
+      std::vector<Index> copied_key = key;
+      return J(copied_key);
    }
    
    //! @brief Return the interaction corresponding to the input argument "std::vector<Index> &index" (lvalue references).
@@ -155,19 +119,11 @@ public:
       std::sort(key.begin(), key.end());
       CheckKeyValid(key);
       if (poly_key_inv_.count(key) == 0) {
-         return 0.0;
+         return 0;
       }
       else {
          return poly_value_list_[poly_key_inv_.at(key)];
       }
-   }
-   
-   //! @brief Access the interaction corresponding to the input argument "const std::vector<Index>& index" (lvalue references) to set an interaction.
-   //! @param index const std::vector<Index>&
-   //! @return The interaction corresponding to "const std::vector<Index>& index", i.e., J[index]
-   FloatType &J(const std::vector<Index> &key) {
-      std::vector<Index> copied_key = key;
-      return J(copied_key);
    }
    
    //! @brief Return the interaction corresponding to the input argument "const std::vector<Index> &index".
@@ -225,15 +181,15 @@ public:
    }
    
    //! @brief Set vartype.
-   //! @param vartype
-   void set_vartype(cimod::Vartype vartype) {
+   //! @param vartype cimod::Vartype
+   void set_vartype(const cimod::Vartype vartype) {
       vartype_ = vartype;
    }
    
-   //! @brief Return the max index of the variables
-   //! @return The max index of the variables
-   Index get_max_variable() const {
-      return max_variable_;
+   //! @brief Set vartype.
+   //! @param vartype std::string
+   void set_vartype(const std::string vartype) {
+      vartype_ = ConvertVartype(vartype);
    }
    
    //! @brief Return the number of interactions
@@ -246,17 +202,18 @@ public:
    //! @param spins const Spins& or const Binaries& (both are the same type)
    //! @param omp_flag if true OpenMP is enabled.
    //! @return The total energy
-   FloatType calc_energy(const Spins& spins, bool omp_flag = true) const {
+   FloatType energy(const Spins &spins, const bool omp_flag = true) const {
       if(spins.size() != Graph::size()){
-         throw std::out_of_range("Out of range in calc_energy in Polynomial graph.");
+         throw std::out_of_range("The size of spins/binaries does not equal to the size of polynomial graph");
       }
       
       FloatType energy = 0.0;
-      std::size_t num_interactions = poly_key_list_.size();
+      
+      int64_t num_interactions = static_cast<int64_t>(poly_key_list_.size());
       
       if (omp_flag) {
 #pragma omp parallel for reduction (+: energy)
-         for (int64_t i = 0; i < (int64_t)num_interactions; ++i) {
+         for (int64_t i = 0; i < num_interactions; ++i) {
             Spin spin_multiple = 1;
             for (const auto &index: poly_key_list_[i]) {
                spin_multiple *= spins[index];
@@ -281,6 +238,16 @@ public:
       }
       return energy;
    }
+
+   //! @deprecated
+   //! @brief Return the total energy corresponding to the input variables, Spins or Binaries.
+   //! @param spins const Spins& or const Binaries& (both are the same type)
+   //! @param omp_flag if true OpenMP is enabled.
+   //! @return The total energy
+   FloatType calc_energy(const Spins &spins, const bool omp_flag = true) const {
+      return energy(spins, omp_flag);
+   }
+   
    
 private:
    //! @brief The list of the indices of the polynomial interactions (namely, the list of keys of the polynomial interactions as std::unordered_map) as std::vector<std::vector>>.
@@ -295,35 +262,53 @@ private:
    //! @brief The model's type. SPIN or BINARY
    cimod::Vartype vartype_ = cimod::Vartype::NONE;
    
-   //! @brief The max index of the variables
-   Index max_variable_ = 0;
+   //! @brief Convert variable type from string
+   //! @param str const std::string
+   //! @return cimod::Vartype
+   cimod::Vartype ConvertVartype(const std::string str) const {
+      if (str == "BINARY") {
+         return cimod::Vartype::BINARY;
+      }
+      else if (str == "SPIN") {
+         return cimod::Vartype::SPIN;
+      }
+      else {
+         throw std::runtime_error("Unknown vartype detected");
+      }
+   }
    
    //! @brief Check if the input keys are valid
    void CheckKeyValid(const std::vector<Index> &key) const {
+      if (key.size() > Graph::size()) {
+         std::stringstream ss;
+         ss << "Too small system size. ";
+         ss << "The degree of the input polynomial interaction is " << key.size();
+         ss << ". But the system size is " << Graph::size();
+         throw std::runtime_error(ss.str());
+      }
       if (0 < key.size()) {
          //key is assumed to be sorted
          for (std::size_t i = 0; i < key.size() - 1; ++i) {
             if (key[i] == key[i + 1]) {
                throw std::runtime_error("No self-loops allowed");
             }
+            if (key[i] >= Graph::size()) {
+               std::stringstream ss;
+               ss << "Too small system size. ";
+               ss << "The index of a interaction: " << key[i] << " is out of range";
+               throw std::runtime_error(ss.str());
+            }
          }
-      }
-      if (key.size() > Graph::size()) {
-         std::stringstream ss;
-         ss << "Too small system size. ";
-         ss << "The degree of the input polynomial interaction is " << key.size();
-         ss << ". But the system size is " << Graph::size() << std::string("\n");
-         throw std::runtime_error(ss.str());
+         if (key.back() >= Graph::size()) {
+            std::stringstream ss;
+            ss << "Too small system size. ";
+            ss << "The index of a interaction: " << key.back() << " is out of range";
+            throw std::runtime_error(ss.str());
+         }
       }
    }
    
-   //! @brief Update max_variable_
-   //! @param variable
-   void UpdateMaxVariable(Index variable) {
-      if (max_variable_ < variable) {
-         max_variable_ = variable;
-      }
-   }
+   
    
 
    
