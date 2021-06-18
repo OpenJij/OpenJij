@@ -387,7 +387,7 @@ TEST(PolyGraph, ConstructorCimod1) {
    cimod::Vartype vartype = cimod::Vartype::SPIN;
    cimod::BinaryPolynomialModel<openjij::graph::Index, double> bpm_cimod(Polynomial, vartype);
    
-   openjij::graph::Polynomial<double> poly_graph(bpm_cimod);
+   openjij::graph::Polynomial<double> poly_graph(bpm_cimod.to_serializable());
 
    EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.get_polynomial().size());
 
@@ -427,7 +427,7 @@ TEST(PolyGraph, ConstructorCimod2) {
    cimod::Vartype vartype = cimod::Vartype::SPIN;
    cimod::BinaryPolynomialModel<openjij::graph::Index, double> bpm_cimod(Polynomial, vartype);
    
-   openjij::graph::Polynomial<double> poly_graph(bpm_cimod);
+   openjij::graph::Polynomial<double> poly_graph(bpm_cimod.to_serializable());
 
    EXPECT_EQ(bpm_cimod.get_polynomial().size(), poly_graph.get_polynomial().size());
    
@@ -523,7 +523,7 @@ TEST(PolyGraph, Energy) {
    cimod::Vartype vartype = cimod::Vartype::SPIN;
    cimod::BinaryPolynomialModel<openjij::graph::Index, double> bpm_cimod(Polynomial, vartype);
    
-   openjij::graph::Polynomial<double> poly_graph(bpm_cimod);
+   openjij::graph::Polynomial<double> poly_graph(bpm_cimod.to_serializable());
    
    openjij::graph::Spins spin = {+1, -1, +1};
    cimod::Sample<openjij::graph::Index> spin_for_cimod {

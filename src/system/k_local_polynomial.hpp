@@ -37,8 +37,14 @@ public:
    //! @brief system type
    using system_type = classical_system;
    
-   //! @brief The number of spins/binaries
+   //! @brief The number of binaries/binaries
    const int64_t num_binaries;
+   
+   //! @brief k-local  update is activated per rate_call_k_local times
+   const int rate_call_k_local = 10;
+   
+   //! @brief Counter of calling updater
+   int64_t count_call_updater = 0;
       
    //! @brief Spin/binary configurations
    graph::Binaries binaries;
@@ -57,16 +63,23 @@ public:
          throw std::runtime_error("The sizes of key_list and value_list must match each other");
       }
 
+      std::unordered_set<graph::Index> active_binary_set;
+      
       poly_key_list_.clear();
       poly_value_list_.clear();
-
+      
       for (std::size_t i = 0; i < poly_key_list.size(); ++i) {
          if (poly_value_list[i] != 0) {
             poly_key_list_.push_back(poly_key_list[i]);
             poly_value_list_.push_back(poly_value_list[i]);
+            for (const auto &it: poly_key_list[i]) {
+               active_binary_set.emplace(it);
+            }
          }
       }
       num_interactions_ = static_cast<int64_t>(poly_key_list_.size());
+      active_binaries_ = std::vector<graph::Index>(active_binary_set.begin(), active_binary_set.end());
+      std::sort(active_binaries_.begin(), active_binaries_.end());
       
       SetAdj();
       reset_spins(initial_binaries);
@@ -94,6 +107,9 @@ public:
          poly_key_list_[i]   = poly_key_list[i];
          poly_value_list_[i] = poly_value_list[i];
       }
+      
+      active_binaries_.resize(num_binaries);
+      std::iota(active_binaries_.begin(),active_binaries_.end(), 0);
       
       SetAdj();
       reset_spins(initial_binaries);
@@ -235,6 +251,49 @@ public:
       return vartype_;
    }
    
+   const std::vector<graph::Index> &get_active_binaries() const {
+      return active_binaries_;
+   }
+   
+   //! @brief Return the total energy corresponding to the input variables, Spins or Binaries.
+   //! @param binaries const Spins& or const Binaries& (both are the same type)
+   //! @param omp_flag if true OpenMP is enabled.
+   //! @return The total energy
+   FloatType energy(const graph::Binaries &binaries, const bool omp_flag = true) const {
+      if(binaries.size() != num_binaries){
+         throw std::out_of_range("The size of binaries/binaries does not equal to the size of polynomial graph");
+      }
+      
+      FloatType energy = 0.0;
+      
+      if (omp_flag) {
+#pragma omp parallel for reduction (+: energy)
+         for (int64_t i = 0; i < num_interactions_; ++i) {
+            graph::Binary binary_multiple = 1;
+            for (const auto &index: poly_key_list_[i]) {
+               binary_multiple *= binaries[index];
+               if (binary_multiple == 0.0) {
+                  break;
+               }
+            }
+            energy += binary_multiple*poly_value_list_[i];
+         }
+      }
+      else {
+         for (std::size_t i = 0; i < num_interactions_; ++i) {
+            graph::Binary binary_multiple = 1;
+            for (const auto &index: poly_key_list_[i]) {
+               binary_multiple *= binaries[index];
+               if (binary_multiple == 0.0) {
+                  break;
+               }
+            }
+            energy += binary_multiple*poly_value_list_[i];
+         }
+      }
+      return energy;
+   }
+   
    void print_dE() const {
       for (std::size_t i = 0; i < dE_.size(); ++i) {
          printf("dE[%2ld]=%+.15lf\n", i, dE_[i]);
@@ -288,7 +347,8 @@ private:
    
    cimod::PolynomialValueList<FloatType>  poly_value_list_;
    
-   
+   std::vector<graph::Index> active_binaries_;
+      
    cimod::Vartype ConvertVartype(const std::string str) const {
       if (str == "BINARY") {
          return cimod::Vartype::BINARY;
@@ -300,26 +360,7 @@ private:
          throw std::runtime_error("Unknown vartype detected");
       }
    }
-   
-   void SetInteractions(const cimod::PolynomialKeyList<graph::Index> &poly_key_list,
-                        const cimod::PolynomialValueList<FloatType>  &poly_value_list) {
       
-      if (poly_key_list.size() != poly_value_list.size()) {
-         throw std::runtime_error("The sizes of key_list and value_list must match each other");
-      }
-
-      poly_key_list_.clear();
-      poly_value_list_.clear();
-
-      for (std::size_t i = 0; i < poly_key_list.size(); ++i) {
-         if (poly_value_list[i] != 0) {
-            poly_key_list_.push_back(poly_key_list[i]);
-            poly_value_list_.push_back(poly_value_list[i]);
-         }
-      }
-      num_interactions_ = static_cast<int64_t>(poly_key_list_.size());
-   }
-   
    void SetAdj() {
       adj_.clear();
       adj_.resize(num_binaries);

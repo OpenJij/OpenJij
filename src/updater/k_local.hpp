@@ -42,14 +42,14 @@ struct KLocal<system::KLocalPolynomial<GraphType>> {
                              ) {
       
       auto urd = std::uniform_real_distribution<>(0, 1.0);
-      static int64_t count = 0;
-      for (std::size_t index_binary = 0; index_binary < system.num_binaries; ++index_binary) {
+
+      for (const auto &index_binary: system.get_active_binaries()) {
          const auto dE_s = system.dE_single(index_binary);
          
-         if (count%10 == 0 && dE_s == 0.0 && system.binaries[index_binary] == 0) {
+         if (system.count_call_updater%system.rate_call_k_local == 0 && dE_s == 0.0 && system.binaries[index_binary] == 0) {
             for (const auto &index_key: system.GetAdj(index_binary)) {
                
-               if (system.GetPolyValue(index_key) > 0) {
+               if (system.GetPolyValue(index_key) > 0.0) {
                   break;
                }
                
@@ -69,11 +69,8 @@ struct KLocal<system::KLocalPolynomial<GraphType>> {
             system.update_system_single(index_binary);
          }
       }
-      count++;
       
-      
-      
-      
+      system.count_call_updater++;
       
    }
        
