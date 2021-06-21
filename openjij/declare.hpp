@@ -227,7 +227,7 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
    auto  str = std::string("ClassicalIsing") + gtype_str;
    
    py::class_<CIP>(m, str.c_str())
-   .def(py::init<const graph::Spins&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
+   .def(py::init<const graph::Spins&, const GraphType&, const cimod::Vartype>(), "init_spin"_a, "init_interaction"_a, "vartype"_a = "vartype"_a)
    .def(py::init([](const graph::Spins& init_spins, const py::object& obj){return std::unique_ptr<CIP>(new CIP(init_spins, static_cast<nlohmann::json>(obj)));}),"init_spin"_a, "obj"_a)
    .def(py::init<const graph::Spins&, const cimod::BinaryPolynomialModel<graph::Index, FloatType>&>(), "init_spin"_a, "init_bpm"_a)
    .def_readonly("vartype"          , &CIP::vartype_                  )
@@ -267,7 +267,6 @@ inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str
    .def_readonly("binaries"          , &KLP::binaries)
    .def_readonly("num_binaries"      , &KLP::num_binaries)
    .def_readonly("count_call_updater", &KLP::count_call_updater)
-   .def_readonly("vartype"           , &KLP::vartype)
    .def_property_readonly("num_interactions", &KLP::GetNumInteractions)
    .def_readwrite("rate_call_k_local", &KLP::rate_call_k_local)
    .def("reset_binaries", &KLP::reset_binaries, "init_binaries"_a)
@@ -278,6 +277,7 @@ inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str
    .def("energy", &KLP::energy, "binaries"_a, "omp_flag"_a = true)
    .def("get_keys", &KLP::get_keys)
    .def("get_values", &KLP::get_values)
+   .def("get_vartype_to_string", &KLP::get_vartype_string)
    .def("get_polynomial", [](const KLP &self) {
       py::dict py_polynomial;
       const auto &poly_key_list   = self.get_keys();

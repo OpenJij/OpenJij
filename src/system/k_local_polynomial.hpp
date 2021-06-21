@@ -52,7 +52,7 @@ public:
    
    const cimod::Vartype vartype = cimod::Vartype::BINARY;
    
-   KLocalPolynomial(const graph::Binaries &init_binaries, const graph::Polynomial<FloatType> &poly_graph): num_binaries(init_binaries.size()) {
+   KLocalPolynomial(const graph::Binaries &init_binaries, const graph::Polynomial<FloatType> &poly_graph): num_binaries(init_binaries.size()), binaries(init_binaries), binaries_v_(init_binaries) {
             
       const auto &poly_key_list   = poly_graph.get_keys();
       const auto &poly_value_list = poly_graph.get_values();
@@ -80,13 +80,11 @@ public:
       std::sort(active_binaries_.begin(), active_binaries_.end());
       
       SetAdj();
-      binaries    = init_binaries;
-      binaries_v_ = init_binaries;
       ResetZeroCount();
       reset_dE();
    }
    
-   KLocalPolynomial(const graph::Binaries &init_binaries, const nlohmann::json &j) :num_binaries(init_binaries.size()) {
+   KLocalPolynomial(const graph::Binaries &init_binaries, const nlohmann::json &j) :num_binaries(init_binaries.size()), binaries(init_binaries), binaries_v_(init_binaries) {
       
       if (j.at("vartype") != "BINARY") {
          throw std::runtime_error("Only binary variables are supported");
@@ -115,8 +113,6 @@ public:
       std::iota(active_binaries_.begin(),active_binaries_.end(), 0);
       
       SetAdj();
-      binaries    = init_binaries;
-      binaries_v_ = init_binaries;
       ResetZeroCount();
       reset_dE();
    }
@@ -297,6 +293,10 @@ public:
    
    const std::vector<std::vector<graph::Index>> &get_adj() const {
       return adj_;
+   }
+   
+   std::string get_vartype_string() const {
+      return "BINARY";
    }
    
    //! @brief Return the total energy corresponding to the input variables, Spins or Binaries.
