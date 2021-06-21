@@ -34,7 +34,7 @@ static openjij::utility::ClassicalScheduleList generate_schedule_list(double bet
 TEST(KLocal, test0) {
    
    openjij::graph::Index num_spins = 3;
-   openjij::graph::Polynomial<double> poly_graph(num_spins, cimod::Vartype::BINARY);
+   openjij::graph::Polynomial<double> poly_graph(num_spins);
    
    poly_graph.J(   {0}   ) = -2;//0
    poly_graph.J( {0, 1}  ) = -1;//1
@@ -75,7 +75,7 @@ TEST(KLocal, test0) {
 TEST(KLocal, test1) {
    
    openjij::graph::Index num_spins = 10;
-   openjij::graph::Polynomial<double> poly_graph(num_spins, cimod::Vartype::BINARY);
+   openjij::graph::Polynomial<double> poly_graph(num_spins);
    
    poly_graph.J({0,1,2,3,4,5,6,7,8,9}) = -1;
    
@@ -106,7 +106,7 @@ TEST(KLocal, test1) {
 TEST(KLocal, test2) {
    
    openjij::graph::Index num_spins = 10;
-   openjij::graph::Polynomial<double> poly_graph(num_spins, cimod::Vartype::BINARY);
+   openjij::graph::Polynomial<double> poly_graph(num_spins);
    
    poly_graph.J({0,1,2,3,4,5,6,7,8,9}) = +1;
    poly_graph.J({0,1,2,3,4,5,7,8,9}) = -2;
@@ -140,7 +140,7 @@ TEST(KLocal, test3) {
    
    const int seed = 1;
    openjij::graph::Index num_spins = 100;
-   openjij::graph::Polynomial<double> poly_graph(num_spins, cimod::Vartype::BINARY);
+   openjij::graph::Polynomial<double> poly_graph(num_spins);
    const int specific_index = 50;
 
    std::vector<openjij::graph::Index> index;
@@ -180,7 +180,7 @@ TEST(KLocal, test4) {
    
    const int seed = 1;
    openjij::graph::Index num_spins = 100;
-   openjij::graph::Polynomial<double> poly_graph(num_spins, cimod::Vartype::BINARY);
+   openjij::graph::Polynomial<double> poly_graph(num_spins);
    const std::vector<int> specific_index = {10,20,30,40,50,60,70,80,90};
 
    std::vector<openjij::graph::Index> index;

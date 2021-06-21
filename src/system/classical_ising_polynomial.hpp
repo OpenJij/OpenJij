@@ -42,7 +42,7 @@ public:
    //! @param init_spins graph::Spins&. The initial spin/binary configurations.
    //! @param poly_graph graph::Polynomial<FloatType>& (Polynomial graph class). The initial interacrtions.
    ClassicalIsingPolynomial(const graph::Spins &initial_spins, const graph::Polynomial<FloatType> &poly_graph): num_spins(poly_graph.size()), vartype_(poly_graph.get_vartype()), spin(initial_spins) {
-      SetPolyKeysAndValues(poly_graph.get_keys(), poly_graph.get_values(), (poly_graph.get_max_variable() != num_spins - 1));
+      SetPolyKeysAndValues(poly_graph.get_keys(), poly_graph.get_values(), true);
       CheckInitialConditions();
       SetPolynomialIndex();
       SetUpdateMatrix();

@@ -52,13 +52,8 @@ public:
    //! @brief Constructor of Polynomial class to initialize variables and vartype.
    //! @param num_variables std::size_t
    //! @param vartype cimod::Vartype
-   Polynomial(const std::size_t num_variables, const cimod::Vartype &vartype): Graph(num_variables), vartype_(vartype) {}
+   Polynomial(const std::size_t num_variables): Graph(num_variables) {}
 
-   //! @brief Constructor of Polynomial class to initialize variables and vartype.
-   //! @param num_variables std::size_t
-   //! @param vartype SPIN or BINARY (std::string)
-   Polynomial(const std::size_t num_variables, const std::string vartype): Graph(num_variables), vartype_(ConvertVartype(vartype)) {}
-    
    //! @brief Constructor of Polynomial class to initialize num_variables, vartype, and interactions from json by using a delegating constructor.
    //! @param j JSON object
    explicit Polynomial(const nlohmann::json &j): Graph(j.at("variables").size()) {
@@ -70,9 +65,7 @@ public:
       if (poly_key_list.size() != poly_value_list.size()) {
          throw std::runtime_error("The sizes of key_list and value_list must match each other");
       }
-      
-      vartype_ = ConvertVartype(j.at("vartype"));
-      
+            
       int64_t num_interactions = static_cast<int64_t>(poly_key_list.size());
             
       poly_key_list_.resize(num_interactions);
@@ -173,25 +166,7 @@ public:
    const cimod::PolynomialValueList<FloatType> &get_values() const {
       return poly_value_list_;
    }
-   
-   //! @brief Return the vartype.
-   //! @return The vartype
-   cimod::Vartype get_vartype() const {
-      return vartype_;
-   }
-   
-   //! @brief Set vartype.
-   //! @param vartype cimod::Vartype
-   void set_vartype(const cimod::Vartype vartype) {
-      vartype_ = vartype;
-   }
-   
-   //! @brief Set vartype.
-   //! @param vartype std::string
-   void set_vartype(const std::string vartype) {
-      vartype_ = ConvertVartype(vartype);
-   }
-   
+      
    //! @brief Return the number of interactions
    //! @return The number of interactions
    std::size_t get_num_interactions() const {
@@ -257,24 +232,6 @@ private:
    
    //! @brief The inverse key list, which indicates the index of the poly_key_list_ and poly_value_list_
    std::unordered_map<std::vector<Index>, std::size_t, cimod::vector_hash> poly_key_inv_;
-   
-   //! @brief The model's type. SPIN or BINARY
-   cimod::Vartype vartype_ = cimod::Vartype::NONE;
-   
-   //! @brief Convert variable type from string
-   //! @param str const std::string
-   //! @return cimod::Vartype
-   cimod::Vartype ConvertVartype(const std::string str) const {
-      if (str == "BINARY") {
-         return cimod::Vartype::BINARY;
-      }
-      else if (str == "SPIN") {
-         return cimod::Vartype::SPIN;
-      }
-      else {
-         throw std::runtime_error("Unknown vartype detected");
-      }
-   }
    
    //! @brief Check if the input keys are valid
    void CheckKeyValid(const std::vector<Index> &key) const {

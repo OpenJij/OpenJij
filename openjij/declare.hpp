@@ -109,11 +109,8 @@ inline void declare_Polynomial(py::module& m, const std::string& suffix){
    auto  str  = std::string("Polynomial") + suffix;
    
    py::class_<Poly, graph::Graph>(m, str.c_str())
-   .def(py::init<const std::size_t, const cimod::Vartype&>(), "num_variables"_a, "vartype"_a)
-   .def(py::init<const std::size_t, const std::string>(), "num_variables"_a, "vartype"_a)
+   .def(py::init<const std::size_t>(), "num_variables"_a)
    .def(py::init([](const py::object& obj){return std::unique_ptr<graph::Polynomial<FloatType>>(new graph::Polynomial<FloatType>(static_cast<json>(obj)));}), "obj"_a)
-   .def(py::init<const graph::Polynomial<FloatType>&>(), "other"_a)
-   .def_property("vartype", &Poly::get_vartype, &Poly::set_vartype)
    .def("get_num_interactions", &Poly::get_num_interactions)
    .def("calc_energy", &Poly::calc_energy, "spins"_a, "omp_flag"_a = true)
    .def("__setitem__"    , [](Poly& self, std::vector<graph::Index>& key, FloatType val){ self.J(key) += val;}, "key"_a, "val"_a)
@@ -265,10 +262,53 @@ inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str
    auto  str = std::string("KLocal") + gtype_str;
    
    py::class_<KLP>(m, str.c_str())
-   .def(py::init<const graph::Spins&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
-   .def(py::init([](const graph::Spins& init_spins, const py::object& obj){return std::unique_ptr<KLP>(new KLP(init_spins, static_cast<nlohmann::json>(obj)));}),"init_spin"_a, "obj"_a)
-   .def_readonly("spins", &KLP::spin)
-   .def_readonly("num_spins", &KLP::num_spins);
+   .def(py::init<const graph::Binaries&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
+   .def(py::init([](const graph::Binaries& init_binaries, const py::object& obj){return std::unique_ptr<KLP>(new KLP(init_binaries, static_cast<nlohmann::json>(obj)));}),"init_binaries"_a, "obj"_a)
+   .def_readonly("binaries"          , &KLP::binaries)
+   .def_readonly("num_binaries"      , &KLP::num_binaries)
+   .def_readonly("count_call_updater", &KLP::count_call_updater)
+   .def_readonly("vartype"           , &KLP::vartype)
+   .def_property_readonly("num_interactions", &KLP::GetNumInteractions)
+   .def_readwrite("rate_call_k_local", &KLP::rate_call_k_local)
+   .def("reset_binaries", &KLP::reset_binaries, "init_binaries"_a)
+   .def("reset_dE", &KLP::reset_dE)
+   .def("get_active_binaries", &KLP::get_active_binaries)
+   .def("get_max_abs_dE", &KLP::get_max_abs_dE)
+   .def("get_min_abs_dE", &KLP::get_min_abs_dE)
+   .def("energy", &KLP::energy, "binaries"_a, "omp_flag"_a = true)
+   .def("get_keys", &KLP::get_keys)
+   .def("get_values", &KLP::get_values)
+   .def("get_polynomial", [](const KLP &self) {
+      py::dict py_polynomial;
+      const auto &poly_key_list   = self.get_keys();
+      const auto &poly_value_list = self.get_values();
+      for (std::size_t i = 0; i < poly_key_list.size(); ++i) {
+         py::tuple tuple;
+         for (const auto &index: poly_key_list[i]) {
+            tuple = tuple + py::make_tuple(index);
+         }
+         py_polynomial[tuple] = poly_value_list[i];
+      }
+      return py_polynomial;
+   })
+   .def("get_adj", [](const KLP &self) {
+      const auto &adj = self.get_adj();
+      const auto &poly_key_list   = self.get_keys();
+      const auto &poly_value_list = self.get_values();
+      py::dict py_adj;
+      for (std::size_t i = 0; i < self.num_binaries; ++i) {
+         py::dict dict;
+         for (const auto &index_key: adj[i]) {
+            py::tuple tuple;
+            for (const auto &index_binary: poly_key_list[index_key]) {
+               tuple = tuple + py::make_tuple(index_binary);
+            }
+            dict[tuple] = poly_value_list[index_key];
+         }
+         py_adj[py::int_(i)] = dict;
+      }
+      return py_adj;
+   });
    
    //make_classical_ising_polynomial
    auto mkcip_str = std::string("make_k_local_polynomial");

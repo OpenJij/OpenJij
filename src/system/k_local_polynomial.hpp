@@ -42,7 +42,7 @@ public:
    const int64_t num_binaries;
    
    //! @brief k-local  update is activated per rate_call_k_local times
-   const int rate_call_k_local = 10;
+   int rate_call_k_local = 10;
    
    //! @brief Counter of calling updater
    int64_t count_call_updater = 0;
@@ -50,13 +50,10 @@ public:
    //! @brief Spin/binary configurations
    graph::Binaries binaries;
    
-   KLocalPolynomial(const graph::Binaries &initial_binaries, const graph::Polynomial<FloatType> &poly_graph): num_binaries(initial_binaries.size()) {
-      if (poly_graph.get_vartype() != cimod::Vartype::BINARY) {
-         throw std::runtime_error("Only Binary variables are supported");
-      }
-      
-      vartype_ = poly_graph.get_vartype();
-      
+   const cimod::Vartype vartype = cimod::Vartype::BINARY;
+   
+   KLocalPolynomial(const graph::Binaries &init_binaries, const graph::Polynomial<FloatType> &poly_graph): num_binaries(init_binaries.size()) {
+            
       const auto &poly_key_list   = poly_graph.get_keys();
       const auto &poly_value_list = poly_graph.get_values();
       
@@ -83,16 +80,18 @@ public:
       std::sort(active_binaries_.begin(), active_binaries_.end());
       
       SetAdj();
-      binaries    = initial_binaries;
-      binaries_v_ = initial_binaries;
+      binaries    = init_binaries;
+      binaries_v_ = init_binaries;
       ResetZeroCount();
       reset_dE();
    }
    
-   KLocalPolynomial(const graph::Binaries &initial_binaries, const nlohmann::json &j) :num_binaries(initial_binaries.size()) {
+   KLocalPolynomial(const graph::Binaries &init_binaries, const nlohmann::json &j) :num_binaries(init_binaries.size()) {
       
-      vartype_ = ConvertVartype(j.at("vartype"));
-      
+      if (j.at("vartype") != "BINARY") {
+         throw std::runtime_error("Only binary variables are supported");
+      }
+            
       const auto &v_k_v = graph::json_parse_polynomial<FloatType>(j);
       const auto &poly_key_list   = std::get<1>(v_k_v);
       const auto &poly_value_list = std::get<2>(v_k_v);
@@ -116,8 +115,8 @@ public:
       std::iota(active_binaries_.begin(),active_binaries_.end(), 0);
       
       SetAdj();
-      binaries    = initial_binaries;
-      binaries_v_ = initial_binaries;
+      binaries    = init_binaries;
+      binaries_v_ = init_binaries;
       ResetZeroCount();
       reset_dE();
    }
@@ -288,8 +287,16 @@ public:
       return min_abs_dE;
    }
    
-   cimod::Vartype get_vartype() const {
-      return vartype_;
+   const cimod::PolynomialValueList<FloatType> &get_values() const {
+      return poly_value_list_;
+   }
+   
+   const cimod::PolynomialKeyList<graph::Index> &get_keys() const {
+      return poly_key_list_;
+   }
+   
+   const std::vector<std::vector<graph::Index>> &get_adj() const {
+      return adj_;
    }
    
    //! @brief Return the total energy corresponding to the input variables, Spins or Binaries.
@@ -358,7 +365,6 @@ public:
    }
    
 private:
-   cimod::Vartype vartype_;
    
    int64_t num_interactions_;
    
@@ -389,18 +395,6 @@ private:
    FloatType max_abs_dE;
    
    FloatType min_abs_dE;
-      
-   cimod::Vartype ConvertVartype(const std::string str) const {
-      if (str == "BINARY") {
-         return cimod::Vartype::BINARY;
-      }
-      else if (str == "SPIN") {
-         throw std::runtime_error("SPIN variables are not supported");
-      }
-      else {
-         throw std::runtime_error("Unknown vartype detected");
-      }
-   }
       
    void SetAdj() {
       adj_.clear();
@@ -436,12 +430,6 @@ private:
          zero_count_v_[i] = zero_count;
       }
    }
-   
-   
-   
-   
-   
-   
    
 };
 
