@@ -18,6 +18,7 @@
 #include <graph/all.hpp>
 #include <nlohmann/json.hpp>
 #include <graph/json/parse.hpp>
+#include <sstream>
 
 namespace openjij {
 namespace system {
@@ -82,7 +83,10 @@ public:
       std::sort(active_binaries_.begin(), active_binaries_.end());
       
       SetAdj();
-      reset_spins(initial_binaries);
+      binaries    = initial_binaries;
+      binaries_v_ = initial_binaries;
+      ResetZeroCount();
+      reset_dE();
    }
    
    KLocalPolynomial(const graph::Binaries &initial_binaries, const nlohmann::json &j) :num_binaries(initial_binaries.size()) {
@@ -112,14 +116,26 @@ public:
       std::iota(active_binaries_.begin(),active_binaries_.end(), 0);
       
       SetAdj();
-      reset_spins(initial_binaries);
-   }
-   
-   void reset_spins(const graph::Binaries &init_binaries) {
-      binaries    = init_binaries;
-      binaries_v_ = init_binaries;
+      binaries    = initial_binaries;
+      binaries_v_ = initial_binaries;
       ResetZeroCount();
       reset_dE();
+   }
+   
+   void reset_binaries(const graph::Binaries &init_binaries) {
+      if (init_binaries.size() != binaries.size()) {
+         throw std::runtime_error("The size of initial binaries does not equal to system size");
+      }
+      for (const auto &index_binary: active_binaries_) {
+         if (binaries[index_binary] != init_binaries[index_binary]) {
+            update_system_single(index_binary);
+         }
+         if (binaries[index_binary] != init_binaries[index_binary]) {
+            std::stringstream ss;
+            ss << "Unknown error detected in " << __func__;
+            throw std::runtime_error(ss.str());
+         }
+      }
    }
    
    void reset_dE() {
@@ -128,17 +144,30 @@ public:
       dE_.resize(num_binaries);
       dE_v_.resize(num_binaries);
       
-#pragma omp parallel for
-      for (int64_t index_binary = 0; index_binary < num_binaries; ++index_binary) {
-         FloatType val = 0.0;
+      max_abs_dE = std::abs(poly_value_list_.front());
+      min_abs_dE = std::abs(poly_value_list_.front());
+      
+      for (const auto &index_binary: active_binaries_) {
+         FloatType val     = 0.0;
+         FloatType abs_val = 0.0;
+         bool flag = false;
          const graph::Binary binary = binaries[index_binary];
          for (const auto &index_key: adj_[index_binary]) {
             if (zero_count_[index_key] + binary == 1) {
-               val += poly_value_list_[index_key];
+               val     += poly_value_list_[index_key];
+               abs_val += std::abs(poly_value_list_[index_key]);
+               flag = true;
             }
          }
          dE_[index_binary]   = (-2*binary + 1)*val;
          dE_v_[index_binary] = dE_[index_binary];
+         
+         if (flag && max_abs_dE < abs_val) {
+            max_abs_dE = abs_val;
+         }
+         if (flag && min_abs_dE > abs_val) {
+            min_abs_dE = abs_val;
+         }
       }
    }
    
@@ -201,7 +230,7 @@ public:
             }
          }
          zero_count_v_[index_key] += count;
-         update_index_zero_count_v_.emplace(index_key);
+         update_index_zero_count_v_.push_back(index_key);
       }
       dE_v_[index_update_binary] *= -1;
       update_index_dE_v_.emplace(index_update_binary);
@@ -219,16 +248,16 @@ public:
             const graph::Binary binary = binaries[index_binary];
             if (zero_count_[index_key] + update_binary + binary == 2 && index_binary != index_update_binary) {
                dE_[index_binary]   += coeef*(-2*binary + 1)*val;
-               dE_v_[index_binary] += coeef*(-2*binary + 1)*val;
+               dE_v_[index_binary]  = dE_[index_binary];
             }
          }
          zero_count_[index_key]   += count;
-         zero_count_v_[index_key] += count;
+         zero_count_v_[index_key]  = zero_count_[index_key];
       }
       dE_[index_update_binary]   *= -1;
-      dE_v_[index_update_binary] *= -1;
+      dE_v_[index_update_binary]  = dE_[index_update_binary];
       binaries[index_update_binary]    = 1 - binaries[index_update_binary];
-      binaries_v_[index_update_binary] = 1 - binaries_v_[index_update_binary];
+      binaries_v_[index_update_binary] = binaries[index_update_binary];
    }
    
    inline int64_t GetNumInteractions() const {
@@ -246,13 +275,21 @@ public:
    inline const std::vector<graph::Index> &GetAdj(const std::size_t index_binary) const {
       return adj_[index_binary];
    }
+
+   inline const std::vector<graph::Index> &get_active_binaries() const {
+      return active_binaries_;
+   }
+   
+   FloatType get_max_abs_dE() const {
+      return max_abs_dE;
+   }
+   
+   FloatType get_min_abs_dE() const {
+      return min_abs_dE;
+   }
    
    cimod::Vartype get_vartype() const {
       return vartype_;
-   }
-   
-   const std::vector<graph::Index> &get_active_binaries() const {
-      return active_binaries_;
    }
    
    //! @brief Return the total energy corresponding to the input variables, Spins or Binaries.
@@ -280,7 +317,7 @@ public:
          }
       }
       else {
-         for (std::size_t i = 0; i < num_interactions_; ++i) {
+         for (int64_t i = 0; i < num_interactions_; ++i) {
             graph::Binary binary_multiple = 1;
             for (const auto &index: poly_key_list_[i]) {
                binary_multiple *= binaries[index];
@@ -326,19 +363,7 @@ private:
    int64_t num_interactions_;
    
    std::vector<FloatType> dE_;
-   
-   std::vector<FloatType> dE_v_;
-   
-   graph::Binaries binaries_v_;
-   
-   std::unordered_set<std::size_t> update_index_dE_v_;
-   
-   std::unordered_set<std::size_t> update_index_zero_count_v_;
-   
-   std::vector<std::size_t> update_index_binaries_v_;
-      
-   std::vector<int64_t> zero_count_v_;
-   
+
    std::vector<int64_t> zero_count_;
    
    std::vector<std::vector<graph::Index>> adj_;
@@ -348,6 +373,22 @@ private:
    cimod::PolynomialValueList<FloatType>  poly_value_list_;
    
    std::vector<graph::Index> active_binaries_;
+
+   std::vector<FloatType> dE_v_;
+   
+   graph::Binaries binaries_v_;
+   
+   std::unordered_set<std::size_t> update_index_dE_v_;
+   
+   std::vector<std::size_t> update_index_zero_count_v_;
+   
+   std::vector<std::size_t> update_index_binaries_v_;
+      
+   std::vector<int64_t> zero_count_v_;
+   
+   FloatType max_abs_dE;
+   
+   FloatType min_abs_dE;
       
    cimod::Vartype ConvertVartype(const std::string str) const {
       if (str == "BINARY") {
@@ -371,7 +412,7 @@ private:
       }
       
       //sort
-      auto compare = [this](std::size_t i1, std::size_t i2) { return poly_value_list_[i1] < poly_value_list_[i2]; };
+      auto compare = [this](const int64_t i1, const int64_t i2) { return poly_value_list_[i1] < poly_value_list_[i2]; };
       
       int64_t adj_size = static_cast<int64_t>(adj_.size());
 #pragma omp parallel for
