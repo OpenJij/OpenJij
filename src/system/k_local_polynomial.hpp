@@ -91,8 +91,8 @@ public:
       }
             
       const auto &v_k_v = graph::json_parse_polynomial<FloatType>(j);
-      const auto &poly_key_list   = std::get<1>(v_k_v);
-      const auto &poly_value_list = std::get<2>(v_k_v);
+      const auto &poly_key_list   = std::get<0>(v_k_v);
+      const auto &poly_value_list = std::get<1>(v_k_v);
       
       if (poly_key_list.size() != poly_value_list.size()) {
          throw std::runtime_error("The sizes of key_list and value_list must match each other");

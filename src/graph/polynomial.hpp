@@ -52,14 +52,14 @@ public:
    //! @brief Constructor of Polynomial class to initialize variables and vartype.
    //! @param num_variables std::size_t
    //! @param vartype cimod::Vartype
-   Polynomial(const std::size_t num_variables): Graph(num_variables) {}
+   explicit Polynomial(const std::size_t num_variables): Graph(num_variables) {}
 
    //! @brief Constructor of Polynomial class to initialize num_variables, vartype, and interactions from json by using a delegating constructor.
    //! @param j JSON object
    explicit Polynomial(const nlohmann::json &j): Graph(j.at("variables").size()) {
       const auto &v_k_v = json_parse_polynomial<FloatType>(j);
-      const auto &poly_key_list   = std::get<1>(v_k_v);
-      const auto &poly_value_list = std::get<2>(v_k_v);
+      const auto &poly_key_list   = std::get<0>(v_k_v);
+      const auto &poly_value_list = std::get<1>(v_k_v);
       
       if (poly_key_list.size() != poly_value_list.size()) {
          throw std::runtime_error("The sizes of key_list and value_list must match each other");

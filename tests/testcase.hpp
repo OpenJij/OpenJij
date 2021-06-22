@@ -461,5 +461,44 @@ FloatType PolynomialExactGroundStateEnergy(openjij::graph::Polynomial<FloatType>
    return min_energy;
 }
 
+template<typename ValueType>
+bool EqualVector(const std::vector<ValueType> &vec1, const std::vector<ValueType> &vec2, const double threshold = 0.0) {
+   if (vec1.size() != vec2.size()) {
+      return false;
+   }
+   bool flag = true;
+   for (std::size_t i = 0; i < vec1.size(); ++i) {
+      if (std::fabs(vec1[i] - vec2[i]) > threshold) {
+         flag = false;
+         break;
+      }
+   }
+   return flag;
+}
+
+template<typename ValueType>
+bool ContainValue(const ValueType val, const std::vector<ValueType> &vec, const double threshold = 0.0) {
+   bool flag = false;
+   for (const auto &it: vec) {
+      if (std::abs(it - val) <= threshold) {
+         flag = true;
+         break;
+      }
+   }
+   return flag;
+}
+
+template<typename ValueType>
+bool ContainVector(const std::vector<ValueType> &vec, const std::vector<std::vector<ValueType>> &vec_vec, const double threshold = 0.0) {
+   bool flag = false;
+   for (const auto &it: vec_vec) {
+      if (EqualVector(vec, it, threshold)) {
+         flag = true;
+         break;
+      }
+   }
+   return flag;
+}
+
 
 #endif

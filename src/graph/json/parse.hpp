@@ -104,7 +104,7 @@ inline auto json_parse_polynomial(const nlohmann::json& obj, const bool relabel 
          poly_key_list[i] = temp;
       }
    }
-   return std::tuple<std::size_t, cimod::PolynomialKeyList<Index>, cimod::PolynomialValueList<FloatType>>(num_variables, poly_key_list, poly_value_list);
+   return std::tuple<cimod::PolynomialKeyList<Index>, cimod::PolynomialValueList<FloatType>>(poly_key_list, poly_value_list);
 }
 
 } // namespace graph

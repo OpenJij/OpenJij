@@ -227,29 +227,32 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
    auto  str = std::string("ClassicalIsing") + gtype_str;
    
    py::class_<CIP>(m, str.c_str())
-   .def(py::init<const graph::Spins&, const GraphType&, const cimod::Vartype>(), "init_spin"_a, "init_interaction"_a, "vartype"_a = "vartype"_a)
+   .def(py::init<const graph::Spins&, const GraphType&, const cimod::Vartype>(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
+   .def(py::init<const graph::Spins&, const GraphType&, const std::string   >(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
    .def(py::init([](const graph::Spins& init_spins, const py::object& obj){return std::unique_ptr<CIP>(new CIP(init_spins, static_cast<nlohmann::json>(obj)));}),"init_spin"_a, "obj"_a)
-   .def(py::init<const graph::Spins&, const cimod::BinaryPolynomialModel<graph::Index, FloatType>&>(), "init_spin"_a, "init_bpm"_a)
-   .def_readonly("vartype"          , &CIP::vartype_                  )
-   .def_readonly("spins"            , &CIP::spin                      )
-   .def_readonly("dE"               , &CIP::dE                        )
-   .def_readonly("num_spins"        , &CIP::num_spins                 )
-   .def("reset_spins"               , &CIP::reset_spins, "init_spin"_a)
+   .def_readonly("vartype"          , &CIP::vartype                   )
+   .def_readonly("variables"        , &CIP::variables                 )
+   .def_readonly("num_variables"    , &CIP::num_variables             )
+   .def("reset_variables"           , &CIP::reset_variables, "init_variables"_a)
    .def("get_values"                , &CIP::get_values                )
    .def("get_keys"                  , &CIP::get_keys                  )
-   .def("get_connected_J_term_index", &CIP::get_connected_J_term_index)
-   .def("get_max_dE"                , &CIP::get_max_dE                )
-   .def("get_min_dE"                , &CIP::get_min_dE                );
+   .def("get_adj"                   , &CIP::get_adj                   )
+   .def("get_max_dE"                , &CIP::get_max_abs_dE            )
+   .def("get_min_dE"                , &CIP::get_min_abs_dE            );
    
    //make_classical_ising_polynomial
    auto mkcip_str = std::string("make_classical_ising_polynomial");
-   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction){
-           return system::make_classical_ising_polynomial(init_spin, init_interaction);
-           }, "init_spin"_a, "init_interaction"_a);
+   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction, const cimod::Vartype vartype){
+           return system::make_classical_ising_polynomial(init_spin, init_interaction, vartype);
+           }, "init_spin"_a, "init_interaction"_a, "vartype"_a);
    
    //make_classical_ising_polynomial
-   auto mkcip_json_str = std::string("make_classical_ising_polynomial");
-   m.def(mkcip_json_str.c_str(), [](const graph::Spins& init_spin, const py::object& obj){
+   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction, const std::string vartype){
+           return system::make_classical_ising_polynomial(init_spin, init_interaction, vartype);
+           }, "init_spin"_a, "init_interaction"_a, "vartype"_a);
+   
+   //make_classical_ising_polynomial
+   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const py::object& obj){
            return system::make_classical_ising_polynomial(init_spin, static_cast<nlohmann::json>(obj));
            }, "init_spin"_a, "obj"_a);
 

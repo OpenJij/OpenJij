@@ -72,8 +72,8 @@ public:
    //! @param j const nlohmann::json object
    ClassicalIsingPolynomial(const graph::Spins &init_variables, const nlohmann::json &j):num_variables(init_variables.size()), variables(init_variables), vartype(j.at("vartype") == "SPIN" ? cimod::Vartype::SPIN : cimod::Vartype::BINARY) {
       const auto &v_k_v = graph::json_parse_polynomial<FloatType>(j);
-      const auto &poly_key_list   = std::get<1>(v_k_v);
-      const auto &poly_value_list = std::get<2>(v_k_v);
+      const auto &poly_key_list   = std::get<0>(v_k_v);
+      const auto &poly_value_list = std::get<1>(v_k_v);
       
       if (poly_key_list.size() != poly_value_list.size()) {
          throw std::runtime_error("The sizes of key_list and value_list must match each other");
@@ -229,8 +229,26 @@ public:
       return active_variables_;
    }
    
+   const cimod::PolynomialValueList<FloatType> &get_values() const {
+      return poly_value_list_;
+   }
+   
+   const cimod::PolynomialKeyList<graph::Index> &get_keys() const {
+      return poly_key_list_;
+   }
+   
+   const std::vector<std::vector<graph::Index>> &get_adj() const {
+      return adj_;
+   }
  
-      
+   FloatType get_max_abs_dE() const {
+      return max_abs_dE_;
+   }
+   
+   FloatType get_min_abs_dE() const {
+      return min_abs_dE_;
+   }
+   
 private:
    int64_t num_interactions_;
    
@@ -332,8 +350,6 @@ private:
          throw std::runtime_error("Unknown vartype detected");
       }
    }
-   
-   
    
 };
 
