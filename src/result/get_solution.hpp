@@ -82,7 +82,7 @@ const graph::Spins get_solution(const system::TransverseIsing<GraphType>& system
 
 template<typename GraphType>
 const graph::Spins get_solution(const system::ClassicalIsingPolynomial<GraphType> &system) {
-   return system.spin;
+   return system.variables;
 }
 
 template<typename GraphType>

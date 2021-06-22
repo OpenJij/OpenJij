@@ -216,7 +216,7 @@ public:
       const int coeef = -2*update_binary + 1;
       const int count = +2*update_binary - 1;
       for (const auto &index_key: adj_[index_update_binary]) {
-         FloatType val = poly_value_list_[index_key];
+         const FloatType val = poly_value_list_[index_key];
          for (const auto &index_binary: poly_key_list_[index_key]) {
             const graph::Binary binary = binaries_v_[index_binary];
             if (zero_count_v_[index_key] + update_binary + binary == 2 && index_binary != index_update_binary) {
@@ -238,7 +238,7 @@ public:
       const int coeef = -2*update_binary + 1;
       const int count = +2*update_binary - 1;
       for (const auto &index_key: adj_[index_update_binary]) {
-         FloatType val = poly_value_list_[index_key];
+         const FloatType val = poly_value_list_[index_key];
          for (const auto &index_binary: poly_key_list_[index_key]) {
             const graph::Binary binary = binaries[index_binary];
             if (zero_count_[index_key] + update_binary + binary == 2 && index_binary != index_update_binary) {

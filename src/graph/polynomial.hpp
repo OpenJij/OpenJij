@@ -58,7 +58,6 @@ public:
    //! @param j JSON object
    explicit Polynomial(const nlohmann::json &j): Graph(j.at("variables").size()) {
       const auto &v_k_v = json_parse_polynomial<FloatType>(j);
-      const auto &num_variable    = std::get<0>(v_k_v);
       const auto &poly_key_list   = std::get<1>(v_k_v);
       const auto &poly_value_list = std::get<2>(v_k_v);
       

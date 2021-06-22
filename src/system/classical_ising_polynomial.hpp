@@ -188,8 +188,19 @@ public:
       }
    }
    
-   void update_spin_system(const graph::Index index_update_variable) {
-      
+   void update_spin_system(const graph::Index index_update_spin) {
+      for (const auto &index_key: adj_[index_update_spin]) {
+         const FloatType val  = poly_value_list_[index_key];
+         const int8_t    sign = sign_key_[index_key];
+         for (const auto &index_spin: poly_key_list_[index_key]) {
+            if (index_spin != index_update_spin) {
+               dE_[index_spin] += val*sign;
+            }
+         }
+         sign_key_[index_key] *= -1;
+      }
+      dE_[index_update_spin] *= -1;
+      variables[index_update_spin] *= -1;
    }
    
    void update_binary_system(const graph::Index index_update_binary) {
@@ -197,7 +208,7 @@ public:
       const int coeef = -2*update_binary + 1;
       const int count = +2*update_binary - 1;
       for (const auto &index_key: adj_[index_update_binary]) {
-         FloatType val = poly_value_list_[index_key];
+         const FloatType val = poly_value_list_[index_key];
          for (const auto &index_binary: poly_key_list_[index_key]) {
             const graph::Binary binary = variables[index_binary];
             if (zero_count_[index_key] + update_binary + binary == 2 && index_binary != index_update_binary) {
@@ -209,6 +220,15 @@ public:
       dE_[index_update_binary] *= -1;
       variables[index_update_binary] = 1 - variables[index_update_binary];
    }
+   
+   inline FloatType dE(const graph::Index index_variable) const {
+      return dE_[index_variable];
+   }
+   
+   inline const std::vector<graph::Index> &get_active_variables() const {
+      return active_variables_;
+   }
+   
  
       
 private:

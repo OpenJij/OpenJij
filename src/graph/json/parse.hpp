@@ -72,8 +72,8 @@ inline auto json_parse_polynomial(const nlohmann::json& obj, const bool relabel 
       throw std::runtime_error("The sizes of key_list and value_list must match each other");
    }
    
-   std::size_t num_variables    = obj["variables"].size();
-   std::size_t num_interactions = obj["poly_value_list"].size();
+   const std::size_t num_variables    = obj["variables"].size();
+   const int64_t num_interactions = static_cast<int64_t>(obj["poly_value_list"].size());
    const cimod::PolynomialKeyList<std::size_t> &poly_key_distance_list = obj["poly_key_distance_list"];
    const cimod::PolynomialValueList<FloatType> &poly_value_list        = obj["poly_value_list"];
    cimod::PolynomialKeyList<Index> poly_key_list(num_interactions);
@@ -83,7 +83,7 @@ inline auto json_parse_polynomial(const nlohmann::json& obj, const bool relabel 
       sorted_variables.resize(num_variables);
       std::iota(sorted_variables.begin(), sorted_variables.end(), 0);
 #pragma omp parallel for
-      for (int64_t i = 0; i < (int64_t)num_interactions; ++i) {
+      for (int64_t i = 0; i < num_interactions; ++i) {
          std::vector<Index> temp;
          for (const auto &it: poly_key_distance_list[i]) {
             temp.push_back(sorted_variables[it]);
@@ -95,7 +95,7 @@ inline auto json_parse_polynomial(const nlohmann::json& obj, const bool relabel 
    else {
       const std::vector<Index> &variables = obj["variables"];
 #pragma omp parallel for
-      for (int64_t i = 0; i < (int64_t)num_interactions; ++i) {
+      for (int64_t i = 0; i < num_interactions; ++i) {
          std::vector<Index> temp;
          for (const auto &it: poly_key_distance_list[i]) {
             temp.push_back(variables[it]);
