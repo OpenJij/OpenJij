@@ -137,10 +137,14 @@ public:
       dE_.clear();
       dE_.resize(num_variables);
       
-      max_abs_dE_ = std::abs(poly_value_list_.front());
-      min_abs_dE_ = std::abs(poly_value_list_.front());
-      
       if (vartype == cimod::Vartype::SPIN) {
+         //Initialize
+         max_abs_dE_ = 2.0*std::abs(poly_value_list_.front());
+         min_abs_dE_ = 0.0;
+         for (const auto &index_key: adj_[active_variables_.front()]) {
+            min_abs_dE_ += std::abs(poly_value_list_[index_key]);
+         }
+         min_abs_dE_ = 2.0*min_abs_dE_/adj_[active_variables_.front()].size();
          for (const auto &index_binary: active_variables_) {
             FloatType val     = 0.0;
             FloatType abs_val = 0.0;
@@ -151,16 +155,23 @@ public:
                flag = true;
             }
             dE_[index_binary] = -2*val;
-            
             if (flag && max_abs_dE_ < 2*abs_val) {
                max_abs_dE_ = 2*abs_val;
             }
-            if (flag && min_abs_dE_ > 2*abs_val) {
-               min_abs_dE_ = 2*abs_val;
+            abs_val = 2.0*abs_val/adj_[index_binary].size();
+            if (flag && min_abs_dE_ > abs_val) {
+               min_abs_dE_ = abs_val;
             }
          }
       }
       else if (vartype == cimod::Vartype::BINARY) {
+         //Initialize
+         max_abs_dE_ = std::abs(poly_value_list_.front());
+         min_abs_dE_ = 0.0;
+         for (const auto &index_key: adj_[active_variables_.front()]) {
+            min_abs_dE_ += std::abs(poly_value_list_[index_key]);
+         }
+         min_abs_dE_ = min_abs_dE_/adj_[active_variables_.front()].size();
          for (const auto &index_binary: active_variables_) {
             FloatType val     = 0.0;
             FloatType abs_val = 0.0;
@@ -169,15 +180,16 @@ public:
             for (const auto &index_key: adj_[index_binary]) {
                if (zero_count_[index_key] + binary == 1) {
                   val     += poly_value_list_[index_key];
-                  abs_val += std::abs(poly_value_list_[index_key]);
-                  flag = true;
                }
+               flag = true;
+               abs_val += std::abs(poly_value_list_[index_key]);
             }
             dE_[index_binary] = (-2*binary + 1)*val;
             
             if (flag && max_abs_dE_ < abs_val) {
                max_abs_dE_ = abs_val;
             }
+            abs_val = abs_val/adj_[index_binary].size();
             if (flag && min_abs_dE_ > abs_val) {
                min_abs_dE_ = abs_val;
             }
