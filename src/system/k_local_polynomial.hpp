@@ -139,8 +139,8 @@ public:
       dE_.resize(num_binaries);
       dE_v_.resize(num_binaries);
       
-      max_abs_dE = std::abs(poly_value_list_.front());
-      min_abs_dE = std::abs(poly_value_list_.front());
+      max_effective_dE = std::abs(poly_value_list_.front());
+      min_effective_dE = std::abs(poly_value_list_.front());
       
       for (const auto &index_binary: active_binaries_) {
          FloatType val     = 0.0;
@@ -157,11 +157,11 @@ public:
          dE_[index_binary]   = (-2*binary + 1)*val;
          dE_v_[index_binary] = dE_[index_binary];
          
-         if (flag && max_abs_dE < abs_val) {
-            max_abs_dE = abs_val;
+         if (flag && max_effective_dE < abs_val) {
+            max_effective_dE = abs_val;
          }
-         if (flag && min_abs_dE > abs_val) {
-            min_abs_dE = abs_val;
+         if (flag && min_effective_dE > abs_val) {
+            min_effective_dE = abs_val;
          }
       }
    }
@@ -255,6 +255,13 @@ public:
       binaries_v_[index_update_binary] = binaries[index_update_binary];
    }
    
+   void set_rate_call_k_local(int rate_k_local) {
+      if (rate_k_local <= 0) {
+         throw std::runtime_error("rate_k_local is larger than zero");
+      }
+      rate_call_k_local = rate_k_local;
+   }
+   
    inline int64_t GetNumInteractions() const {
       return num_interactions_;
    }
@@ -267,7 +274,7 @@ public:
       return poly_value_list_[index_key];
    }
    
-   inline const std::vector<graph::Index> &GetAdj(const std::size_t index_binary) const {
+   inline const std::vector<graph::Index> &get_adj(const std::size_t index_binary) const {
       return adj_[index_binary];
    }
 
@@ -275,12 +282,12 @@ public:
       return active_binaries_;
    }
    
-   FloatType get_max_abs_dE() const {
-      return max_abs_dE;
+   FloatType get_max_effective_dE() const {
+      return max_effective_dE;
    }
    
-   FloatType get_min_abs_dE() const {
-      return min_abs_dE;
+   FloatType get_min_effective_dE() const {
+      return min_effective_dE;
    }
    
    const cimod::PolynomialValueList<FloatType> &get_values() const {
@@ -392,9 +399,9 @@ private:
       
    std::vector<int64_t> zero_count_v_;
    
-   FloatType max_abs_dE;
+   FloatType max_effective_dE;
    
-   FloatType min_abs_dE;
+   FloatType min_effective_dE;
       
    void SetAdj() {
       adj_.clear();

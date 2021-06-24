@@ -139,12 +139,12 @@ public:
       
       if (vartype == cimod::Vartype::SPIN) {
          //Initialize
-         max_abs_dE_ = 2.0*std::abs(poly_value_list_.front());
-         min_abs_dE_ = 0.0;
+         max_effective_dE_ = 2.0*std::abs(poly_value_list_.front());
+         min_effective_dE_ = 0.0;
          for (const auto &index_key: adj_[active_variables_.front()]) {
-            min_abs_dE_ += std::abs(poly_value_list_[index_key]);
+            min_effective_dE_ += std::abs(poly_value_list_[index_key]);
          }
-         min_abs_dE_ = 2.0*min_abs_dE_/adj_[active_variables_.front()].size();
+         min_effective_dE_ = 2.0*min_effective_dE_/adj_[active_variables_.front()].size();
          for (const auto &index_binary: active_variables_) {
             FloatType val     = 0.0;
             FloatType abs_val = 0.0;
@@ -155,23 +155,23 @@ public:
                flag = true;
             }
             dE_[index_binary] = -2*val;
-            if (flag && max_abs_dE_ < 2*abs_val) {
-               max_abs_dE_ = 2*abs_val;
+            if (flag && max_effective_dE_ < 2*abs_val) {
+               max_effective_dE_ = 2*abs_val;
             }
             abs_val = 2.0*abs_val/adj_[index_binary].size();
-            if (flag && min_abs_dE_ > abs_val) {
-               min_abs_dE_ = abs_val;
+            if (flag && min_effective_dE_ > abs_val) {
+               min_effective_dE_ = abs_val;
             }
          }
       }
       else if (vartype == cimod::Vartype::BINARY) {
          //Initialize
-         max_abs_dE_ = std::abs(poly_value_list_.front());
-         min_abs_dE_ = 0.0;
+         max_effective_dE_ = std::abs(poly_value_list_.front());
+         min_effective_dE_ = 0.0;
          for (const auto &index_key: adj_[active_variables_.front()]) {
-            min_abs_dE_ += std::abs(poly_value_list_[index_key]);
+            min_effective_dE_ += std::abs(poly_value_list_[index_key]);
          }
-         min_abs_dE_ = min_abs_dE_/adj_[active_variables_.front()].size();
+         min_effective_dE_ = min_effective_dE_/adj_[active_variables_.front()].size();
          for (const auto &index_binary: active_variables_) {
             FloatType val     = 0.0;
             FloatType abs_val = 0.0;
@@ -186,12 +186,12 @@ public:
             }
             dE_[index_binary] = (-2*binary + 1)*val;
             
-            if (flag && max_abs_dE_ < abs_val) {
-               max_abs_dE_ = abs_val;
+            if (flag && max_effective_dE_ < abs_val) {
+               max_effective_dE_ = abs_val;
             }
             abs_val = abs_val/adj_[index_binary].size();
-            if (flag && min_abs_dE_ > abs_val) {
-               min_abs_dE_ = abs_val;
+            if (flag && min_effective_dE_ > abs_val) {
+               min_effective_dE_ = abs_val;
             }
          }
       }
@@ -202,7 +202,7 @@ public:
    
    void update_spin_system(const graph::Index index_update_spin) {
       for (const auto &index_key: adj_[index_update_spin]) {
-         const FloatType val  = poly_value_list_[index_key];
+         const FloatType val  = 4.0*poly_value_list_[index_key];
          const int8_t    sign = sign_key_[index_key];
          for (const auto &index_spin: poly_key_list_[index_key]) {
             if (index_spin != index_update_spin) {
@@ -253,12 +253,12 @@ public:
       return adj_;
    }
  
-   FloatType get_max_abs_dE() const {
-      return max_abs_dE_;
+   FloatType get_max_effective_dE() const {
+      return max_effective_dE_;
    }
    
-   FloatType get_min_abs_dE() const {
-      return min_abs_dE_;
+   FloatType get_min_effective_dE() const {
+      return min_effective_dE_;
    }
    
 private:
@@ -278,9 +278,9 @@ private:
    
    std::vector<graph::Index> active_variables_;
    
-   FloatType max_abs_dE_;
+   FloatType max_effective_dE_;
    
-   FloatType min_abs_dE_;
+   FloatType min_effective_dE_;
    
    void SetAdj() {
       adj_.clear();

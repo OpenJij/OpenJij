@@ -45,14 +45,11 @@ struct KLocal<system::KLocalPolynomial<GraphType>> {
 
       for (const auto &index_binary: system.get_active_binaries()) {
          const auto dE_s = system.dE_single(index_binary);
-         
          if (system.count_call_updater%system.rate_call_k_local == 0 && dE_s == 0.0 && system.binaries[index_binary] == 0) {
-            for (const auto &index_key: system.GetAdj(index_binary)) {
-               
+            for (const auto &index_key: system.get_adj(index_binary)) {
                if (system.GetPolyValue(index_key) > 0.0) {
                   break;
                }
-               
                const auto dE_i = system.dE_k_local(index_key);
                if (dE_i <= 0.0 || std::exp(-parameter.beta*dE_i) > urd(random_number_engine)) {
                   system.update_system_k_local();
@@ -61,17 +58,13 @@ struct KLocal<system::KLocalPolynomial<GraphType>> {
                   system.reset_virtual_system();
                   system.update_system_single(index_binary);
                }
-               
             }
-            
          }
         else if (dE_s <= 0.0 || std::exp(-parameter.beta*dE_s) > urd(random_number_engine)) {
             system.update_system_single(index_binary);
          }
       }
-      
       system.count_call_updater++;
-      
    }
        
       

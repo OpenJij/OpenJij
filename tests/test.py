@@ -256,12 +256,12 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
 
-    def test_SingleSpinFlip_ClassicalIsing_Polynomial_Polynomial_Interactions(self):
+    def test_SingleSpinFlip_Polynomial(self):
         system_size = 5
-        self.polynomial = G.Polynomial(system_size, "SPIN")
+        self.polynomial = G.Polynomial(system_size)
         self.polynomial = self.gen_testcase_polynomial(self.polynomial)
         #classial ising (Polynomial)
-        system = S.make_classical_ising_polynomial(self.polynomial.gen_spin(), self.polynomial)
+        system = S.make_classical_ising_polynomial(self.polynomial.gen_spin(), self.polynomial, "SPIN")
 
         #schedulelist
         schedule_list = U.make_classical_schedule_list(0.1, 100.0, 200, 200)
@@ -270,7 +270,7 @@ class CXXTest(unittest.TestCase):
         A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
 
         #result spin
-        result_spin = R.get_solution(system)
+        result_spin = system.variables
 
         #compare
         self.assertAlmostEqual(self.true_energy, self.polynomial.calc_energy(result_spin))
