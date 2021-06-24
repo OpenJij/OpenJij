@@ -274,6 +274,7 @@ inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str
    .def_property_readonly("num_interactions", &KLP::GetNumInteractions)
    .def_readwrite("rate_call_k_local", &KLP::rate_call_k_local)
    .def("reset_binaries", &KLP::reset_binaries, "init_binaries"_a)
+   .def("reset_spins", &KLP::reset_binaries, "init_spins"_a)
    .def("reset_dE", &KLP::reset_dE)
    .def("get_active_binaries", &KLP::get_active_binaries)
    .def("get_max_effective_dE", &KLP::get_max_effective_dE)

@@ -305,8 +305,10 @@ class SASampler(BaseSampler):
         
         if model.vartype == openjij.SPIN:
             sa_system = cxxjij.system.make_classical_ising_polynomial(_generate_init_state(), model.to_serializable())
+            algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
         elif model.vartype == openjij.BINARY:
             sa_system = cxxjij.system.make_k_local_polynomial(_generate_init_state(), model.to_serializable())
+            algorithm = cxxjij.algorithm.Algorithm_KLocal_run
         else:
             raise ValueError("Unknown vartype detected")
         
@@ -335,7 +337,6 @@ class SASampler(BaseSampler):
             }
         # ------------------------------- set annealing schedule
 
-        algorithm = self._algorithm['singlespinflippolynomial']
         response = self._cxxjij_sampling(
             model, _generate_init_state,
             algorithm, sa_system,

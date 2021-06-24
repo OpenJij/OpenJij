@@ -274,6 +274,26 @@ class CXXTest(unittest.TestCase):
 
         #compare
         self.assertAlmostEqual(self.true_energy, self.polynomial.calc_energy(result_spin))
+
+    
+    def test_SingleSpinFlip_KLocal(self):
+        system_size = 20
+        self.polynomial = G.Polynomial(system_size)
+        self.polynomial[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19] = -1
+        #classial ising (Polynomial)
+        system = S.make_k_local_polynomial(self.polynomial.gen_binary(), self.polynomial)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 200, 200)
+
+        #anneal
+        A.Algorithm_KLocal_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertAlmostEqual(-1, self.polynomial.calc_energy(result_spin))
     
     """
     def test_SingleSpinFlip_ClassicalIsing_Polynomial_Quadratic_Interactions(self):

@@ -140,6 +140,7 @@ PYBIND11_MODULE(cxxjij, m){
     ::declare_get_solution<system::ClassicalIsing<graph::Dense<FloatType>>>(m_result);
     ::declare_get_solution<system::ClassicalIsing<graph::Sparse<FloatType>>>(m_result);
     ::declare_get_solution<system::ClassicalIsingPolynomial<graph::Polynomial<FloatType>>>(m_result);
+    ::declare_get_solution<system::KLocalPolynomial<graph::Polynomial<FloatType>>>(m_result);
     ::declare_get_solution<system::TransverseIsing<graph::Dense<FloatType>>>(m_result);
     ::declare_get_solution<system::TransverseIsing<graph::Sparse<FloatType>>>(m_result);
     ::declare_get_solution<system::ContinuousTimeIsing<graph::Sparse<FloatType>>>(m_result);
