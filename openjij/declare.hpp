@@ -230,16 +230,17 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
    .def(py::init<const graph::Spins&, const GraphType&, const cimod::Vartype>(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
    .def(py::init<const graph::Spins&, const GraphType&, const std::string   >(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
    .def(py::init([](const graph::Spins& init_spins, const py::object& obj){return std::unique_ptr<CIP>(new CIP(init_spins, static_cast<nlohmann::json>(obj)));}),"init_spin"_a, "obj"_a)
-   .def_readonly("vartype"      , &CIP::vartype                   )
-   .def_readonly("variables"    , &CIP::variables                 )
-   .def_readonly("num_variables", &CIP::num_variables             )
+   .def_readonly("vartype"      , &CIP::vartype      )
+   .def_readonly("variables"    , &CIP::variables    )
+   .def_readonly("num_variables", &CIP::num_variables)
    .def("reset_variables"       , &CIP::reset_variables, "init_variables"_a)
    .def("reset_spins"           , &CIP::reset_variables, "init_spins"_a)
-   .def("get_values"            , &CIP::get_values                )
-   .def("get_keys"              , &CIP::get_keys                  )
-   .def("get_adj"               , &CIP::get_adj                   )
-   .def("get_max_effective_dE"  , &CIP::get_max_effective_dE      )
-   .def("get_min_effective_dE"  , &CIP::get_min_effective_dE      );
+   .def("get_values"            , &CIP::get_values          )
+   .def("get_keys"              , &CIP::get_keys            )
+   .def("get_adj"               , &CIP::get_adj             )
+   .def("get_vartype_to_string" , &KLP::get_vartype_string  )
+   .def("get_max_effective_dE"  , &CIP::get_max_effective_dE)
+   .def("get_min_effective_dE"  , &CIP::get_min_effective_dE);
    
    //make_classical_ising_polynomial
    auto mkcip_str = std::string("make_classical_ising_polynomial");
@@ -279,7 +280,6 @@ inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str
    .def("get_active_binaries", &KLP::get_active_binaries)
    .def("get_max_effective_dE", &KLP::get_max_effective_dE)
    .def("get_min_effective_dE", &KLP::get_min_effective_dE)
-   .def("energy", &KLP::energy, "binaries"_a, "omp_flag"_a = true)
    .def("get_keys", &KLP::get_keys)
    .def("get_values", &KLP::get_values)
    .def("get_vartype_to_string", &KLP::get_vartype_string)

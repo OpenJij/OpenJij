@@ -261,6 +261,18 @@ public:
       return min_effective_dE_;
    }
    
+   std::string get_vartype_string() const {
+      if (vartype == cimod::Vartype::SPIN) {
+         return "SPIN";
+      }
+      else if (vartype == cimod::Vartype::BINARY) {
+         return "BINARY";
+      }
+      else {
+         throw std::runtime_error("Unknown vartype detected");
+      }
+   }
+   
 private:
    int64_t num_interactions_;
    

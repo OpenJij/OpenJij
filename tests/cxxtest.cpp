@@ -1107,7 +1107,7 @@ TEST(PolySystem, ConstructorSpinGraph) {
    
 }
 
-TEST(PolyUpdater, SingleSpinFlip1) {
+TEST(PolyUpdater, SingleSpinFlipSPIN) {
    
    //Check the polynomial updater work properly by comparing the result of the quadratic updater
    const int seed = 1;
@@ -1145,198 +1145,138 @@ TEST(PolyUpdater, SingleSpinFlip1) {
    
    EXPECT_DOUBLE_EQ(poly_graph.energy(result_spin_poly), interaction.calc_energy(result_spin));
 }
-
-
-TEST(KLocal, test0) {
+/*
+TEST(PolyUpdater, SingleSpinFlipBINARY) {
    
-   openjij::graph::Index num_spins = 3;
-   openjij::graph::Polynomial<double> poly_graph(num_spins);
-   
-   poly_graph.J(   {0}   ) = -2;//0
-   poly_graph.J( {0, 1}  ) = -1;//1
-   poly_graph.J( {0, 2}  ) = +1;//2
-   poly_graph.J({0, 1, 2}) = +3;//3
-   poly_graph.J(   {1}   ) = -2;//4
-   poly_graph.J( {1, 2}  ) = +1.5;//5
-   poly_graph.J(   {2}   ) = -6;//6
-   
-   openjij::graph::Spins spin = {0, 0, 1};
-   
-   auto poly_system = openjij::system::make_k_local_polynomial(spin, poly_graph);
-   
-   poly_system.print_adj();
-   
+   cimod::Polynomial<int, double> polynomial;
    const int seed = 1;
-   
-   auto random_numder_engine = std::mt19937(seed);
-   const auto schedule_list = generate_schedule_list();
-   poly_system.print_adj();
-   poly_system.print_dE();
-   poly_system.print_zero_count();
-   openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
-   poly_system.print_dE();
-   poly_system.print_zero_count();
-   //openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
+   const int system_size = 9;
+   auto engin_for_interaction = std::mt19937(seed);
+   auto urd = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
+   for (int i = 0; i < system_size; ++i) {
+      for (int j = i + 1; j < system_size; ++j) {
+         polynomial[{i, j}]  = urd(engin_for_interaction);
+      }
+   }
+   cimod::BinaryPolynomialModel<int, double> cimod_bpm(polynomial, cimod::Vartype::BINARY);
+   cimod_bpm.change_vartype(cimod::Vartype::SPIN);
+   auto interaction_spin   = openjij::graph::Sparse<double>(system_size);
+   auto interaction_binary = openjij::graph::Polynomial<double>(system_size);
 
-   //poly_system.PrintInfo();
-   
-   const auto result_spin_poly = openjij::result::get_solution(poly_system);
-   for (std::size_t i = 0; i < result_spin_poly.size(); ++i) {
-      printf("Result_spin[%ld]=%d\n", i , result_spin_poly[i]);
+   for (const auto &it: cimod_bpm.get_polynomial()) {
+      printf("%ld\n", it.first.size());
+      interaction_spin.J(it.first[0], it.first[1]) = it.second;
+   }
+   for (const auto &it: polynomial) {
+      interaction_binary.J(it.first) = it.second;
    }
    
-   
-}
+   auto engine_for_spin   = std::mt19937(seed);
+   auto engine_for_binary = std::mt19937(seed);
+   const auto spin   = interaction_spin.gen_spin(engine_for_spin);
+   const auto binary = interaction_binary.gen_binary(engine_for_binary);
 
-TEST(KLocal, test1) {
-   
-   openjij::graph::Index num_spins = 10;
-   openjij::graph::Polynomial<double> poly_graph(num_spins);
-   
-   poly_graph.J({0,1,2,3,4,5,6,7,8,9}) = -1;
-   
-   openjij::graph::Spins spin = {1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
-   
-   auto poly_system = openjij::system::make_k_local_polynomial(spin, poly_graph);
-   
-   //poly_system.PrintInfo();
-   
-   const int seed = 1;
+   auto classical_ising      = openjij::system::make_classical_ising(spin, interaction_spin);
+   auto classical_ising_poly = openjij::system::make_classical_ising_polynomial(binary, interaction_binary, "BINARY");
    
    auto random_numder_engine = std::mt19937(seed);
-   const auto schedule_list = generate_schedule_list();
-   
-   openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
-   
-   //openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
+   openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising     , random_numder_engine, generate_schedule_list());
+   openjij::algorithm::Algorithm<openjij::updater::SingleSpinFlip>::run(classical_ising_poly, random_numder_engine, generate_schedule_list());
+   const auto result_spin   = openjij::result::get_solution(classical_ising);
+   const auto result_binary = openjij::result::get_solution(classical_ising_poly);
 
-   //poly_system.PrintInfo();
-   
-   const auto result_spin_poly = openjij::result::get_solution(poly_system);
-   for (std::size_t i = 0; i < result_spin_poly.size(); ++i) {
-      printf("Result_spin[%ld]=%d\n", i , result_spin_poly[i]);
+   //Check both equal
+   EXPECT_EQ(result_binary.size(), result_spin.size());
+   for (std::size_t i = 0; i < result_binary.size(); ++i) {
+      EXPECT_EQ(result_binary[i], (result_spin[i] + 1)/2);
    }
    
+   EXPECT_DOUBLE_EQ(interaction_binary.energy(result_binary), interaction_spin.calc_energy(result_spin));
 }
+*/
 
-TEST(KLocal, test2) {
-   
-   openjij::graph::Index num_spins = 10;
+TEST(PolyUpdater, KLocal1) {
+   const int seed = 1;
+   openjij::graph::Index num_spins = 30;
    openjij::graph::Polynomial<double> poly_graph(num_spins);
    
-   poly_graph.J({0,1,2,3,4,5,6,7,8,9}) = +1;
-   poly_graph.J({0,1,2,3,4,5,7,8,9}) = -2;
-
+   poly_graph.J({0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29}) = -1;
    
-   openjij::graph::Spins spin = {0, 0, 1, 1, 0, 0, 1, 1, 0, 0};
+   auto engine_for_binary = std::mt19937(seed);
    
-   auto poly_system = openjij::system::make_k_local_polynomial(spin, poly_graph);
+   openjij::graph::Binaries binary = poly_graph.gen_binary(engine_for_binary);
    
-   //poly_system.PrintInfo();
-   
-   const int seed = 1;
+   auto poly_system = openjij::system::make_k_local_polynomial(binary, poly_graph);
    
    auto random_numder_engine = std::mt19937(seed);
-   const auto schedule_list = generate_schedule_list();
-   openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
-   poly_system.print_dE();
-
-   //openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
-
-   //poly_system.PrintInfo();
    
-   const auto result_spin_poly = openjij::result::get_solution(poly_system);
-   for (std::size_t i = 0; i < result_spin_poly.size(); ++i) {
-      printf("Result_spin[%ld]=%d\n", i , result_spin_poly[i]);
+   openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, generate_schedule_list());
+   
+   const auto result_binary_poly = openjij::result::get_solution(poly_system);
+   
+   for (const auto &binary: result_binary_poly) {
+      EXPECT_EQ(binary, 1);
    }
    
 }
 
-TEST(KLocal, test3) {
-   
+TEST(PolyUpdater, KLocal2) {
    const int seed = 1;
-   openjij::graph::Index num_spins = 100;
+   openjij::graph::Index num_spins = 30;
    openjij::graph::Polynomial<double> poly_graph(num_spins);
-   const int specific_index = 50;
+   
+   poly_graph.J({0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29}) = +1;
+   poly_graph.J({0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,   17,18,19,20,21,22,23,24,25,26,27,28,29}) = -1;
 
-   std::vector<openjij::graph::Index> index;
-   for (int i = 0; i < num_spins; ++i) {
-      index.push_back(i);
-   }
+   auto engine_for_binary = std::mt19937(seed);
    
-   poly_graph.J(index) = +1;
-   index.erase(index.begin() + specific_index);
-   poly_graph.J(index) = -2;
-
-   auto engine_for_binary_poly = std::mt19937(seed);
-   openjij::graph::Spins spin = poly_graph.gen_binary(engine_for_binary_poly);
+   openjij::graph::Binaries binary = poly_graph.gen_binary(engine_for_binary);
    
-   auto poly_system = openjij::system::make_k_local_polynomial(spin, poly_graph);
+   auto poly_system = openjij::system::make_k_local_polynomial(binary, poly_graph);
    
-   //poly_system.PrintInfo();
-   
+   poly_system.print_dE();
    
    auto random_numder_engine = std::mt19937(seed);
-   const auto schedule_list = generate_schedule_list();
-   openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
-   poly_system.print_dE();
-
-   //openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
-
-   //poly_system.PrintInfo();
    
-   const auto result_spin_poly = openjij::result::get_solution(poly_system);
-   for (std::size_t i = 0; i < result_spin_poly.size(); ++i) {
-      printf("Result_spin[%ld]=%d\n", i , result_spin_poly[i]);
+   openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, generate_schedule_list());
+   
+   const auto result_binary_poly = openjij::result::get_solution(poly_system);
+   /*
+   for (std::size_t i = 0; i < result_binary_poly.size(); ++i) {
+      if (i != 16) {
+         EXPECT_EQ(binary[i], 1);
+      }
+      else {
+         EXPECT_EQ(binary[i], 0);
+      }
+   }
+   */
+}
+
+TEST(PolyUpdater, KLocal3) {
+   
+   cimod::Polynomial<int, double> polynomial {
+      {{11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30}, -1}
+   };
+   
+   cimod::BinaryPolynomialModel<int, double> bpm(polynomial, cimod::Vartype::BINARY);
+      
+   openjij::graph::Spins spin = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1};
+   
+   auto poly_system = openjij::system::make_k_local_polynomial(spin, bpm.to_serializable());
+      
+   const int seed = 1;
+   
+   auto random_numder_engine = std::mt19937(seed);
+   
+   openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, generate_schedule_list());
+      
+   const auto result_binary_poly = openjij::result::get_solution(poly_system);
+   for (std::size_t i = 0; i < result_binary_poly.size(); ++i) {
+      EXPECT_EQ(result_binary_poly[i], 1);
    }
    
 }
-
-TEST(KLocal, test4) {
-   
-   const int seed = 1;
-   openjij::graph::Index num_spins = 100;
-   openjij::graph::Polynomial<double> poly_graph(num_spins);
-   const std::vector<int> specific_index = {10,20,30,40,50,60,70,80,90};
-
-   std::vector<openjij::graph::Index> index;
-   for (int i = 0; i < num_spins; ++i) {
-      index.push_back(i);
-   }
-   
-   poly_graph.J(index) = +1;
-   int count = 0;
-   for (const auto &i: specific_index) {
-      index.erase(index.begin() + i - count);
-      count++;
-   }
-   poly_graph.J(index) = -2;
-
-   auto engine_for_binary_poly = std::mt19937(seed);
-   openjij::graph::Spins spin = poly_graph.gen_binary(engine_for_binary_poly);
-   
-   auto poly_system = openjij::system::make_k_local_polynomial(spin, poly_graph);
-   
-   //poly_system.PrintInfo();
-   
-   
-   auto random_numder_engine = std::mt19937(seed);
-   const auto schedule_list = generate_schedule_list();
-   openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
-   poly_system.print_dE();
-
-   //openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, schedule_list);
-
-   //poly_system.PrintInfo();
-   
-   const auto result_spin_poly = openjij::result::get_solution(poly_system);
-   for (std::size_t i = 0; i < result_spin_poly.size(); ++i) {
-      printf("Result_spin[%ld]=%d\n", i , result_spin_poly[i]);
-   }
-   printf("energy=%lf\n", poly_graph.calc_energy(result_spin_poly));
-   
-}
-
 
 
 /*

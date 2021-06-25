@@ -305,46 +305,7 @@ public:
    std::string get_vartype_string() const {
       return "BINARY";
    }
-   
-   //! @brief Return the total energy corresponding to the input variables, Spins or Binaries.
-   //! @param binaries const Spins& or const Binaries& (both are the same type)
-   //! @param omp_flag if true OpenMP is enabled.
-   //! @return The total energy
-   FloatType energy(const graph::Binaries &binaries, const bool omp_flag = true) const {
-      if(binaries.size() != num_binaries){
-         throw std::out_of_range("The size of binaries/binaries does not equal to the size of polynomial graph");
-      }
       
-      FloatType energy = 0.0;
-      
-      if (omp_flag) {
-#pragma omp parallel for reduction (+: energy)
-         for (int64_t i = 0; i < num_interactions_; ++i) {
-            graph::Binary binary_multiple = 1;
-            for (const auto &index: poly_key_list_[i]) {
-               binary_multiple *= binaries[index];
-               if (binary_multiple == 0.0) {
-                  break;
-               }
-            }
-            energy += binary_multiple*poly_value_list_[i];
-         }
-      }
-      else {
-         for (int64_t i = 0; i < num_interactions_; ++i) {
-            graph::Binary binary_multiple = 1;
-            for (const auto &index: poly_key_list_[i]) {
-               binary_multiple *= binaries[index];
-               if (binary_multiple == 0.0) {
-                  break;
-               }
-            }
-            energy += binary_multiple*poly_value_list_[i];
-         }
-      }
-      return energy;
-   }
-   
    void print_dE() const {
       for (std::size_t i = 0; i < dE_.size(); ++i) {
          printf("dE[%2ld]=%+.15lf\n", i, dE_[i]);
