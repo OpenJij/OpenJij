@@ -238,7 +238,7 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
    .def("get_values"            , &CIP::get_values          )
    .def("get_keys"              , &CIP::get_keys            )
    .def("get_adj"               , &CIP::get_adj             )
-   .def("get_vartype_to_string" , &KLP::get_vartype_string  )
+   .def("get_vartype_to_string" , &CIP::get_vartype_string  )
    .def("get_max_effective_dE"  , &CIP::get_max_effective_dE)
    .def("get_min_effective_dE"  , &CIP::get_min_effective_dE);
    
@@ -287,7 +287,7 @@ inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str
       py::dict py_polynomial;
       const auto &poly_key_list   = self.get_keys();
       const auto &poly_value_list = self.get_values();
-      for (std::size_t i = 0; i < poly_key_list.size(); ++i) {
+      for (int64_t i = 0; i < poly_key_list.size(); ++i) {
          py::tuple tuple;
          for (const auto &index: poly_key_list[i]) {
             tuple = tuple + py::make_tuple(index);
@@ -301,7 +301,7 @@ inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str
       const auto &poly_key_list   = self.get_keys();
       const auto &poly_value_list = self.get_values();
       py::dict py_adj;
-      for (std::size_t i = 0; i < self.num_binaries; ++i) {
+      for (int64_t i = 0; i < self.num_binaries; ++i) {
          py::dict dict;
          for (const auto &index_key: adj[i]) {
             py::tuple tuple;
