@@ -26,17 +26,20 @@ namespace updater {
 template<typename System>
 struct KLocal;
 
-
+//! @brief K-local update for higher order unconstrained binary optimization (HUBO) problems with vartype being "BINARY".
+//! @tparam GraphType graph type for Polynomial graph class
 template<typename GraphType>
 struct KLocal<system::KLocalPolynomial<GraphType>> {
    
-   using CPIsing = system::KLocalPolynomial<GraphType>;
-   
-   //! @brief floating point type
+      //! @brief floating point type
    using FloatType = typename GraphType::value_type;
    
+   //! @brief Operate k-local update for HUBO.
+   //! @param system ClPIsing&. Object of a KLocalPolynomial system.
+   //! @param random_number_engine RandomNumberEngine&. Eandom number engine.
+   //! @param parameter const utility::ClassicalUpdaterParameter&. Parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f.
    template<typename RandomNumberEngine>
-   inline static void update(CPIsing &system,
+   inline static void update(system::KLocalPolynomial<GraphType> &system,
                              RandomNumberEngine &random_number_engine,
                              const utility::ClassicalUpdaterParameter &parameter
                              ) {
@@ -65,11 +68,7 @@ struct KLocal<system::KLocalPolynomial<GraphType>> {
       }
       system.count_call_updater++;
    }
-   
-   
 };
-
-
 
 } // namespace updater
 } // namespace openjij

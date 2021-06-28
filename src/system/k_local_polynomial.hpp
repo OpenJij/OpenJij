@@ -23,7 +23,7 @@
 namespace openjij {
 namespace system {
 
-//! @brief KLocalPolynomial class, which is a system for higher ordere unconstrained binary optimization (HUBO) models with vartype being "BINARY"
+//! @brief KLocalPolynomial class, which is a system to solve higher order unconstrained binary optimization (HUBO) problems with vartype being "BINARY"
 //! @tparam GraphType type of graph
 template<class GraphType>
 class KLocalPolynomial;
@@ -38,7 +38,7 @@ public:
    //! @brief system type
    using system_type = classical_system;
    
-   //! @brief The number of binaries/binaries
+   //! @brief The number of binaries
    const int64_t num_binaries;
    
    //! @brief k-local  update is activated per rate_call_k_local times
@@ -47,11 +47,15 @@ public:
    //! @brief Counter of calling updater
    int64_t count_call_updater = 0;
       
-   //! @brief Spin/binary configurations
+   //! @brief Binary configurations
    graph::Binaries binaries;
    
+   //! @brief The model's type. SPIN or BINARY
    const cimod::Vartype vartype = cimod::Vartype::BINARY;
    
+   //! @brief Constructor of KLocalPolynomial system class
+   //! @param init_binaries const graph::Binaries&. The initial binary configurations.
+   //! @param poly_graph const graph::Polynomial<FloatType>& (Polynomial graph class). The initial interacrtions.
    KLocalPolynomial(const graph::Binaries &init_binaries, const graph::Polynomial<FloatType> &poly_graph): num_binaries(init_binaries.size()), binaries(init_binaries), binaries_v_(init_binaries) {
             
       const auto &poly_key_list   = poly_graph.get_keys();
@@ -84,6 +88,9 @@ public:
       reset_dE();
    }
    
+   //! @brief Constructor of KLocalPolynomial system class.
+   //! @param init_binaries const graph::Binaries&. The initial binary configurations.
+   //! @param j const nlohmann::json&
    KLocalPolynomial(const graph::Binaries &init_binaries, const nlohmann::json &j) :num_binaries(init_binaries.size()), binaries(init_binaries), binaries_v_(init_binaries) {
       
       if (j.at("vartype") != "BINARY") {
@@ -117,6 +124,8 @@ public:
       reset_dE();
    }
    
+   //! @brief Reset KLocalPolynomial system with new binary configurations.
+   //! @param init_binaries const graph::Binaries&
    void reset_binaries(const graph::Binaries &init_binaries) {
       if (init_binaries.size() != binaries.size()) {
          throw std::runtime_error("The size of initial binaries does not equal to system size");
@@ -133,6 +142,7 @@ public:
       }
    }
    
+   //! @brief Reset energy differences (dE), which is used to determine whether to flip the binary or not.
    void reset_dE() {
       dE_.clear();
       dE_v_.clear();
@@ -166,10 +176,17 @@ public:
       }
    }
    
+   //! @brief Return the energy difference of single spin flip update
+   //! @param index_binary const graph::Index
+   //! @return the energy difference corresponding to "index_binary"
    inline FloatType dE_single(const graph::Index index_binary) const {
       return dE_[index_binary];
    }
    
+   //! @brief Return the energy difference of k-local update
+   //! @details Note that this function changes the internal state of KLocalPolynomial system. This function virtually update the system by k-local update.
+   //! @param index_key const graph::Index
+   //! @return the energy difference corresponding to "index_key"
    FloatType dE_k_local(const std::size_t index_key) {
       FloatType dE = 0.0;
       for (const auto &index_binary: poly_key_list_[index_key]) {
@@ -181,6 +198,7 @@ public:
       return dE;
    }
    
+   //! @brief Update binary configurations by k-local update
    void update_system_k_local() {
       for (const auto &index_binary: update_index_binaries_v_) {
          binaries[index_binary] = binaries_v_[index_binary];
@@ -196,21 +214,32 @@ public:
       update_index_dE_v_.clear();
    }
    
-   void reset_virtual_system() {
-      for (const auto &index_binary: update_index_binaries_v_) {
-         binaries_v_[index_binary] = binaries[index_binary];
+   //! @brief Flip specified binary by single spin flip.
+   //! @param index_update_binary const graph::Index
+   void update_system_single(const graph::Index index_update_binary) {
+      const graph::Binary update_binary = binaries[index_update_binary];
+      const int coeef = -2*update_binary + 1;
+      const int count = +2*update_binary - 1;
+      for (const auto &index_key: adj_[index_update_binary]) {
+         const FloatType val = poly_value_list_[index_key];
+         for (const auto &index_binary: poly_key_list_[index_key]) {
+            const graph::Binary binary = binaries[index_binary];
+            if (zero_count_[index_key] + update_binary + binary == 2 && index_binary != index_update_binary) {
+               dE_[index_binary]   += coeef*(-2*binary + 1)*val;
+               dE_v_[index_binary]  = dE_[index_binary];
+            }
+         }
+         zero_count_[index_key]   += count;
+         zero_count_v_[index_key]  = zero_count_[index_key];
       }
-      for (const auto &index_zero_count: update_index_zero_count_v_) {
-         zero_count_v_[index_zero_count] = zero_count_[index_zero_count];
-      }
-      for (const auto &index_dE: update_index_dE_v_) {
-         dE_v_[index_dE] = dE_[index_dE];
-      }
-      update_index_binaries_v_.clear();
-      update_index_zero_count_v_.clear();
-      update_index_dE_v_.clear();
+      dE_[index_update_binary]   *= -1;
+      dE_v_[index_update_binary]  = dE_[index_update_binary];
+      binaries[index_update_binary]    = 1 - binaries[index_update_binary];
+      binaries_v_[index_update_binary] = binaries[index_update_binary];
    }
-   
+      
+   //! @brief Virtually flip specified binary by single spin flip.
+   //! @param index_update_binary const graph::Index.
    void virtual_update_system_single(const graph::Index index_update_binary) {
       const graph::Binary update_binary = binaries_v_[index_update_binary];
       const int coeef = -2*update_binary + 1;
@@ -233,79 +262,103 @@ public:
       update_index_binaries_v_.push_back(index_update_binary);
    }
    
-   void update_system_single(const graph::Index index_update_binary) {
-      const graph::Binary update_binary = binaries[index_update_binary];
-      const int coeef = -2*update_binary + 1;
-      const int count = +2*update_binary - 1;
-      for (const auto &index_key: adj_[index_update_binary]) {
-         const FloatType val = poly_value_list_[index_key];
-         for (const auto &index_binary: poly_key_list_[index_key]) {
-            const graph::Binary binary = binaries[index_binary];
-            if (zero_count_[index_key] + update_binary + binary == 2 && index_binary != index_update_binary) {
-               dE_[index_binary]   += coeef*(-2*binary + 1)*val;
-               dE_v_[index_binary]  = dE_[index_binary];
-            }
-         }
-         zero_count_[index_key]   += count;
-         zero_count_v_[index_key]  = zero_count_[index_key];
+   //! @brief Reset binary configurations virtually updated by k-local update.
+   void reset_virtual_system() {
+      for (const auto &index_binary: update_index_binaries_v_) {
+         binaries_v_[index_binary] = binaries[index_binary];
       }
-      dE_[index_update_binary]   *= -1;
-      dE_v_[index_update_binary]  = dE_[index_update_binary];
-      binaries[index_update_binary]    = 1 - binaries[index_update_binary];
-      binaries_v_[index_update_binary] = binaries[index_update_binary];
+      for (const auto &index_zero_count: update_index_zero_count_v_) {
+         zero_count_v_[index_zero_count] = zero_count_[index_zero_count];
+      }
+      for (const auto &index_dE: update_index_dE_v_) {
+         dE_v_[index_dE] = dE_[index_dE];
+      }
+      update_index_binaries_v_.clear();
+      update_index_zero_count_v_.clear();
+      update_index_dE_v_.clear();
    }
-   
+      
+   //! @brief Set "rate_call_k_local". k-local update is activated per rate_call_k_local times.
+   //! @param rate_k_local int.
    void set_rate_call_k_local(int rate_k_local) {
       if (rate_k_local <= 0) {
-         throw std::runtime_error("rate_k_local is larger than zero");
+         throw std::runtime_error("rate_k_local must be larger than zero");
       }
       rate_call_k_local = rate_k_local;
    }
    
+   //! @brief Get the number of interactions.
    inline int64_t GetNumInteractions() const {
       return num_interactions_;
    }
    
+   //! @brief Return the number of variables taking the zero in the interaction specified by "index_key".
+   //! @param index_key const std::size_t
+   //! @return Corresponding number of variables taking the zero.
    inline int64_t GetZeroCount(const std::size_t index_key) const {
       return zero_count_[index_key];
    }
    
+   //! @brief Get the value of the interaction specified by "index_key".
+   //! @param index_key const std::size_t
+   //! @return Corresponding value.
    inline FloatType GetPolyValue(const std::size_t index_key) const {
       return poly_value_list_[index_key];
    }
    
+   //! @brief Get the adjacency list (the index of interactions) of the binary specified by "index_binary".
+   //! @param index_binary const std::size_t
+   //! @return Corresponding adjacency list.
    inline const std::vector<graph::Index> &get_adj(const std::size_t index_binary) const {
       return adj_[index_binary];
    }
 
+   //! @brief Get "active_binaries_", which is the list of the binaries connected by at least one interaction.
+   //! @return active_binaries_
    inline const std::vector<graph::Index> &get_active_binaries() const {
       return active_binaries_;
    }
    
+   //! @brief Get "max_effective_dE", which is a upper bound of energy gap.
+   //! @return max_effective_dE
    FloatType get_max_effective_dE() const {
       return max_effective_dE;
    }
    
+   //! @brief Get "min_effective_dE", which is a rough lower bound of energy gap.
+   //! @return min_effective_dE
    FloatType get_min_effective_dE() const {
       return min_effective_dE;
    }
    
+   //! @brief Get the PolynomialValueList object, which is the list of the values of the polynomial interactions as std::vector<FloatType>.
+   //! @return "poly_value_list_"
    const cimod::PolynomialValueList<FloatType> &get_values() const {
       return poly_value_list_;
    }
    
+   //! @brief Get the PolynomialKeyList object, which is the list of the indices of the polynomial interactions as std::vector<std::vector<graph::Index>>.
+   //! @return "poly_key_list_"
    const cimod::PolynomialKeyList<graph::Index> &get_keys() const {
       return poly_key_list_;
    }
    
+   //! @brief Get the adjacency list, which is the list of the indices of polynomial interactions including specific binary.
+   //! @return adjacency list
    const std::vector<std::vector<graph::Index>> &get_adj() const {
       return adj_;
    }
    
+   //! @brief Get the vartype as std::string, which must be "BINARY".
+   //! @return "BINARY" as std::string
    std::string get_vartype_string() const {
       return "BINARY";
    }
-      
+    
+   ///----------------------------------------------------------------------------------------
+   ///----------------The following functions are for debugging. Disable when release.----------------
+   ///----------------------------------------------------------------------------------------
+   /*
    void print_dE() const {
       for (std::size_t i = 0; i < dE_.size(); ++i) {
          printf("dE[%2ld]=%+.15lf\n", i, dE_[i]);
@@ -313,7 +366,7 @@ public:
    }
    
    void print_zero_count() const {
-      for (std::size_t i = 0; i < num_interactions_; ++i) {
+      for (int64_t i = 0; i < num_interactions_; ++i) {
          printf("zero_count[");
          for (const auto &index_binary: poly_key_list_[i]) {
             printf("%ld, ", index_binary);
@@ -323,7 +376,7 @@ public:
    }
    
    void print_adj() const {
-      for (std::size_t i = 0; i < num_binaries; ++i) {
+      for (int64_t i = 0; i < num_binaries; ++i) {
          printf("adj[%ld]=", i);
          for (const auto &index_key: adj_[i]) {
             printf("%ld(%+lf), ", index_key, poly_value_list_[index_key]);
@@ -331,39 +384,63 @@ public:
          printf("\n");
       }
    }
+   */
+   ///----------------------------------------------------------------------------------------
+
    
 private:
    
+   //! @brief The number of the interactions.
    int64_t num_interactions_;
    
+   //! @brief The energy differences when flipping a binary.
    std::vector<FloatType> dE_;
 
+   //! @brief The number of variables taking the zero in each interaction.
    std::vector<int64_t> zero_count_;
    
+   //! @brief Adjacency list, which is the list of the indices of polynomial interactions including specific binary.
    std::vector<std::vector<graph::Index>> adj_;
    
+   //! @brief The list of the indices of the polynomial interactions as std::vector<std::vector<graph::Index>>.
    cimod::PolynomialKeyList<graph::Index> poly_key_list_;
    
+   //! @brief The list of the values of the polynomial interactions as std::vector<FloatType>.
    cimod::PolynomialValueList<FloatType>  poly_value_list_;
    
+   //! @brief The list of the binaries connected by at least one interaction.
    std::vector<graph::Index> active_binaries_;
-
-   std::vector<FloatType> dE_v_;
    
-   graph::Binaries binaries_v_;
-   
-   std::unordered_set<std::size_t> update_index_dE_v_;
-   
-   std::vector<std::size_t> update_index_zero_count_v_;
-   
-   std::vector<std::size_t> update_index_binaries_v_;
-      
-   std::vector<int64_t> zero_count_v_;
-   
+   //! @brief Upper bound of energy gap.
    FloatType max_effective_dE;
    
+   //! @brief Rough lower bound of energy gap.
    FloatType min_effective_dE;
+
+   ///------------------------------------------------------------------------------------------------------------------------------------------------------
+   ///----------------The following member variables are used to virtually update the system and k-local update----------------
+   ///------------------------------------------------------------------------------------------------------------------------------------------------------
+   //! @brief The energy differences when flipping a binary, which is used to implement k-local update.
+   std::vector<FloatType> dE_v_;
+   
+   //! @brief Virtually updated binary configulations, which is used to implement k-local update.
+   graph::Binaries binaries_v_;
+   
+   //! @brief The list of virtually updated delta E's, which is used to implement k-local update.
+   std::unordered_set<std::size_t> update_index_dE_v_;
+   
+   //! @brief The list of virtually updated index of zero_count_v_, which is used to implement k-local update.
+   std::vector<std::size_t> update_index_zero_count_v_;
+   
+   //! @brief The list of virtually updated index of binaries_v_, which is used to implement k-local update.
+   std::vector<std::size_t> update_index_binaries_v_;
       
+   //! @brief The list of virtually updated the number of variables taking the zero in each interaction, which is used to implement k-local update.
+   std::vector<int64_t> zero_count_v_;
+   ///------------------------------------------------------------------------------------------------------------------------------------------------------
+
+      
+   //! @brief Set adjacency list. Note that the list is sorted in accordance with the value of the interactions.
    void SetAdj() {
       adj_.clear();
       adj_.resize(num_binaries);
@@ -383,6 +460,7 @@ private:
       }
    }
    
+   //! @brief Set zero_count_ and zero_count_v_
    void ResetZeroCount() {
       zero_count_.resize(num_interactions_);
       zero_count_v_.resize(num_interactions_);

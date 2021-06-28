@@ -51,10 +51,9 @@ public:
    
    //! @brief Constructor of Polynomial class to initialize variables and vartype.
    //! @param num_variables std::size_t
-   //! @param vartype cimod::Vartype
    explicit Polynomial(const std::size_t num_variables): Graph(num_variables) {}
 
-   //! @brief Constructor of Polynomial class to initialize num_variables, vartype, and interactions from json by using a delegating constructor.
+   //! @brief Constructor of Polynomial class to initialize num_variables, and interactions from json.
    //! @param j JSON object
    explicit Polynomial(const nlohmann::json &j): Graph(j.at("variables").size()) {
       const auto &v_k_v = json_parse_polynomial<FloatType>(j);
@@ -79,12 +78,12 @@ public:
       for (std::size_t i = 0; i < poly_key_list.size(); ++i) {
          poly_key_inv_[poly_key_list_[i]] = i;
       }
-      
    }
    
-   //! @brief Access the interaction corresponding to the input argument "std::vector<Index>& index" (lvalue references) to set an interaction.
+   //! @brief Access the interaction corresponding to the input argument to set an interaction.
+   //! @details Note that the input argument "key" will be sorted. If the interaction specified by "key" is empty, the zero will be added to the polynomial graph.
    //! @param key std::vector<Index>&
-   //! @return The interaction corresponding to "std::vector<Index>& index", i.e., J[index]
+   //! @return The interaction corresponding to "key".
    FloatType &J(std::vector<Index> &key) {
       std::sort(key.begin(), key.end());
       CheckKeyValid(key);
@@ -96,17 +95,19 @@ public:
       return poly_value_list_[poly_key_inv_.at(key)];
    }
    
-   //! @brief Access the interaction corresponding to the input argument "const std::vector<Index>& index" (lvalue references) to set an interaction.
-   //! @param index const std::vector<Index>&
-   //! @return The interaction corresponding to "const std::vector<Index>& index", i.e., J[index]
+   //! @brief Access the interaction corresponding to the input argument to set an interaction.
+   //! @details If the interaction specified by "key" is empty, the zero will be added to the polynomial graph.
+   //! @param key const std::vector<Index>&
+   //! @return The interaction corresponding to "key".
    FloatType &J(const std::vector<Index> &key) {
       std::vector<Index> copied_key = key;
       return J(copied_key);
    }
    
-   //! @brief Return the interaction corresponding to the input argument "std::vector<Index> &index" (lvalue references).
-   //! @param index std::vector<Index>&
-   //! @return The interaction corresponding to "std::vector<Index>& index", i.e., J.at(index)
+   //! @brief Return the interaction corresponding to the input argument.
+   //! @details Note that the input argument "key" will be sorted. If the interaction specified by "key" is empty, this function returns the zero.
+   //! @param key std::vector<Index>&
+   //! @return The interaction corresponding to "key".
    FloatType J(std::vector<Index> &key) const {
       std::sort(key.begin(), key.end());
       CheckKeyValid(key);
@@ -118,34 +119,37 @@ public:
       }
    }
    
-   //! @brief Return the interaction corresponding to the input argument "const std::vector<Index> &index".
-   //! @param index const std::vector<Index>&
-   //! @return The interaction corresponding to "const std::vector<Index>& index", i.e., J.at(index)
+   //! @brief Return the interaction corresponding to the input argument.
+   //! @details If the interaction specified by "key" is empty, this function returns the zero.
+   //! @param key const std::vector<Index>&
+   //! @return The interaction corresponding to "key".
    FloatType J(const std::vector<Index> &key) const {
       std::vector<Index> copied_key = key;
       return J(copied_key);
    }
    
-   //! @brief Access the interaction corresponding to the input argument "args" (parameter pack) to set an interaction.
+   //! @brief Access the interaction corresponding to the input argument to set an interaction.
+   //! @details If the interaction specified by "args" is empty, the zero will be added to the polynomial graph.
    //! @param args parameter pack
-   //! @return The interaction corresponding to "args", i.e., J[args]
+   //! @return The interaction corresponding to "args".
    template<typename... Args>
    FloatType &J(Args... args) {
       std::vector<Index> copied_key{(Index)args...};
       return J(copied_key);
    }
    
-   //! @brief Return the interaction corresponding to the input argument "args" (parameter pack).
+   //! @brief Access the interaction corresponding to the input argument to set an interaction.
+   //! @details If the interaction specified by "args" is empty, this function returns the zero.
    //! @param args parameter pack
-   //! @return The interaction corresponding to "args", i.e., J[args]
+   //! @return The interaction corresponding to "args".
    template<typename... Args>
    FloatType J(Args... args) const {
       std::vector<Index> copied_key{(Index)args...};
       return J(copied_key);
    }
    
-   //! @brief Return the polynomial interactions.
-   //! @return The interactions
+   //! @brief Generate and return all the polynomial interactions as std::unordered_map<std::vector<Index>, FloatType>.
+   //! @return All the interactions
    cimod::Polynomial<Index, FloatType> get_polynomial() const {
       cimod::Polynomial<Index, FloatType> poly_map;
       for (std::size_t i = 0; i < poly_key_list_.size(); ++i) {
@@ -154,20 +158,20 @@ public:
       return poly_map;
    }
    
-   //! @brief Get the PolynomialKeyList object.
-   //! @return PolynomialKeyList object as std::vector<std::vector>>.
+   //! @brief Get the PolynomialKeyList object (all the keys of polynomial interactions).
+   //! @return PolynomialKeyList object as std::vector<std::vector<Index>>.
    const cimod::PolynomialKeyList<Index> &get_keys() const {
       return poly_key_list_;
    }
    
-   //! @brief Get the PolynomialValueList object.
-   //! @return PolynomialValueList object as std::vector.
+   //! @brief Get the PolynomialValueList object (all the values of polynomial interactions).
+   //! @return PolynomialValueList object as std::vector<FloatType>.
    const cimod::PolynomialValueList<FloatType> &get_values() const {
       return poly_value_list_;
    }
       
-   //! @brief Return the number of interactions
-   //! @return The number of interactions
+   //! @brief Return the number of all the interactions.
+   //! @return The number of all the interactions.
    std::size_t get_num_interactions() const {
       return poly_key_list_.size();
    }
@@ -223,10 +227,10 @@ public:
    }
    
 private:
-   //! @brief The list of the indices of the polynomial interactions (namely, the list of keys of the polynomial interactions as std::unordered_map) as std::vector<std::vector>>.
+   //! @brief The list of the indices of the polynomial interactions (namely, the list of key of the polynomial interactions as std::unordered_map) as std::vector<std::vector<Index>>.
    cimod::PolynomialKeyList<Index> poly_key_list_;
    
-   //! @brief The list of the values of the polynomial interactions (namely, the list of values of the polynomial interactions as std::unordered_map) as std::vector.
+   //! @brief The list of the values of the polynomial interactions (namely, the list of value of the polynomial interactions as std::unordered_map) as std::vecto<FloatType>.
    cimod::PolynomialValueList<FloatType> poly_value_list_;
    
    //! @brief The inverse key list, which indicates the index of the poly_key_list_ and poly_value_list_

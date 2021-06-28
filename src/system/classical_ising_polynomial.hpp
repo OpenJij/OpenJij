@@ -24,7 +24,7 @@
 namespace openjij {
 namespace system {
 
-//! @brief ClassicalIsingPolynomial structure, which is a system for classical Ising models with poynomial interactions and higher ordere unconstrained binary optimization (HUBO) models
+//! @brief ClassicalIsingPolynomial class, which is a system to solve higher order unconstrained binary optimization (HUBO) problems with vartype being "SPIN" or "BINARY"
 //! @tparam GraphType type of graph
 template<typename GraphType>
 class ClassicalIsingPolynomial;
@@ -38,16 +38,19 @@ public:
    //! @brief system type
    using system_type = classical_system;
 
-   //! @brief The number of binaries/binaries
+   //! @brief The number of spins/binaries
    const int64_t num_variables;
    
+   //! @brief Spin/binary configurations
    graph::Spins variables;
    
+   //! @brief The model's type. SPIN or BINARY
    const cimod::Vartype vartype;
    
    //! @brief Constructor of ClassicalIsingPolynomial
-   //! @param init_spins graph::Spins&. The initial spin/binary configurations.
+   //! @param init_variables graph::Spins& or graph::Binaries& (both are equal). The initial spin/binary configurations.
    //! @param poly_graph graph::Polynomial<FloatType>& (Polynomial graph class). The initial interacrtions.
+   //! @param init_vartype const cimod::Vartype. The model's variable type. SPIN or BINARY.
    ClassicalIsingPolynomial(const graph::Spins &init_variables, const graph::Polynomial<FloatType> &poly_graph, const cimod::Vartype init_vartype): num_variables(poly_graph.size()), variables(init_variables), vartype(init_vartype) {
       SetInteractions(poly_graph);
       SetAdj();
@@ -57,8 +60,9 @@ public:
    }
    
    //! @brief Constructor of ClassicalIsingPolynomial
-   //! @param init_spins graph::Spins&. The initial spin/binary configurations.
+   //! @param init_variables graph::Spins& or graph::Binaries& (both are equal). The initial spin/binary configurations.
    //! @param poly_graph graph::Polynomial<FloatType>& (Polynomial graph class). The initial interacrtions.
+   //! @param init_vartype const std::string. The model's variable type. "SPIN" or "BINARY".
    ClassicalIsingPolynomial(const graph::Spins &init_variables, const graph::Polynomial<FloatType> &poly_graph, const std::string init_vartype): num_variables(poly_graph.size()), variables(init_variables), vartype(ConvertVartype(init_vartype)) {
       SetInteractions(poly_graph);
       SetAdj();
@@ -68,9 +72,9 @@ public:
    }
    
    //! @brief Constructor of ClassicalIsingPolynomial
-   //! @param init_spins graph::Spins&. The initial spin/binary configurations.
+   //! @param init_variables graph::Spins& or graph::Binaries& (both are equal). The initial spin/binary configurations.
    //! @param j const nlohmann::json object
-   ClassicalIsingPolynomial(const graph::Spins &init_variables, const nlohmann::json &j):num_variables(init_variables.size()), variables(init_variables), vartype(j.at("vartype") == "SPIN" ? cimod::Vartype::SPIN : cimod::Vartype::BINARY) {
+   ClassicalIsingPolynomial(const graph::Spins &init_variables, const nlohmann::json &j):num_variables(init_variables.size()), variables(init_variables), vartype(j.at("vartype") == "SPIN" ? cimod::Vartype::SPIN: cimod::Vartype::BINARY) {
       const auto &v_k_v = graph::json_parse_polynomial<FloatType>(j);
       const auto &poly_key_list   = std::get<0>(v_k_v);
       const auto &poly_value_list = std::get<1>(v_k_v);
@@ -99,6 +103,8 @@ public:
       reset_dE();
    }
    
+   //! @brief Reset ClassicalIsingPolynomial system with new spin/binary configurations.
+   //! @param init_variables const graph::Spins& or const graph::Binaries (both are equal).
    void reset_variables(const graph::Spins &init_variables) {
       if (init_variables.size() != variables.size()) {
          throw std::runtime_error("The size of initial spins/binaries does not equal to system size");
@@ -133,6 +139,7 @@ public:
       }
    }
    
+   //! @brief Reset energy differences (dE), which is used to determine whether to flip the spin/binary or not.
    void reset_dE() {
       dE_.clear();
       dE_.resize(num_variables);
@@ -200,6 +207,8 @@ public:
       }
    }
    
+   //! @brief Flip specified spin by single spin flip. Note that this function is used when the model's type is SPIN.
+   //! @param index_update_spin const graph::Index.
    void update_spin_system(const graph::Index index_update_spin) {
       for (const auto &index_key: adj_[index_update_spin]) {
          const FloatType val  = 4.0*poly_value_list_[index_key];
@@ -215,6 +224,8 @@ public:
       variables[index_update_spin] *= -1;
    }
    
+   //! @brief Flip specified binary by single spin flip. Note that this function is used when the model's type is BINARY.
+   //! @param index_update_binary const graph::Index.
    void update_binary_system(const graph::Index index_update_binary) {
       const graph::Binary update_binary = variables[index_update_binary];
       const int coeef = -2*update_binary + 1;
@@ -233,34 +244,51 @@ public:
       variables[index_update_binary] = 1 - variables[index_update_binary];
    }
    
+   //! @brief Return the energy difference of single spin flip update.
+   //! @param index_variable const graph::Index.
+   //! @return the energy difference corresponding to "index_variable".
    inline FloatType dE(const graph::Index index_variable) const {
       return dE_[index_variable];
    }
    
+   //! @brief Get "active_binaries_", which is the list of the binaries connected by at least one interaction.
+   //! @return active_binaries_
    inline const std::vector<graph::Index> &get_active_variables() const {
       return active_variables_;
    }
    
+   //! @brief Get the PolynomialValueList object, which is the list of the values of the polynomial interactions as std::vector<FloatType>.
+   //! @return "poly_value_list_"
    const cimod::PolynomialValueList<FloatType> &get_values() const {
       return poly_value_list_;
    }
    
+   //! @brief Get the PolynomialKeyList object, which is the list of the indices of the polynomial interactions as std::vector<std::vector<graph::Index>>.
+   //! @return "poly_key_list_"
    const cimod::PolynomialKeyList<graph::Index> &get_keys() const {
       return poly_key_list_;
    }
    
+   //! @brief Get the adjacency list, which is the list of the indices of polynomial interactions including specific spin/binary.
+   //! @return adjacency list
    const std::vector<std::vector<graph::Index>> &get_adj() const {
       return adj_;
    }
  
+   //! @brief Get "max_effective_dE", which is a upper bound of energy gap.
+   //! @return max_effective_dE
    FloatType get_max_effective_dE() const {
       return max_effective_dE_;
    }
    
+   //! @brief Get "min_effective_dE", which is a rough lower bound of energy gap.
+   //! @return min_effective_dE
    FloatType get_min_effective_dE() const {
       return min_effective_dE_;
    }
    
+   //! @brief Get the vartype as std::string.
+   //! @return The model's type as std::string
    std::string get_vartype_string() const {
       if (vartype == cimod::Vartype::SPIN) {
          return "SPIN";
@@ -274,26 +302,38 @@ public:
    }
    
 private:
+   
+   //! @brief The number of the interactions.
    int64_t num_interactions_;
    
+   //! @brief The energy differences when flipping a spin/binary.
    std::vector<FloatType> dE_;
    
+   //! @brief The number of variables taking the zero in each interaction. Note that this variable is used when the model's type is BINARY.
    std::vector<int64_t> zero_count_;
    
+   //! @brief The sign of product of spin variables in each interaction. Note that this variable is used when the model's type is SPIN.
    std::vector<int8_t>  sign_key_;
    
+   //! @brief Adjacency list, which is the list of the indices of polynomial interactions including specific spin/binary.
    std::vector<std::vector<graph::Index>> adj_;
    
+   //! @brief The list of the indices of the polynomial interactions as std::vector<std::vector<graph::Index>>.
    cimod::PolynomialKeyList<graph::Index> poly_key_list_;
    
+   //! @brief The list of the values of the polynomial interactions as std::vector<FloatType>.
    cimod::PolynomialValueList<FloatType>  poly_value_list_;
    
+   //! @brief The list of the binaries connected by at least one interaction.
    std::vector<graph::Index> active_variables_;
    
+   //! @brief Upper bound of energy gap.
    FloatType max_effective_dE_;
    
+   //! @brief Rough lower bound of energy gap.
    FloatType min_effective_dE_;
    
+   //! @brief Set adjacency list.
    void SetAdj() {
       adj_.clear();
       adj_.resize(num_variables);
@@ -304,6 +344,8 @@ private:
       }
    }
    
+   //! @brief Set interactions from Polynomial graph.
+   //! @param poly_graph const graph::Polynomial<FloatType>&.
    void SetInteractions(const graph::Polynomial<FloatType> &poly_graph) {
       const auto &poly_key_list   = poly_graph.get_keys();
       const auto &poly_value_list = poly_graph.get_values();
@@ -331,6 +373,7 @@ private:
       std::sort(active_variables_.begin(), active_variables_.end());
    }
    
+   //! @brief Set zero_count_.
    void ResetZeroCount() {
       if (vartype != cimod::Vartype::BINARY) {
          return;
@@ -348,6 +391,7 @@ private:
       }
    }
    
+   //! @brief Set sign_key_.
    void ResetSignKey() {
       if (vartype != cimod::Vartype::SPIN) {
          return;
@@ -363,6 +407,8 @@ private:
       }
    }
    
+   //! @brief Convert vartype from std::string to cimod::Vartype
+   //! @param vartype const std::string
    cimod::Vartype ConvertVartype(const std::string vartype) const {
       if (vartype == "SPIN") {
          return cimod::Vartype::SPIN;
@@ -379,26 +425,30 @@ private:
 
 //! @brief Helper function for ClassicalIsingPolynomial constructor
 //! @tparam GraphType
-//! @param init_spin const graph::Spins&. The initial spin/binaries.
-//! @param init_interaction GraphType&. The initial interactions.
+//! @param init_variables const graph::Spins& or const graph::Binaries& (both are equal). The initial spin/binarie configulations.
+//! @param poly_graph graph::Polynomial<FloatType>& (Polynomial graph class). The initial interacrtions.
+//! @param init_vartype const cimod::Vartype. The model's variable type. SPIN or BINARY.
 template<typename GraphType>
-auto make_classical_ising_polynomial(const graph::Spins &init_spin, const GraphType &init_interaction, const cimod::Vartype vartype) {
-   return ClassicalIsingPolynomial<GraphType>(init_spin, init_interaction, vartype);
+auto make_classical_ising_polynomial(const graph::Spins &init_variables, const GraphType &poly_graph, const cimod::Vartype init_vartype) {
+   return ClassicalIsingPolynomial<GraphType>(init_variables, poly_graph, init_vartype);
 }
 
+//! @brief Helper function for ClassicalIsingPolynomial constructor
+//! @tparam GraphType
+//! @param init_variables const graph::Spins& or const graph::Binaries& (both are equal). The initial spin/binarie configulations.
+//! @param poly_graph graph::Polynomial<FloatType>& (Polynomial graph class). The initial interacrtions.
+//! @param init_vartype std::string. The model's variable type. SPIN or BINARY.
 template<typename GraphType>
-auto make_classical_ising_polynomial(const graph::Spins &init_spin, const GraphType &init_interaction, const std::string vartype) {
-   return ClassicalIsingPolynomial<graph::Polynomial<double>>(init_spin, init_interaction, vartype);
+auto make_classical_ising_polynomial(const graph::Spins &init_variables, const GraphType &poly_graph, const std::string init_vartype) {
+   return ClassicalIsingPolynomial<graph::Polynomial<double>>(init_variables, poly_graph, init_vartype);
 }
 
 //! @brief Helper function for ClassicalIsingPolynomial constructor by using nlohmann::json object
-//! @tparam FloatType
-//! @param init_spin const graph::Spins&. The initial spin/binaries.
+//! @param init_variables const graph::Spins& or const graph::Binaries& (both are equal). The initial spin/binarie configulations.
 //! @param init_obj nlohmann::json&
-auto make_classical_ising_polynomial(const graph::Spins &init_spin, const nlohmann::json &init_obj) {
-   return ClassicalIsingPolynomial<graph::Polynomial<double>>(init_spin, init_obj);
+auto make_classical_ising_polynomial(const graph::Spins &init_variables, const nlohmann::json &init_obj) {
+   return ClassicalIsingPolynomial<graph::Polynomial<double>>(init_variables, init_obj);
 }
-
 
 } //namespace system
 } //namespace openjij

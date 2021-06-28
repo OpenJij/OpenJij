@@ -1,7 +1,14 @@
 var searchData=
 [
-  ['transverse_5ffield_5fsystem_527',['transverse_field_system',['../structopenjij_1_1system_1_1transverse__field__system.html',1,'openjij::system']]],
-  ['transverseising_528',['TransverseIsing',['../structopenjij_1_1system_1_1_transverse_ising.html',1,'openjij::system']]],
-  ['transverseising_3c_20graph_3a_3adense_3c_20floattype_20_3e_20_3e_529',['TransverseIsing&lt; graph::Dense&lt; FloatType &gt; &gt;',['../structopenjij_1_1system_1_1_transverse_ising_3_01graph_1_1_dense_3_01_float_type_01_4_01_4.html',1,'openjij::system']]],
-  ['transverseising_3c_20graph_3a_3asparse_3c_20floattype_20_3e_20_3e_530',['TransverseIsing&lt; graph::Sparse&lt; FloatType &gt; &gt;',['../structopenjij_1_1system_1_1_transverse_ising_3_01graph_1_1_sparse_3_01_float_type_01_4_01_4.html',1,'openjij::system']]]
+  ['schedule_542',['Schedule',['../structopenjij_1_1utility_1_1_schedule.html',1,'openjij::utility']]],
+  ['single_5fcommand_5fsystem_543',['single_command_system',['../structopenjij_1_1system_1_1single__command__system.html',1,'openjij::system']]],
+  ['singlespinflip_544',['SingleSpinFlip',['../structopenjij_1_1updater_1_1_single_spin_flip.html',1,'openjij::updater']]],
+  ['singlespinflip_3c_20system_3a_3aclassicalising_3c_20graphtype_20_3e_20_3e_545',['SingleSpinFlip&lt; system::ClassicalIsing&lt; GraphType &gt; &gt;',['../structopenjij_1_1updater_1_1_single_spin_flip_3_01system_1_1_classical_ising_3_01_graph_type_01_4_01_4.html',1,'openjij::updater']]],
+  ['singlespinflip_3c_20system_3a_3aclassicalisingpolynomial_3c_20graphtype_20_3e_20_3e_546',['SingleSpinFlip&lt; system::ClassicalIsingPolynomial&lt; GraphType &gt; &gt;',['../structopenjij_1_1updater_1_1_single_spin_flip_3_01system_1_1_classical_ising_polynomial_3_01_graph_type_01_4_01_4.html',1,'openjij::updater']]],
+  ['singlespinflip_3c_20system_3a_3atransverseising_3c_20graphtype_20_3e_20_3e_547',['SingleSpinFlip&lt; system::TransverseIsing&lt; GraphType &gt; &gt;',['../structopenjij_1_1updater_1_1_single_spin_flip_3_01system_1_1_transverse_ising_3_01_graph_type_01_4_01_4.html',1,'openjij::updater']]],
+  ['sparse_548',['Sparse',['../classopenjij_1_1graph_1_1_sparse.html',1,'openjij::graph']]],
+  ['sparse_3c_20double_20_3e_549',['Sparse&lt; double &gt;',['../classopenjij_1_1graph_1_1_sparse.html',1,'openjij::graph']]],
+  ['square_550',['Square',['../classopenjij_1_1graph_1_1_square.html',1,'openjij::graph']]],
+  ['swendsenwang_551',['SwendsenWang',['../structopenjij_1_1updater_1_1_swendsen_wang.html',1,'openjij::updater']]],
+  ['swendsenwang_3c_20system_3a_3aclassicalising_3c_20graph_3a_3asparse_3c_20floattype_20_3e_20_3e_20_3e_552',['SwendsenWang&lt; system::ClassicalIsing&lt; graph::Sparse&lt; FloatType &gt; &gt; &gt;',['../structopenjij_1_1updater_1_1_swendsen_wang_3_01system_1_1_classical_ising_3_01graph_1_1_sparse_3_01_float_type_01_4_01_4_01_4.html',1,'openjij::updater']]]
 ];

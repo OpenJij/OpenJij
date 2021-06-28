@@ -1233,9 +1233,7 @@ TEST(PolyUpdater, KLocal2) {
    openjij::graph::Binaries binary = poly_graph.gen_binary(engine_for_binary);
    
    auto poly_system = openjij::system::make_k_local_polynomial(binary, poly_graph);
-   
-   poly_system.print_dE();
-   
+      
    auto random_numder_engine = std::mt19937(seed);
    
    openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, generate_schedule_list());

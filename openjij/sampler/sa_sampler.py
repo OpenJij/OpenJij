@@ -241,9 +241,10 @@ class SASampler(BaseSampler):
 
 
     def sample_hubo(self, J, vartype, 
-                    beta_min = None, beta_max = None, schedule = None,
-                    num_sweeps = None, num_reads = 1,
-                    initial_state = None, reinitialize_state=True, seed = None):
+                    beta_min = None, beta_max = None,
+                    num_sweeps = None, num_reads = 1, schedule = None,
+                    initial_state = None, updater=None,
+                    reinitialize_state=True, seed = None):
 
         """sampling from higher order unconstrainted binary optimization.
 
@@ -274,19 +275,7 @@ class SASampler(BaseSampler):
                 >>> response = sampler.sample_hubo(J, "BINARY")
         """
 
-        if vartype == "SPIN":
-            vartype = openjij.SPIN
-        elif vartype == "BINARY":
-            vartype = openjij.BINARY
-
-        bpm = openjij.BinaryPolynomialModel(J, vartype)
-
-        return self._sampling_hubo(bpm, beta_min, beta_max,num_sweeps, num_reads, schedule, initial_state, reinitialize_state, seed)
-
-    def _sampling_hubo(self, model, beta_min=None, beta_max=None,
-                     num_sweeps=None, num_reads=1, schedule=None,
-                     initial_state=None,
-                     reinitialize_state=True, seed=None):
+        model = openjij.BinaryPolynomialModel(J, vartype)
 
         # make init state generator --------------------------------
         if initial_state is None:
@@ -299,19 +288,26 @@ class SASampler(BaseSampler):
         else:
             if isinstance(initial_state, dict):
                 initial_state = [initial_state[k] for k in model.indices]
-            _init_state = np.array(initial_state)
-            def _generate_init_state(): return _init_state
+            def _generate_init_state(): return np.array(initial_state)
         # -------------------------------- make init state generator
-        
+
+        # determine system class and algorithm --------------------------------
         if model.vartype == openjij.SPIN:
             sa_system = cxxjij.system.make_classical_ising_polynomial(_generate_init_state(), model.to_serializable())
             algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
         elif model.vartype == openjij.BINARY:
-            sa_system = cxxjij.system.make_k_local_polynomial(_generate_init_state(), model.to_serializable())
-            algorithm = cxxjij.algorithm.Algorithm_KLocal_run
+            if updater == "k-local" or updater == None:
+                sa_system = cxxjij.system.make_k_local_polynomial(_generate_init_state(), model.to_serializable())
+                algorithm = cxxjij.algorithm.Algorithm_KLocal_run
+            elif updater == "single spin flip":
+                sa_system = cxxjij.system.make_classical_ising_polynomial(_generate_init_state(), model.to_serializable())
+                algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
+            else:
+                raise ValueError("Unknown updater name")
         else:
             raise ValueError("Unknown vartype detected")
-        
+        # -------------------------------- determine system class and algorithm
+
         self._setting_overwrite(
             beta_min=beta_min, beta_max=beta_max,
             num_sweeps=num_sweeps, num_reads=num_reads
@@ -346,7 +342,6 @@ class SASampler(BaseSampler):
         response.info['schedule'] = self.schedule_info
 
         return response
-
 
 def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
                                   beta_max=None, beta_min=None,

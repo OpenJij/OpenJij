@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['_7ecublaswrapper_769',['~CuBLASWrapper',['../classopenjij_1_1utility_1_1cuda_1_1_cu_b_l_a_s_wrapper.html#a142356f693155b99599f4dd5d6c0fc12',1,'openjij::utility::cuda::CuBLASWrapper']]],
-  ['_7ecurandwrapper_770',['~CurandWrapper',['../classopenjij_1_1utility_1_1cuda_1_1_curand_wrapper.html#a5448626020481bd6ee60967388717494',1,'openjij::utility::cuda::CurandWrapper']]]
+  ['xorshift_804',['Xorshift',['../classopenjij_1_1utility_1_1_xorshift.html#add3177d2cd773b8ba1c3e191f3671919',1,'openjij::utility::Xorshift::Xorshift()'],['../classopenjij_1_1utility_1_1_xorshift.html#a76cf699e1814f13679b0fd6684b1fd49',1,'openjij::utility::Xorshift::Xorshift(unsigned s)']]]
 ];
