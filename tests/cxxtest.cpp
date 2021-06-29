@@ -23,6 +23,8 @@
 #include <utility/gpu/memory.hpp>
 #include <utility/gpu/cublas.hpp>
 
+#include "polynomial_test.hpp"
+
 // #####################################
 // helper functions
 // #####################################
@@ -40,7 +42,7 @@ static constexpr std::size_t num_system_size = 8;
 
 
 static openjij::utility::ClassicalScheduleList generate_schedule_list(){
-    return openjij::utility::make_classical_schedule_list(0.1, 100, 2, 2);
+    return openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 100);
 }
 
 static openjij::utility::TransverseFieldScheduleList generate_tfm_schedule_list(){
@@ -377,238 +379,173 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse) {
 }
 */
 
-// Classical Polynomial Ising/Binary Model Test
-TEST(PolyGraph, ConstructorCimod1) {
+///-------------------------------------------------------------------------------------------
+///-------------------------Graph Class Tests: Polynomiall-------------------------
+///-------------------------------------------------------------------------------------------
+TEST(PolyGraph, ConstructorIntCimod1) {
    
-   cimod::Polynomial<openjij::graph::Index, double> polynomial {
-      {{0}, 0.0}, {{1}, 1.0}, {{2}, 2.0},
-      {{0, 1}, 11.0}, {{0, 2}, 22.0}, {{1, 2}, 12.0},
-      {{0, 1, 2}, +12}
-   };
+   auto polynomial = GeneratePolynomialInteractionsDenseInt<double>();
+
    cimod::BinaryPolynomialModel<openjij::graph::Index, double> bpm_cimod(polynomial, cimod::Vartype::SPIN);
    
    openjij::graph::Polynomial<double> poly_graph(bpm_cimod.to_serializable());
 
-   EXPECT_EQ(bpm_cimod.get_num_variables()   , poly_graph.size()                );
-   EXPECT_EQ(bpm_cimod.get_num_interactions(), poly_graph.get_num_interactions());
-   EXPECT_EQ(bpm_cimod._get_values().size()  , poly_graph.get_values().size()   );
-   EXPECT_EQ(bpm_cimod._get_keys().size()    , poly_graph.get_keys().size()     );
-
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(   {0}   ), poly_graph.J(   {0}   ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(   {1}   ), poly_graph.J(   {1}   ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(   {2}   ), poly_graph.J(   {2}   ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial( {0, 1}  ), poly_graph.J( {0, 1}  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial( {0, 2}  ), poly_graph.J( {0, 2}  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial( {1, 2}  ), poly_graph.J( {1, 2}  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial({0, 1, 2}), poly_graph.J({0, 1, 2}));
-   
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(   {0}   ), poly_graph.J(   0   ));//Add
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(   {1}   ), poly_graph.J(   1   ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(   {2}   ), poly_graph.J(   2   ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial( {0, 1}  ), poly_graph.J( 0, 1  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial( {0, 2}  ), poly_graph.J( 0, 2  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial( {1, 2}  ), poly_graph.J( 1, 2  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial({0, 1, 2}), poly_graph.J(0, 1, 2));
-   
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial( {0, 1}  ), poly_graph.J( 1, 0  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial( {0, 2}  ), poly_graph.J( 2, 0  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial( {1, 2}  ), poly_graph.J( 2, 1  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial({0, 1, 2}), poly_graph.J(0, 2, 1));
-   
-   EXPECT_THROW(poly_graph.J(  500  ), std::runtime_error);
-   EXPECT_THROW(poly_graph.J( 0, 0  ), std::runtime_error);
-   EXPECT_THROW(poly_graph.J(2, 1, 1), std::runtime_error);
-   
-   EXPECT_EQ(bpm_cimod.get_num_variables()   , poly_graph.size()                    );
-   EXPECT_EQ(bpm_cimod.get_num_interactions(), poly_graph.get_num_interactions() - 1);
-   EXPECT_EQ(bpm_cimod._get_values().size()  , poly_graph.get_values().size()    - 1);
-   EXPECT_EQ(bpm_cimod._get_keys().size()    , poly_graph.get_keys().size()      - 1);
-   
-   std::random_device rnd;
-   std::mt19937 mt(rnd());
-   const auto spins = poly_graph.gen_spin(mt);
-   EXPECT_DOUBLE_EQ(bpm_cimod.energy(spins), poly_graph.energy(spins));
-
-   const auto binaries = poly_graph.gen_binary(mt);
-   EXPECT_DOUBLE_EQ(bpm_cimod.energy(binaries), poly_graph.energy(binaries));
+   TestPolyGraphDense(poly_graph);
    
 }
 
-TEST(PolyGraph, ConstructorCimod2) {
+TEST(PolyGraph, ConstructorIntCimod2) {
    
-   cimod::Polynomial<openjij::graph::Index, float> polynomial {
-      {{1}, 1.0}, {{0,2}, 2.0}, {{1,2}, 12.0}
-   };
+   auto polynomial = GeneratePolynomialInteractionsSparseInt1<double>();
    
-   cimod::BinaryPolynomialModel<openjij::graph::Index, float> bpm_cimod(polynomial, cimod::Vartype::SPIN);
+   cimod::BinaryPolynomialModel<openjij::graph::Index, double> bpm_cimod(polynomial, cimod::Vartype::SPIN);
    
-   openjij::graph::Polynomial<float> poly_graph(bpm_cimod.to_serializable());
+   openjij::graph::Polynomial<double> poly_graph(bpm_cimod.to_serializable());
 
-   EXPECT_EQ(bpm_cimod.get_num_variables()   , poly_graph.size()                );
-   EXPECT_EQ(bpm_cimod.get_num_interactions(), poly_graph.get_num_interactions());
-   EXPECT_EQ(bpm_cimod._get_values().size()  , poly_graph.get_values().size()   );
-   EXPECT_EQ(bpm_cimod._get_keys().size()    , poly_graph.get_keys().size()     );
-
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(   {0}   ), poly_graph.J(   {0}   ));//Add
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(   {1}   ), poly_graph.J(   {1}   ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(   {2}   ), poly_graph.J(   {2}   ));//Add
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial( {0, 1}  ), poly_graph.J( {0, 1}  ));//Add
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial( {0, 2}  ), poly_graph.J( {0, 2}  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial( {1, 2}  ), poly_graph.J( {1, 2}  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial({0, 1, 2}), poly_graph.J({0, 1, 2}));//Add
- 
-   EXPECT_EQ(bpm_cimod.get_num_variables()   , poly_graph.size()                    );
-   EXPECT_EQ(bpm_cimod.get_num_interactions(), poly_graph.get_num_interactions() - 4);
-   EXPECT_EQ(bpm_cimod._get_values().size()  , poly_graph.get_values().size()    - 4);
-   EXPECT_EQ(bpm_cimod._get_keys().size()    , poly_graph.get_keys().size()      - 4);
-   
-   std::random_device rnd;
-   std::mt19937 mt(rnd());
-   const auto spins = poly_graph.gen_spin(mt);
-   EXPECT_DOUBLE_EQ(bpm_cimod.energy(spins), poly_graph.energy(spins));
-   
-   const auto binaries = poly_graph.gen_binary(mt);
-   EXPECT_DOUBLE_EQ(bpm_cimod.energy(binaries), poly_graph.energy(binaries));
+   TestPolyGraphSparse(poly_graph);
 
 }
 
-TEST(PolyGraph, ConstructorCimod3) {
+TEST(PolyGraph, ConstructorIntCimod3) {
    
-   cimod::Polynomial<openjij::graph::Index, float> polynomial {
-      {{11}, 1.0}, {{10,12}, 2.0}, {{11,12}, 12.0}
-   };
+   auto polynomial = GeneratePolynomialInteractionsSparseInt2<double>();
    
-   cimod::BinaryPolynomialModel<openjij::graph::Index, float> bpm_cimod(polynomial, cimod::Vartype::SPIN);
+   cimod::BinaryPolynomialModel<openjij::graph::Index, double> bpm_cimod(polynomial, cimod::Vartype::SPIN);
    
-   openjij::graph::Polynomial<float> poly_graph(bpm_cimod.to_serializable());
+   openjij::graph::Polynomial<double> poly_graph(bpm_cimod.to_serializable());
 
-   EXPECT_EQ(bpm_cimod.get_num_variables()   , poly_graph.size()                );
-   EXPECT_EQ(bpm_cimod.get_num_interactions(), poly_graph.get_num_interactions());
-   EXPECT_EQ(bpm_cimod._get_values().size()  , poly_graph.get_values().size()   );
-   EXPECT_EQ(bpm_cimod._get_keys().size()    , poly_graph.get_keys().size()     );
-
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(  {11}  ), poly_graph.J( {1}  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial({10, 12}), poly_graph.J({0, 2}));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial({11, 12}), poly_graph.J({1, 2}));
-
-   EXPECT_EQ(bpm_cimod.get_num_variables()   , poly_graph.size()                );
-   EXPECT_EQ(bpm_cimod.get_num_interactions(), poly_graph.get_num_interactions());
-   EXPECT_EQ(bpm_cimod._get_values().size()  , poly_graph.get_values().size()   );
-   EXPECT_EQ(bpm_cimod._get_keys().size()    , poly_graph.get_keys().size()     );
-   
-   std::random_device rnd;
-   std::mt19937 mt(rnd());
-   const auto spins = poly_graph.gen_spin(mt);
-   EXPECT_DOUBLE_EQ(bpm_cimod.energy(spins), poly_graph.energy(spins));
-   
-   const auto binaries = poly_graph.gen_binary(mt);
-   EXPECT_DOUBLE_EQ(bpm_cimod.energy(binaries), poly_graph.energy(binaries));
+   TestPolyGraphSparse(poly_graph);
 
 }
 
 
-TEST(PolyGraph, ConstructorCimod4) {
+TEST(PolyGraph, ConstructorIntCimod4) {
    
-   cimod::Polynomial<std::string, double> polynomial {
-      {{"a"}, 0.0}, {{"b"}, 1.0}, {{"c"}, 2.0},
-      {{"a", "b"}, 11.0}, {{"a", "c"}, 22.0}, {{"b", "c"}, 12.0},
-      {{"a", "b", "c"}, +12}
-   };
+   auto polynomial = GeneratePolynomialInteractionsSparseInt3<double>();
+   
+   cimod::BinaryPolynomialModel<openjij::graph::Index, double> bpm_cimod(polynomial, cimod::Vartype::SPIN);
+   
+   openjij::graph::Polynomial<double> poly_graph(bpm_cimod.to_serializable());
+
+   TestPolyGraphSparse(poly_graph);
+   
+}
+
+TEST(PolyGraph, ConstructorStringCimod1) {
+   
+   auto polynomial = GeneratePolynomialInteractionsDenseString<double>();
 
    cimod::BinaryPolynomialModel<std::string, double> bpm_cimod(polynomial, cimod::Vartype::SPIN);
    
    openjij::graph::Polynomial<double> poly_graph(bpm_cimod.to_serializable());
 
-   EXPECT_EQ(bpm_cimod.get_num_variables()   , poly_graph.size()                );
-   EXPECT_EQ(bpm_cimod.get_num_interactions(), poly_graph.get_num_interactions());
-   EXPECT_EQ(bpm_cimod._get_values().size()  , poly_graph.get_values().size()   );
-   EXPECT_EQ(bpm_cimod._get_keys().size()    , poly_graph.get_keys().size()     );
-   
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(     {"a"}     ), poly_graph.J(   {0}   ));//Add
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(     {"b"}     ), poly_graph.J(   {1}   ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(     {"c"}     ), poly_graph.J(   {2}   ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(  {"a", "b"}   ), poly_graph.J( {0, 1}  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(  {"a", "c"}   ), poly_graph.J( {0, 2}  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial(  {"b", "c"}   ), poly_graph.J( {1, 2}  ));
-   EXPECT_DOUBLE_EQ(bpm_cimod.get_polynomial({"a", "b", "c"}), poly_graph.J({0, 1, 2}));
-   
-   EXPECT_EQ(bpm_cimod.get_num_variables()   , poly_graph.size()                    );
-   EXPECT_EQ(bpm_cimod.get_num_interactions(), poly_graph.get_num_interactions() - 1);
-   EXPECT_EQ(bpm_cimod._get_values().size()  , poly_graph.get_values().size()    - 1);
-   EXPECT_EQ(bpm_cimod._get_keys().size()    , poly_graph.get_keys().size()      - 1);
-   
-   std::random_device rnd;
-   std::mt19937 mt(rnd());
-   const auto spins = poly_graph.gen_spin(mt);
-   EXPECT_DOUBLE_EQ(bpm_cimod.energy(spins), poly_graph.energy(spins));
-   
-   const auto binaries = poly_graph.gen_binary(mt);
-   EXPECT_DOUBLE_EQ(bpm_cimod.energy(binaries), poly_graph.energy(binaries));
+   TestPolyGraphDense(poly_graph);
    
 }
 
-TEST(PolyGraph, AddInteractions) {
+TEST(PolyGraph, ConstructorTuple2Cimod1) {
+   
+   auto polynomial = GeneratePolynomialInteractionsDenseTuple2<double>();
+
+   cimod::BinaryPolynomialModel<std::tuple<openjij::graph::Index, openjij::graph::Index>, double> bpm_cimod(polynomial, cimod::Vartype::SPIN);
+   
+   openjij::graph::Polynomial<double> poly_graph(bpm_cimod.to_serializable());
+
+   TestPolyGraphDense(poly_graph);
+   
+}
+
+
+TEST(PolyGraph, AddInteractions1) {
    
    const openjij::graph::Index num_spins = 3;
    openjij::graph::Polynomial<double> poly_graph(num_spins);
    
-   poly_graph.J(   {0}   ) = +0.0 ;
-   poly_graph.J(   {1}   ) = +1.0 ;
-   poly_graph.J(   {2}   ) = +2.0 ;
-   poly_graph.J( {0, 1}  ) = +11.0;
-   poly_graph.J( {0, 2}  ) = +22.0;
-   poly_graph.J( {1, 2}  ) = +12.0;
-   poly_graph.J({0, 1, 2}) = +12.0;
+   poly_graph.J(   {}    ) = +0.1  ;
+   poly_graph.J(   {0}   ) = -0.5  ;
+   poly_graph.J(   {1}   ) = +1.0  ;
+   poly_graph.J(   {2}   ) = -2.0  ;
+   poly_graph.J( {0, 1}  ) = +10.0 ;
+   poly_graph.J( {0, 2}  ) = -20.0 ;
+   poly_graph.J( {1, 2}  ) = +21.0 ;
+   poly_graph.J({0, 1, 2}) = -120.0;
    
-   EXPECT_EQ(poly_graph.size()                , num_spins);
-   EXPECT_EQ(poly_graph.get_num_interactions(), 7        );
-   EXPECT_EQ(poly_graph.get_values().size()   , 7        );
-   EXPECT_EQ(poly_graph.get_keys().size()     , 7        );
-   
-   EXPECT_DOUBLE_EQ(poly_graph.J(   {0}   ), +0.0 );
-   EXPECT_DOUBLE_EQ(poly_graph.J(   {1}   ), +1.0 );
-   EXPECT_DOUBLE_EQ(poly_graph.J(   {2}   ), +2.0 );
-   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 1}  ), +11.0);
-   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 2}  ), +22.0);
-   EXPECT_DOUBLE_EQ(poly_graph.J( {1, 2}  ), +12.0);
-   EXPECT_DOUBLE_EQ(poly_graph.J({0, 1, 2}), +12.0);
-   
-   poly_graph.J(0)     += +0.0 ;
-   poly_graph.J(1)     += +1.0 ;
-   poly_graph.J(2)     += +2.0 ;
-   poly_graph.J(0,1)   += +11.0;
-   poly_graph.J(0,2)   += +22.0;
-   poly_graph.J(1,2)   += +12.0;
-   poly_graph.J(0,1,2) += +12.0;
-   
-   EXPECT_DOUBLE_EQ(poly_graph.J(   {0}   ), +0.0 *2);
-   EXPECT_DOUBLE_EQ(poly_graph.J(   {1}   ), +1.0 *2);
-   EXPECT_DOUBLE_EQ(poly_graph.J(   {2}   ), +2.0 *2);
-   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 1}  ), +11.0*2);
-   EXPECT_DOUBLE_EQ(poly_graph.J( {0, 2}  ), +22.0*2);
-   EXPECT_DOUBLE_EQ(poly_graph.J( {1, 2}  ), +12.0*2);
-   EXPECT_DOUBLE_EQ(poly_graph.J({0, 1, 2}), +12.0*2);
-   
-   EXPECT_THROW(poly_graph.J(0,0,0) += +0.0 , std::runtime_error);
-   EXPECT_THROW(poly_graph.J(1,1,1) += +1.0 , std::runtime_error);
-   EXPECT_THROW(poly_graph.J(2,2,2) += +2.0 , std::runtime_error);
-   EXPECT_THROW(poly_graph.J(0,1,1) += +11.0, std::runtime_error);
-   EXPECT_THROW(poly_graph.J(0,2,2) += +22.0, std::runtime_error);
-   EXPECT_THROW(poly_graph.J(1,2,1) += +12.0, std::runtime_error);
-   
-   cimod::BinaryPolynomialModel<openjij::graph::Index, double> bpm_cimod(poly_graph.get_polynomial(), cimod::Vartype::SPIN);
-   
-   std::random_device rnd;
-   std::mt19937 mt(rnd());
-   const auto spins = poly_graph.gen_spin(mt);
-   EXPECT_DOUBLE_EQ(bpm_cimod.energy(spins), poly_graph.energy(spins));
-   
-   const auto binaries = poly_graph.gen_binary(mt);
-   EXPECT_DOUBLE_EQ(bpm_cimod.energy(binaries), poly_graph.energy(binaries));
-
+   TestPolyGraphDense(poly_graph);
 }
 
-TEST(PolySystem, ConstructorSpinCimod1) {
+TEST(PolyGraph, AddInteractions2) {
+   
+   const openjij::graph::Index num_spins = 3;
+   openjij::graph::Polynomial<double> poly_graph(num_spins);
+   
+   poly_graph.J(       ) = +0.1  /2.0;
+   poly_graph.J(   0   ) = -0.5  /2.0;
+   poly_graph.J(   1   ) = +1.0  /2.0;
+   poly_graph.J(   2   ) = -2.0  /2.0;
+   poly_graph.J( 0, 1  ) = +10.0 /2.0;
+   poly_graph.J( 0, 2  ) = -20.0 /2.0;
+   poly_graph.J( 1, 2  ) = +21.0 /2.0;
+   poly_graph.J(0, 1, 2) = -120.0/2.0;
+   
+   poly_graph.J(       ) += +0.1  /2.0;
+   poly_graph.J(   0   ) += -0.5  /2.0;
+   poly_graph.J(   1   ) += +1.0  /2.0;
+   poly_graph.J(   2   ) += -2.0  /2.0;
+   poly_graph.J( 0, 1  ) += +10.0 /2.0;
+   poly_graph.J( 0, 2  ) += -20.0 /2.0;
+   poly_graph.J( 1, 2  ) += +21.0 /2.0;
+   poly_graph.J(0, 1, 2) += -120.0/2.0;
+   
+   TestPolyGraphDense(poly_graph);
+}
+
+TEST(PolyGraph, AddInteractions3) {
+   
+   const openjij::graph::Index num_spins = 3;
+   openjij::graph::Polynomial<double> poly_graph(num_spins);
+   
+   poly_graph.J(       ) = +0.1  ;
+   poly_graph.J(   0   ) = -0.5  ;
+   poly_graph.J(   1   ) = +1.0  ;
+   poly_graph.J(   2   ) = -2.0  ;
+   poly_graph.J( 0, 1  ) = +10.0 ;
+   poly_graph.J( 0, 2  ) = -20.0 ;
+   poly_graph.J( 1, 2  ) = +21.0 ;
+   poly_graph.J(0, 1, 2) = -120.0;
+   
+   TestPolyGraphDense(poly_graph);
+}
+
+TEST(PolyGraph, AddInteractions4) {
+   
+   const openjij::graph::Index num_spins = 3;
+   openjij::graph::Polynomial<double> poly_graph(num_spins);
+   
+   poly_graph.J(       ) = +999999;
+   poly_graph.J(   0   ) = +999999;
+   poly_graph.J(   1   ) = +999999;
+   poly_graph.J(   2   ) = +999999;
+   poly_graph.J( 0, 1  ) = +999999;
+   poly_graph.J( 0, 2  ) = +999999;
+   poly_graph.J( 1, 2  ) = +999999;
+   poly_graph.J(0, 1, 2) = +999999;
+   
+   poly_graph.J(       ) = +0.1  ;
+   poly_graph.J(   0   ) = -0.5  ;
+   poly_graph.J(   1   ) = +1.0  ;
+   poly_graph.J(   2   ) = -2.0  ;
+   poly_graph.J( 0, 1  ) = +10.0 ;
+   poly_graph.J( 0, 2  ) = -20.0 ;
+   poly_graph.J( 1, 2  ) = +21.0 ;
+   poly_graph.J(0, 1, 2) = -120.0;
+   
+   TestPolyGraphDense(poly_graph);
+}
+
+///---------------------------------------------------------------------------------------------------------------
+///-------------------------System Class Tests: ClassicalIsingPolynomial-------------------------
+///---------------------------------------------------------------------------------------------------------------
+TEST(PolySystemCIP, ConstructorSpinCimod1) {
    
    const int system_size = 3;
    
@@ -679,7 +616,7 @@ TEST(PolySystem, ConstructorSpinCimod1) {
 
 }
 
-TEST(PolySystem, ConstructorSpinCimod2) {
+TEST(PolySystemCIP, ConstructorSpinCimod2) {
    
    const int system_size = 3;
    
@@ -750,7 +687,7 @@ TEST(PolySystem, ConstructorSpinCimod2) {
 
 }
 
-TEST(PolySystem, ConstructorSpinCimod3) {
+TEST(PolySystemCIP, ConstructorSpinCimod3) {
    
    const int system_size = 3;
    
@@ -821,7 +758,7 @@ TEST(PolySystem, ConstructorSpinCimod3) {
 
 }
 
-TEST(PolySystem, ConstructorBinaryCimod1) {
+TEST(PolySystemCIP, ConstructorBinaryCimod1) {
    
    const int system_size = 3;
    
@@ -892,7 +829,7 @@ TEST(PolySystem, ConstructorBinaryCimod1) {
 
 }
 
-TEST(PolySystem, ConstructorBinaryCimod2) {
+TEST(PolySystemCIP, ConstructorBinaryCimod2) {
    
    const int system_size = 3;
    
@@ -963,7 +900,7 @@ TEST(PolySystem, ConstructorBinaryCimod2) {
 
 }
 
-TEST(PolySystem, ConstructorBinaryCimod3) {
+TEST(PolySystemCIP, ConstructorBinaryCimod3) {
    
    const int system_size = 3;
    
@@ -1145,31 +1082,37 @@ TEST(PolyUpdater, SingleSpinFlipSPIN) {
    
    EXPECT_DOUBLE_EQ(poly_graph.energy(result_spin_poly), interaction.calc_energy(result_spin));
 }
-/*
+
 TEST(PolyUpdater, SingleSpinFlipBINARY) {
    
-   cimod::Polynomial<int, double> polynomial;
    const int seed = 1;
    const int system_size = 9;
+   
+   cimod::BinaryPolynomialModel<int, double> cimod_bpm({}, cimod::Vartype::BINARY);
+   
    auto engin_for_interaction = std::mt19937(seed);
    auto urd = std::uniform_real_distribution<>(-1.0/system_size, 1.0/system_size);
+   
    for (int i = 0; i < system_size; ++i) {
       for (int j = i + 1; j < system_size; ++j) {
-         polynomial[{i, j}]  = urd(engin_for_interaction);
+         cimod_bpm.add_interaction({i, j}, urd(engin_for_interaction));
       }
    }
-   cimod::BinaryPolynomialModel<int, double> cimod_bpm(polynomial, cimod::Vartype::BINARY);
+   
+   auto interaction_binary = openjij::graph::Polynomial<double>(cimod_bpm.to_serializable());
    cimod_bpm.change_vartype(cimod::Vartype::SPIN);
    auto interaction_spin   = openjij::graph::Sparse<double>(system_size);
-   auto interaction_binary = openjij::graph::Polynomial<double>(system_size);
-
+   
    for (const auto &it: cimod_bpm.get_polynomial()) {
-      printf("%ld\n", it.first.size());
-      interaction_spin.J(it.first[0], it.first[1]) = it.second;
+      if (it.first.size() == 2) {
+         interaction_spin.J(it.first[0], it.first[1]) = it.second;
+      }
+      else if (it.first.size() == 1) {
+         interaction_spin.h(it.first[0]) = it.second;
+      }
    }
-   for (const auto &it: polynomial) {
-      interaction_binary.J(it.first) = it.second;
-   }
+   
+   const auto offset = cimod_bpm.get_offset();
    
    auto engine_for_spin   = std::mt19937(seed);
    auto engine_for_binary = std::mt19937(seed);
@@ -1191,9 +1134,9 @@ TEST(PolyUpdater, SingleSpinFlipBINARY) {
       EXPECT_EQ(result_binary[i], (result_spin[i] + 1)/2);
    }
    
-   EXPECT_DOUBLE_EQ(interaction_binary.energy(result_binary), interaction_spin.calc_energy(result_spin));
+   EXPECT_DOUBLE_EQ(interaction_binary.energy(result_binary), interaction_spin.calc_energy(result_spin) + offset);
 }
-*/
+
 
 TEST(PolyUpdater, KLocal1) {
    const int seed = 1;
