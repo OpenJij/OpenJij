@@ -1239,16 +1239,16 @@ TEST(PolyUpdater, KLocal2) {
    openjij::algorithm::Algorithm<openjij::updater::KLocal>::run(poly_system, random_numder_engine, generate_schedule_list());
    
    const auto result_binary_poly = openjij::result::get_solution(poly_system);
-   /*
+   
    for (std::size_t i = 0; i < result_binary_poly.size(); ++i) {
       if (i != 16) {
-         EXPECT_EQ(binary[i], 1);
+         EXPECT_EQ(result_binary_poly[i], 1);
       }
       else {
-         EXPECT_EQ(binary[i], 0);
+         EXPECT_EQ(result_binary_poly[i], 0);
       }
    }
-   */
+   printf("E=%lf\n", poly_graph.calc_energy(result_binary_poly));
 }
 
 TEST(PolyUpdater, KLocal3) {

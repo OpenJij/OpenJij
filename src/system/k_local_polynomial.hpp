@@ -159,10 +159,10 @@ public:
          const graph::Binary binary = binaries[index_binary];
          for (const auto &index_key: adj_[index_binary]) {
             if (zero_count_[index_key] + binary == 1) {
-               val     += poly_value_list_[index_key];
-               abs_val += std::abs(poly_value_list_[index_key]);
-               flag = true;
+               val += poly_value_list_[index_key];
             }
+            flag = true;
+            abs_val += std::abs(poly_value_list_[index_key]);
          }
          dE_[index_binary]   = (-2*binary + 1)*val;
          dE_v_[index_binary] = dE_[index_binary];
@@ -170,6 +170,7 @@ public:
          if (flag && max_effective_dE < abs_val) {
             max_effective_dE = abs_val;
          }
+         abs_val = abs_val/adj_[index_binary].size();
          if (flag && min_effective_dE > abs_val) {
             min_effective_dE = abs_val;
          }
