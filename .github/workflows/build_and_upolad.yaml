@@ -6,7 +6,8 @@ on:
     branches: [main, master]
   pull_request:
   release:
-    - released
+    types:
+      - released
 
 env:
   Python_Version: 3.9
