@@ -42,7 +42,7 @@ jobs:
           CIBW_MANYLINUX_AARCH64_IMAGE: quay.io/pypa/manylinux_2_24_aarch64:latest
           CIBW_MANYLINUX_I686_IMAGE: quay.io/pypa/manylinux_2_24_i686:latest
           CIBW_MANYLINUX_PPC64LE_IMAGE: quay.io/pypa/manylinux_2_24_ppc64le:latest
-          CIBW_MANYLINUX_S390X_IMAGE: quay.io/pypa/manylinux_2_24_s390x
+          CIBW_MANYLINUX_S390X_IMAGE: quay.io/pypa/manylinux_2_24_s390xlatest
           CIBW_DEPENDENCY_VERSIONS: latest
           CIBW_BEFORE_BUILD: "pip install --upgrade cmake"
 
