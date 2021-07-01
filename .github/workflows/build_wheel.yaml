@@ -44,6 +44,7 @@ jobs:
           CIBW_MANYLINUX_PPC64LE_IMAGE: quay.io/pypa/manylinux_2_24_ppc64le:latest
           CIBW_MANYLINUX_S390X_IMAGE: quay.io/pypa/manylinux_2_24_s390x
           CIBW_DEPENDENCY_VERSIONS: latest
+          CIBW_BEFORE_BUILD: "pip install --upgrade cmake"
 
       - uses: actions/upload-artifact@v2
         with:
