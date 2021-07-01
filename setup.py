@@ -64,7 +64,7 @@ class CMakeBuild(build_ext):
             build_kwargs += ['--', '-j2']
 
         # disable macos openmp since addtional dependency is needed.
-        if platform.system() != "Windows" and platform.system() != "Linux" and {'true': True, 'false': False}[os.getenv('USE_OMP', 'false')]:
+        if platform.system() != "Windows" and platform.system() != "Linux" and {'True': True, 'False': False}[os.getenv('USE_OMP', 'False')]:
             cmake_kwargs += ['-DUSE_OMP=No']
 
         env = os.environ.copy()
