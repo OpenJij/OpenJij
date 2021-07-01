@@ -34,7 +34,7 @@ jobs:
           CIBW_BUILD: "cp3*-*"
           CIBW_SKIP: "cp35-* cp36-* cp37-* *-win32 pp*"
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8.10"
-          CIBW_ENVIRONMENT: "BUILD_TIME=$(date)"
+          CIBW_ENVIRONMENT: "CFLAGS='-Ofast' CXXFLAGS='-Ofast' BUILD_TIME=$(date)"
           CIBW_ARCHS_LINUX: "x86_64 aarch64 i686 ppc64le s390x"
           CIBW_ARCHS_MACOS: "x86_64 universal2 arm64"
           CIBW_ARCHS_WINDOWS: "AMD64"
@@ -61,4 +61,6 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
+          name: WheelHouse
           path: ./wheelhouse/*.whl
+          retention-days: 1
