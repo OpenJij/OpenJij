@@ -81,7 +81,6 @@ PolynomialBinaryToSpin(const std::unordered_map<std::vector<openjij::graph::Inde
    return J_out;
 }
 
-
 template<typename FloatType>
 FloatType PolynomialExactGroundStateEnergy(openjij::graph::Polynomial<FloatType> &polynomial, const cimod::Vartype &vartype) {
    const std::size_t system_size = polynomial.size();
@@ -142,7 +141,6 @@ bool ContainVector(const std::vector<ValueType> &vec, const std::vector<std::vec
    }
    return flag;
 }
-
 
 template<typename FloatType>
 cimod::Polynomial<openjij::graph::Index, FloatType> GeneratePolynomialInteractionsDenseInt() {
@@ -383,17 +381,30 @@ void TestPolyGraphSparse(const openjij::graph::Polynomial<FloatType> &poly_graph
 
 }
 
+template<typename IndexType, typename FloatType>
+void TestPolyGraphConstructorCimodDense(const cimod::Polynomial<IndexType, FloatType> &polynomial) {
+   cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, cimod::Vartype::SPIN);
+   openjij::graph::Polynomial<FloatType> poly_graph(bpm_cimod.to_serializable());
+   TestPolyGraphDense(poly_graph);
+}
+
+template<typename IndexType, typename FloatType>
+void TestPolyGraphConstructorCimodSparse(const cimod::Polynomial<IndexType, FloatType> &polynomial) {
+   cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, cimod::Vartype::SPIN);
+   openjij::graph::Polynomial<FloatType> poly_graph(bpm_cimod.to_serializable());
+   TestPolyGraphSparse(poly_graph);
+}
+
 template<typename FloatType>
-void TestCIPSystemDenseSpin(openjij::system::ClassicalIsingPolynomial<openjij::graph::Polynomial<FloatType>> &cip_system) {
+void TestCIPSystemDense(const openjij::system::ClassicalIsingPolynomial<openjij::graph::Polynomial<FloatType>> &cip_system) {
    
    const int system_size = 3;
    
    EXPECT_EQ(cip_system.num_variables, system_size);
-   EXPECT_EQ(cip_system.vartype, cimod::Vartype::SPIN);
       
-   EXPECT_EQ(cip_system.get_adj().at(0).size(), 3);
-   EXPECT_EQ(cip_system.get_adj().at(1).size(), 3);
-   EXPECT_EQ(cip_system.get_adj().at(2).size(), 3);
+   EXPECT_EQ(cip_system.get_adj().at(0).size(), 4);
+   EXPECT_EQ(cip_system.get_adj().at(1).size(), 4);
+   EXPECT_EQ(cip_system.get_adj().at(2).size(), 4);
    
    std::vector<std::vector<std::vector<openjij::graph::Index>>> adj_key(system_size);
    
@@ -403,14 +414,17 @@ void TestCIPSystemDenseSpin(openjij::system::ClassicalIsingPolynomial<openjij::g
       }
    }
 
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({   0   }, adj_key[0]));
    EXPECT_TRUE(ContainVector<openjij::graph::Index>({ 0, 1  }, adj_key[0]));
    EXPECT_TRUE(ContainVector<openjij::graph::Index>({ 0, 2  }, adj_key[0]));
    EXPECT_TRUE(ContainVector<openjij::graph::Index>({0, 1, 2}, adj_key[0]));
    
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({   1   }, adj_key[1]));
    EXPECT_TRUE(ContainVector<openjij::graph::Index>({ 0, 1  }, adj_key[1]));
    EXPECT_TRUE(ContainVector<openjij::graph::Index>({ 1, 2  }, adj_key[1]));
    EXPECT_TRUE(ContainVector<openjij::graph::Index>({0, 1, 2}, adj_key[1]));
 
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({   2   }, adj_key[2]));
    EXPECT_TRUE(ContainVector<openjij::graph::Index>({ 0, 2  }, adj_key[2]));
    EXPECT_TRUE(ContainVector<openjij::graph::Index>({ 1, 2  }, adj_key[2]));
    EXPECT_TRUE(ContainVector<openjij::graph::Index>({0, 1, 2}, adj_key[2]));
@@ -427,25 +441,394 @@ void TestCIPSystemDenseSpin(openjij::system::ClassicalIsingPolynomial<openjij::g
    const int s1 = init_spins[1];
    const int s2 = init_spins[2];
    
-   const double dE0 = -2*s0*(s1*polynomial[{0, 1}] + s2*polynomial[{0, 2}] + s1*s2*polynomial[{0, 1, 2}]);
-   const double dE1 = -2*s1*(s0*polynomial[{0, 1}] + s2*polynomial[{1, 2}] + s0*s2*polynomial[{0, 1, 2}]);
-   const double dE2 = -2*s2*(s0*polynomial[{0, 2}] + s1*polynomial[{1, 2}] + s0*s1*polynomial[{0, 1, 2}]);
+   if (cip_system.vartype == cimod::Vartype::SPIN) {
+      const double dE0 = -2*s0*(polynomial.at({0}) + s1*polynomial.at({0, 1}) + s2*polynomial.at({0, 2}) + s1*s2*polynomial.at({0, 1, 2}));
+      const double dE1 = -2*s1*(polynomial.at({1}) + s0*polynomial.at({0, 1}) + s2*polynomial.at({1, 2}) + s0*s2*polynomial.at({0, 1, 2}));
+      const double dE2 = -2*s2*(polynomial.at({2}) + s0*polynomial.at({0, 2}) + s1*polynomial.at({1, 2}) + s0*s1*polynomial.at({0, 1, 2}));
 
-   EXPECT_DOUBLE_EQ(dE0, cip_system.dE(0));
-   EXPECT_DOUBLE_EQ(dE1, cip_system.dE(1));
-   EXPECT_DOUBLE_EQ(dE2, cip_system.dE(2));
-   
-   const double abs_dE0 = 2*(std::abs(polynomial[{0, 1}]) + std::abs(polynomial[{0, 2}]) + std::abs(polynomial[{0, 1, 2}]));
-   const double abs_dE1 = 2*(std::abs(polynomial[{0, 1}]) + std::abs(polynomial[{1, 2}]) + std::abs(polynomial[{0, 1, 2}]));
-   const double abs_dE2 = 2*(std::abs(polynomial[{0, 2}]) + std::abs(polynomial[{1, 2}]) + std::abs(polynomial[{0, 1, 2}]));
+      EXPECT_DOUBLE_EQ(dE0, cip_system.dE(0));
+      EXPECT_DOUBLE_EQ(dE1, cip_system.dE(1));
+      EXPECT_DOUBLE_EQ(dE2, cip_system.dE(2));
+      
+      const double abs_dE0 = 2*(std::abs(polynomial.at({0})) + std::abs(polynomial.at({0, 1})) + std::abs(polynomial.at({0, 2})) + std::abs(polynomial.at({0, 1, 2})));
+      const double abs_dE1 = 2*(std::abs(polynomial.at({1})) + std::abs(polynomial.at({0, 1})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2})));
+      const double abs_dE2 = 2*(std::abs(polynomial.at({2})) + std::abs(polynomial.at({0, 2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2})));
 
-   EXPECT_DOUBLE_EQ(cip_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
-   EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::min({abs_dE0/3.0, abs_dE1/3.0, abs_dE2/3.0}));
-   
+      EXPECT_DOUBLE_EQ(cip_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
+      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::min({abs_dE0/4.0, abs_dE1/4.0, abs_dE2/4.0}));
+   }
+   else if (cip_system.vartype == cimod::Vartype::BINARY) {
+      const double dE0 = (-2*s0 + 1)*(polynomial.at({0}) + s1*polynomial.at({0, 1}) + s2*polynomial.at({0, 2}) + s1*s2*polynomial.at({0, 1, 2}));
+      const double dE1 = (-2*s1 + 1)*(polynomial.at({1}) + s0*polynomial.at({0, 1}) + s2*polynomial.at({1, 2}) + s0*s2*polynomial.at({0, 1, 2}));
+      const double dE2 = (-2*s2 + 1)*(polynomial.at({2}) + s0*polynomial.at({0, 2}) + s1*polynomial.at({1, 2}) + s0*s1*polynomial.at({0, 1, 2}));
+
+      EXPECT_DOUBLE_EQ(dE0, cip_system.dE(0));
+      EXPECT_DOUBLE_EQ(dE1, cip_system.dE(1));
+      EXPECT_DOUBLE_EQ(dE2, cip_system.dE(2));
+      
+      const double abs_dE0 = std::abs(polynomial.at({0})) + std::abs(polynomial.at({0, 1})) + std::abs(polynomial.at({0, 2})) + std::abs(polynomial.at({0, 1, 2}));
+      const double abs_dE1 = std::abs(polynomial.at({1})) + std::abs(polynomial.at({0, 1})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
+      const double abs_dE2 = std::abs(polynomial.at({2})) + std::abs(polynomial.at({0, 2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
+
+      EXPECT_DOUBLE_EQ(cip_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
+      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::min({abs_dE0/4.0, abs_dE1/4.0, abs_dE2/4.0}));
+   }
+   else {
+      throw std::runtime_error("Unknown vartype detected");
+   }
    for (std::size_t i = 0; i < cip_system.get_active_variables().size(); ++i) {
       EXPECT_EQ(cip_system.get_active_variables().at(i), i);
    }
 }
+
+template<typename FloatType>
+void TestCIPSystemSparse(const openjij::system::ClassicalIsingPolynomial<openjij::graph::Polynomial<FloatType>> &cip_system) {
+   
+   const int system_size = 3;
+   
+   EXPECT_EQ(cip_system.num_variables, system_size);
+      
+   EXPECT_EQ(cip_system.get_adj().at(0).size(), 2);
+   EXPECT_EQ(cip_system.get_adj().at(1).size(), 3);
+   EXPECT_EQ(cip_system.get_adj().at(2).size(), 3);
+   
+   std::vector<std::vector<std::vector<openjij::graph::Index>>> adj_key(system_size);
+   
+   for (int i = 0; i < system_size; ++i) {
+      for (const auto &index_key: cip_system.get_adj().at(i)) {
+         adj_key[i].push_back(cip_system.get_keys().at(index_key));
+      }
+   }
+
+   EXPECT_FALSE(ContainVector<openjij::graph::Index>({   0   }, adj_key[0]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({ 0, 1  }, adj_key[0]));
+   EXPECT_FALSE(ContainVector<openjij::graph::Index>({ 0, 2  }, adj_key[0]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({0, 1, 2}, adj_key[0]));
+   
+   EXPECT_FALSE(ContainVector<openjij::graph::Index>({   1   }, adj_key[1]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({ 0, 1  }, adj_key[1]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({ 1, 2  }, adj_key[1]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({0, 1, 2}, adj_key[1]));
+
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({   2   }, adj_key[2]));
+   EXPECT_FALSE(ContainVector<openjij::graph::Index>({ 0, 2  }, adj_key[2]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({ 1, 2  }, adj_key[2]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({0, 1, 2}, adj_key[2]));
+   
+   const auto init_spins = cip_system.variables;
+   
+   cimod::Polynomial<openjij::graph::Index, FloatType> polynomial;
+   
+   for (std::size_t i = 0; i < cip_system.get_values().size(); ++i) {
+      polynomial[cip_system.get_keys().at(i)] = cip_system.get_values().at(i);
+   }
+   
+   const int s0 = init_spins[0];
+   const int s1 = init_spins[1];
+   const int s2 = init_spins[2];
+   
+   if (cip_system.vartype == cimod::Vartype::SPIN) {
+      const double dE0 = -2*s0*(s1*polynomial.at({0, 1}) + s1*s2*polynomial.at({0, 1, 2}));
+      const double dE1 = -2*s1*(s0*polynomial.at({0, 1}) + s2*polynomial.at({1, 2}) + s0*s2*polynomial.at({0, 1, 2}));
+      const double dE2 = -2*s2*(polynomial.at({2}) + s1*polynomial.at({1, 2}) + s0*s1*polynomial.at({0, 1, 2}));
+
+      EXPECT_DOUBLE_EQ(dE0, cip_system.dE(0));
+      EXPECT_DOUBLE_EQ(dE1, cip_system.dE(1));
+      EXPECT_DOUBLE_EQ(dE2, cip_system.dE(2));
+      
+      const double abs_dE0 = 2*(std::abs(polynomial.at({0, 1})) + std::abs(polynomial.at({0, 1, 2})));
+      const double abs_dE1 = 2*(std::abs(polynomial.at({0, 1})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2})));
+      const double abs_dE2 = 2*(std::abs(polynomial.at({2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2})));
+
+      EXPECT_DOUBLE_EQ(cip_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
+      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::min({abs_dE0/2.0, abs_dE1/3.0, abs_dE2/3.0}));
+   }
+   else if (cip_system.vartype == cimod::Vartype::BINARY) {
+      const double dE0 = (-2*s0 + 1)*(s1*polynomial.at({0, 1}) + s1*s2*polynomial.at({0, 1, 2}));
+      const double dE1 = (-2*s1 + 1)*(s0*polynomial.at({0, 1}) + s2*polynomial.at({1, 2}) + s0*s2*polynomial.at({0, 1, 2}));
+      const double dE2 = (-2*s2 + 1)*(polynomial.at({2}) + s1*polynomial.at({1, 2}) + s0*s1*polynomial.at({0, 1, 2}));
+
+      EXPECT_DOUBLE_EQ(dE0, cip_system.dE(0));
+      EXPECT_DOUBLE_EQ(dE1, cip_system.dE(1));
+      EXPECT_DOUBLE_EQ(dE2, cip_system.dE(2));
+      
+      const double abs_dE0 = std::abs(polynomial.at({0, 1})) + std::abs(polynomial.at({0, 1, 2}));
+      const double abs_dE1 = std::abs(polynomial.at({0, 1})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
+      const double abs_dE2 = std::abs(polynomial.at({2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
+
+      EXPECT_DOUBLE_EQ(cip_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
+      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::min({abs_dE0/2.0, abs_dE1/3.0, abs_dE2/3.0}));
+   }
+   else {
+      throw std::runtime_error("Unknown vartype detected");
+   }
+   for (std::size_t i = 0; i < cip_system.get_active_variables().size(); ++i) {
+      EXPECT_EQ(cip_system.get_active_variables().at(i), i);
+   }
+}
+
+template<typename IndexType, typename FloatType>
+void TestCIPConstructorCimod(const cimod::Polynomial<IndexType, FloatType> &polynomial, cimod::Vartype vartype, std::string type) {
+   cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, vartype);
+   std::random_device rnd;
+   std::mt19937 mt(rnd());
+   openjij::graph::Spins init_spins_1;
+   openjij::graph::Spins init_spins_2;
+   if (vartype == cimod::Vartype::SPIN) {
+      init_spins_1 = openjij::graph::Polynomial<FloatType>(3).gen_spin(mt);
+      init_spins_2 = openjij::graph::Polynomial<FloatType>(3).gen_spin(mt);
+   }
+   else {
+      init_spins_1 = openjij::graph::Polynomial<FloatType>(3).gen_binary(mt);
+      init_spins_2 = openjij::graph::Polynomial<FloatType>(3).gen_binary(mt);
+   }
+   auto system = openjij::system::make_classical_ising_polynomial(init_spins_1, bpm_cimod.to_serializable());
+   if (type == "Dense") {
+      TestCIPSystemDense(system);
+      system.reset_variables(init_spins_2);
+      TestCIPSystemDense(system);
+   }
+   else if (type == "Sparse") {
+      TestCIPSystemSparse(system);
+      system.reset_variables(init_spins_2);
+      TestCIPSystemSparse(system);
+   }
+   else {
+      throw std::runtime_error("Unknown type");
+   }
+}
+
+
+template<typename IndexType, typename FloatType>
+void TestCIPConstructorGraph(const cimod::Polynomial<IndexType, FloatType> &polynomial, cimod::Vartype vartype, std::string type) {
+   cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, vartype);
+   openjij::graph::Polynomial<FloatType> poly_graph(3);
+   for (const auto &it: bpm_cimod.get_polynomial()) {
+      poly_graph.J(it.first) = it.second;
+   }
+   std::random_device rnd;
+   std::mt19937 mt(rnd());
+   openjij::graph::Spins init_spins_1;
+   openjij::graph::Spins init_spins_2;
+   if (vartype == cimod::Vartype::SPIN) {
+      init_spins_1 = openjij::graph::Polynomial<FloatType>(3).gen_spin(mt);
+      init_spins_2 = openjij::graph::Polynomial<FloatType>(3).gen_spin(mt);
+   }
+   else {
+      init_spins_1 = openjij::graph::Polynomial<FloatType>(3).gen_binary(mt);
+      init_spins_2 = openjij::graph::Polynomial<FloatType>(3).gen_binary(mt);
+   }
+   auto system = openjij::system::make_classical_ising_polynomial(init_spins_1, poly_graph, vartype);
+   if (type == "Dense") {
+      TestCIPSystemDense(system);
+      system.reset_variables(init_spins_2);
+      TestCIPSystemDense(system);
+   }
+   else if (type == "Sparse") {
+      TestCIPSystemSparse(system);
+      system.reset_variables(init_spins_2);
+      TestCIPSystemSparse(system);
+   }
+   else {
+      throw std::runtime_error("Unknown type");
+   }
+}
+
+template<typename FloatType>
+void TestKLPSystemDense(const openjij::system::KLocalPolynomial<openjij::graph::Polynomial<FloatType>> &klp_system) {
+   
+   const int system_size = 3;
+   
+   EXPECT_EQ(klp_system.num_binaries, system_size);
+      
+   EXPECT_EQ(klp_system.get_adj().at(0).size(), 4);
+   EXPECT_EQ(klp_system.get_adj().at(1).size(), 4);
+   EXPECT_EQ(klp_system.get_adj().at(2).size(), 4);
+   
+   std::vector<std::vector<std::vector<openjij::graph::Index>>> adj_key(system_size);
+   
+   for (int i = 0; i < system_size; ++i) {
+      for (const auto &index_key: klp_system.get_adj().at(i)) {
+         adj_key[i].push_back(klp_system.get_keys().at(index_key));
+      }
+   }
+
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({   0   }, adj_key[0]));
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({ 0, 1  }, adj_key[0]));
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({ 0, 2  }, adj_key[0]));
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({0, 1, 2}, adj_key[0]));
+   
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({   1   }, adj_key[1]));
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({ 0, 1  }, adj_key[1]));
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({ 1, 2  }, adj_key[1]));
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({0, 1, 2}, adj_key[1]));
+
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({   2   }, adj_key[2]));
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({ 0, 2  }, adj_key[2]));
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({ 1, 2  }, adj_key[2]));
+   EXPECT_TRUE(ContainVector<openjij::graph::Index>({0, 1, 2}, adj_key[2]));
+   
+   const auto init_spins = klp_system.binaries;
+   
+   cimod::Polynomial<openjij::graph::Index, FloatType> polynomial;
+   
+   for (std::size_t i = 0; i < klp_system.get_values().size(); ++i) {
+      polynomial[klp_system.get_keys().at(i)] = klp_system.get_values().at(i);
+   }
+   
+   const int s0 = init_spins[0];
+   const int s1 = init_spins[1];
+   const int s2 = init_spins[2];
+
+   if (klp_system.vartype == cimod::Vartype::BINARY) {
+      const double dE0 = (-2*s0 + 1)*(polynomial.at({0}) + s1*polynomial.at({0, 1}) + s2*polynomial.at({0, 2}) + s1*s2*polynomial.at({0, 1, 2}));
+      const double dE1 = (-2*s1 + 1)*(polynomial.at({1}) + s0*polynomial.at({0, 1}) + s2*polynomial.at({1, 2}) + s0*s2*polynomial.at({0, 1, 2}));
+      const double dE2 = (-2*s2 + 1)*(polynomial.at({2}) + s0*polynomial.at({0, 2}) + s1*polynomial.at({1, 2}) + s0*s1*polynomial.at({0, 1, 2}));
+
+      EXPECT_DOUBLE_EQ(dE0, klp_system.dE_single(0));
+      EXPECT_DOUBLE_EQ(dE1, klp_system.dE_single(1));
+      EXPECT_DOUBLE_EQ(dE2, klp_system.dE_single(2));
+      
+      const double abs_dE0 = std::abs(polynomial.at({0})) + std::abs(polynomial.at({0, 1})) + std::abs(polynomial.at({0, 2})) + std::abs(polynomial.at({0, 1, 2}));
+      const double abs_dE1 = std::abs(polynomial.at({1})) + std::abs(polynomial.at({0, 1})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
+      const double abs_dE2 = std::abs(polynomial.at({2})) + std::abs(polynomial.at({0, 2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
+
+      EXPECT_DOUBLE_EQ(klp_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
+      EXPECT_DOUBLE_EQ(klp_system.get_min_effective_dE(), std::min({abs_dE0/4.0, abs_dE1/4.0, abs_dE2/4.0}));
+   }
+   else {
+      throw std::runtime_error("Unknown vartype detected");
+   }
+   for (std::size_t i = 0; i < klp_system.get_active_binaries().size(); ++i) {
+      EXPECT_EQ(klp_system.get_active_binaries().at(i), i);
+   }
+}
+
+template<typename FloatType>
+void TestKLPSystemSparse(const openjij::system::KLocalPolynomial<openjij::graph::Polynomial<FloatType>> &klp_system) {
+   
+   const int system_size = 3;
+   
+   EXPECT_EQ(klp_system.num_binaries, system_size);
+      
+   EXPECT_EQ(klp_system.get_adj().at(0).size(), 2);
+   EXPECT_EQ(klp_system.get_adj().at(1).size(), 3);
+   EXPECT_EQ(klp_system.get_adj().at(2).size(), 3);
+   
+   std::vector<std::vector<std::vector<openjij::graph::Index>>> adj_key(system_size);
+   
+   for (int i = 0; i < system_size; ++i) {
+      for (const auto &index_key: klp_system.get_adj().at(i)) {
+         adj_key[i].push_back(klp_system.get_keys().at(index_key));
+      }
+   }
+
+   EXPECT_FALSE(ContainVector<openjij::graph::Index>({   0   }, adj_key[0]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({ 0, 1  }, adj_key[0]));
+   EXPECT_FALSE(ContainVector<openjij::graph::Index>({ 0, 2  }, adj_key[0]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({0, 1, 2}, adj_key[0]));
+   
+   EXPECT_FALSE(ContainVector<openjij::graph::Index>({   1   }, adj_key[1]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({ 0, 1  }, adj_key[1]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({ 1, 2  }, adj_key[1]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({0, 1, 2}, adj_key[1]));
+
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({   2   }, adj_key[2]));
+   EXPECT_FALSE(ContainVector<openjij::graph::Index>({ 0, 2  }, adj_key[2]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({ 1, 2  }, adj_key[2]));
+   EXPECT_TRUE (ContainVector<openjij::graph::Index>({0, 1, 2}, adj_key[2]));
+   
+   const auto init_spins = klp_system.binaries;
+   
+   cimod::Polynomial<openjij::graph::Index, FloatType> polynomial;
+   
+   for (std::size_t i = 0; i < klp_system.get_values().size(); ++i) {
+      polynomial[klp_system.get_keys().at(i)] = klp_system.get_values().at(i);
+   }
+   
+   const int s0 = init_spins[0];
+   const int s1 = init_spins[1];
+   const int s2 = init_spins[2];
+   
+   if (klp_system.vartype == cimod::Vartype::BINARY) {
+      const double dE0 = (-2*s0 + 1)*(s1*polynomial.at({0, 1}) + s1*s2*polynomial.at({0, 1, 2}));
+      const double dE1 = (-2*s1 + 1)*(s0*polynomial.at({0, 1}) + s2*polynomial.at({1, 2}) + s0*s2*polynomial.at({0, 1, 2}));
+      const double dE2 = (-2*s2 + 1)*(polynomial.at({2}) + s1*polynomial.at({1, 2}) + s0*s1*polynomial.at({0, 1, 2}));
+
+      EXPECT_DOUBLE_EQ(dE0, klp_system.dE_single(0));
+      EXPECT_DOUBLE_EQ(dE1, klp_system.dE_single(1));
+      EXPECT_DOUBLE_EQ(dE2, klp_system.dE_single(2));
+      
+      const double abs_dE0 = std::abs(polynomial.at({0, 1})) + std::abs(polynomial.at({0, 1, 2}));
+      const double abs_dE1 = std::abs(polynomial.at({0, 1})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
+      const double abs_dE2 = std::abs(polynomial.at({2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
+
+      EXPECT_DOUBLE_EQ(klp_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
+      EXPECT_DOUBLE_EQ(klp_system.get_min_effective_dE(), std::min({abs_dE0/2.0, abs_dE1/3.0, abs_dE2/3.0}));
+   }
+   else {
+      throw std::runtime_error("Unknown vartype detected");
+   }
+   for (std::size_t i = 0; i < klp_system.get_active_binaries().size(); ++i) {
+      EXPECT_EQ(klp_system.get_active_binaries().at(i), i);
+   }
+}
+
+
+template<typename IndexType, typename FloatType>
+void TestKLPConstructorCimod(const cimod::Polynomial<IndexType, FloatType> &polynomial, std::string type) {
+   cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, cimod::Vartype::BINARY);
+   std::random_device rnd;
+   std::mt19937 mt(rnd());
+   openjij::graph::Binaries init_spins = openjij::graph::Polynomial<FloatType>(3).gen_binary(mt);
+   
+   auto system = openjij::system::make_k_local_polynomial(init_spins, bpm_cimod.to_serializable());
+   if (type == "Dense") {
+      TestKLPSystemDense(system);
+      system.reset_binaries(openjij::graph::Polynomial<FloatType>(3).gen_binary(mt));
+      TestKLPSystemDense(system);
+   }
+   else if (type == "Sparse") {
+      TestKLPSystemSparse(system);
+      system.reset_binaries(openjij::graph::Polynomial<FloatType>(3).gen_binary(mt));
+      TestKLPSystemSparse(system);
+   }
+   else {
+      throw std::runtime_error("Unknown type");
+   }
+}
+
+
+template<typename IndexType, typename FloatType>
+void TestKLPConstructorGraph(const cimod::Polynomial<IndexType, FloatType> &polynomial, std::string type) {
+   cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, cimod::Vartype::BINARY);
+   openjij::graph::Polynomial<FloatType> poly_graph(3);
+   for (const auto &it: bpm_cimod.get_polynomial()) {
+      poly_graph.J(it.first) = it.second;
+   }
+   std::random_device rnd;
+   std::mt19937 mt(rnd());
+   openjij::graph::Binaries init_spins = poly_graph.gen_binary(mt);
+   
+   auto system = openjij::system::make_k_local_polynomial(init_spins, poly_graph);
+   if (type == "Dense") {
+      TestKLPSystemDense(system);
+      system.reset_binaries(openjij::graph::Polynomial<FloatType>(3).gen_binary(mt));
+      TestKLPSystemDense(system);
+   }
+   else if (type == "Sparse") {
+      TestKLPSystemSparse(system);
+      system.reset_binaries(openjij::graph::Polynomial<FloatType>(3).gen_binary(mt));
+      TestKLPSystemSparse(system);
+   }
+   else {
+      throw std::runtime_error("Unknown type");
+   }
+}
+
+
+
+
 
 void TestBinaryConfigulationsKlocal1(const openjij::graph::Binaries &binaries) {
    EXPECT_EQ(binaries.size(), 30);

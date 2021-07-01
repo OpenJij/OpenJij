@@ -71,7 +71,7 @@ public:
       poly_value_list_.clear();
       
       for (std::size_t i = 0; i < poly_key_list.size(); ++i) {
-         if (poly_value_list[i] != 0) {
+         if (poly_value_list[i] != 0.0) {
             poly_key_list_.push_back(poly_key_list[i]);
             poly_value_list_.push_back(poly_value_list[i]);
             for (const auto &it: poly_key_list[i]) {
@@ -82,7 +82,6 @@ public:
       num_interactions_ = static_cast<int64_t>(poly_key_list_.size());
       active_binaries_ = std::vector<graph::Index>(active_binary_set.begin(), active_binary_set.end());
       std::sort(active_binaries_.begin(), active_binaries_.end());
-      
       SetAdj();
       ResetZeroCount();
       reset_dE();
@@ -118,7 +117,7 @@ public:
       
       active_binaries_.resize(num_binaries);
       std::iota(active_binaries_.begin(),active_binaries_.end(), 0);
-      
+
       SetAdj();
       ResetZeroCount();
       reset_dE();
@@ -149,8 +148,13 @@ public:
       dE_.resize(num_binaries);
       dE_v_.resize(num_binaries);
       
-      max_effective_dE = std::abs(poly_value_list_.front());
-      min_effective_dE = std::abs(poly_value_list_.front());
+      //Initialize
+      max_effective_dE_ = std::abs(poly_value_list_.front());
+      min_effective_dE_ = 0.0;
+      for (const auto &index_key: adj_[active_binaries_.front()]) {
+         min_effective_dE_ += std::abs(poly_value_list_[index_key]);
+      }
+      min_effective_dE_ = min_effective_dE_/adj_[active_binaries_.front()].size();
       
       for (const auto &index_binary: active_binaries_) {
          FloatType val     = 0.0;
@@ -167,12 +171,12 @@ public:
          dE_[index_binary]   = (-2*binary + 1)*val;
          dE_v_[index_binary] = dE_[index_binary];
          
-         if (flag && max_effective_dE < abs_val) {
-            max_effective_dE = abs_val;
+         if (flag && max_effective_dE_ < abs_val) {
+            max_effective_dE_ = abs_val;
          }
          abs_val = abs_val/adj_[index_binary].size();
-         if (flag && min_effective_dE > abs_val) {
-            min_effective_dE = abs_val;
+         if (flag && min_effective_dE_ > abs_val) {
+            min_effective_dE_ = abs_val;
          }
       }
    }
@@ -320,16 +324,16 @@ public:
       return active_binaries_;
    }
    
-   //! @brief Get "max_effective_dE", which is a upper bound of energy gap.
-   //! @return max_effective_dE
+   //! @brief Get "max_effective_dE_", which is a upper bound of energy gap.
+   //! @return max_effective_dE_
    FloatType get_max_effective_dE() const {
-      return max_effective_dE;
+      return max_effective_dE_;
    }
    
-   //! @brief Get "min_effective_dE", which is a rough lower bound of energy gap.
-   //! @return min_effective_dE
+   //! @brief Get "min_effective_dE_", which is a rough lower bound of energy gap.
+   //! @return min_effective_dE_
    FloatType get_min_effective_dE() const {
-      return min_effective_dE;
+      return min_effective_dE_;
    }
    
    //! @brief Get the PolynomialValueList object, which is the list of the values of the polynomial interactions as std::vector<FloatType>.
@@ -378,11 +382,17 @@ public:
    
    void print_adj() const {
       for (int64_t i = 0; i < num_binaries; ++i) {
-         printf("adj[%ld]=", i);
+         printf("adj[%lld]=", i);
          for (const auto &index_key: adj_[i]) {
             printf("%ld(%+lf), ", index_key, poly_value_list_[index_key]);
          }
          printf("\n");
+      }
+   }
+   
+   void print_active_binaries() const {
+      for (std::size_t i = 0; i < active_binaries_.size(); ++i) {
+         printf("act_bin[%ld]=%ld\n", i, active_binaries_[i]);
       }
    }
    */
@@ -413,10 +423,10 @@ private:
    std::vector<graph::Index> active_binaries_;
    
    //! @brief Upper bound of energy gap.
-   FloatType max_effective_dE;
+   FloatType max_effective_dE_;
    
    //! @brief Rough lower bound of energy gap.
-   FloatType min_effective_dE;
+   FloatType min_effective_dE_;
 
    ///------------------------------------------------------------------------------------------------------------------------------------------------------
    ///----------------The following member variables are used to virtually update the system and k-local update----------------
@@ -451,13 +461,17 @@ private:
          }
       }
       
-      //sort
-      auto compare = [this](const int64_t i1, const int64_t i2) { return poly_value_list_[i1] < poly_value_list_[i2]; };
-      
+      //sort by value and key size
+      auto compare_value = [this](const int64_t i1, const int64_t i2) { return poly_value_list_[i1] < poly_value_list_[i2]; };
+      auto compare_size  = [this](const int64_t i1, const int64_t i2) {
+         return (poly_value_list_[i1] < 0.0) && (poly_value_list_[i2] < 0.0) && (poly_key_list_[i1].size() < poly_key_list_[i2].size());
+      };
+
       int64_t adj_size = static_cast<int64_t>(adj_.size());
 #pragma omp parallel for
       for (int64_t i = 0; i < adj_size; ++i) {
-         std::sort(adj_[i].begin(), adj_[i].end(), compare);
+         std::sort(adj_[i].begin(), adj_[i].end(), compare_value);
+         std::sort(adj_[i].begin(), adj_[i].end(), compare_size);
       }
    }
    
@@ -477,7 +491,7 @@ private:
          zero_count_v_[i] = zero_count;
       }
    }
-   
+      
 };
 
 //! @brief Helper function for ClassicalIsingPolynomial constructor
