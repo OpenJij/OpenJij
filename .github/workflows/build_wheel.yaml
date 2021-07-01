@@ -45,13 +45,16 @@ jobs:
           CIBW_MANYLINUX_S390X_IMAGE: quay.io/pypa/manylinux_2_24_s390xlatest
           CIBW_DEPENDENCY_VERSIONS: latest
           CIBW_BEFORE_BUILD: "pip install --upgrade cmake"
+          
+          CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -w {dest_dir} {wheel}"
+          
           CIBW_ENVIRONMENT_MACOS: 
             USE_OMP=True
             CPPFLAGS="$CPPFLAGS -Xpreprocessor -fopenmp"
             CFLAGS="$CFLAGS -I/usr/local/opt/libomp/include"
             CXXFLAGS="$CXXFLAGS -I/usr/local/opt/libomp/include"
             LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib -L/usr/local/opt/libomp/lib -lomp"
-            
           CIBW_BEFORE_ALL_MACOS:
             brew install libomp
 
