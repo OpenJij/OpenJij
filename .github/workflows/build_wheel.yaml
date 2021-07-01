@@ -3,6 +3,9 @@ name: Build Wheel
 on:
   workflow_dispatch:
 
+env:
+  Python_Version: 3.9
+
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -10,15 +13,37 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false 
+      max-parallel: 3
 
     steps:
       - uses: actions/checkout@v2
-
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: ${{env.Python_Version}}
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: all
       - name: Build wheels
         uses: pypa/cibuildwheel@v1.12.0
-        # to supply options, put them in 'env', like:
-        # env:
-        #   CIBW_SOME_OPTION: value
+        env:
+          CIBW_PLATFORM: auto 
+          CIBW_BUILD: "cp3*-*"
+          CIBW_SKIP: "cp35-* cp36-* cp37-* *-win32 pp*"
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8.10"
+          CIBW_ENVIRONMENT: "BUILD_TIME=$(date)"
+          CIBW_ARCHS_LINUX: "x86_64 aarch64 i686 ppc64le s390x"
+          CIBW_ARCHS_MACOS: "x86_64 universal2 arm64"
+          CIBW_ARCHS_WINDOWS: "AMD64"
+          CIBW_MANYLINUX_X86_64_IMAGE: quay.io/pypa/manylinux_2_24_x86_64:latest
+          CIBW_MANYLINUX_AARCH64_IMAGE: quay.io/pypa/manylinux_2_24_aarch64:latest
+          CIBW_MANYLINUX_I686_IMAGE: quay.io/pypa/manylinux_2_24_i686:latest
+          CIBW_MANYLINUX_PPC64LE_IMAGE: quay.io/pypa/manylinux_2_24_ppc64le:latest
+          CIBW_MANYLINUX_S390X_IMAGE: quay.io/pypa/manylinux_2_24_s390x
+          CIBW_DEPENDENCY_VERSIONS: latest
 
       - uses: actions/upload-artifact@v2
         with:
