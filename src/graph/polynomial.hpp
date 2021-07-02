@@ -203,7 +203,7 @@ public:
          }
       }
       else {
-         for (std::size_t i = 0; i < num_interactions; ++i) {
+         for (int64_t i = 0; i < num_interactions; ++i) {
             Spin spin_multiple = 1;
             for (const auto &index: poly_key_list_[i]) {
                spin_multiple *= spins[index];

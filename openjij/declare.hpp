@@ -287,7 +287,7 @@ inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str
       py::dict py_polynomial;
       const auto &poly_key_list   = self.get_keys();
       const auto &poly_value_list = self.get_values();
-      for (int64_t i = 0; i < poly_key_list.size(); ++i) {
+      for (std::size_t i = 0; i < poly_key_list.size(); ++i) {
          py::tuple tuple;
          for (const auto &index: poly_key_list[i]) {
             tuple = tuple + py::make_tuple(index);

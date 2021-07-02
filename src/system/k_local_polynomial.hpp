@@ -57,7 +57,9 @@ public:
    //! @param init_binaries const graph::Binaries&. The initial binary configurations.
    //! @param poly_graph const graph::Polynomial<FloatType>& (Polynomial graph class). The initial interacrtions.
    KLocalPolynomial(const graph::Binaries &init_binaries, const graph::Polynomial<FloatType> &poly_graph): num_binaries(init_binaries.size()), binaries(init_binaries), binaries_v_(init_binaries) {
-            
+      
+      CheckVariables(binaries);
+
       const auto &poly_key_list   = poly_graph.get_keys();
       const auto &poly_value_list = poly_graph.get_values();
       
@@ -91,6 +93,8 @@ public:
    //! @param init_binaries const graph::Binaries&. The initial binary configurations.
    //! @param j const nlohmann::json&
    KLocalPolynomial(const graph::Binaries &init_binaries, const nlohmann::json &j) :num_binaries(init_binaries.size()), binaries(init_binaries), binaries_v_(init_binaries) {
+      
+      CheckVariables(binaries);
       
       if (j.at("vartype") != "BINARY") {
          throw std::runtime_error("Only binary variables are supported");
@@ -126,6 +130,9 @@ public:
    //! @brief Reset KLocalPolynomial system with new binary configurations.
    //! @param init_binaries const graph::Binaries&
    void reset_binaries(const graph::Binaries &init_binaries) {
+      
+      CheckVariables(init_binaries);
+      
       if (init_binaries.size() != binaries.size()) {
          throw std::runtime_error("The size of initial binaries does not equal to system size");
       }
@@ -489,6 +496,16 @@ private:
          }
          zero_count_[i]   = zero_count;
          zero_count_v_[i] = zero_count;
+      }
+   }
+   
+   //! @brief Check if variables are valid
+   //! @param init_binaries const graph::Spins&
+   void CheckVariables(const graph::Binaries &init_binaries) const {
+      for (const auto &v: init_binaries) {
+         if (!(v == 0 || v == 1)) {
+            throw std::runtime_error("The initial binaries must be 0 or 1");
+         }
       }
    }
       
