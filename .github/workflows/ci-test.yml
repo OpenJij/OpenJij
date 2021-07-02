@@ -16,7 +16,15 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version : ${{ matrix.python-version }}
-    - name: Install dependencies and test
+    - name: Install dependencies and test ${{ matrix.python-version }}
+      if: runner.os == 'macOS'
+      run: |
+        export USE_OMP=False
+        python -m pip install --upgrade pip
+        pip install cmake
+        python setup.py build --debug test
+    - name: Install dependencies and test on ${{ matrix.python-version }}
+      if: runner.os != 'macOS'
       run: |
         python -m pip install --upgrade pip
         pip install cmake
