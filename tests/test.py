@@ -256,7 +256,7 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
 
-    def test_SingleSpinFlip_Polynomial(self):
+    def test_SingleSpinFlip_Polynomial_Spin(self):
         system_size = 5
         self.polynomial = G.Polynomial(system_size)
         self.polynomial = self.gen_testcase_polynomial(self.polynomial)
@@ -275,11 +275,114 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertAlmostEqual(self.true_energy, self.polynomial.calc_energy(result_spin))
 
-    
-    def test_SingleSpinFlip_KLocal(self):
-        system_size = 20
+    def test_SingleSpinFlip_Polynomial_Binary(self):
+        system_size = 5
         self.polynomial = G.Polynomial(system_size)
-        self.polynomial[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19] = -1
+        self.polynomial[0]   = +1
+        self.polynomial[0,1] = -1
+        self.polynomial[0,2] = +1.5
+        self.polynomial[0,3] = -1.6
+        self.polynomial[0,4] = -1.7
+        self.polynomial[1,3] = +2.3
+        self.polynomial[1,4] = -0.3
+        self.polynomial[2,3] = +3.4
+        self.polynomial[2,4] = +3.7
+        self.polynomial[3,4] = -0.8
+        self.polynomial[0,1,2] = -0.5
+        self.polynomial[1,2,3] = -1.0
+        self.polynomial[2,3,4] = +0.9
+        #classial ising (Polynomial)
+        system = S.make_classical_ising_polynomial(self.polynomial.gen_binary(), self.polynomial, "BINARY")
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 200, 200)
+
+        #anneal
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = system.variables
+
+        #compare
+        self.assertAlmostEqual(-3.1, self.polynomial.calc_energy(result_spin))
+
+    def test_SingleSpinFlip_KLocal_1(self):
+        system_size = 5
+        self.polynomial = G.Polynomial(system_size)
+        self.polynomial[0]   = +1
+        self.polynomial[0,1] = -1
+        self.polynomial[0,2] = +1.5
+        self.polynomial[0,3] = -1.6
+        self.polynomial[0,4] = -1.7
+        self.polynomial[1,3] = +2.3
+        self.polynomial[1,4] = -0.3
+        self.polynomial[2,3] = +3.4
+        self.polynomial[2,4] = +3.7
+        self.polynomial[3,4] = -0.8
+        self.polynomial[0,1,2] = -0.5
+        self.polynomial[1,2,3] = -1.0
+        self.polynomial[2,3,4] = +0.9
+        #classial ising (Polynomial)
+        system = S.make_k_local_polynomial(self.polynomial.gen_binary(), self.polynomial)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 200, 200)
+
+        #anneal
+        A.Algorithm_KLocal_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertAlmostEqual(-3.1, self.polynomial.calc_energy(result_spin))
+    
+    def test_SingleSpinFlip_KLocal_2(self):
+        system_size = 30
+        self.polynomial = G.Polynomial(system_size)
+        self.polynomial[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] = -1
+        #classial ising (Polynomial)
+        system = S.make_k_local_polynomial(self.polynomial.gen_binary(), self.polynomial)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 200, 200)
+
+        #anneal
+        A.Algorithm_KLocal_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertAlmostEqual(-1, self.polynomial.calc_energy(result_spin))
+
+    def test_SingleSpinFlip_KLocal_3(self):
+        system_size = 30
+        self.polynomial = G.Polynomial(system_size)
+        self.polynomial[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] = +1
+        self.polynomial[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,   17,18,19,20,21,22,23,24,25,26,27,28,29] = -1
+        #classial ising (Polynomial)
+        system = S.make_k_local_polynomial(self.polynomial.gen_binary(), self.polynomial)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 200, 200)
+
+        #anneal
+        A.Algorithm_KLocal_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertAlmostEqual(-1, self.polynomial.calc_energy(result_spin))
+
+    def test_SingleSpinFlip_KLocal_4(self):
+        system_size = 30
+        self.polynomial = G.Polynomial(system_size)
+        self.polynomial[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] = -1
+        self.polynomial[0,1,2,3,4,5,6,7,8,  10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] = +1
+        self.polynomial[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,   24,25,26,27,28,29] = +1
+        self.polynomial[0,1,2,3,4,5,6,7,8,  10,11,12,13,14,15,16,17,18,19,20,21,22,   24,25,26,27,28,29] = -1
         #classial ising (Polynomial)
         system = S.make_k_local_polynomial(self.polynomial.gen_binary(), self.polynomial)
 
@@ -295,27 +398,6 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertAlmostEqual(-1, self.polynomial.calc_energy(result_spin))
     
-    """
-    def test_SingleSpinFlip_ClassicalIsing_Polynomial_Quadratic_Interactions(self):
-        self.polynomial = G.Polynomial(self.size, "SPIN")
-        self.polynomial = self.gen_testcase(self.polynomial)
-        #classial ising (Polynomial)
-        system = S.make_classical_ising_polynomial(self.polynomial.gen_spin(self.seed_for_spin), self.polynomial)
-
-        #schedulelist
-        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 100)
-
-        #anneal
-        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
-
-        #result spin
-        result_spin = R.get_solution(system)
-
-        #compare
-        self.assertTrue(self.true_groundstate == result_spin)
-    """
-
-
     def test_SingleSpinFlip_TransverseIsing_Dense(self):
 
         #transverse ising (dense)

@@ -50,7 +50,7 @@ struct KLocal<system::KLocalPolynomial<GraphType>> {
          const FloatType dE_s = system.dE_single(index_binary);
          if (system.count_call_updater%system.rate_call_k_local == 0 && dE_s == 0.0) {
             for (const auto &index_key: system.get_adj(index_binary)) {
-               if (system.GetPolyValue(index_key) > 0.0) {
+               if (system.GetPolyValue(index_key) >= 0.0) {
                   break;
                }
                const FloatType dE_i = system.dE_k_local(index_key);

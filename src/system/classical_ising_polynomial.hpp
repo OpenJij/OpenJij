@@ -424,6 +424,8 @@ private:
       }
    }
    
+   //! @brief Check if variables are valid
+   //! @param init_variables const graph::Spins&
    void CheckVariables(const graph::Spins &init_variables) const {
       if (vartype == cimod::Vartype::SPIN) {
          for (const auto &v: init_variables) {

@@ -57,12 +57,84 @@ class HUBOTest(unittest.TestCase):
         true_energy = -1.3422641349549371
         return J, true_energy
 
-    def test_SASampler_hubo(self):
+    def test_SASampler_hubo_spin_1(self):
         sampler = oj.SASampler()
         K, true_energy = self.gen_testcase_polynomial()
+        response = sampler.sample_hubo(K, vartype="SPIN", seed = 3, num_sweeps = 10000)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+    def test_SASampler_hubo_spin_2(self):
+        sampler = oj.SASampler()
+        K = {}
+        K[0,]  = +1
+        K[0,1] = -1
+        K[0,2] = +1.5
+        K[0,3] = -1.6
+        K[0,4] = -1.7
+        K[1,3] = +2.3
+        K[1,4] = -0.3
+        K[2,3] = +3.4
+        K[2,4] = +3.7
+        K[3,4] = -0.8
+        K[0,1,2] = -0.5
+        K[1,2,3] = -1.0
+        K[2,3,4] = +0.9
+        true_energy = -15.1
         response = sampler.sample_hubo(K, vartype="SPIN", seed = 3)
-        #TODO: the following test fails on windows, we need to change to simpler test.
-        #self.assertAlmostEqual(true_energy, response.energies[0])
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+    def test_SASampler_hubo_binary_1(self):
+        sampler = oj.SASampler()
+        K = {}
+        K[0,]  = +1
+        K[0,1] = -1
+        K[0,2] = +1.5
+        K[0,3] = -1.6
+        K[0,4] = -1.7
+        K[1,3] = +2.3
+        K[1,4] = -0.3
+        K[2,3] = +3.4
+        K[2,4] = +3.7
+        K[3,4] = -0.8
+        K[0,1,2] = -0.5
+        K[1,2,3] = -1.0
+        K[2,3,4] = +0.9
+        true_energy = -3.1
+        response = sampler.sample_hubo(K, vartype="BINARY", updater = "single spin flip", seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+        response = sampler.sample_hubo(K, vartype="BINARY", updater = "k-local", seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+        response = sampler.sample_hubo(K, vartype="BINARY", seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+    def test_SASampler_hubo_binary_2(self):
+        sampler = oj.SASampler()
+        K = {}
+        K[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] = -1
+        true_energy = -1
+        response = sampler.sample_hubo(K, vartype="BINARY", seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+    def test_SASampler_hubo_binary_3(self):
+        sampler = oj.SASampler()
+        K = {}
+        K[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] = +1
+        K[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,   17,18,19,20,21,22,23,24,25,26,27,28,29] = -1
+        true_energy = -1
+        #TO DO beta_max must be set automatically
+        response = sampler.sample_hubo(K, vartype="BINARY", seed = 3, beta_max = 10)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+    def test_SASampler_hubo_binary_4(self):
+        sampler = oj.SASampler()
+        K = {}
+        K[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] = -1
+        K[0,1,2,3,4,5,6,7,8,  10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] = +1
+        K[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,   24,25,26,27,28,29] = +1
+        K[0,1,2,3,4,5,6,7,8,  10,11,12,13,14,15,16,17,18,19,20,21,22,   24,25,26,27,28,29] = -1
+        true_energy = -1
+        response = sampler.sample_hubo(K, vartype="BINARY", seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])  
 
     def test_hubo_constructor(self):
         hubo_spin = oj.BinaryPolynomialModel(self.J_quad, oj.SPIN)

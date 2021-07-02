@@ -42,7 +42,7 @@ static constexpr std::size_t num_system_size = 8;
 
 
 static openjij::utility::ClassicalScheduleList generate_schedule_list(){
-    return openjij::utility::make_classical_schedule_list(100, 100, 1, 11);
+    return openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 100);
 }
 
 static openjij::utility::TransverseFieldScheduleList generate_tfm_schedule_list(){
@@ -84,7 +84,7 @@ static openjij::utility::TransverseFieldScheduleList generate_tfm_schedule_list(
 //    end = std::chrono::high_resolution_clock::now();
 //    std::cout << "time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << std::endl;
 //}
-/*
+
 TEST(Graph, DenseGraphCheck){
     using namespace openjij::graph;
     using namespace openjij;
@@ -377,7 +377,7 @@ TEST(SingleSpinFlip, FindTrueGroundState_TransverseIsing_Sparse) {
 
     EXPECT_EQ(get_true_groundstate(), result::get_solution(transverse_ising));
 }
-*/
+
 
 
 ///-------------------------------------------------------------------------------------------
@@ -555,7 +555,6 @@ TEST(PolySystemKLP, ConstructorGraphSparseInt2) {
    TestKLPConstructorGraph<openjij::graph::Index, double>(GeneratePolynomialInteractionsSparseInt2<double>(), "Sparse");
 }
 
-
 TEST(PolyUpdater, SingleSpinFlipSPIN) {
    
    //Check the polynomial updater work properly by comparing the result of the quadratic updater
@@ -705,7 +704,6 @@ TEST(PolyUpdater, KLocal2) {
    }
 }
 
-
 TEST(PolyUpdater, KLocal3) {
    
    const int seed = 1;
@@ -741,8 +739,6 @@ TEST(PolyUpdater, KLocal3) {
 
 }
 
-
-/*
 //swendsen-wang test
 TEST(SwendsenWang, FindTrueGroundState_ClassicalIsing_Sparse_OneDimensionalIsing) {
     using namespace openjij;
@@ -839,7 +835,7 @@ TEST(ContinuousTimeSwendsenWang, Place_Cuts_Special_Case) {
 
     EXPECT_EQ(timeline, correct_timeline);
 }
-*/
+
 /*************** currently disabled *************
 
 TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ContinuousTimeIsing_Sparse_OneDimensionalIsing) {
@@ -890,7 +886,7 @@ TEST(ContinuousTimeSwendsenWang, FindTrueGroundState_ContinuousTimeIsing_Sparse)
 }
 
 **********************************/
-/*
+
 TEST(RESULT, GetSolutionFromTrotter){
     auto graph = openjij::graph::Dense<float>(4);
     graph.J(1, 1) = -1.0;
@@ -1303,5 +1299,4 @@ TEST(GPUUtil, CuBLASWrapperTest){
 }
 
 #endif
-*/
 

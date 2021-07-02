@@ -201,31 +201,6 @@ cimod::Polynomial<std::tuple<openjij::graph::Index, openjij::graph::Index>, Floa
 }
 
 template<typename FloatType>
-cimod::Polynomial<openjij::graph::Index, FloatType> GeneratePolynomialInteractionsForKLocal1() {
-   return cimod::Polynomial<openjij::graph::Index, FloatType> {
-      {{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29}, -1}
-   };
-}
-
-template<typename FloatType>
-cimod::Polynomial<openjij::graph::Index, FloatType> GeneratePolynomialInteractionsForKLocal2() {
-   return cimod::Polynomial<openjij::graph::Index, FloatType> {
-      {{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29}, +1},
-      {{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,   17,18,19,20,21,22,23,24,25,26,27,28,29}, -1}
-   };
-}
-
-template<typename FloatType>
-cimod::Polynomial<openjij::graph::Index, FloatType> GeneratePolynomialInteractionsForKLocal3() {
-   return cimod::Polynomial<openjij::graph::Index, FloatType> {
-      {{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29}, -1},
-      {{0,1,2,3,4,5,6,7,8,  10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29}, +1},
-      {{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,   24,25,26,27,28,29}, +1},
-      {{0,1,2,3,4,5,6,7,8,  10,11,12,13,14,15,16,17,18,19,20,21,22,   24,25,26,27,28,29}, -1}
-   };
-}
-
-template<typename FloatType>
 void TestPolyGraphDense(const openjij::graph::Polynomial<FloatType> &poly_graph) {
    EXPECT_EQ(poly_graph.size()                , 3);
    EXPECT_EQ(poly_graph.get_num_interactions(), 8);
@@ -825,49 +800,5 @@ void TestKLPConstructorGraph(const cimod::Polynomial<IndexType, FloatType> &poly
       throw std::runtime_error("Unknown type");
    }
 }
-
-
-
-
-
-void TestBinaryConfigulationsKlocal1(const openjij::graph::Binaries &binaries) {
-   EXPECT_EQ(binaries.size(), 30);
-   for (const auto &binary: binaries) {
-      EXPECT_EQ(binary, 1);
-   }
-}
-
-void TestBinaryConfigulationsKlocal2(const openjij::graph::Binaries &binaries) {
-   EXPECT_EQ(binaries.size(), 30);
-   for (std::size_t i = 0; i < binaries.size(); ++i) {
-      if (i == 16) {
-         EXPECT_EQ(binaries[i], 0);
-      }
-      else {
-         EXPECT_EQ(binaries[i], 1);
-      }
-   }
-}
-
-void TestBinaryConfigulationsKlocal3(const openjij::graph::Binaries &binaries) {
-   EXPECT_EQ(binaries.size(), 30);
-   for (std::size_t i = 0; i < binaries.size(); ++i) {
-      if (i == 9 || i == 23) {
-         EXPECT_EQ(binaries[i], 0);
-      }
-      else {
-         EXPECT_EQ(binaries[i], 1);
-      }
-   }
-}
-
-
-
-
-
-
-
-
-
 
 #endif /* polynomial_test_hpp */
