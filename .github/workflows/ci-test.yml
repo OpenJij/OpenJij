@@ -31,10 +31,10 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('~/.python3_path.txt') }}
         restore-keys: |
          ${{ runner.os }}-pip-
-    - name: Install dependencies on ${{ matrix.python-version }}
+    - name: Install dependencies 
       run: |
         pip install cmake
-    - name: Test on ${{ matrix.python-version }}
+    - name: Test 
       run: |
         python setup.py build --debug test
 
