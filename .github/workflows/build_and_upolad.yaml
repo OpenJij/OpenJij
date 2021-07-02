@@ -54,7 +54,7 @@ jobs:
           CIBW_BUILD: "cp3*-*"
           CIBW_SKIP: "cp35-* cp36-* *-win32 pp*"
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7.8"
-          CIBW_ENVIRONMENT: "CFLAGS='-Ofast' CXXFLAGS='-Ofast' BUILD_TIME=$(date)"
+          CIBW_ENVIRONMENT: "CFLAGS='-Ofast -pipe -flto' CXXFLAGS='-Ofast -pipe -flto' BUILD_TIME=$(date)"
           CIBW_ARCHS_LINUX: "x86_64 aarch64"
           CIBW_ARCHS_MACOS: "x86_64 universal2 arm64"
           CIBW_ARCHS_WINDOWS: "AMD64"
