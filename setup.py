@@ -115,7 +115,10 @@ class PyTestCommand(TestCommand):
 setup(
     name=NAME,
     version_config=True,
-    setup_requires=['setuptools-git-versioning'],
+    setup_requires=[
+        'setuptools-git-versioning', 
+        'cmake>=3.20.5',
+    ],
     author=AUTHOR,
     author_email='openjij@j-ij.com',
     url='https://openjij.github.io/OpenJij/',
