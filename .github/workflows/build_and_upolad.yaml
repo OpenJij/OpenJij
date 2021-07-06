@@ -140,11 +140,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: bdist_wheel
-          path: ./dist
-      - uses: actions/download-artifact@v2
-        with:
-          name: sdist
+          name: artifact
           path: ./dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
