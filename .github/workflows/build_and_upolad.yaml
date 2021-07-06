@@ -77,7 +77,7 @@ jobs:
               
          - os: macos-latest
            CIBW_PLATFORM: macos
-           CIBW_BUILD: "{cp,pp}3*-macosx*"
+           CIBW_BUILD: "cp3*-macosx*"
            CIBW_BEFORE_ALL: "brew install libomp"
            CIBW_BEFORE_BUILD: "pip install --upgrade cmake"
            CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps --all --depending {wheel} && delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
