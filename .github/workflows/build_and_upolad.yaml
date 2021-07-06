@@ -40,6 +40,8 @@ jobs:
          - os: ubuntu-latest
            arch: AMD64
          - os: ubuntu-latest
+           arch: i686
+         - os: ubuntu-latest
            arch: arm64
          - os: ubuntu-latest
            arch: universal2
@@ -120,6 +122,8 @@ jobs:
           CIBW_BEFORE_BUILD: ${{matrix.CIBW_BEFORE_BUILD}}        
           CIBW_BEFORE_ALL: ${{matrix.CIBW_BEFORE_ALL}}
           CIBW_REPAIR_WHEEL_COMMAND: ${{matrix.CIBW_REPAIR_WHEEL_COMMAND}}
+          CIBW_MANYLINUX_X86_64_IMAGE: quay.io/pypa/manylinux2014_x86_64:latest
+          CIBW_MANYLINUX_AARCH64_IMAGE: quay.io/pypa/manylinux2014_aarch64:latest
 
       - uses: actions/upload-artifact@v2
         with:
