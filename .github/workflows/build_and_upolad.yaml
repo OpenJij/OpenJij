@@ -67,7 +67,7 @@ jobs:
         include:
          - os: ubuntu-latest
            CIBW_PLATFORM: linux
-           CIBW_BUILD: "{cp,pp}3*-manylinux*"
+           CIBW_BUILD: "cp3*-manylinux*"
            CIBW_BEFORE_ALL: "yum install -y centos-release-scl && yum install -y devtoolset-10"
            CIBW_BEFORE_BUILD: "source scl_source enable devtoolset-10 && pip install --upgrade cmake"
            CIBW_REPAIR_WHEEL_COMMAND: ""
