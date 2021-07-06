@@ -87,30 +87,26 @@ endif()
 if(USE_TEST)
        #include(${CMAKE_SOURCE_DIR}/external/googletest.cmake)
        conan_cmake_configure(REQUIRES gtest/[>=1.10.0]
-                      GENERATORS cmake_find_package_multi
+                      GENERATORS cmake_find_package
                       OPTIONS gtest:shared=True)                
 else()
 	message(STATUS "Skip downloding googletest")
 endif()
 
 conan_cmake_configure(REQUIRES pybind11/[>=2.6.2]
-                      GENERATORS cmake_find_package_multi)
+                      GENERATORS cmake_find_package)
 
 conan_cmake_configure(REQUIRES eigen/[>=3.3.9]
-                      GENERATORS cmake_find_package_multi
+                      GENERATORS cmake_find_package
                       OPTIONS eigen:MPL2_only=true)
 
 conan_cmake_configure(REQUIRES nlohmann_json/[>=3.9.1]
-                      GENERATORS cmake_find_package_multi)
+                      GENERATORS cmake_find_package)
 
-
-foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
-    conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
-    conan_cmake_install(PATH_OR_REFERENCE .
-                        BUILD all
-                        REMOTE conan-center
-                        SETTINGS ${settings})
-endforeach()
+conan_cmake_install(PATH_OR_REFERENCE .
+                    BUILD missing
+                    REMOTE conan-center
+                    SETTINGS ${settings})
 
  
 find_package(pybind11 REQUIRED) 
