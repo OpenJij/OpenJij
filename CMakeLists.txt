@@ -108,13 +108,13 @@ conan_cmake_configure(REQUIRES nlohmann_json/[>=3.9.1]
                       GENERATORS cmake_find_package_multi
                       BUILD_REQUIRES cmake/[>=3.15.7])
 
-foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
-    conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
-    conan_cmake_install(PATH_OR_REFERENCE .
-                        BUILD missing
-                        REMOTE conan-center
-                        SETTINGS ${settings})
-endforeach()
+conan_cmake_autodetect(settings)
+
+conan_cmake_install(PATH_OR_REFERENCE .
+                    BUILD missing
+                    REMOTE conan-center
+                    SETTINGS ${settings})
+
  
 find_package(pybind11 CONFIG) 
 find_package(eigen CONFIG) 
