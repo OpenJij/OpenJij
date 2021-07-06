@@ -90,9 +90,7 @@ if(USE_TEST)
        conan_cmake_configure(REQUIRES gtest/[>=1.10.0]
                       GENERATORS cmake_find_package_multi
                       BUILD_REQUIRES cmake/[>=3.15.7]
-                      IMPORTS "bin, *.dll -> ./bin"
-                      IMPORTS "lib, *.dylib* -> ./bin")
-                      OPTIONS gtest:shared=true)                
+                      OPTIONS gtest:shared=True)                
 else()
 	message(STATUS "Skip downloding googletest")
 endif()
