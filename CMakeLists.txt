@@ -89,39 +89,37 @@ if(USE_TEST)
        #include(${CMAKE_SOURCE_DIR}/external/googletest.cmake)
        conan_cmake_configure(REQUIRES gtest/[>=1.10.0]
                       GENERATORS cmake_find_package_multi
-                      BUILD_REQUIRES cmake/[>=3.15.7]
                       OPTIONS gtest:shared=True)                
 else()
 	message(STATUS "Skip downloding googletest")
 endif()
 
 conan_cmake_configure(REQUIRES pybind11/[>=2.6.2]
-                      GENERATORS cmake_find_package_multi
-                      BUILD_REQUIRES cmake/[>=3.15.7])
+                      GENERATORS cmake_find_package_multi)
 
 conan_cmake_configure(REQUIRES eigen/[>=3.3.9]
                       GENERATORS cmake_find_package_multi
-                      BUILD_REQUIRES cmake/[>=3.15.7]
                       OPTIONS eigen:MPL2_only=true)
 
 conan_cmake_configure(REQUIRES nlohmann_json/[>=3.9.1]
-                      GENERATORS cmake_find_package_multi
-                      BUILD_REQUIRES cmake/[>=3.15.7])
+                      GENERATORS cmake_find_package_multi)
 
-conan_cmake_autodetect(settings)
 
-conan_cmake_install(PATH_OR_REFERENCE .
-                    BUILD missing
-                    REMOTE conan-center
-                    SETTINGS ${settings})
+foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
+    conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
+    conan_cmake_install(PATH_OR_REFERENCE .
+                        BUILD missing
+                        REMOTE conan-center
+                        SETTINGS ${settings})
+endforeach()
 
  
-find_package(pybind11 CONFIG) 
-find_package(eigen CONFIG) 
-find_package(nlohmann_json CONFIG) 
+find_package(pybind11 REQUIRED) 
+find_package(eigen REQUIRED) 
+find_package(nlohmann_json REQUIRED) 
   
 if(USE_TEST)  
-  find_package(gtest CONFIG) 
+  find_package(gtest REQUIRED) 
 endif()
 
 #include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
