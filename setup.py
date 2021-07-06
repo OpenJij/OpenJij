@@ -117,7 +117,6 @@ setup(
     version_config=True,
     setup_requires=[
         'setuptools-git-versioning', 
-        'conan',
         'cmake>=3.20.5',
     ],
     author=AUTHOR,
