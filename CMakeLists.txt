@@ -3,7 +3,6 @@ project(openjij)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
-list(APPEND CMAKE_MODULE_PATH external)
 
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
@@ -108,7 +107,7 @@ conan_cmake_configure(REQUIRES nlohmann_json/[>=3.9.1]
 foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
     conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
     conan_cmake_install(PATH_OR_REFERENCE .
-                        BUILD missing
+                        BUILD all
                         REMOTE conan-center
                         SETTINGS ${settings})
 endforeach()
@@ -121,7 +120,7 @@ find_package(nlohmann_json REQUIRED)
 if(USE_TEST)  
   find_package(gtest REQUIRED) 
 endif()
-
+list(APPEND CMAKE_MODULE_PATH external)
 #include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
 #include(${CMAKE_SOURCE_DIR}/external/eigen.cmake)
 #include(${CMAKE_SOURCE_DIR}/external/json.cmake)
