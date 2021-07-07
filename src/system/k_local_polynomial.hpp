@@ -210,6 +210,62 @@ public:
       return dE;
    }
    
+   FloatType dE_k_local_rev(const std::size_t index_key) {
+      FloatType dE = 0.0;
+      for (const auto &index_binary: poly_key_list_[index_key]) {
+         if (binaries_v_[index_binary] == 1) {
+            dE += dE_v_[index_binary];
+            virtual_update_system_single(index_binary);
+         }
+      }
+      return dE;
+   }
+   
+   template<typename RandomNumberEngine>
+   FloatType dE_k_local_p2(const std::size_t index_key, RandomNumberEngine &random_number_engine) {
+      FloatType dE = 0.0;
+      if (GetZeroCount(index_key) != 0) {
+         return dE_k_local(index_key);
+      }
+      else {
+         auto urd = std::uniform_real_distribution<>(0, 1.0);
+         for (const auto &index_binary: poly_key_list_[index_key]) {
+            if (urd(random_number_engine) <= 0.5) {
+               dE += dE_v_[index_binary];
+               virtual_update_system_single(index_binary);
+            }
+            //if (dE_v_[index_binary] <= 0.0) {
+            //   dE += dE_v_[index_binary];
+            //   virtual_update_system_single(index_binary);
+            //}
+         }
+         return dE;
+      }
+   }
+   
+   FloatType dE_k_local_p3(const std::size_t index_key) {
+      FloatType dE = 0.0;
+      for (const auto &index_binary: poly_key_list_[index_key]) {
+         if (binaries_v_[index_binary] == 0) {
+            dE += dE_v_[index_binary];
+            virtual_update_system_single(index_binary);
+            if (dE != 0.0) {
+               break;
+            }
+         }
+      }
+      return dE;
+   }
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
    //! @brief Update binary configurations by k-local update
    void update_system_k_local() {
       for (const auto &index_binary: update_index_binaries_v_) {
@@ -311,6 +367,10 @@ public:
       return zero_count_[index_key];
    }
    
+   inline int64_t GetKeySize(const std::size_t index_key) const {
+      return poly_key_list_[index_key].size();
+   }
+   
    //! @brief Get the value of the interaction specified by "index_key".
    //! @param index_key const std::size_t
    //! @return Corresponding value.
@@ -329,6 +389,11 @@ public:
    //! @return active_binaries_
    inline const std::vector<graph::Index> &get_active_binaries() const {
       return active_binaries_;
+   }
+   
+
+   inline graph::Index get_active_binaries_index(const std::size_t index) const {
+      return active_binaries_[index];
    }
    
    //! @brief Get "max_effective_dE_", which is a upper bound of energy gap.
@@ -361,6 +426,10 @@ public:
       return adj_;
    }
    
+   const std::vector<graph::Index> get_key(const std::size_t index) const {
+      return poly_key_list_[index];
+   }
+   
    //! @brief Get the vartype as std::string, which must be "BINARY".
    //! @return "BINARY" as std::string
    std::string get_vartype_string() const {
@@ -370,7 +439,7 @@ public:
    ///----------------------------------------------------------------------------------------
    ///----------------The following functions are for debugging. Disable when release.----------------
    ///----------------------------------------------------------------------------------------
-   /*
+   
    void print_dE() const {
       for (std::size_t i = 0; i < dE_.size(); ++i) {
          printf("dE[%2ld]=%+.15lf\n", i, dE_[i]);
@@ -399,11 +468,27 @@ public:
    
    void print_active_binaries() const {
       for (std::size_t i = 0; i < active_binaries_.size(); ++i) {
-         printf("act_bin[%ld]=%ld\n", i, active_binaries_[i]);
+         printf("%d, ", binaries[active_binaries_[i]]);
       }
+      printf("\n");
    }
-   */
+   
    ///----------------------------------------------------------------------------------------
+   
+   FloatType energy() const {
+      FloatType energy = 0.0;
+      for (int64_t i = 0; i < num_interactions_; ++i) {
+         int spin_multiple = 1;
+         for (const auto &index: poly_key_list_[i]) {
+            spin_multiple *= binaries[index];
+            if (spin_multiple == 0.0) {
+               break;
+            }
+         }
+         energy += spin_multiple*poly_value_list_[i];
+      }
+      return energy;
+   }
 
    
 private:
@@ -436,7 +521,7 @@ private:
    FloatType min_effective_dE_;
 
    ///------------------------------------------------------------------------------------------------------------------------------------------------------
-   ///----------------The following member variables are used to virtually update the system and k-local update----------------
+   ///----------------The following member variables are used to virtually update the system for k-local update----------------
    ///------------------------------------------------------------------------------------------------------------------------------------------------------
    //! @brief The energy differences when flipping a binary, which is used to implement k-local update.
    std::vector<FloatType> dE_v_;
