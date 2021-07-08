@@ -72,7 +72,7 @@ struct KLocal<system::KLocalPolynomial<GraphType>> {
          }
       }
       
-      if (count == system.get_active_binaries().size() && system.count_call_updater%system.rate_call_k_local != 0) {
+      if (count == static_cast<int64_t>(system.get_active_binaries().size()) && system.count_call_updater%system.rate_call_k_local != 0) {
          for (const auto &index_binary: system.get_active_binaries()) {
             const FloatType dE_s = system.dE_single(index_binary);
             if (dE_s == 0.0 && system.binaries[index_binary] == 1) {
