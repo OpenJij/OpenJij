@@ -82,6 +82,7 @@ public:
          }
       }
       num_interactions_ = static_cast<int64_t>(poly_key_list_.size());
+      SortInteractions();
       active_binaries_ = std::vector<graph::Index>(active_binary_set.begin(), active_binary_set.end());
       std::sort(active_binaries_.begin(), active_binaries_.end());
       SetAdj();
@@ -118,6 +119,7 @@ public:
          poly_key_list_[i]   = poly_key_list[i];
          poly_value_list_[i] = poly_value_list[i];
       }
+      SortInteractions();
       
       active_binaries_.resize(num_binaries);
       std::iota(active_binaries_.begin(),active_binaries_.end(), 0);
@@ -206,65 +208,12 @@ public:
             dE += dE_v_[index_binary];
             virtual_update_system_single(index_binary);
          }
-      }
-      return dE;
-   }
-   
-   FloatType dE_k_local_rev(const std::size_t index_key) {
-      FloatType dE = 0.0;
-      for (const auto &index_binary: poly_key_list_[index_key]) {
-         if (binaries_v_[index_binary] == 1) {
-            dE += dE_v_[index_binary];
-            virtual_update_system_single(index_binary);
+         if (dE < 0.0) {
+            break;
          }
       }
       return dE;
    }
-   
-   template<typename RandomNumberEngine>
-   FloatType dE_k_local_p2(const std::size_t index_key, RandomNumberEngine &random_number_engine) {
-      FloatType dE = 0.0;
-      if (GetZeroCount(index_key) != 0) {
-         return dE_k_local(index_key);
-      }
-      else {
-         auto urd = std::uniform_real_distribution<>(0, 1.0);
-         for (const auto &index_binary: poly_key_list_[index_key]) {
-            if (urd(random_number_engine) <= 0.5) {
-               dE += dE_v_[index_binary];
-               virtual_update_system_single(index_binary);
-            }
-            //if (dE_v_[index_binary] <= 0.0) {
-            //   dE += dE_v_[index_binary];
-            //   virtual_update_system_single(index_binary);
-            //}
-         }
-         return dE;
-      }
-   }
-   
-   FloatType dE_k_local_p3(const std::size_t index_key) {
-      FloatType dE = 0.0;
-      for (const auto &index_binary: poly_key_list_[index_key]) {
-         if (binaries_v_[index_binary] == 0) {
-            dE += dE_v_[index_binary];
-            virtual_update_system_single(index_binary);
-            if (dE != 0.0) {
-               break;
-            }
-         }
-      }
-      return dE;
-   }
-   
-   
-   
-   
-   
-   
-   
-   
-   
    
    //! @brief Update binary configurations by k-local update
    void update_system_k_local() {
@@ -366,11 +315,7 @@ public:
    inline int64_t GetZeroCount(const std::size_t index_key) const {
       return zero_count_[index_key];
    }
-   
-   inline int64_t GetKeySize(const std::size_t index_key) const {
-      return poly_key_list_[index_key].size();
-   }
-   
+      
    //! @brief Get the value of the interaction specified by "index_key".
    //! @param index_key const std::size_t
    //! @return Corresponding value.
@@ -390,12 +335,7 @@ public:
    inline const std::vector<graph::Index> &get_active_binaries() const {
       return active_binaries_;
    }
-   
-
-   inline graph::Index get_active_binaries_index(const std::size_t index) const {
-      return active_binaries_[index];
-   }
-   
+      
    //! @brief Get "max_effective_dE_", which is a upper bound of energy gap.
    //! @return max_effective_dE_
    FloatType get_max_effective_dE() const {
@@ -425,11 +365,7 @@ public:
    const std::vector<std::vector<graph::Index>> &get_adj() const {
       return adj_;
    }
-   
-   const std::vector<graph::Index> get_key(const std::size_t index) const {
-      return poly_key_list_[index];
-   }
-   
+      
    //! @brief Get the vartype as std::string, which must be "BINARY".
    //! @return "BINARY" as std::string
    std::string get_vartype_string() const {
@@ -473,23 +409,14 @@ public:
       printf("\n");
    }
    
+   void print_interactions() const {
+      for (int64_t i = 0; i < num_interactions_; ++i) {
+         printf("%lld: size:%ld val: %lf\n", i, poly_key_list_[i].size(), poly_value_list_[i]);
+      }
+   }
+   
    ///----------------------------------------------------------------------------------------
    
-   FloatType energy() const {
-      FloatType energy = 0.0;
-      for (int64_t i = 0; i < num_interactions_; ++i) {
-         int spin_multiple = 1;
-         for (const auto &index: poly_key_list_[i]) {
-            spin_multiple *= binaries[index];
-            if (spin_multiple == 0.0) {
-               break;
-            }
-         }
-         energy += spin_multiple*poly_value_list_[i];
-      }
-      return energy;
-   }
-
    
 private:
    
@@ -543,6 +470,43 @@ private:
    ///------------------------------------------------------------------------------------------------------------------------------------------------------
 
       
+   void SortInteractions() {
+      
+      std::vector<graph::Index> index(num_interactions_);
+#pragma omp parallel for
+      for (int64_t i = 0; i < num_interactions_; ++i) {
+         index[i] = i;
+      }
+      
+      auto compare_value = [this](const std::size_t i1, const std::size_t i2) {
+         return poly_value_list_[i1] < poly_value_list_[i2];
+      };
+      auto compare_size  = [this](const std::size_t i1, const std::size_t i2) {
+         return poly_key_list_[i1].size() < poly_key_list_[i2].size();
+      };
+      
+      std::stable_sort(index.begin(), index.end(), compare_size);
+      std::stable_sort(index.begin(), index.end(), compare_value);
+            
+      cimod::PolynomialValueList<FloatType> vv = poly_value_list_;
+      
+#pragma omp parallel for
+      for (int64_t i = 0; i < num_interactions_; ++i) {
+         poly_value_list_[i] = vv[index[i]];
+      }
+      
+      cimod::PolynomialValueList<FloatType>().swap(vv);
+      
+      cimod::PolynomialKeyList<graph::Index> ii = poly_key_list_;
+            
+#pragma omp parallel for
+      for (int64_t i = 0; i < num_interactions_; ++i) {
+         poly_key_list_[i] = ii[index[i]];
+      }
+      
+   }
+   
+   
    //! @brief Set adjacency list. Note that the list is sorted in accordance with the value of the interactions.
    void SetAdj() {
       adj_.clear();
@@ -554,16 +518,14 @@ private:
       }
       
       //sort by value and key size
+      auto compare_size  = [this](const int64_t i1, const int64_t i2) { return poly_key_list_[i1].size() < poly_key_list_[i2].size(); };
       auto compare_value = [this](const int64_t i1, const int64_t i2) { return poly_value_list_[i1] < poly_value_list_[i2]; };
-      auto compare_size  = [this](const int64_t i1, const int64_t i2) {
-         return (poly_value_list_[i1] < 0.0) && (poly_value_list_[i2] < 0.0) && (poly_key_list_[i1].size() < poly_key_list_[i2].size());
-      };
 
       int64_t adj_size = static_cast<int64_t>(adj_.size());
 #pragma omp parallel for
       for (int64_t i = 0; i < adj_size; ++i) {
-         std::sort(adj_[i].begin(), adj_[i].end(), compare_value);
-         std::sort(adj_[i].begin(), adj_[i].end(), compare_size);
+         std::stable_sort(adj_[i].begin(), adj_[i].end(), compare_size);
+         std::stable_sort(adj_[i].begin(), adj_[i].end(), compare_value);
       }
    }
    
