@@ -293,8 +293,13 @@ class SASampler(BaseSampler):
 
         # determine system class and algorithm --------------------------------
         if model.vartype == openjij.SPIN:
-            sa_system = cxxjij.system.make_classical_ising_polynomial(_generate_init_state(), model.to_serializable())
-            algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
+            if updater == None or updater == "single spin flip":
+                sa_system = cxxjij.system.make_classical_ising_polynomial(_generate_init_state(), model.to_serializable())
+                algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
+            elif updater == "k-local":
+                raise ValueError("k-local update is only supported for binary variables")
+            else:
+                raise ValueError("Unknown updater name")
         elif model.vartype == openjij.BINARY:
             if updater == "k-local" or updater == None:
                 sa_system = cxxjij.system.make_k_local_polynomial(_generate_init_state(), model.to_serializable())
