@@ -239,7 +239,6 @@ class SASampler(BaseSampler):
 
         return response
 
-
     def sample_hubo(self, J, vartype, 
                     beta_min = None, beta_max = None,
                     num_sweeps = None, num_reads = 1, schedule = None,
@@ -276,7 +275,7 @@ class SASampler(BaseSampler):
         """
 
         model = openjij.BinaryPolynomialModel(J, vartype)
-
+  
         # make init state generator --------------------------------
         if initial_state is None:
             if model.vartype == openjij.SPIN:
