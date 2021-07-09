@@ -147,10 +147,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:afdf2bbaf8ddcf952c4f350edab4d5309"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get "active_binaries_", which is the list of the binaries connected by at least one interaction.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#afdf2bbaf8ddcf952c4f350edab4d5309">More...</a><br /></td></tr>
 <tr class="separator:afdf2bbaf8ddcf952c4f350edab4d5309"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7475a85b4e52017c6ee1fe7e916e04d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#ae7475a85b4e52017c6ee1fe7e916e04d">get_max_effective_dE</a> () const</td></tr>
-<tr class="memdesc:ae7475a85b4e52017c6ee1fe7e916e04d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get "max_effective_dE", which is a upper bound of energy gap.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#ae7475a85b4e52017c6ee1fe7e916e04d">More...</a><br /></td></tr>
+<tr class="memdesc:ae7475a85b4e52017c6ee1fe7e916e04d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get "max_effective_dE_", which is a upper bound of energy gap.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#ae7475a85b4e52017c6ee1fe7e916e04d">More...</a><br /></td></tr>
 <tr class="separator:ae7475a85b4e52017c6ee1fe7e916e04d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41b531dd698e0157ade6dcf085a5e766"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a41b531dd698e0157ade6dcf085a5e766">get_min_effective_dE</a> () const</td></tr>
-<tr class="memdesc:a41b531dd698e0157ade6dcf085a5e766"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get "min_effective_dE", which is a rough lower bound of energy gap.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a41b531dd698e0157ade6dcf085a5e766">More...</a><br /></td></tr>
+<tr class="memdesc:a41b531dd698e0157ade6dcf085a5e766"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get "min_effective_dE_", which is a rough lower bound of energy gap.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a41b531dd698e0157ade6dcf085a5e766">More...</a><br /></td></tr>
 <tr class="separator:a41b531dd698e0157ade6dcf085a5e766"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1e08b5000bf41e8cfcd55113217e7d8"><td class="memItemLeft" align="right" valign="top">const cimod::PolynomialValueList&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#ad1e08b5000bf41e8cfcd55113217e7d8">get_values</a> () const</td></tr>
 <tr class="memdesc:ad1e08b5000bf41e8cfcd55113217e7d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the PolynomialValueList object, which is the list of the values of the polynomial interactions as std::vector&lt;FloatType&gt;.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#ad1e08b5000bf41e8cfcd55113217e7d8">More...</a><br /></td></tr>
@@ -185,12 +185,18 @@ Public Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
+<tr class="memitem:a484f11bcec20684cd02f59438ac8a8d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a484f11bcec20684cd02f59438ac8a8d4">SortInteractions</a> ()</td></tr>
+<tr class="memdesc:a484f11bcec20684cd02f59438ac8a8d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort interactions in accordance with its value and the degree of interactions (ascending order).  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a484f11bcec20684cd02f59438ac8a8d4">More...</a><br /></td></tr>
+<tr class="separator:a484f11bcec20684cd02f59438ac8a8d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a865c787f5c5fb9bf783c0b47dd7b020e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a865c787f5c5fb9bf783c0b47dd7b020e">SetAdj</a> ()</td></tr>
 <tr class="memdesc:a865c787f5c5fb9bf783c0b47dd7b020e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set adjacency list. Note that the list is sorted in accordance with the value of the interactions.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a865c787f5c5fb9bf783c0b47dd7b020e">More...</a><br /></td></tr>
 <tr class="separator:a865c787f5c5fb9bf783c0b47dd7b020e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32fe1452e19ba4abc0fa02ecb3529081"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a32fe1452e19ba4abc0fa02ecb3529081">ResetZeroCount</a> ()</td></tr>
 <tr class="memdesc:a32fe1452e19ba4abc0fa02ecb3529081"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set zero_count_ and zero_count_v_.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a32fe1452e19ba4abc0fa02ecb3529081">More...</a><br /></td></tr>
 <tr class="separator:a32fe1452e19ba4abc0fa02ecb3529081"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49eb7e94c37e0bbc05abe45c47f2a92d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a49eb7e94c37e0bbc05abe45c47f2a92d">CheckVariables</a> (const <a class="el" href="namespaceopenjij_1_1graph.html#a367bece07df716fc31c3bb24d9c74174">graph::Binaries</a> &amp;init_binaries) const</td></tr>
+<tr class="memdesc:a49eb7e94c37e0bbc05abe45c47f2a92d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if variables are valid.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a49eb7e94c37e0bbc05abe45c47f2a92d">More...</a><br /></td></tr>
+<tr class="separator:a49eb7e94c37e0bbc05abe45c47f2a92d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -215,12 +221,12 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a36c2e9a9e3f339f961e2b9d69e4fad48"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">graph::Index</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a36c2e9a9e3f339f961e2b9d69e4fad48">active_binaries_</a></td></tr>
 <tr class="memdesc:a36c2e9a9e3f339f961e2b9d69e4fad48"><td class="mdescLeft">&#160;</td><td class="mdescRight">The list of the binaries connected by at least one interaction.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a36c2e9a9e3f339f961e2b9d69e4fad48">More...</a><br /></td></tr>
 <tr class="separator:a36c2e9a9e3f339f961e2b9d69e4fad48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59e390729459149f09c991ed1940f7b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a59e390729459149f09c991ed1940f7b4">max_effective_dE</a></td></tr>
-<tr class="memdesc:a59e390729459149f09c991ed1940f7b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upper bound of energy gap.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a59e390729459149f09c991ed1940f7b4">More...</a><br /></td></tr>
-<tr class="separator:a59e390729459149f09c991ed1940f7b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa181649681a7c83ec84df6dbd42bfd1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#aa181649681a7c83ec84df6dbd42bfd1c">min_effective_dE</a></td></tr>
-<tr class="memdesc:aa181649681a7c83ec84df6dbd42bfd1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rough lower bound of energy gap.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#aa181649681a7c83ec84df6dbd42bfd1c">More...</a><br /></td></tr>
-<tr class="separator:aa181649681a7c83ec84df6dbd42bfd1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af835110cbf52286594ce5721ff508871"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#af835110cbf52286594ce5721ff508871">max_effective_dE_</a></td></tr>
+<tr class="memdesc:af835110cbf52286594ce5721ff508871"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upper bound of energy gap.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#af835110cbf52286594ce5721ff508871">More...</a><br /></td></tr>
+<tr class="separator:af835110cbf52286594ce5721ff508871"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58c69492c173ba4631bfae4b6e961a63"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a58c69492c173ba4631bfae4b6e961a63">min_effective_dE_</a></td></tr>
+<tr class="memdesc:a58c69492c173ba4631bfae4b6e961a63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rough lower bound of energy gap.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a58c69492c173ba4631bfae4b6e961a63">More...</a><br /></td></tr>
+<tr class="separator:a58c69492c173ba4631bfae4b6e961a63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c0b8ba57d68127c75f883487ce191c4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a6c0b8ba57d68127c75f883487ce191c4">dE_v_</a></td></tr>
 <tr class="memdesc:a6c0b8ba57d68127c75f883487ce191c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The energy differences when flipping a binary, which is used to implement k-local update.  <a href="classopenjij_1_1system_1_1_k_local_polynomial_3_01graph_1_1_polynomial_3_01_float_type_01_4_01_4.html#a6c0b8ba57d68127c75f883487ce191c4">More...</a><br /></td></tr>
 <tr class="separator:a6c0b8ba57d68127c75f883487ce191c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -360,6 +366,42 @@ template&lt;typename FloatType &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a49eb7e94c37e0bbc05abe45c47f2a92d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49eb7e94c37e0bbc05abe45c47f2a92d">&#9670;&nbsp;</a></span>CheckVariables()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FloatType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial.html">openjij::system::KLocalPolynomial</a>&lt; <a class="el" href="classopenjij_1_1graph_1_1_polynomial.html">graph::Polynomial</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt; &gt;::CheckVariables </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceopenjij_1_1graph.html#a367bece07df716fc31c3bb24d9c74174">graph::Binaries</a> &amp;&#160;</td>
+          <td class="paramname"><em>init_binaries</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check if variables are valid. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">init_binaries</td><td>const <a class="el" href="namespaceopenjij_1_1graph.html#ace188933d1719b22664ab431b0c1c85c">graph::Spins</a>&amp; </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a54f892bdf5bc8806ec077de3d53a9fd2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a54f892bdf5bc8806ec077de3d53a9fd2">&#9670;&nbsp;</a></span>dE_k_local()</h2>
 
@@ -586,8 +628,8 @@ template&lt;typename FloatType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Get "max_effective_dE", which is a upper bound of energy gap. </p>
-<dl class="section return"><dt>Returns</dt><dd>max_effective_dE </dd></dl>
+<p>Get "max_effective_dE_", which is a upper bound of energy gap. </p>
+<dl class="section return"><dt>Returns</dt><dd>max_effective_dE_ </dd></dl>
 
 </div>
 </div>
@@ -616,8 +658,8 @@ template&lt;typename FloatType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Get "min_effective_dE", which is a rough lower bound of energy gap. </p>
-<dl class="section return"><dt>Returns</dt><dd>min_effective_dE </dd></dl>
+<p>Get "min_effective_dE_", which is a rough lower bound of energy gap. </p>
+<dl class="section return"><dt>Returns</dt><dd>min_effective_dE_ </dd></dl>
 
 </div>
 </div>
@@ -969,6 +1011,35 @@ template&lt;typename FloatType &gt; </div>
 </div><div class="memdoc">
 
 <p>Set adjacency list. Note that the list is sorted in accordance with the value of the interactions. </p>
+
+</div>
+</div>
+<a id="a484f11bcec20684cd02f59438ac8a8d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a484f11bcec20684cd02f59438ac8a8d4">&#9670;&nbsp;</a></span>SortInteractions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FloatType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial.html">openjij::system::KLocalPolynomial</a>&lt; <a class="el" href="classopenjij_1_1graph_1_1_polynomial.html">graph::Polynomial</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt; &gt;::SortInteractions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sort interactions in accordance with its value and the degree of interactions (ascending order). </p>
 <hr  />
  
 </div>
@@ -1239,12 +1310,12 @@ template&lt;typename FloatType &gt; </div>
 
 <p>The energy differences when flipping a binary, which is used to implement k-local update. </p>
 <hr  />
- <h2>-------------&mdash;The following member variables are used to virtually update the system and k-local update-------------&mdash; </h2>
+ <h2>-------------&mdash;The following member variables are used to virtually update the system for k-local update-------------&mdash; </h2>
 
 </div>
 </div>
-<a id="a59e390729459149f09c991ed1940f7b4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a59e390729459149f09c991ed1940f7b4">&#9670;&nbsp;</a></span>max_effective_dE</h2>
+<a id="af835110cbf52286594ce5721ff508871"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af835110cbf52286594ce5721ff508871">&#9670;&nbsp;</a></span>max_effective_dE_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1255,7 +1326,7 @@ template&lt;typename FloatType &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> <a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial.html">openjij::system::KLocalPolynomial</a>&lt; <a class="el" href="classopenjij_1_1graph_1_1_polynomial.html">graph::Polynomial</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt; &gt;::max_effective_dE</td>
+          <td class="memname"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> <a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial.html">openjij::system::KLocalPolynomial</a>&lt; <a class="el" href="classopenjij_1_1graph_1_1_polynomial.html">graph::Polynomial</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt; &gt;::max_effective_dE_</td>
         </tr>
       </table>
   </td>
@@ -1269,8 +1340,8 @@ template&lt;typename FloatType &gt; </div>
 
 </div>
 </div>
-<a id="aa181649681a7c83ec84df6dbd42bfd1c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa181649681a7c83ec84df6dbd42bfd1c">&#9670;&nbsp;</a></span>min_effective_dE</h2>
+<a id="a58c69492c173ba4631bfae4b6e961a63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58c69492c173ba4631bfae4b6e961a63">&#9670;&nbsp;</a></span>min_effective_dE_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1281,7 +1352,7 @@ template&lt;typename FloatType &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> <a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial.html">openjij::system::KLocalPolynomial</a>&lt; <a class="el" href="classopenjij_1_1graph_1_1_polynomial.html">graph::Polynomial</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt; &gt;::min_effective_dE</td>
+          <td class="memname"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> <a class="el" href="classopenjij_1_1system_1_1_k_local_polynomial.html">openjij::system::KLocalPolynomial</a>&lt; <a class="el" href="classopenjij_1_1graph_1_1_polynomial.html">graph::Polynomial</a>&lt; <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> &gt; &gt;::min_effective_dE_</td>
         </tr>
       </table>
   </td>

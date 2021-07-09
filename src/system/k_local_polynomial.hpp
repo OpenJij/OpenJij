@@ -375,7 +375,7 @@ public:
    ///----------------------------------------------------------------------------------------
    ///----------------The following functions are for debugging. Disable when release.----------------
    ///----------------------------------------------------------------------------------------
-   
+   /*
    void print_dE() const {
       for (std::size_t i = 0; i < dE_.size(); ++i) {
          printf("dE[%2ld]=%+.15lf\n", i, dE_[i]);
@@ -414,7 +414,7 @@ public:
          printf("%lld: size:%ld val: %lf\n", i, poly_key_list_[i].size(), poly_value_list_[i]);
       }
    }
-   
+   */
    ///----------------------------------------------------------------------------------------
    
    
@@ -470,6 +470,7 @@ private:
    ///------------------------------------------------------------------------------------------------------------------------------------------------------
 
       
+   //! @brief Sort interactions in accordance with its value and the degree of interactions (ascending order).
    void SortInteractions() {
       
       std::vector<graph::Index> index(num_interactions_);
