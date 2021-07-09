@@ -1,4 +1,4 @@
-//    Copyright 2019 Jij Inc.
+//    Copyright 2021 Jij Inc.
 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 #include <system/transverse_ising.hpp>
 #include <system/continuous_time_ising.hpp>
 #include <system/classical_ising_polynomial.hpp>
+#include <system/k_local_polynomial.hpp>
 
 #ifdef USE_CUDA
 #include <system/gpu/chimera_gpu_transverse.hpp>

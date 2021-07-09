@@ -1,4 +1,4 @@
-//    Copyright 2019 Jij Inc.
+//    Copyright 2021 Jij Inc.
 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -109,14 +109,15 @@ inline void declare_Polynomial(py::module& m, const std::string& suffix){
    auto  str  = std::string("Polynomial") + suffix;
    
    py::class_<Poly, graph::Graph>(m, str.c_str())
-   .def(py::init<const std::size_t, const cimod::Vartype&>(), "num_variables"_a, "vartype"_a)
-   .def(py::init<const std::size_t, const std::string>(), "num_variables"_a, "vartype"_a)
+   .def(py::init<const std::size_t>(), "num_variables"_a)
    .def(py::init([](const py::object& obj){return std::unique_ptr<graph::Polynomial<FloatType>>(new graph::Polynomial<FloatType>(static_cast<json>(obj)));}), "obj"_a)
-   .def(py::init<const graph::Polynomial<FloatType>&>(), "other"_a)
-   .def_property("vartype", &Poly::get_vartype, &Poly::set_vartype)
-   .def("calc_energy", &Poly::calc_energy, "spins"_a, "omp_flag"_a = true)
-   .def("__setitem__"    , [](Poly& self, std::vector<graph::Index>& key, FloatType val){ self.J(key) += val;}, "key"_a, "val"_a)
+   .def("get_num_interactions", &Poly::get_num_interactions)
+   .def("calc_energy"  , &Poly::calc_energy, "spins"_a, "omp_flag"_a = true)
+   .def("energy"       , &Poly::energy, "spins"_a, "omp_flag"_a = true)
+   .def("__setitem__"    , [](Poly& self, graph::Index key, FloatType val){ self.J(key) = val;}, "key"_a, "val"_a)
+   .def("__setitem__"    , [](Poly& self, std::vector<graph::Index>& key, FloatType val){ self.J(key) = val;}, "key"_a, "val"_a)
    .def("__getitem__"    , [](const Poly& self, std::vector<graph::Index>& key){ return self.J(key); }, "key"_a)
+   .def("__getitem__"    , [](const Poly& self, graph::Index key){ return self.J(key); }, "key"_a)
    .def("get_polynomial" , [](const Poly& self) {
       py::dict py_polynomial;
       for (std::size_t i = 0; i < self.get_keys().size(); ++i) {
@@ -128,10 +129,7 @@ inline void declare_Polynomial(py::module& m, const std::string& suffix){
       }
       return py_polynomial;
    });
-   
-
 }
-
 
 //enum class Dir
 inline void declare_Dir(py::module& m){
@@ -229,32 +227,106 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
    auto  str = std::string("ClassicalIsing") + gtype_str;
    
    py::class_<CIP>(m, str.c_str())
-   .def(py::init<const graph::Spins&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
+   .def(py::init<const graph::Spins&, const GraphType&, const cimod::Vartype>(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
+   .def(py::init<const graph::Spins&, const GraphType&, const std::string   >(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
    .def(py::init([](const graph::Spins& init_spins, const py::object& obj){return std::unique_ptr<CIP>(new CIP(init_spins, static_cast<nlohmann::json>(obj)));}),"init_spin"_a, "obj"_a)
-   .def(py::init<const graph::Spins&, const cimod::BinaryPolynomialModel<graph::Index, FloatType>&>(), "init_spin"_a, "init_bpm"_a)
-   .def_readonly("vartype"          , &CIP::vartype_                  )
-   .def_readonly("spins"            , &CIP::spin                      )
-   .def_readonly("dE"               , &CIP::dE                        )
-   .def_readonly("num_spins"        , &CIP::num_spins                 )
-   .def("reset_spins"               , &CIP::reset_spins, "init_spin"_a)
-   .def("get_values"                , &CIP::get_values                )
-   .def("get_keys"                  , &CIP::get_keys                  )
-   .def("get_connected_J_term_index", &CIP::get_connected_J_term_index)
-   .def("get_max_dE"                , &CIP::get_max_dE                )
-   .def("get_min_dE"                , &CIP::get_min_dE                );
+   .def_readonly("vartype"      , &CIP::vartype      )
+   .def_readonly("variables"    , &CIP::variables    )
+   .def_readonly("num_variables", &CIP::num_variables)
+   .def("reset_variables"       , &CIP::reset_variables, "init_variables"_a)
+   .def("reset_spins"           , &CIP::reset_variables, "init_spins"_a)
+   .def("get_values"            , &CIP::get_values          )
+   .def("get_keys"              , &CIP::get_keys            )
+   .def("get_adj"               , &CIP::get_adj             )
+   .def("get_vartype_to_string" , &CIP::get_vartype_string  )
+   .def("get_max_effective_dE"  , &CIP::get_max_effective_dE)
+   .def("get_min_effective_dE"  , &CIP::get_min_effective_dE);
    
    //make_classical_ising_polynomial
    auto mkcip_str = std::string("make_classical_ising_polynomial");
-   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction){
-           return system::make_classical_ising_polynomial(init_spin, init_interaction);
-           }, "init_spin"_a, "init_interaction"_a);
+   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction, const cimod::Vartype vartype){
+           return system::make_classical_ising_polynomial(init_spin, init_interaction, vartype);
+           }, "init_spin"_a, "init_interaction"_a, "vartype"_a);
    
    //make_classical_ising_polynomial
-   auto mkcip_json_str = std::string("make_classical_ising_polynomial");
-   m.def(mkcip_json_str.c_str(), [](const graph::Spins& init_spin, const py::object& obj){
+   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction, const std::string vartype){
+           return system::make_classical_ising_polynomial(init_spin, init_interaction, vartype);
+           }, "init_spin"_a, "init_interaction"_a, "vartype"_a);
+   
+   //make_classical_ising_polynomial
+   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const py::object& obj){
            return system::make_classical_ising_polynomial(init_spin, static_cast<nlohmann::json>(obj));
            }, "init_spin"_a, "obj"_a);
 
+}
+
+template<typename GraphType>
+inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str) {
+   
+   using KLP = system::KLocalPolynomial<GraphType>;
+   auto  str = std::string("KLocal") + gtype_str;
+   
+   py::class_<KLP>(m, str.c_str())
+   .def(py::init<const graph::Binaries&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
+   .def(py::init([](const graph::Binaries& init_binaries, const py::object& obj){return std::unique_ptr<KLP>(new KLP(init_binaries, static_cast<nlohmann::json>(obj)));}),"init_binaries"_a, "obj"_a)
+   .def_readonly("binaries"          , &KLP::binaries)
+   .def_readonly("num_binaries"      , &KLP::num_binaries)
+   .def_readonly("count_call_updater", &KLP::count_call_updater)
+   .def_property_readonly("num_interactions", &KLP::GetNumInteractions)
+   .def_readwrite("rate_call_k_local", &KLP::rate_call_k_local)
+   .def("reset_binaries", &KLP::reset_binaries, "init_binaries"_a)
+   .def("reset_spins", &KLP::reset_binaries, "init_spins"_a)
+   .def("reset_dE", &KLP::reset_dE)
+   .def("get_active_binaries", &KLP::get_active_binaries)
+   .def("get_max_effective_dE", &KLP::get_max_effective_dE)
+   .def("get_min_effective_dE", &KLP::get_min_effective_dE)
+   .def("get_keys", &KLP::get_keys)
+   .def("get_values", &KLP::get_values)
+   .def("get_vartype_to_string", &KLP::get_vartype_string)
+   .def("get_polynomial", [](const KLP &self) {
+      py::dict py_polynomial;
+      const auto &poly_key_list   = self.get_keys();
+      const auto &poly_value_list = self.get_values();
+      for (std::size_t i = 0; i < poly_key_list.size(); ++i) {
+         py::tuple tuple;
+         for (const auto &index: poly_key_list[i]) {
+            tuple = tuple + py::make_tuple(index);
+         }
+         py_polynomial[tuple] = poly_value_list[i];
+      }
+      return py_polynomial;
+   })
+   .def("get_adj", [](const KLP &self) {
+      const auto &adj = self.get_adj();
+      const auto &poly_key_list   = self.get_keys();
+      const auto &poly_value_list = self.get_values();
+      py::dict py_adj;
+      for (int64_t i = 0; i < self.num_binaries; ++i) {
+         py::dict dict;
+         for (const auto &index_key: adj[i]) {
+            py::tuple tuple;
+            for (const auto &index_binary: poly_key_list[index_key]) {
+               tuple = tuple + py::make_tuple(index_binary);
+            }
+            dict[tuple] = poly_value_list[index_key];
+         }
+         py_adj[py::int_(i)] = dict;
+      }
+      return py_adj;
+   });
+   
+   //make_classical_ising_polynomial
+   auto mkcip_str = std::string("make_k_local_polynomial");
+   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction){
+           return system::make_k_local_polynomial(init_spin, init_interaction);
+           }, "init_spin"_a, "init_interaction"_a);
+   
+   //make_classical_ising_polynomial
+   auto mkcip_json_str = std::string("make_k_local_polynomial");
+   m.def(mkcip_json_str.c_str(), [](const graph::Spins& init_spin, const py::object& obj){
+           return system::make_k_local_polynomial(init_spin, static_cast<nlohmann::json>(obj));
+           }, "init_spin"_a, "obj"_a);
+   
 }
 
 

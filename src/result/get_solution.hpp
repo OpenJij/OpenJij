@@ -1,4 +1,4 @@
-//    Copyright 2019 Jij Inc.
+//    Copyright 2021 Jij Inc.
 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -82,7 +82,12 @@ const graph::Spins get_solution(const system::TransverseIsing<GraphType>& system
 
 template<typename GraphType>
 const graph::Spins get_solution(const system::ClassicalIsingPolynomial<GraphType> &system) {
-   return system.spin;
+   return system.variables;
+}
+
+template<typename GraphType>
+const graph::Spins get_solution(const system::KLocalPolynomial<GraphType> &system) {
+   return system.binaries;
 }
 
 

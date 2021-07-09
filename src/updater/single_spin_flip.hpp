@@ -1,4 +1,4 @@
-//    Copyright 2019 Jij Inc.
+//    Copyright 2021 Jij Inc.
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
 //    You may obtain a copy of the License at
@@ -264,13 +264,12 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
                              RandomNumberEngine& random_number_engine,
                              const utility::ClassicalUpdaterParameter& parameter
                              ) {
-      //If "vartype" is cimod::Vartype::SPIN, call "UpdatePolyIsing()"
-      if (system.get_vartype() == cimod::Vartype::SPIN) {
-         update_poly_ising<RandomNumberEngine>(system, random_number_engine, parameter);
+      
+      if (system.vartype == cimod::Vartype::SPIN) {
+         update_spin<RandomNumberEngine>(system, random_number_engine, parameter);
       }
-      //If "vartype" is cimod::Vartype::BINARY, call "UpdatePolyPubo()"
-      else if (system.get_vartype() == cimod::Vartype::BINARY) {
-         update_poly_pubo<RandomNumberEngine>(system, random_number_engine, parameter);
+      else if (system.vartype == cimod::Vartype::BINARY) {
+         update_binary<RandomNumberEngine>(system, random_number_engine, parameter);
       }
       else {
          std::stringstream ss;
@@ -284,15 +283,14 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
    //! @param random_number_engine RandomNumberEngine&. Eandom number engine.
    //! @param parameter const utility::ClassicalUpdaterParameter&. Parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f.
    template<typename RandomNumberEngine>
-   inline static void update_poly_ising(ClPIsing &system,
-                                      RandomNumberEngine& random_number_engine,
-                                      const utility::ClassicalUpdaterParameter& parameter) {
-
+   inline static void update_spin(ClPIsing &system,
+                                  RandomNumberEngine& random_number_engine,
+                                  const utility::ClassicalUpdaterParameter& parameter) {
+      
       auto urd = std::uniform_real_distribution<>(0, 1.0);
-      for (std::size_t index = 0; index < system.num_spins; ++index) {
-         if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
-            system.update_dE_for_spin(index);
-            system.update_sign_and_spin(index);
+      for (const auto &index_spin: system.get_active_variables()) {
+         if (system.dE(index_spin) <= 0.0 || std::exp(-parameter.beta*system.dE(index_spin)) > urd(random_number_engine)) {
+            system.update_spin_system(index_spin);
          }
       }
    }
@@ -302,15 +300,14 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
    //! @param random_number_engine RandomNumberEngine&. Random number engine.
    //! @param parameter const utility::ClassicalUpdaterParameter&. Parameter object including inverse temperature \f\beta:=(k_B T)^{-1}\f.
    template<typename RandomNumberEngine>
-   inline static void update_poly_pubo(ClPIsing &system,
-                                     RandomNumberEngine& random_number_engine,
-                                     const utility::ClassicalUpdaterParameter& parameter) {
+   inline static void update_binary(ClPIsing &system,
+                                    RandomNumberEngine& random_number_engine,
+                                    const utility::ClassicalUpdaterParameter& parameter) {
       
       auto urd = std::uniform_real_distribution<>(0, 1.0);
-      for (std::size_t index = 0; index < system.num_spins; ++index) {
-         if (system.dE[index] <= 0 || std::exp(-parameter.beta*system.dE[index]) > urd(random_number_engine)) {
-            system.update_dE_for_binary(index);
-            system.update_zero_count_and_binary(index);
+      for (const auto &index_binary: system.get_active_variables()) {
+         if (system.dE(index_binary) <= 0.0 || std::exp(-parameter.beta*system.dE(index_binary)) > urd(random_number_engine)) {
+            system.update_binary_system(index_binary);
          }
       }
    }

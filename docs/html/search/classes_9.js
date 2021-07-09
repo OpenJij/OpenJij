@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nonstoquastic_5fsystem_510',['nonstoquastic_system',['../structopenjij_1_1system_1_1nonstoquastic__system.html',1,'openjij::system']]]
+  ['mc_5fsystem_534',['mc_system',['../structopenjij_1_1system_1_1mc__system.html',1,'openjij::system']]]
 ];
