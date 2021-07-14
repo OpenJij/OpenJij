@@ -161,16 +161,15 @@ jobs:
   upload_pypi:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
-    if: ${{github.event_name == 'release' || github.event_name == 'workflow_dispatch'}}
+    if: ${{github.event_name == 'release'}}
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: artifact
+          name: WHEEL
           path: ./dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: ${{ secrets.JFROG_USER }}
-          password: ${{ secrets.JFROG_PASSWORD }}
+          user: ${{ secrets.PYPI_USERNAME }}
           repository_url: ${{ secrets.JFROG_URL }}
           packages_dir: ./dist
           verify_metadata: true
