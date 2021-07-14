@@ -66,7 +66,11 @@ class CMakeBuild(build_ext):
         # disable macos openmp since addtional dependency is needed.
         if platform.system() == 'Darwin' and (not {'True': True, 'False': False}[os.getenv('USE_OMP', 'False')]):
             cmake_kwargs += ['-DUSE_OMP=No']
-
+        if platform.system() == 'Darwin':
+            # Cross-compile support for macOS - respect ARCHFLAGS if set
+            archs = re.findall(r"-arch (\S+)", os.environ.get("ARCHFLAGS", ""))
+            if archs:
+                cmake_args += ["-DCMAKE_OSX_ARCHITECTURES={}".format(";".join(archs))]
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
                                                               self.distribution.get_version())
