@@ -13,7 +13,10 @@ project(openjij)
 #endif()
 
 #include(${CMAKE_BINARY_DIR}/conan.cmake)
-
+if (APPLE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-command-line-argument")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wno-unused-command-line-argument")
+endif()
 set(CMAKE_CXX_STANDARD 17)
 # Set default compile flags for GCC
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -70,13 +73,17 @@ if(USE_CUDA)
 endif()
 
 if(USE_OMP)
-    find_package(OpenMP REQUIRED)
-    if(OpenMP_FOUND)
+    if(APPLE) 
+      add_definitions(-DUSE_OMP)
+    else()
+      find_package(OpenMP REQUIRED)
+      if(OpenMP_FOUND)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
         #disable Eigen parallelization
         add_definitions(-DEIGEN_DONT_PARALLELIZE)
         add_definitions(-DUSE_OMP)
+      endif()
     endif()
 endif()
 
