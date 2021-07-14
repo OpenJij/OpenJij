@@ -65,7 +65,7 @@ class CMakeBuild(build_ext):
             build_kwargs += ['--', '-j2']
 
         # disable macos openmp since addtional dependency is needed.
-        if platform.system() != "Windows" and platform.system() != "Linux":
+        if platform.system() == 'Darwin' and (not {'True': True, 'False': False}[os.getenv('USE_OMP', 'False')]):
             cmake_kwargs += ['-DUSE_OMP=No']
 
         env = os.environ.copy()
@@ -116,7 +116,10 @@ class PyTestCommand(TestCommand):
 setup(
     name=NAME,
     version_config=True,
-    setup_requires=['setuptools-git-versioning'],
+    setup_requires=[
+        'setuptools-git-versioning', 
+        'cmake >= 3.20.5',
+    ],
     author=AUTHOR,
     author_email='openjij@j-ij.com',
     url='https://openjij.github.io/OpenJij/',

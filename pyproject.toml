@@ -1,0 +1,6 @@
+[build-system]
+requires = [
+   'setuptools-git-versioning', 
+   'cmake >= 3.20.5',
+   ]
+build-backend = "setuptools.build_meta"

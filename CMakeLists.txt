@@ -1,6 +1,18 @@
-cmake_minimum_required(VERSION 3.12.2)
+cmake_minimum_required(VERSION 3.15.7)
 project(openjij)
 
+#list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+#list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+
+#if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+#  message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+#  file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.16.1/conan.cmake"
+#                "${CMAKE_BINARY_DIR}/conan.cmake"
+#                EXPECTED_HASH SHA256=396e16d0f5eabdc6a14afddbcfff62a54a7ee75c6da23f32f7a31bc85db23484
+#                TLS_VERIFY ON)
+#endif()
+
+#include(${CMAKE_BINARY_DIR}/conan.cmake)
 
 set(CMAKE_CXX_STANDARD 17)
 # Set default compile flags for GCC
@@ -68,16 +80,52 @@ if(USE_OMP)
     endif()
 endif()
 
+if (APPLE)
+    find_package(BLAS)
+endif()
+
 list(APPEND CMAKE_MODULE_PATH external)
+
 if(USE_TEST)
-    include(${CMAKE_SOURCE_DIR}/external/googletest.cmake)
+       include(${CMAKE_SOURCE_DIR}/external/googletest.cmake)
+       #conan_cmake_configure(REQUIRES gtest/[>=1.10.0]
+       #               GENERATORS cmake_find_package
+       #               OPTIONS gtest:shared=True)                
 else()
 	message(STATUS "Skip downloding googletest")
 endif()
+
+#conan_cmake_configure(REQUIRES pybind11/[>=2.6.2]
+#                      GENERATORS cmake_find_package)
+
+#conan_cmake_configure(REQUIRES eigen/[>=3.3.9]
+#                      GENERATORS cmake_find_package
+#                      OPTIONS eigen:MPL2_only=true)
+
+#conan_cmake_configure(REQUIRES nlohmann_json/[>=3.9.1]
+#                      GENERATORS cmake_find_package)
+
+#conan_cmake_install(PATH_OR_REFERENCE .
+#                    BUILD missing
+#                    REMOTE conan-center
+#                    SETTINGS ${settings})
+
+ 
+
+
 include(${CMAKE_SOURCE_DIR}/external/pybind11.cmake)
 include(${CMAKE_SOURCE_DIR}/external/eigen.cmake)
 include(${CMAKE_SOURCE_DIR}/external/json.cmake)
 include(${CMAKE_SOURCE_DIR}/external/pybind11-json.cmake)
+
+
+#find_package(pybind11 REQUIRED) 
+#find_package(eigen REQUIRED) 
+#find_package(nlohmann_json REQUIRED) 
+  
+#if(USE_TEST)  
+#  find_package(gtest REQUIRED) 
+#endif()
 
 add_subdirectory(src)
 add_subdirectory(openjij)
