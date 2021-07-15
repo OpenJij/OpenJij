@@ -47,10 +47,15 @@ jobs:
          pip install delocate
          brew install libomp
       - name: Build 
+        if: ${{matrix.os == 'macos-latest'}}
         run: |
           export USE_OMP=True
           export CFLAGS="-O3 -flto -pipe -lcblas -lclapack -framework Accelerate -framework OpenCL"
           export CXXFLAGS="-O3 -flto -pipe -lcblas -lclapack -framework Accelerate -framework OpenCL"
+          python -m build 
+      - name: Build 
+        if: ${{matrix.os == 'ubuntu-latest'}}
+        run: |
           python -m build 
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
