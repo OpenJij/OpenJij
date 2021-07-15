@@ -54,6 +54,7 @@ jobs:
       - name: Install libomp
         run: |
          brew install libomp
+         du -a $(brew --cache)
       - name: Download OpenJij
         run: |
          mkdir wheel
@@ -74,7 +75,7 @@ jobs:
           DIR_NAME=${DIR_NAME%%-cp3}
           echo "::set-output name=unoack::$DIR_NAME"
           python -m wheel unpack ./wheel/${{steps.wheel.outputs.wheel}} 
-          du -a       
+          du -a 
           echo $DIR_NAME
       - name: Copy libomp 
         run: | 
