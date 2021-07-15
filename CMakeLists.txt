@@ -113,8 +113,6 @@ if (APPLE)
     find_package(LAPACK)
 endif()
 
-list(APPEND CMAKE_MODULE_PATH external)
-
 if(USE_TEST)
        include(external/googletest.cmake)          
 else()
