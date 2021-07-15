@@ -111,6 +111,11 @@ jobs:
         continue-on-error: true
         run: |
           python -c 'import pprint; import cxxjij; pprint.pprint(dir(cxxjij), compact=True)'
+      - uses: actions/upload-artifact@v2
+        with:
+          name: WHEEL
+          path: ./dist/*.whl
+          retention-days: 30
       #- name: Build 
      #   run: |
       #    python setup.py build --debug test
