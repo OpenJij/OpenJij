@@ -47,7 +47,6 @@ jobs:
          pip install delocate
       - name: Build 
         run: |
-          export MACOSX_DEPLOYMENT_TARGET=11
           export USE_OMP=True
           python -m build 
       - name: IMPORT
