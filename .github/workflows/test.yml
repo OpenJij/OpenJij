@@ -74,7 +74,7 @@ jobs:
         working-directory: dist 
         run: |
           mkdir ../delocate
-          delocate-wheel  --require-archs x86-64 -w ../delocate -v  ./${{steps.build.outputs.wheel}}
+          delocate-wheel  --check-archs -vv --require-archs x86-64 -w ../delocate  ./${{steps.build.outputs.wheel}}
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: delocate
