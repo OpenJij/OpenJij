@@ -55,6 +55,7 @@ jobs:
           export USE_OMP=True
           export CFLAGS="-O3 -flto -pipe -lcblas -lclapack -framework Accelerate -framework OpenCL"
           export CXXFLAGS="-O3 -flto -pipe -lcblas -lclapack -framework Accelerate -framework OpenCL"
+          export LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib -L/usr/local/opt/libomp/lib -lomp"
           python -m build 
       - name: Build 
         if: ${{matrix.os == 'ubuntu-latest'}}
@@ -78,27 +79,32 @@ jobs:
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: delocate
         run: |
+          set -eux
           mkdir ../unzip
           for w in *.whl; do unzip -d ../unzip $w; done
       - name: install_name_tool
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: unzip
         run: |
+          set -eux
           for w in *.so; do install_name_tool -change "/usr/local/opt/libomp/lib/libomp.dylib" "@rpath/libomp.dylib" $w ; done
       - name: otool -D
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: unzip
         run: |
+          set -eux
           for w in *.so; do otool -D $w ; done
       - name: otool -L
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: unzip
         run: |
+          set -eux
           for w in *.so; do otool -L $w ; done
       - name: Zip 
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: unzip
         run: |
+          set -eux
           unzip -l ../dist/${{steps.build.outputs.wheel}}
           zip ../dist/${{steps.build.outputs.wheel}} /usr/local/opt/libomp/lib/libomp.dylib
           for w in *.so; do zip ../dist/${{steps.build.outputs.wheel}} $w ; done 
