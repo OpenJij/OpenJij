@@ -8,3 +8,4 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(pybind11_json)
+add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR} ) 
