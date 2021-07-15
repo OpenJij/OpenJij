@@ -99,8 +99,10 @@ jobs:
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: unzip
         run: |
+          unzip -l ../dist/${{steps.build.outputs.wheel}}
           zip ../dist/${{steps.build.outputs.wheel}} /usr/local/opt/libomp/lib/libomp.dylib
           for w in *.so; do zip ../dist/${{steps.build.outputs.wheel}} $w ; done 
+          unzip -l ../dist/${{steps.build.outputs.wheel}}
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: dist
