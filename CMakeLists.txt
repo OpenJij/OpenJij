@@ -103,8 +103,8 @@ include(external/eigen.cmake)
 include(external/json.cmake)
 include(external/pybind11-json.cmake)
 
-add_subdirectory(${pybind11_SOURCE_DIR}) 
-add_subdirectory(${pybind11_json_SOURCE_DIR}) 
+add_subdirectory(${pybind11_SOURCE_DIR} build) 
+add_subdirectory(${pybind11_json_SOURCE_DIR} build) 
 find_package(Python REQUIRED COMPONENTS Development.Module)
 #find_package(pybind11 REQUIRED CONFIG)
 
