@@ -50,6 +50,10 @@ jobs:
           export MACOSX_DEPLOYMENT_TARGET=11
           export USE_OMP=True
           python -m build 
+      - name: IMPORT
+        working-directory: dist 
+        run: |
+          for w in *.whl; pip install $w; done
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: dist 
@@ -64,5 +68,6 @@ jobs:
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: delocate
         run: for w in *.whl; do delocate-listdeps --all --depending $w; done
+
         
            
