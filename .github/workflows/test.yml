@@ -59,7 +59,7 @@ jobs:
         working-directory: dist 
         run: |
           mkdir ../delocate
-          for w in *.whl; delocate-wheel  --require-archs x86-64 -w ../delocate -v  $w; done
+          for w in *.whl; do delocate-wheel  --require-archs x86-64 -w ../delocate -v  $w; done
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: delocate
