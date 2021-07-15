@@ -1,5 +1,5 @@
 
-if (OPENJIJ_BUILD_SHARED_LIBS)
+if (${OPENJIJ_BUILD_SHARED_LIBS})
   add_library(cxxjij SHARED main.cpp)
 else()
   add_library(cxxjij MODULE main.cpp)
