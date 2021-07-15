@@ -119,7 +119,7 @@ endif()
 
 find_package(Eigen3 NO_MODULE)
 
-if(EIGEN3_INCLUDE_DIR)
+if(NOT EIGEN3_INCLUDE_DIR)
   include(external/eigen.cmake)
 endif() 
 
