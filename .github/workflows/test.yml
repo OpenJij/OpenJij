@@ -1,0 +1,66 @@
+name: Build Test
+
+on:
+  workflow_dispatch:
+
+env:
+  Python_Version: 3.9
+
+jobs:
+  build_cmake:
+    name: Build wheels ${{ matrix.OS }} 
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false 
+      matrix:       
+        include:  
+         - os: ubuntu-latest
+         - os: macos-latest  
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: ${{env.Python_Version}}
+      - name: Python Cache Key
+        shell: bash
+        run: |
+          echo $(which python) > /tmp/python_version.txt
+      - name: Get pip cache dir
+        shell: bash
+        id: pip-cache
+        run: |
+          echo "::set-output name=dir::$(pip cache dir)"
+      - name: pip cache
+        uses: actions/cache@v2
+        with:
+           path: ${{ steps.pip-cache.outputs.dir }}
+           key: ${{ runner.os }}-pip-${{ hashFiles('/tmp/python_version.txt') }}
+           restore-keys: |
+              ${{ runner.os }}-pip-
+      - name: Install Dep
+        if: ${{matrix.os == 'macos-latest'}}
+        run: | 
+         pip install delocate
+      - name: Build Ext 
+        run: python setup.py build_ext 
+      - name: Build 
+        run: python setup.py build
+      - name: Build Wheel
+        run: python setup.py bdist_wheel 
+      - name: Delocate List
+        if: ${{matrix.os == 'macos-latest'}}
+        working-dir: dist 
+        run: for w in *.whl; do delocate-listdeps --all --depending $w; done
+      - name: Delocate List
+        if: ${{matrix.os == 'macos-latest'}}
+        working-dir: dist 
+        run: |
+          mkdir ../delocate
+          for w in *.whl; delocate-wheel  --require-archs x86-64 -w ../delocate -v  $w; done
+      - name: Delocate List
+        if: ${{matrix.os == 'macos-latest'}}
+        working-dir: delocate
+        run: for w in *.whl; do delocate-listdeps --all --depending $w; done
+        
+           
