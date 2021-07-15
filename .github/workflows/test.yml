@@ -64,11 +64,26 @@ jobs:
         working-directory: delocate
         run: for w in *.whl; do delocate-listdeps --all --depending $w; done
       - name: IMPORT
+        if: ${{matrix.os == 'macos-latest'}}
         working-directory: delocate
         run: |
           for w in *.whl; do pip install $w; done
           python -c 'import pprint; import openjij; pprint.pprint(dir(openjij), compact=True)'
       - name: IMPORT
+        if: ${{matrix.os == 'macos-latest'}}
+        working-directory: delocate
+        continue-on-error: true
+        run: |
+          python -c 'import pprint; import cxxjij; pprint.pprint(dir(cxxjij), compact=True)'
+      - name: IMPORT
+        if: ${{matrix.os == 'ubuntu-latest'}}
+        working-directory: dist
+        run: |
+          for w in *.whl; do pip install $w; done
+          python -c 'import pprint; import openjij; pprint.pprint(dir(openjij), compact=True)'
+      - name: IMPORT
+        if: ${{matrix.os == 'ubuntu-latest'}}
+        working-directory: dist
         continue-on-error: true
         run: |
           python -c 'import pprint; import cxxjij; pprint.pprint(dir(cxxjij), compact=True)'
