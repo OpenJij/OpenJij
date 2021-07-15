@@ -107,7 +107,8 @@ jobs:
         run: |
           set -eux
           unzip -l ../dist/${{steps.build.outputs.wheel}}
-          zip ../dist/${{steps.build.outputs.wheel}} /usr/local/opt/libomp/lib/libomp.dylib
+          cp /usr/local/opt/libomp/lib/libomp.dylib ./
+          zip ../dist/${{steps.build.outputs.wheel}} libomp.dylib
           for w in *.so; do zip ../dist/${{steps.build.outputs.wheel}} $w ; done 
           unzip -l ../dist/${{steps.build.outputs.wheel}}
       - name: Delocate List
