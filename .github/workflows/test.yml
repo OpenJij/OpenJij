@@ -64,11 +64,6 @@ jobs:
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: dist 
         run: delocate-listdeps --all --depending ./${{steps.build.outputs.wheel}}
-      - name: Wheel 
-        if: ${{matrix.os == 'macos-latest'}}
-        working-directory: dist 
-        run: |
-           python -m wheel unpack ./${{steps.build.outputs.wheel}}
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: dist 
