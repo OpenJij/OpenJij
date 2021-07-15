@@ -136,7 +136,7 @@ jobs:
           CIBW_BEFORE_BUILD_MACOS: "pip install cmake"      
           CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel cmake"
           
-          CIBW_REPAIR_WHEEL_COMMAND_MACOS: "delocate-listdeps --all --depending {wheel} && delocate-wheel  --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: "delocate-listdeps --all --depending {wheel} && delocate-wheel  --require-archs {delocate_archs} -w {dest_dir} -v {wheel} $$ delocate-listdeps --all --depending {wheel}"
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel show {wheel} && delvewheel repair -w {dest_dir} {wheel}"
           
           CIBW_MANYLINUX_X86_64_IMAGE: quay.io/pypa/manylinux2014_x86_64:latest
@@ -146,6 +146,7 @@ jobs:
               CFLAGS="-flto -O3 -pipe"
               CXXFLAGS="-flto -O3 -pipe"
           CIBW_ENVIRONMENT_MACOS:
+              MACOSX_DEPLOYMENT_TARGET="11"
               USE_OMP=True
               CPPFLAGS="$CPPFLAGS -Xpreprocessor -fopenmp"
               CFLAGS="-flto -O3 -pipe -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
