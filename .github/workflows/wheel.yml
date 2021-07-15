@@ -68,6 +68,9 @@ jobs:
         id: wheel
         run: |
           for f in *.whl; do echo "::set-output name=wheel::$f"; done
+      - name: Delocate List
+        working-directory: wheel
+        run: delocate-listdeps --all --depending ./${{steps.wheel.outputs.wheel}}
       - name: Unpack 
         shell: bash
         id: unpack
