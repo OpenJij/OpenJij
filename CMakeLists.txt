@@ -116,13 +116,12 @@ else()
 	message(STATUS "Skip downloding googletest")
 endif()
 
-find_package(Python REQUIRED COMPONENTS Development.Module)
-
 include(external/pybind11.cmake)
 include(external/eigen.cmake)
 include(external/json.cmake)
 include(external/pybind11-json.cmake)
 
+find_package(Python REQUIRED COMPONENTS Development.Module)
 
 #find_package(pybind11 REQUIRED CONFIG)
 
