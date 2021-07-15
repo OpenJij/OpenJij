@@ -1,0 +1,50 @@
+name: Wheel
+
+on:
+  workflow_dispatch:
+
+env:
+  Python_Version: 3.9
+
+jobs:
+  wheel:
+    name: Build wheels ${{ matrix.OS }} 
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false 
+      matrix:       
+        include:  
+         #- os: ubuntu-latest
+         - os: macos-latest  
+    steps:
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: ${{env.Python_Version}}
+      - name: Python Cache Key
+        shell: bash
+        run: |
+          echo $(which python) > /tmp/python_version.txt
+      - name: Get pip cache dir
+        shell: bash
+        id: pip-cache
+        run: |
+          echo "::set-output name=dir::$(pip cache dir)"
+      - name: pip cache
+        uses: actions/cache@v2
+        with:
+           path: ${{ steps.pip-cache.outputs.dir }}
+           key: ${{ runner.os }}-pip-${{ hashFiles('/tmp/python_version.txt') }}
+           restore-keys: |
+              ${{ runner.os }}-pip-
+      - name: Update
+        run: | 
+         pip install --upgrade pip wheel setuptools build
+      - name: Install Dep
+        if: ${{matrix.os == 'macos-latest'}}
+        run: | 
+         pip install delocate
+         brew install libomp
+         pip wheel openjij 
+      - name: show   
+        run: du -a ./
