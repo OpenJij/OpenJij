@@ -80,7 +80,7 @@ jobs:
         run: |
           mkdir ../unzip
           for w in *.whl; do unzip -d ../unzip $w; done
-      - name: Unzip
+      - name: install_name_tool
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: unzip
         run: |
