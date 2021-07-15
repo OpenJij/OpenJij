@@ -72,3 +72,6 @@ jobs:
         run: | 
           python -m wheel unpack ../wheel/${{steps.wheel.outputs.wheel}} 
           du -a ./
+      - name: Pack 
+        run: |
+          python -m wheel pack
