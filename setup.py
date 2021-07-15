@@ -109,12 +109,12 @@ class CMakeBuild(build_ext):
             archs = re.findall(r"-arch (\S+)", os.environ.get("ARCHFLAGS", ""))
             if archs:
                 cmake_args += ["-DCMAKE_OSX_ARCHITECTURES={}".format(";".join(archs))]
-                if platform.processor() == archs: 
-                    print("COPY libomp.")
-                    shutil.copytree("/usr/local/opt/libomp", "./libomp")
-            else:
-                print("COPY libomp.")
-                shutil.copytree("/usr/local/opt/libomp", "./libomp")
+                #if platform.processor() == archs: 
+                #    print("COPY libomp.")
+                #    shutil.copytree("/usr/local/opt/libomp", "./libomp")
+            #else:
+                #print("COPY libomp.")
+                #shutil.copytree("/usr/local/opt/libomp", "./libomp")
                 
         # Set CMAKE_BUILD_PARALLEL_LEVEL to control the parallel build level
         # across all generators.
