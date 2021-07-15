@@ -49,7 +49,7 @@ jobs:
         run: |
           export MACOSX_DEPLOYMENT_TARGET=11
           export USE_OMP=True
-          pip wheel . -w ./dist
+          python -m build 
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: dist 
