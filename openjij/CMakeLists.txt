@@ -35,7 +35,7 @@ if(OpenMP_FOUND)
     pybind11::headers
     Python::Module
     pybind11::lto 
-    Eigen3::Eigen
+    eigen_lib
     cxxjij_header_only
     pybind11_json
     nlohmann_json::nlohmann_json
@@ -46,7 +46,7 @@ else()
     pybind11::headers
     Python::Module
     pybind11::lto 
-    Eigen3::Eigen
+    eigen_lib
     cxxjij_header_only
     pybind11_json
     nlohmann_json::nlohmann_json
