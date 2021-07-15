@@ -46,21 +46,21 @@ jobs:
         run: | 
          pip install delocate
          brew install libomp eigen
+         install_name_tool -id "@rpath/libomp.dylib" /usr/local/opt/libomp/lib/libomp.dylib
       - name: Build 
         if: ${{matrix.os == 'macos-latest'}}
-        id: build
         run: |
           export USE_OMP=True
           export CFLAGS="-O3 -flto -pipe -lcblas -lclapack -framework Accelerate -framework OpenCL"
           export CXXFLAGS="-O3 -flto -pipe -lcblas -lclapack -framework Accelerate -framework OpenCL"
           python -m build 
-          for f in *.whl; do echo "::set-output name=wheel::$f"; done
       - name: Build 
         if: ${{matrix.os == 'ubuntu-latest'}}
-        #id: build
         run: |
           python -m build  
-          cd dist
+      - name: Get Name 
+        id: build
+        run: |
           for f in *.whl; do echo "::set-output name=wheel::$f"; done
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
@@ -72,6 +72,22 @@ jobs:
         run: |
           mkdir ../delocate
           delocate-wheel  --check-archs -vv --require-archs x86-64 -w ../delocate  ./${{steps.build.outputs.wheel}}
+      - name: Unzip
+        if: ${{matrix.os == 'macos-latest'}}
+        working-directory: delocate
+        run: |
+          mkdir ../unzip
+          for w in *.whl; do unzip -d ../unzip $w; done
+      - name: otool -D
+        if: ${{matrix.os == 'macos-latest'}}
+        working-directory: unzip
+        run: |
+          for w in *.so; do otool -D $w ; done
+      - name: otool -L
+        if: ${{matrix.os == 'macos-latest'}}
+        working-directory: unzip
+        run: |
+          for w in *.so; do otool -L $w ; done
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: delocate
