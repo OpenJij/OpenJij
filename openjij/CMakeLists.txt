@@ -52,6 +52,6 @@ else()
     nlohmann_json::nlohmann_json
   )
 endif()
-#add_custom_target(python
-#    DEPENDS cxxjij
-#)
+add_custom_target(python
+    DEPENDS cxxjij
+)
