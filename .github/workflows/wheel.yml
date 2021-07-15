@@ -86,8 +86,12 @@ jobs:
       - name: Copy libomp 
         run: | 
           set -eux
+          otool -D /usr/local/opt/libomp/lib/libomp.dylib
+          otool -L /usr/local/opt/libomp/lib/libomp.dylib
           cp /usr/local/opt/libomp/lib/libomp.dylib ./openjij-0.3.5/
       - name: Pack 
         continue-on-error: true
         run: |
+          otool -L ./openjij-0.3.5/cxxjij.cpython-39-darwin.so
+          otool -D ./openjij-0.3.5/cxxjij.cpython-39-darwin.so
           python -m wheel pack
