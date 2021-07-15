@@ -116,8 +116,14 @@ else()
 	message(STATUS "Skip downloding googletest")
 endif()
 
+
+find_package(Eigen3 NO_MODULE)
+
+if(EIGEN3_INCLUDE_DIR)
+  include(external/eigen.cmake)
+endif() 
+
 include(external/pybind11.cmake)
-include(external/eigen.cmake)
 include(external/json.cmake)
 include(external/pybind11-json.cmake)
 
