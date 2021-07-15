@@ -84,13 +84,12 @@ jobs:
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: unzip
         run: |
-          for w in *.so; install_name_tool -change "/usr/local/opt/libomp/lib/libomp.dylib" "@rpath/libomp.dylib" $w ; done
+          for w in *.so; do install_name_tool -change "/usr/local/opt/libomp/lib/libomp.dylib" "@rpath/libomp.dylib" $w ; done
       - name: otool -D
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: unzip
         run: |
-          for w in *.so; do zip ../dist/${{steps.build.outputs.wheel}} $w ; done 
-          zip ../dist/${{steps.build.outputs.wheel}} /usr/local/opt/libomp/lib/libomp.dylib
+          for w in *.so; do otool -D $w ; done
       - name: otool -L
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: unzip
@@ -100,16 +99,17 @@ jobs:
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: unzip
         run: |
-          for w in *.so; do zip $w ; done
+          zip ../dist/${{steps.build.outputs.wheel}} /usr/local/opt/libomp/lib/libomp.dylib
+          for w in *.so; do zip ../dist/${{steps.build.outputs.wheel}} $w ; done 
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
-        working-directory: delocate
-        run: for w in *.whl; do delocate-listdeps --all --depending $w; done
+        working-directory: dist
+        run: delocate-listdeps --all --depending ./${{steps.build.outputs.wheel}}
       - name: IMPORT
         if: ${{matrix.os == 'macos-latest'}}
-        working-directory: delocate
+        working-directory: dist
         run: |
-          for w in *.whl; do pip install $w; done
+          pip install ./${{steps.build.outputs.wheel}}
           python -c 'import pprint; import openjij; pprint.pprint(dir(openjij), compact=True)'
       - name: IMPORT
         if: ${{matrix.os == 'macos-latest'}}
