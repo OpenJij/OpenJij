@@ -14,7 +14,7 @@ jobs:
       fail-fast: false 
       matrix:       
         include:  
-         - os: ubuntu-latest
+         #- os: ubuntu-latest
          - os: macos-latest  
     steps:
       - uses: actions/checkout@v2
@@ -55,18 +55,26 @@ jobs:
           python -m build 
       - name: Build 
         if: ${{matrix.os == 'ubuntu-latest'}}
+        id: build
         run: |
-          python -m build 
+          python -m build  
+          cd dist
+          for f in *.whl; do echo "::set-output name=wheel::$f"; done
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: dist 
-        run: for w in *.whl; do delocate-listdeps --all --depending $w; done
+        run: delocate-listdeps --all --depending ./${{steps.build.outputs.wheel}}
+      - name: Wheel 
+        if: ${{matrix.os == 'macos-latest'}}
+        working-directory: dist 
+        run: |
+           python -m wheel unpack ./${{steps.build.outputs.wheel}}
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: dist 
         run: |
           mkdir ../delocate
-          for w in *.whl; do delocate-wheel  --require-archs x86-64 -w ../delocate -v  $w; done
+          delocate-wheel  --require-archs x86-64 -w ../delocate -v  ./${{steps.build.outputs.wheel}}
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: delocate
