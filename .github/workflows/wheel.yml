@@ -67,7 +67,7 @@ jobs:
         run: |
           for f in *.whl; do echo "::set-output name=wheel::$f"; done
       - name: Unpack 
+        working-directory: unpack
         run: | 
-          mkdir ./unpack
-          python -m wheel unpack --dest-dir=./unpack ./${{steps.wheel.outputs.wheel}} 
-          du -a ./unpack
+          python -m wheel unpack ../wheel/${{steps.wheel.outputs.wheel}} 
+          du -a ./
