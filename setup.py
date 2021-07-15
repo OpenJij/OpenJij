@@ -48,6 +48,7 @@ class CMakeBuild(build_ext):
         for ext in self.extensions:
             self.build_extension(ext)
     def build_extension(self, ext):
+        print(platform.system())
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
         # required for auto-detection of auxiliary "native" libs
         if not extdir.endswith(os.path.sep):
