@@ -74,7 +74,7 @@ jobs:
           set -eux
           python -m wheel unpack ./wheel/${{steps.wheel.outputs.wheel}} 
           WHEEL=${{steps.wheel.outputs.wheel}} 
-          WHEEL_NAME=$(echo $WHEEL | sed 's/\-cp3[m0-9]+\-cp3[m0-9]+\-.*//')
+          WHEEL_NAME=$(echo $WHEEL | sed 's/\-cp3[m0-9]+\-cp3[m0-9]+\-.*$//')
           find . -type d -maxdepth 1 -path "*${WHEEL_NAME}"
           UNPACK_DIR=$(find . -type d -maxdepth 1 -path "*${WHEEL_NAME}")
           echo "::set-output name=unpack::$UNPACK_DIR"
