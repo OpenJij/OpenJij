@@ -53,7 +53,6 @@ else()
     cxxjij_header_only
     pybind11_json
     nlohmann_json::nlohmann_json
-    OpenMP::OpenMP_CXX
   )
 endif()
 #add_custom_target(python
