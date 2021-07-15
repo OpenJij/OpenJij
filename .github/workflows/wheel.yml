@@ -48,13 +48,14 @@ jobs:
       - name: Configure Homebrew cache
         uses: actions/cache@v2
         with:
-          path: ${{ steps.homebrew-cache.outputs.dir }}
+          path: |
+            ${{ steps.homebrew-cache.outputs.dir }}/downloads/d471854cb45185fec96714280a89336020d68864a5b9dec9ec01d4de352c8131--libomp-12.0.0.bottle_manifest.json
+            ${{ steps.homebrew-cache.outputs.dir }}/downloads/3078f02ebb837089d81ffcbd3b77b3f5cf4a45765dd44083a279e9086de05f38--libomp--12.0.0.catalina.bottle.tar.gz
           key: brew-${{ hashFiles('/tmp/brew') }}
           restore-keys: brew-
       - name: Install libomp
         run: |
          brew install libomp
-         find $(brew --cache) -type f -name "*libomp*"
       - name: Download OpenJij
         run: |
          mkdir wheel
@@ -72,6 +73,8 @@ jobs:
         run: | 
           set -eux
           python -m wheel unpack ./wheel/${{steps.wheel.outputs.wheel}} 
+          WHEEL=$(echo ${{steps.wheel.outputs.wheel}} | sed 's/\-cp3[m0-9]+\-cp3[m0-9]+\-$//')
+          WHEEL_NAME=${WHEEL%%-*--}
           find . -type d -maxdepth 1
           UNPACK_DIR=$(find . -type d -maxdepth 1)
           echo "::set-output name=unpack::$UNPACK_DIR"
