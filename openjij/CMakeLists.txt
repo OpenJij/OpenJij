@@ -31,7 +31,7 @@ else()
 endif()
 
 if(OpenMP_FOUND)
-  target_link_libraries(cxxjij
+  target_link_libraries(cxxjij PRIVATE
     pybind11::headers
     Python::Module
     pybind11::lto 
@@ -42,7 +42,7 @@ if(OpenMP_FOUND)
     OpenMP::OpenMP_CXX
   )
 else() 
-  target_link_libraries(cxxjij
+  target_link_libraries(cxxjij PRIVATE
     pybind11::headers
     Python::Module
     pybind11::lto 
