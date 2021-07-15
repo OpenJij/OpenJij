@@ -41,10 +41,19 @@ jobs:
         run: | 
          pip install --upgrade pip wheel setuptools build
       - name: Install Dep
-        if: ${{matrix.os == 'macos-latest'}}
         run: | 
          pip install delocate
          brew install libomp
-         pip wheel openjij 
-      - name: show   
-        run: du -a ./
+         pip wheel --no-deps openjij 
+      - name: Show
+        run: |
+          du -a ./
+      - name: Wheel Name
+        id: wheel
+        run: |
+          for f in *.whl; do echo "::set-output name=wheel::$f"; done
+      - name: Unpack 
+        run: | 
+          mkdir ./unpack
+          python -m wheel unpack ./${{steps.build.outputs.wheel}} --dest-dir ./unpack
+          du ./unpack
