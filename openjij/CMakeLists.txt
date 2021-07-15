@@ -1,5 +1,7 @@
+add_subdirectory(${pybind11_SOURCE_DIR}) 
+add_subdirectory(${pybind11_json_SOURCE_DIR}) 
 find_package(Python REQUIRED COMPONENTS Development.Module)
-find_package(pybind11 CONFIG)
+find_package(pybind11 REQUIRED CONFIG)
 
 if (OPENJIJ_BUILD_SHARED_LIBS)
   add_library(cxxjij SHARED main.cpp)
