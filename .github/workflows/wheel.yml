@@ -44,16 +44,18 @@ jobs:
         run: | 
          pip install delocate
          brew install libomp
-         pip wheel --no-deps openjij 
+         mkdir wheel
+         pip wheel --no-deps --wheel-dir wheel openjij 
       - name: Show
         run: |
-          du -a ./
+          du -a ./wheel
       - name: Wheel Name
+        working-directory: wheel
         id: wheel
         run: |
           for f in *.whl; do echo "::set-output name=wheel::$f"; done
       - name: Unpack 
         run: | 
           mkdir ./unpack
-          python -m wheel unpack ./${{steps.build.outputs.wheel}} --dest-dir ./unpack
+          python -m wheel unpack ./${{steps.wheel.outputs.wheel}} --dest-dir ./unpack
           du -a ./unpack
