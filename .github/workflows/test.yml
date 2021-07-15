@@ -80,16 +80,27 @@ jobs:
         run: |
           mkdir ../unzip
           for w in *.whl; do unzip -d ../unzip $w; done
+      - name: Unzip
+        if: ${{matrix.os == 'macos-latest'}}
+        working-directory: unzip
+        run: |
+          for w in *.so; install_name_tool -change "/usr/local/opt/libomp/lib/libomp.dylib" "@rpath/libomp.dylib" $w ; done
       - name: otool -D
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: unzip
         run: |
-          for w in *.so; do otool -D $w ; done
+          for w in *.so; do zip ../dist/${{steps.build.outputs.wheel}} $w ; done 
+          zip ../dist/${{steps.build.outputs.wheel}} /usr/local/opt/libomp/lib/libomp.dylib
       - name: otool -L
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: unzip
         run: |
           for w in *.so; do otool -L $w ; done
+      - name: Zip 
+        if: ${{matrix.os == 'macos-latest'}}
+        working-directory: unzip
+        run: |
+          for w in *.so; do zip $w ; done
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: delocate
