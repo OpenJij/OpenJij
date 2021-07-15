@@ -45,6 +45,7 @@ jobs:
         if: ${{matrix.os == 'macos-latest'}}
         run: | 
          pip install delocate
+         brew install libomp
       - name: Build 
         run: |
           export USE_OMP=True
