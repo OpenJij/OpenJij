@@ -8,14 +8,8 @@ env:
 
 jobs:
   wheel:
-    name: Build wheels ${{ matrix.OS }} 
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false 
-      matrix:       
-        include:  
-         #- os: ubuntu-latest
-         - os: macos-latest  
+    name: Build wheels macos-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/setup-python@v2
         name: Install Python
@@ -43,7 +37,27 @@ jobs:
       - name: Install Dep
         run: | 
          pip install delocate
+      - name: Update Homebrew
+        run: |
+          brew update --preinstall
+          cat "$(brew --repository)/Library/Taps/homebrew/homebrew-core/Formula/foo.rb" > .github/brew-formulae
+      - name: Update Homebrew
+        run: |
+          brew update --preinstall
+          cat "$(brew --repository)/Library/Taps/homebrew/homebrew-core/Formula/foo.rb" > .github/brew-formulae
+      - name: Configure Homebrew cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/Library/Caches/Homebrew/foo--*
+            ~/Library/Caches/Homebrew/downloads/*--foo-*
+          key: brew-${{ hashFiles('.github/brew-formulae') }}
+          restore-keys: brew-- 
+      - name: Install libomp
+        run: |
          brew install libomp
+      - name: Download OpenJij
+        run: |
          mkdir wheel
          pip wheel --no-deps --wheel-dir wheel openjij 
       - name: Show
