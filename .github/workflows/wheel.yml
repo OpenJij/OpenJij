@@ -55,7 +55,7 @@ jobs:
           restore-keys: brew-- 
       - name: Install libomp
         run: |
-         brew install libomp
+         env HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp
       - name: Download OpenJij
         run: |
          mkdir wheel
