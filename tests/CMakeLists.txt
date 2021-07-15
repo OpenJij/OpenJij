@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-
+add_subdirectory(${googletest_SOURCE_DIR}) 
 add_executable(cxxjij_test
     EXCLUDE_FROM_ALL
     cxxtest.cpp
