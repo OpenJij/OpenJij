@@ -3,7 +3,7 @@ FetchContent_MakeAvailable(eigen)
 FetchContent_MakeAvailable(pybind11_json)
 
 find_package(Python REQUIRED COMPONENTS Development.Module)
-find_package(pybind11 REQUIRED CONFIG)
+find_package(pybind11 CONFIG)
 
 if (OPENJIJ_BUILD_SHARED_LIBS)
   add_library(cxxjij SHARED main.cpp)
