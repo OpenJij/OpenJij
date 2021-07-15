@@ -53,7 +53,8 @@ jobs:
       - name: IMPORT
         working-directory: dist 
         run: |
-          for w in *.whl; pip install $w; done
+          for w in *.whl; do pip install $w; done
+          python -c 'import pprint; import openjij; pprint.pprint(dir(openjij), compact=True)'
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: dist 
