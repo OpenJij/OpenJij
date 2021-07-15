@@ -49,8 +49,22 @@ jobs:
         run: |
           export USE_OMP=True
           python -m build 
-      - name: IMPORT
+      - name: Delocate List
+        if: ${{matrix.os == 'macos-latest'}}
         working-directory: dist 
+        run: for w in *.whl; do delocate-listdeps --all --depending $w; done
+      - name: Delocate List
+        if: ${{matrix.os == 'macos-latest'}}
+        working-directory: dist 
+        run: |
+          mkdir ../delocate
+          for w in *.whl; delocate-wheel  --require-archs x86-64 -w ../delocate -v  $w; done
+      - name: Delocate List
+        if: ${{matrix.os == 'macos-latest'}}
+        working-directory: delocate
+        run: for w in *.whl; do delocate-listdeps --all --depending $w; done
+      - name: IMPORT
+        working-directory: delocate
         run: |
           for w in *.whl; do pip install $w; done
           python -c 'import pprint; import openjij; pprint.pprint(dir(openjij), compact=True)'
@@ -69,20 +83,7 @@ jobs:
       #- name: Build 
      #   run: |
       #    python setup.py build --debug test
-      - name: Delocate List
-        if: ${{matrix.os == 'macos-latest'}}
-        working-directory: dist 
-        run: for w in *.whl; do delocate-listdeps --all --depending $w; done
-      - name: Delocate List
-        if: ${{matrix.os == 'macos-latest'}}
-        working-directory: dist 
-        run: |
-          mkdir ../delocate
-          for w in *.whl; delocate-wheel  --require-archs x86-64 -w ../delocate -v  $w; done
-      - name: Delocate List
-        if: ${{matrix.os == 'macos-latest'}}
-        working-directory: delocate
-        run: for w in *.whl; do delocate-listdeps --all --depending $w; done
+      
 
         
            
