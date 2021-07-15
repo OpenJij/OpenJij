@@ -97,21 +97,24 @@ class CMakeBuild(build_ext):
                 ]
                 build_args += ["--config", cfg]
         
-        # disable macos openmp since addtional dependency is needed.
         if platform.system() == 'Darwin':
+            # disable macos openmp since addtional dependency is needed.
             if not {'True': True, 'False': False}[os.getenv('USE_OMP', 'False')]:
+                print("USE_OMP=No")
                 cmake_args += ['-DUSE_OMP=No']
-            elif not re.findall(r"-arch (\S+)", os.environ.get("ARCHFLAGS", "")):
-                print("COPY libomp.")
-                shutil.copytree("/usr/local/opt/libomp", "./libomp")
-            elif platform.processor() == re.findall(r"-arch (\S+)", os.environ.get("ARCHFLAGS", "")):
-                print("COPY libomp.")
-                shutil.copytree("/usr/local/opt/libomp", "./libomp")
-        if platform.system() == 'Darwin':
+            else:
+                print("USE_OMP=Yes")
             # Cross-compile support for macOS - respect ARCHFLAGS if set
             archs = re.findall(r"-arch (\S+)", os.environ.get("ARCHFLAGS", ""))
             if archs:
                 cmake_args += ["-DCMAKE_OSX_ARCHITECTURES={}".format(";".join(archs))]
+                if platform.processor() == archs: 
+                    print("COPY libomp.")
+                    shutil.copytree("/usr/local/opt/libomp", "./libomp")
+            else:
+                print("COPY libomp.")
+                shutil.copytree("/usr/local/opt/libomp", "./libomp")
+                
         # Set CMAKE_BUILD_PARALLEL_LEVEL to control the parallel build level
         # across all generators.
         if "CMAKE_BUILD_PARALLEL_LEVEL" not in os.environ:
