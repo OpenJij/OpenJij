@@ -69,12 +69,13 @@ jobs:
         run: |
           for f in *.whl; do echo "::set-output name=wheel::$f"; done
       - name: Unpack 
+        shell: bash
         id: unpack
         run: | 
           set -eux
           python -m wheel unpack ./wheel/${{steps.wheel.outputs.wheel}} 
           WHEEL=${{steps.wheel.outputs.wheel}} 
-          WHEEL_NAME=$(echo $WHEEL | sed 's/\-cp3[m0-9]\+\-cp3[m0-9]\+\-.*/ /g')
+          WHEEL_NAME=$(echo "${WHEEL}" | sed 's/\-cp3[m0-9]\+\-cp3[m0-9]\+\-.*/ /g')
           find . -type d -maxdepth 1 -path "*${WHEEL_NAME}"
           UNPACK_DIR=$(find . -type d -maxdepth 1 -path "*${WHEEL_NAME}")
           echo "::set-output name=unpack::$UNPACK_DIR"
