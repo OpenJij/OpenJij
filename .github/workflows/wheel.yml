@@ -56,4 +56,4 @@ jobs:
         run: | 
           mkdir ./unpack
           python -m wheel unpack ./${{steps.build.outputs.wheel}} --dest-dir ./unpack
-          du ./unpack
+          du -a ./unpack
