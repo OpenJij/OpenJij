@@ -103,11 +103,10 @@ include(external/eigen.cmake)
 include(external/json.cmake)
 include(external/pybind11-json.cmake)
 
-
-#find_package(pybind11 REQUIRED) 
-#find_package(eigen REQUIRED) 
-#find_package(nlohmann_json REQUIRED) 
-  
+add_subdirectory(${pybind11_SOURCE_DIR}) 
+add_subdirectory(${pybind11_json_SOURCE_DIR}) 
+find_package(Python REQUIRED COMPONENTS Development.Module)
+#find_package(pybind11 REQUIRED CONFIG)
 
 add_subdirectory(src)
 add_subdirectory(openjij)
