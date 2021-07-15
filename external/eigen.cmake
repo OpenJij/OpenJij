@@ -18,8 +18,4 @@ if (APPLE)
 endif()
 FetchContent_MakeAvailable(eigen)
 
-add_library(eigen_lib INTERFACE)
-target_include_directories(eigen_lib INTERFACE ${eigen_SOURCE_DIR})
-# use MPL2-only libraries
-target_compile_definitions(eigen_lib INTERFACE EIGEN_MPL2_ONLY)
 
