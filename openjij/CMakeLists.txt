@@ -33,8 +33,8 @@ else()
     )
 endif()
 
-
-target_link_libraries(cxxjij
+if(OpenMP_FOUND)
+  target_link_libraries(cxxjij
     pybind11::headers
     Python::Module
     pybind11::lto 
@@ -42,8 +42,20 @@ target_link_libraries(cxxjij
     cxxjij_header_only
     pybind11_json
     nlohmann_json::nlohmann_json
-)
-
+    OpenMP::OpenMP_CXX
+  )
+else() 
+  target_link_libraries(cxxjij
+    pybind11::headers
+    Python::Module
+    pybind11::lto 
+    eigen_lib
+    cxxjij_header_only
+    pybind11_json
+    nlohmann_json::nlohmann_json
+    OpenMP::OpenMP_CXX
+  )
+endif()
 #add_custom_target(python
 #    DEPENDS cxxjij
 #)
