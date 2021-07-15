@@ -1,4 +1,4 @@
-from cxxjij import *
+#from cxxjij import *
 import cxxjij
 from .__version import __version__
 from .variable_type import SPIN, BINARY, Vartype, cast_vartype
