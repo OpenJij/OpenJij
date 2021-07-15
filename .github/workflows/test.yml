@@ -38,16 +38,18 @@ jobs:
            key: ${{ runner.os }}-pip-${{ hashFiles('/tmp/python_version.txt') }}
            restore-keys: |
               ${{ runner.os }}-pip-
+      - name: Update
+        run: | 
+         pip install --upgrade pip wheel setuptools build
       - name: Install Dep
         if: ${{matrix.os == 'macos-latest'}}
         run: | 
          pip install delocate
-      - name: Build Ext 
-        run: python setup.py build_ext 
       - name: Build 
-        run: python setup.py build
-      - name: Build Wheel
-        run: python setup.py bdist_wheel 
+        run: |
+          export MACOSX_DEPLOYMENT_TARGET=11
+          export USE_OMP=True
+          pip wheel . -w ./dist
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: dist 
