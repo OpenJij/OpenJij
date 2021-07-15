@@ -87,6 +87,7 @@ jobs:
         working-directory: unzip
         run: |
           set -eux
+          for w in *.so; do install_name_tool -id "@rpath/${w}" $w ; done
           for w in *.so; do install_name_tool -change "/usr/local/opt/libomp/lib/libomp.dylib" "@rpath/libomp.dylib" $w ; done
       - name: otool -D
         if: ${{matrix.os == 'macos-latest'}}
