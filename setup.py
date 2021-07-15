@@ -4,7 +4,7 @@ import sys
 import platform
 import sysconfig
 import subprocess
-
+import shutil
 from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 from setuptools.command.test import test as TestCommand
@@ -100,6 +100,12 @@ class CMakeBuild(build_ext):
         # disable macos openmp since addtional dependency is needed.
         if platform.system() == 'Darwin' and (not {'True': True, 'False': False}[os.getenv('USE_OMP', 'False')]):
             cmake_args += ['-DUSE_OMP=No']
+        elif not re.findall(r"-arch (\S+)", os.environ.get("ARCHFLAGS", "")):
+            print("COPY libomp.")
+            shutil.copytree("/usr/local/opt/libomp", "./libomp")
+        elif platform.processor() == re.findall(r"-arch (\S+)", os.environ.get("ARCHFLAGS", "")):
+            print("COPY libomp.")
+            shutil.copytree("/usr/local/opt/libomp", "./libomp")
         if platform.system() == 'Darwin':
             # Cross-compile support for macOS - respect ARCHFLAGS if set
             archs = re.findall(r"-arch (\S+)", os.environ.get("ARCHFLAGS", ""))
