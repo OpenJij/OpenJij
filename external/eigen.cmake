@@ -17,7 +17,7 @@ if (APPLE)
     find_package(LAPACK REQUIRED)
     if(BLAS_FOUND AND LAPACK_FOUND) 
       target_compile_definitions(eigen_lib INTERFACE EIGEN_USE_BLAS=ON)
-      target_compile_definitions(eigen_lib EIGEN_USE_LAPACKE=ON)
+      target_compile_definitions(eigen_lib INTERFACE EIGEN_USE_LAPACKE=ON)
     endif()
 endif()
 
