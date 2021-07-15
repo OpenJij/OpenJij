@@ -55,6 +55,21 @@ jobs:
         run: |
           for w in *.whl; do pip install $w; done
           python -c 'import pprint; import openjij; pprint.pprint(dir(openjij), compact=True)'
+      - name: IMPORT
+        continue-on-error: true
+        run: |
+          python -c 'import pprint; import cxxjij; pprint.pprint(dir(cxxjij), compact=True)'
+      - name: IMPORT
+        run: |
+          pip install --force-reinstall --upgrade openjij
+          python -c 'import pprint; import openjij; pprint.pprint(dir(openjij), compact=True)'
+      - name: IMPORT
+        continue-on-error: true
+        run: |
+          python -c 'import pprint; import cxxjij; pprint.pprint(dir(cxxjij), compact=True)'
+      #- name: Build 
+     #   run: |
+      #    python setup.py build --debug test
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
         working-directory: dist 
