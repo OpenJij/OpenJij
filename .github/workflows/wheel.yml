@@ -37,21 +37,23 @@ jobs:
       - name: Install Dep
         run: | 
          pip install delocate
-      - name: Update Homebrew
+      - name: Homebrew Key
         run: |
-          #brew update --preinstall
-          cat "$(brew --repository)/Library/Taps/homebrew/homebrew-core/Formula/foo.rb" > /tmp/brew-formulae
+          echo $(brew --version) > /tmp/brew
+      - name: Get Homebrew  cache dir
+        shell: bash
+        id: homebrew-cache
+        run: |
+          echo "::set-output name=dir::$(brew --cache)"
       - name: Configure Homebrew cache
         uses: actions/cache@v2
         with:
-          path: |
-            ~/Library/Caches/Homebrew
-            ~/Library/Caches/Homebrew/downloads
-          key: brew-${{ hashFiles('/tmp/brew-formulae') }}
-          restore-keys: brew-- 
+          path: ${{ steps.homebrew-cache.outputs.dir }}
+          key: brew-${{ hashFiles('/tmp/brew') }}
+          restore-keys: brew-
       - name: Install libomp
         run: |
-         env HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp
+         brew install libomp
       - name: Download OpenJij
         run: |
          mkdir wheel
