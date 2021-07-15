@@ -47,6 +47,8 @@ jobs:
          pip install delocate
          brew install libomp eigen
          install_name_tool -id "@rpath/libomp.dylib" /usr/local/opt/libomp/lib/libomp.dylib
+         otool -D /usr/local/opt/libomp/lib/libomp.dylib
+         otool -L /usr/local/opt/libomp/lib/libomp.dylib
       - name: Build 
         if: ${{matrix.os == 'macos-latest'}}
         run: |
