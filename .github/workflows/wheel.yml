@@ -73,10 +73,10 @@ jobs:
         run: | 
           set -eux
           python -m wheel unpack ./wheel/${{steps.wheel.outputs.wheel}} 
-          WHEEL=$(echo ${{steps.wheel.outputs.wheel}} | sed 's/\-cp3[m0-9]+\-cp3[m0-9]+\-$//')
-          WHEEL_NAME=${WHEEL%%-*--}
-          find . -type d -maxdepth 1
-          UNPACK_DIR=$(find . -type d -maxdepth 1)
+          WHEEL=${{steps.wheel.outputs.wheel}} 
+          WHEEL_NAME=$(echo $WHEEL | sed 's/\-cp3[m0-9]+\-cp3[m0-9]+\-.*//')
+          find . -type d -maxdepth 1 -path "*${WHEEL_NAME}"
+          UNPACK_DIR=$(find . -type d -maxdepth 1 -path "*${WHEEL_NAME}")
           echo "::set-output name=unpack::$UNPACK_DIR"
           du -a 
       - name: Copy libomp 
