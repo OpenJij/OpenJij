@@ -54,7 +54,7 @@ jobs:
       - name: Install libomp
         run: |
          brew install libomp
-         du -a $(brew --cache)
+         find $(brew --cache) -type f -name "*libomp*"
       - name: Download OpenJij
         run: |
          mkdir wheel
@@ -71,16 +71,15 @@ jobs:
         id: unpack
         run: | 
           set -eux
-          DIR_NAME=${{steps.wheel.outputs.wheel}}
-          DIR_NAME=${DIR_NAME%%-cp3}
-          echo "::set-output name=unoack::$DIR_NAME"
           python -m wheel unpack ./wheel/${{steps.wheel.outputs.wheel}} 
+          find . -type d -maxdepth 1
+          UNPACK_DIR=$(find . -type d -maxdepth 1)
+          echo "::set-output name=unpack::$UNPACK_DIR"
           du -a 
-          echo $DIR_NAME
       - name: Copy libomp 
         run: | 
           set -eux
-          cp /usr/local/opt/libomp/lib/libomp.dylib ./${{steps.unpack.outputs.unpack}}
+          cp /usr/local/opt/libomp/lib/libomp.dylib ${{steps.unpack.outputs.unpack}}
       - name: Pack 
         continue-on-error: true
         run: |
