@@ -1,19 +1,28 @@
-add_library(cxxjij MODULE main.cpp)
+find_package(Python REQUIRED COMPONENTS Development.Module)
+find_package(pybind11 REQUIRED CONFIG)
+if (OPENJIJ_BUILD_SHARED_LIBS)
+  add_library(cxxjij SHARED main.cpp)
+else()
+  add_library(cxxjij MODULE main.cpp)
+endif()
 
 if(USE_CUDA)
     set_target_properties(cxxjij PROPERTIES
         CXX_VISIBILITY_PRESET "hidden"
-        INTERPROCEDURAL_OPTIMIZATION TRUE
         PREFIX "${PYTHON_MODULE_PREFIX}"
         SUFFIX "${PYTHON_MODULE_EXTENSION}"
         POSITION_INDEPENDENT_CODE ON
         CUDA_VISIBILITY_PRESET "hidden"
         CUDA_SEPARABLE_COMPILATION ON
     )
+    target_link_libraries(cxxjij 
+        ${CUDA_LIBRARIES} ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} 
+        cxxjij_chimera_gpu_kernel_static
+    )
 else()
     set_target_properties(cxxjij PROPERTIES
         CXX_VISIBILITY_PRESET "hidden"
-        INTERPROCEDURAL_OPTIMIZATION TRUE
+        VISIBLITY_INLINES_HIDDEN ON
         PREFIX "${PYTHON_MODULE_PREFIX}"
         SUFFIX "${PYTHON_MODULE_EXTENSION}"
     )
@@ -21,19 +30,15 @@ endif()
 
 
 target_link_libraries(cxxjij
-    pybind11::module
+    pybind11::headers
+    Python::Module
+    pybind11::lto 
     eigen_lib
     cxxjij_header_only
     pybind11_json
     nlohmann_json::nlohmann_json
 )
 
-if(USE_CUDA)
-    target_link_libraries(cxxjij 
-        ${CUDA_LIBRARIES} ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} 
-        cxxjij_chimera_gpu_kernel_static)
-endif()
-
-add_custom_target(python
-    DEPENDS cxxjij
-)
+#add_custom_target(python
+#    DEPENDS cxxjij
+#)
