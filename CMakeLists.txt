@@ -4,6 +4,7 @@ project(openjij)
 option(OPENJIJ_BUILD_SHARED_LIBS "build mylib as a shared library" OFF)
 
 if (APPLE)
+    set(CMAKE_MACOSX_RPATH TRUE)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-command-line-argument")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wno-unused-command-line-argument")
 endif()
