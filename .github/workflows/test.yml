@@ -1,4 +1,4 @@
-name: Build Test
+name: Build Test CMake
 
 on:
   workflow_dispatch:
@@ -50,17 +50,17 @@ jobs:
         run: python setup.py bdist_wheel 
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
-        working-dir: dist 
+        working-directory: dist 
         run: for w in *.whl; do delocate-listdeps --all --depending $w; done
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
-        working-dir: dist 
+        working-directory: dist 
         run: |
           mkdir ../delocate
           for w in *.whl; delocate-wheel  --require-archs x86-64 -w ../delocate -v  $w; done
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
-        working-dir: delocate
+        working-directory: delocate
         run: for w in *.whl; do delocate-listdeps --all --depending $w; done
         
            
