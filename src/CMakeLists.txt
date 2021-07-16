@@ -1,11 +1,10 @@
 add_library(cxxjij_header_only INTERFACE)
 
-target_include_directories(cxxjij_header_only INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-if(NOT TARGET Eigen3::Eigen)
-  target_include_directories(cxxjij_header_only INTERFACE ${eigen_SOURCE_DIR})
-else() 
-  target_include_directories(cxxjij_header_only INTERFACE ${EIGEN3_INCLUDE_DIR})
-endif()
+target_include_directories(cxxjij_header_only INTERFACE 
+  ${CMAKE_CURRENT_SOURCE_DIR})
+  $<IF:$<TARGET_EXISTS:Eigen3::Eigen>, ${EIGEN3_INCLUDE_DIR}, ${eigen_SOURCE_DIR}> 
+)
+
 
 #for GPU
 if(USE_CUDA)
