@@ -37,7 +37,7 @@ jobs:
          ${{ runner.os }}-pip-
     - name: Install dependencies 
       run: |
-        pip install cmake
+        pip install --upgrade pip wheel setuptools build cmake
     - name: Test 
       run: |
         python setup.py build --debug test
