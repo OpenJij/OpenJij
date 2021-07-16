@@ -115,7 +115,7 @@ jobs:
           CIBW_ARCHS: ${{matrix.arch}}
           CIBW_DEPENDENCY_VERSIONS: latest 
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7"
-         # CIBW_BUILD_VERBOSITY: 3
+          CIBW_BUILD_VERBOSITY: 1
           
           CIBW_BEFORE_ALL: "" 
           CIBW_BEFORE_ALL_LINUX: "yum install -y epel-release centos-release-scl && yum install -y devtoolset-10 eigen3-devel"
