@@ -34,10 +34,7 @@ target_link_libraries(cxxjij PRIVATE
       cxxjij_header_only
       pybind11_json
       nlohmann_json::nlohmann_json
-      $<IF:$<TARGET_EXISTS:Python::Module>,
-        pybind11::headers Python::Module,
-        pybind11::module
-      >
+      $<IF:$<TARGET_EXISTS:Python::Module>,$<JOIN:pybind11::headers;Python::Module, >,pybind11::module>
       $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen_lib>
       $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
 )
