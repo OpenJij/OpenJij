@@ -59,7 +59,7 @@ class CMakeBuild(build_ext):
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable, 
                       "-DCMAKE_BUILD_TYPE={}".format(cfg),  # not used on MSVC, but no harm
-                      "-DCMAKE_FIND_DEBUG_MODE=1",
+                      #"-DCMAKE_FIND_DEBUG_MODE=1",
                      ]
         build_args = []
         
