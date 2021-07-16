@@ -44,7 +44,7 @@ jobs:
       - name: Install Dep
         if: ${{matrix.os == 'macos-latest'}}
         run: | 
-         brew install eigen
+         brew install eigen libomp
       - name: Build 
         if: ${{matrix.os == 'macos-latest'}}
         run: |
