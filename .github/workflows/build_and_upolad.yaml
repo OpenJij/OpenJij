@@ -127,7 +127,7 @@ jobs:
          # CIBW_BUILD_VERBOSITY: 3
           
           CIBW_BEFORE_ALL: "" 
-          CIBW_BEFORE_ALL_LINUX: "yum install -y centos-release-scl && yum install -y devtoolset-10"
+          CIBW_BEFORE_ALL_LINUX: "yum install -y centos-release-scl && yum install -y devtoolset-10 eigen3-devel"
           CIBW_BEFORE_ALL_MACOS: "brew install eigen"
           CIBW_BEFORE_ALL_WINDOWS: ""
           
