@@ -30,13 +30,14 @@ else()
     )
 endif()
 target_link_libraries(cxxjij PRIVATE
+      pybind11::headers
       pybind11::lto   
-      cxxjij_header_only
       pybind11_json
       nlohmann_json::nlohmann_json
-      $<IF:$<TARGET_EXISTS:Python::Module>,$<JOIN:pybind11::headers;Python::Module, >,pybind11::module>
+      $<IF:$<TARGET_EXISTS:Python::Module>,Python::Module,pybind11::module>
       $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen_lib>
       $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
+      cxxjij_header_only
 )
 
 add_custom_target(python
