@@ -38,6 +38,12 @@ jobs:
     - name: Install dependencies 
       run: |
         pip install --upgrade pip wheel setuptools build cmake
+    - name: Install Eigen3 on ${{ matrix.os }}
+      if: ${{ matrix.os == 'ubuntu-latest'}
+      run: sudo apt-get install -y libeigen3-dev
+    - name: Install Eigen3 on ${{ matrix.os }}
+      if: ${{ matrix.os == 'macos-latest'}
+      run: brew install libomp eigen
     - name: Test 
       run: |
         python setup.py build --debug test
