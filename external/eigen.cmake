@@ -4,20 +4,21 @@ include(FetchContent)
 FetchContent_Declare(
     eigen
     GIT_REPOSITORY  https://gitlab.com/libeigen/eigen
-    GIT_TAG         3.3.7
+    GIT_TAG         3.3.9
     )
-
-FetchContent_GetProperties(eigen)
-
-if(NOT eigen_POPULATED)
-    message(STATUS "Fetch eigen")
-    FetchContent_Populate(eigen)
-    message(${eigen_SOURCE_DIR})
-    add_subdirectory(${eigen_SOURCE_DIR})
-endif()
+set(EIGEN_CPP_STANDARD -std=c++11)
+FetchContent_MakeAvailable(eigen)
 
 add_library(eigen_lib INTERFACE)
 target_include_directories(eigen_lib INTERFACE ${eigen_SOURCE_DIR})
-# use MPL2-only libraries
 target_compile_definitions(eigen_lib INTERFACE EIGEN_MPL2_ONLY)
+if (APPLE)
+    if(BLAS_FOUND AND LAPACK_FOUND) 
+      target_compile_definitions(eigen_lib INTERFACE EIGEN_USE_BLAS=ON)
+      target_compile_definitions(eigen_lib INTERFACE EIGEN_USE_LAPACKE=ON)
+    endif()
+endif()
+
+
+
 
