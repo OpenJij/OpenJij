@@ -29,29 +29,16 @@ else()
         SUFFIX "${PYTHON_MODULE_EXTENSION}"
     )
 endif()
-
-if(OpenMP_FOUND)
-    target_link_libraries(cxxjij PRIVATE
+target_link_libraries(cxxjij PRIVATE
       pybind11::headers
-      Python::Module
+      $<IF:$<BOOL:${Python_Development.Module_FOUND}>,Python::Module, pybind11::python_link_helper>
       pybind11::lto 
       Eigen3::Eigen
       cxxjij_header_only
       pybind11_json
       nlohmann_json::nlohmann_json
-      OpenMP::OpenMP_CXX
-    )
-else() 
-    target_link_libraries(cxxjij PRIVATE
-      pybind11::headers
-      Python::Module
-      pybind11::lto 
-      Eigen3::Eigen
-      cxxjij_header_only
-      pybind11_json
-      nlohmann_json::nlohmann_json
-    )
-endif()
+      $<IF:$<BOOL:${OpenMP_FOUND}>,OpenMP::OpenMP_CXX, >
+      )
 add_custom_target(python
     DEPENDS cxxjij
 )
