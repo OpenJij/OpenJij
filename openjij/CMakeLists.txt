@@ -33,7 +33,7 @@ if(OpenMP_FOUND)
     target_link_libraries(cxxjij PRIVATE
       pybind11::module
       pybind11::lto 
-      Eigen3::Eigen
+      $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen_lib>
       cxxjij_header_only
       pybind11_json
       nlohmann_json::nlohmann_json
@@ -43,7 +43,7 @@ else()
     target_link_libraries(cxxjij PRIVATE
       pybind11::module
       pybind11::lto 
-      Eigen3::Eigen
+      $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen_lib>
       cxxjij_header_only
       pybind11_json
       nlohmann_json::nlohmann_json
