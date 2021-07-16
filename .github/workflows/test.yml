@@ -52,12 +52,14 @@ jobs:
           export CFLAGS="-O3 -flto -pipe -lcblas -lclapack -framework Accelerate -framework OpenCL"
           export CXXFLAGS="-O3 -flto -pipe -lcblas -lclapack -framework Accelerate -framework OpenCL"
           python -m build 
+          du -a .
       - name: Build 
         if: ${{matrix.os == 'ubuntu-latest'}}
         run: |
           sudo apt-get install -y libeigen3-dev
-          python -m build  
+          python -m build   
       - name: Delocate List
         if: ${{matrix.os == 'macos-latest'}}
+        working-directory: dist
         run: |
           for f in *.whl; do delocate-listdeps --all --depending $f; done
