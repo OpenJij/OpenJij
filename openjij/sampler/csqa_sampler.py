@@ -38,12 +38,6 @@ class CSQASampler(SQASampler):
         self.num_sweeps = num_sweeps
         self.schedule = schedule
         self.energy_bias = 0.0
-        self._schedule_setting = {
-            'beta': beta,
-            'gamma': gamma,
-            'num_sweeps': num_sweeps,
-            'num_reads': num_reads,
-        }
 
     def _get_result(self, system, model):
         info = {}
@@ -56,7 +50,7 @@ class CSQASampler(SQASampler):
     def sample_ising(self, h, J,
                      beta=None, gamma=None,
                      num_sweeps=None, schedule=None,
-                     num_reads=1,
+                     num_reads=None,
                      initial_state=None, updater='swendsenwang',
                      reinitialize_state=True, seed=None):
         """Sampling from the Ising model.

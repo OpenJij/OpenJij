@@ -55,11 +55,8 @@ class BaseSampler(dimod.Sampler):
             **kwargs: options
         """
         for key, value in kwargs.items():
-            if value is not None:
-                self._schedule_setting[key] = value
-
-        self.num_reads = kwargs['num_reads'] if kwargs['num_reads'] > 1\
-            else self.num_reads
+            if value is not None and hasattr(self, key) is True:
+                setattr(self, key, value)
 
     def _sampling(self, **kwargs):
         pass

@@ -73,12 +73,6 @@ class SASampler(BaseSampler):
         self.num_sweeps = num_sweeps
         self.schedule = schedule
         self.num_reads = num_reads
-        self._schedule_setting = {
-            'beta_min': beta_min,
-            'beta_max': beta_max,
-            'num_sweeps': num_sweeps,
-            'num_reads': num_reads,
-        }
 
         self._make_system = {
             'singlespinflip': cxxjij.system.make_classical_ising,
@@ -121,7 +115,7 @@ class SASampler(BaseSampler):
         return cxxjij_schedule
 
     def sample(self, bqm, beta_min=None, beta_max=None,
-                     num_sweeps=None, num_reads=1, schedule=None,
+                     num_sweeps=None, num_reads=None, schedule=None,
                      initial_state=None, updater='single spin flip',
                      sparse=False,
                      reinitialize_state=True, seed=None,
@@ -181,27 +175,27 @@ class SASampler(BaseSampler):
 
         self._setting_overwrite(
             beta_min=beta_min, beta_max=beta_max,
-            num_sweeps=num_sweeps, num_reads=num_reads
+            num_sweeps=num_sweeps, num_reads=num_reads, schedule=schedule,
         )
 
 
         # set annealing schedule -------------------------------
-        if schedule or self.schedule:
+        if self.schedule:
             self._schedule = self._convert_validation_schedule(
-                schedule if schedule else self.schedule
+                self.schedule
             )
             self.schedule_info = {'schedule': 'custom schedule'}
         else:
             self._schedule, beta_range = geometric_ising_beta_schedule(
                 model=model,
-                beta_max=self._schedule_setting['beta_max'],
-                beta_min=self._schedule_setting['beta_min'],
-                num_sweeps=self._schedule_setting['num_sweeps']
+                beta_max=self.beta_max,
+                beta_min=self.beta_min,
+                num_sweeps=self.num_sweeps
             )
             self.schedule_info = {
                 'beta_max': beta_range[0],
                 'beta_min': beta_range[1],
-                'num_sweeps': self._schedule_setting['num_sweeps']
+                'num_sweeps': self.num_sweeps
             }
         # ------------------------------- set annealing schedule
 
@@ -241,7 +235,7 @@ class SASampler(BaseSampler):
 
     def sample_hubo(self, J, vartype, 
                     beta_min = None, beta_max = None,
-                    num_sweeps = None, num_reads = 1, schedule = None,
+                    num_sweeps = None, num_reads = None, schedule = None,
                     initial_state = None, updater=None,
                     reinitialize_state=True, seed = None):
 
@@ -314,26 +308,26 @@ class SASampler(BaseSampler):
 
         self._setting_overwrite(
             beta_min=beta_min, beta_max=beta_max,
-            num_sweeps=num_sweeps, num_reads=num_reads
+            num_sweeps=num_sweeps, num_reads=num_reads, schedule=schedule
         )
 
         # set annealing schedule -------------------------------
-        if schedule or self.schedule:
+        if self.schedule:
             self._schedule = self._convert_validation_schedule(
-                schedule if schedule else self.schedule
+                self.schedule
             )
             self.schedule_info = {'schedule': 'custom schedule'}
         else:
             self._schedule, beta_range = geometric_hubo_beta_schedule(
                 sa_system=sa_system,
-                beta_max=self._schedule_setting['beta_max'],
-                beta_min=self._schedule_setting['beta_min'],
-                num_sweeps=self._schedule_setting['num_sweeps']
+                beta_max=self.beta_max,
+                beta_min=self.beta_min,
+                num_sweeps=self.num_sweeps
             )
             self.schedule_info = {
                 'beta_max': beta_range[0],
                 'beta_min': beta_range[1],
-                'num_sweeps': self._schedule_setting['num_sweeps']
+                'num_sweeps': self.num_sweeps
             }
         # ------------------------------- set annealing schedule
 
