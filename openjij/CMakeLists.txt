@@ -36,7 +36,7 @@ target_link_libraries(cxxjij PRIVATE
       cxxjij_header_only
       pybind11_json
       nlohmann_json::nlohmann_json
-      $<$<BOOL:OpenMP_FOUND>:OpenMP::OpenMP_CXX>
+      $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
 )
 
 endif()
