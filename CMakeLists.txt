@@ -58,10 +58,6 @@ if(NOT DEFINED USE_TEST)
     set(USE_TEST ${DEFAULT_USE_TEST})
 endif()
 
-message(STATUS "USE_OMP = ${USE_OMP}")
-message(STATUS "USE_CUDA = ${USE_CUDA}")
-message(STATUS "USE_TEST = ${USE_TEST}")
-
 if(USE_CUDA)
     add_definitions(-DUSE_CUDA)
 endif()
@@ -163,6 +159,10 @@ else()
       endif()
   endif()
 endif()
+
+message(STATUS "USE_OMP = ${USE_OMP}")
+message(STATUS "USE_CUDA = ${USE_CUDA}")
+message(STATUS "USE_TEST = ${USE_TEST}")
 
 if (APPLE)
     find_package(BLAS)
