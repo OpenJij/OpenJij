@@ -175,6 +175,7 @@ setup(
     description='Framework for the Ising model and QUBO',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
+    python_requires = ">=3.7, <3.10",
     install_requires=['dimod >= 0.9.1', 'numpy >= 1.18.4', 'scipy', 'requests', 'jij-cimod >= 1.2.3'],
     ext_modules=[CMakeExtension('cxxjij')],
     cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
@@ -185,6 +186,14 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Intended Audience :: Science/Research',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
+    platforms=[
+                'Operating System :: Microsoft :: Windows :: Windows 10',
+                'Operating System :: MacOS :: MacOS X',
+                'Operating System :: POSIX :: Linux',
+                ],
     zip_safe=False
 )
