@@ -1,11 +1,6 @@
+add_library(cxxjij MODULE main.cpp)
 
-if (${OPENJIJ_BUILD_SHARED_LIBS})
-  add_library(cxxjij SHARED main.cpp)
-else()
-  add_library(cxxjij MODULE main.cpp)
-endif()
-
-if(USE_CUDA)
+if(CUDAToolkit_FOUND)
     set_target_properties(cxxjij PROPERTIES
         CXX_VISIBILITY_PRESET "hidden"
         PREFIX "${PYTHON_MODULE_PREFIX}"
@@ -32,10 +27,10 @@ target_link_libraries(cxxjij PRIVATE
       nlohmann_json::nlohmann_json
       $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen_lib>
       $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
-      $<$<BOOL:USE_CUDA>:${CUDA_LIBRARIES}>
-      $<$<BOOL:USE_CUDA>:${CUDA_curand_LIBRARY}>
-      $<$<BOOL:USE_CUDA>:${CUDA_CUBLAS_LIBRARIES}>
-      $<$<BOOL:USE_CUDA>:cxxjij_chimera_gpu_kernel_static>
+      $<$<BOOL:CUDAToolkit_FOUND>:CUDA::cudart_static>
+      $<$<BOOL:CUDAToolkit_FOUND>:CUDA::cublas_static>
+      $<$<BOOL:CUDAToolkit_FOUND>:CUDA::curand_static>
+      $<$<BOOL:CUDAToolkit_FOUND>:cxxjij_chimera_gpu_kernel_static>
       cxxjij_header_only
 )
 
