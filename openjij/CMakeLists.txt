@@ -27,10 +27,10 @@ target_link_libraries(cxxjij PRIVATE
       nlohmann_json::nlohmann_json
       $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen_lib>
       $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
-      $<$<BOOL:CUDAToolkit_FOUND>:CUDA::cudart_static>
-      $<$<BOOL:CUDAToolkit_FOUND>:CUDA::cublas_static>
-      $<$<BOOL:CUDAToolkit_FOUND>:CUDA::curand_static>
-      $<$<BOOL:CUDAToolkit_FOUND>:cxxjij_chimera_gpu_kernel_static>
+      $<$<TARGET_EXISTS:CUDA::cudart_static>:CUDA::cudart_static>
+      $<$<TARGET_EXISTS:CUDA::cublas_static>:CUDA::cublas_static>
+      $<$<TARGET_EXISTS:CUDA::curand_static>:CUDA::curand_static>
+      $<$<TARGET_EXISTS:cxxjij_chimera_gpu_kernel_static>:cxxjij_chimera_gpu_kernel_static>
       cxxjij_header_only
 )
 
