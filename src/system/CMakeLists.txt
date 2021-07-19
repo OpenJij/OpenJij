@@ -47,22 +47,19 @@ if(USE_CUDA)
     add_library(cxxjij_chimera_gpu_kernel SHARED "${PROJECT_SOURCE_DIR}\/src\/system\/gpu\/chimera_cuda\/kernel.cu")
 
  	set_target_properties(cxxjij_chimera_gpu_kernel_static PROPERTIES
+        CUDA_STANDARD 11
         POSITION_INDEPENDENT_CODE ON
         #CUDA_VISIBILITY_PRESET "hidden"
         CUDA_SEPARABLE_COMPILATION ON
            )
 
  	set_target_properties(cxxjij_chimera_gpu_kernel PROPERTIES
+        CUDA_STANDARD 11
         POSITION_INDEPENDENT_CODE ON
         #CUDA_VISIBILITY_PRESET "hidden"
         CUDA_SEPARABLE_COMPILATION ON
  		)
 
- 	target_link_libraries(cxxjij_chimera_gpu_kernel_static ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} ${CUDA_LIBRARIES})
- 	target_link_libraries(cxxjij_chimera_gpu_kernel_static cxxjij_header_only)
- 	target_link_libraries(cxxjij_chimera_gpu_kernel ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} ${CUDA_LIBRARIES})
- 	target_link_libraries(cxxjij_chimera_gpu_kernel cxxjij_header_only)
-   set_property(TARGET cxxjij_chimera_gpu_kernel_static PROPERTY CUDA_STANDARD 11) 
-   set_property(TARGET cxxjij_chimera_gpu_kernel PROPERTY CUDA_STANDARD 11) 
-
+ 	target_link_libraries(cxxjij_chimera_gpu_kernel_static cxxjij_header_only ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} ${CUDA_LIBRARIES})
+ 	target_link_libraries(cxxjij_chimera_gpu_kernel cxxjij_header_only ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} ${CUDA_LIBRARIES})
 endif()
