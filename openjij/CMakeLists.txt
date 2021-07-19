@@ -15,10 +15,6 @@ if(USE_CUDA)
         CUDA_VISIBILITY_PRESET "hidden"
         CUDA_SEPARABLE_COMPILATION ON
     )
-    target_link_libraries(cxxjij 
-        ${CUDA_LIBRARIES} ${CUDA_curand_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} 
-        cxxjij_chimera_gpu_kernel_static
-    )
 else()
     set_target_properties(cxxjij PROPERTIES
         CXX_VISIBILITY_PRESET "hidden"
@@ -36,6 +32,10 @@ target_link_libraries(cxxjij PRIVATE
       nlohmann_json::nlohmann_json
       $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen_lib>
       $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
+      $<$<BOOL:USE_CUDA>:${CUDA_LIBRARIES}>
+      $<$<BOOL:USE_CUDA>:${CUDA_curand_LIBRARY}>
+      $<$<BOOL:USE_CUDA>:${CUDA_CUBLAS_LIBRARIES}>
+      $<$<BOOL:USE_CUDA>:cxxjij_chimera_gpu_kernel_static>
       cxxjij_header_only
 )
 
