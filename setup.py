@@ -128,7 +128,7 @@ setup(
         'scipy',
         'requests',
         'jij-cimod >= 1.2.3',
-        'typing-extensions >= 3.10.0; python_version < 3.8.0',
+        'typing-extensions >= 3.10.0; python_version < "3.8.0"',
         ],
     ext_modules=[CMakeExtension('cxxjij')],
     cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
