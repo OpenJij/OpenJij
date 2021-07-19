@@ -42,7 +42,7 @@ add_custom_target(output_lib_name
   COMMAND ${CMAKE_COMMAND} -E echo "cxxjij location: $<TARGET_FILE:cxxjij>"
   )
   
-if (APPLE)
+if(APPLE AND OpenMP_FOUND)
    add_custom_command(TARGET cxxjij
            POST_BUILD COMMAND
            ${CMAKE_INSTALL_NAME_TOOL} -change libomp.dylib @loader_path/libomp.dylib $<TARGET_FILE:cxxjij>)
