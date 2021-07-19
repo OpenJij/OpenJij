@@ -7,7 +7,7 @@ target_include_directories(cxxjij_header_only INTERFACE
 
 
 #for GPU
-if(USE_CUDA)
+if(CUDAToolkit_FOUND)
     add_subdirectory(system)
 endif()
 if(OpenMP_FOUND)
