@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.17)
 project(openjij)
 
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
+
 if (APPLE)
     set(CMAKE_MACOSX_RPATH TRUE)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-command-line-argument")
