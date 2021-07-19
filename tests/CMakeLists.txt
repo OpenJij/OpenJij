@@ -21,7 +21,8 @@ endif()
 
 target_link_libraries(cxxjij_test PRIVATE
     cxxjij_header_only
-    eigen_lib
+    $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen_lib>
+    $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
     nlohmann_json::nlohmann_json
     gmock_main
     gmock
