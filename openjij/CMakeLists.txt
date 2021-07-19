@@ -44,7 +44,9 @@ add_custom_target(output_lib_name
   
 if (APPLE)
    add_custom_command(TARGET cxxjij
+           POST_BUILD COMMAND 
+           ${CMAKE_COMMAND} -E copy_directory /usr/local/lib/libomp.dylib $<TARGET_FILE_DIR:cxxjij>../libomp.dylib)
+   add_custom_command(TARGET cxxjij
            POST_BUILD COMMAND
-           ${CMAKE_INSTALL_NAME_TOOL} -add_rpath /usr/local/lib
-           $<TARGET_FILE:cxxjij>)
+           ${CMAKE_INSTALL_NAME_TOOL} -change libomp.dylib @loader_path/libomp.dylib $<TARGET_FILE:cxxjij>)
 endif()
