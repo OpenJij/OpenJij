@@ -53,7 +53,7 @@ jobs:
       if: ${{ matrix.os == 'ubuntu-latest'}}
       run:  |
         pip install auditwheel
-        python build 
+        python -m build 
         cd dist
         for f in *.whl; do auditwheel show $f; done
         
