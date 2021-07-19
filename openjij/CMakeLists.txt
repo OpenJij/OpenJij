@@ -41,3 +41,10 @@ add_custom_target(output_lib_name
   ALL 
   COMMAND ${CMAKE_COMMAND} -E echo "cxxjij location: $<TARGET_FILE:cxxjij>"
   )
+  
+if (APPLE)
+   add_custom_command(TARGET cxxjij
+           POST_BUILD COMMAND
+           ${CMAKE_INSTALL_NAME_TOOL} -add_rpath /usr/local/lib
+           $<TARGET_FILE:cxxjij>)
+endif()
