@@ -37,10 +37,6 @@ target_link_libraries(cxxjij PRIVATE
 add_custom_target(python
     DEPENDS cxxjij
 )
-add_custom_target(output_lib_name 
-  ALL 
-  COMMAND ${CMAKE_COMMAND} -E echo "cxxjij location: $<TARGET_FILE:cxxjij>"
-  )
   
 if(APPLE AND OpenMP_FOUND)
    add_custom_command(TARGET cxxjij
