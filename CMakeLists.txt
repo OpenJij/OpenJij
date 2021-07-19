@@ -72,6 +72,7 @@ if(NOT DEFINED USE_TEST)
 endif()
 
 if(USE_OMP)
+    set(CMAKE_INSTALL_OPENMP_LIBRARIES ON)
     if(APPLE) 
       if(NOT CMAKE_OSX_ARCHITECTURES)
         message(STATUS "Apple Native Build")
