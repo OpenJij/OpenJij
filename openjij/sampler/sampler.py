@@ -208,11 +208,17 @@ class BaseSampler(dimod.Sampler):
         """Sample from a QUBO model using the implemented sample method.
 
         Args:
-            Q (dict): Coefficients of a quadratic unconstrained binary optimization
+            Q (dict or numpy.ndarray): Coefficients of a quadratic unconstrained binary optimization
 
         Returns:
             :class:`openjij.sampler.response.Response`: results 
         """
-        bqm = openjij.BinaryQuadraticModel.from_qubo(Q, sparse=parameters.get('sparse', False))
-        return self.sample(bqm, **parameters)
+        if isinstance(Q, dict):
+            bqm = openjij.BinaryQuadraticModel.from_qubo(Q, sparse=parameters.get('sparse', False))
+            return self.sample(bqm, **parameters)
+        elif isinstance(Q, np.ndarray):
+            bqm = openjij.BinaryQuadraticModel.from_numpy_matrix(Q, vartype='BINARY')
+            return self.sample(bqm, **parameters)
+        else:
+            raise TypeError('Q must be either dict or np.ndarray')
 
