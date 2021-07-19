@@ -4,7 +4,7 @@ add_executable(cxxjij_test
     cxxtest.cpp
 )
 
-if(USE_CUDA)
+if(CUDAToolkit_FOUND)
     set_target_properties(cxxjij_test PROPERTIES
         CXX_VISIBILITY_PRESET "hidden"
         INTERPROCEDURAL_OPTIMIZATION TRUE
@@ -23,10 +23,10 @@ target_link_libraries(cxxjij_test PRIVATE
     cxxjij_header_only
     $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen_lib>
     $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
-    $<$<BOOL:USE_CUDA>:cxxjij_chimera_gpu_kernel>
-    $<$<BOOL:USE_CUDA>:${CUDA_LIBRARIES}>
-    $<$<BOOL:USE_CUDA>:${CUDA_curand_LIBRARY}>
-    $<$<BOOL:USE_CUDA>:${CUDA_CUBLAS_LIBRARIES}>
+    $<$<BOOL:CUDAToolkit_FOUND>:cxxjij_chimera_gpu_kernel>
+    $<$<TARGET_EXISTS:CUDA::cudart>:CUDA::cudart>
+    $<$<TARGET_EXISTS:CUDA::cublas>:CUDA::cublas>
+    $<$<TARGET_EXISTS:CUDA::curand>:CUDA::curand>
     nlohmann_json::nlohmann_json
     gmock_main
     gmock
