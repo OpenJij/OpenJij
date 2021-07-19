@@ -125,7 +125,7 @@ class CMakeBuild(build_ext):
                 # CMake 3.12+ only.
                 build_args += ["-j{}".format(self.parallel)]       
         if "USE_TEST" in os.environ:  
-            cmake_args += ["-DUSE_TEST=Yes"]
+            cmake_args += ["-DUSE_TEST=Yes", "-LA", "-LH"]
         
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''), self.distribution.get_version())
