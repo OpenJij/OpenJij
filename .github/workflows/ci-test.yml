@@ -59,17 +59,18 @@ jobs:
     - name: delocate show
       if: ${{ matrix.os == 'macos-latest'}}
       run:  |
+        set -eux
         pip install delocate
         python -m build 
         cd dist
         echo '::group::delocate-listdeps'
-        for f in *.whl; delocate-listdeps --all --depending $f; done
+        for f in *.whl; do delocate-listdeps --all --depending $f; done
         echo '::endgroup::'
         echo '::group::delocate'
         mkdir ../dist-new
-        for f in *.whl; delocate-wheel -v -w ../dist-new $f; done 
+        for f in *.whl; do delocate-wheel -v -w ../dist-new $f; done 
         echo '::endgroup::'
         echo '::group::delocate-listdeps'
         cd ../dist-new
-        for f in *.whl; delocate-listdeps --all --depending $f; done
+        for f in *.whl; do delocate-listdeps --all --depending $f; done
         echo '::endgroup::'
