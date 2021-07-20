@@ -17,8 +17,8 @@
 //! @date 2021-03-11
 //! @copyright Copyright (c) Jij Inc. 2021
 
-#ifndef polynomial_hpp
-#define polynomial_hpp
+#ifndef OPENJIJ_GRAPH_POLYNOMIAL_HPP__
+#define OPENJIJ_GRAPH_POLYNOMIAL_HPP__
 
 #include <algorithm>
 #include <cassert>
@@ -272,5 +272,4 @@ private:
 } //graph
 } //openjij
 
-
-#endif /* polynomial_hpp */
+#endif /* OPENJIJ_GRAPH_POLYNOMIAL_HPP__ */

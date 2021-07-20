@@ -312,8 +312,6 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
       }
    }
    
-   
-   
 };
 
 
