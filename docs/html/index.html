@@ -29,7 +29,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">OpenJij C++ interface
-   &#160;<span id="projectnumber">0.2.0</span>
+   &#160;<span id="projectnumber">0.4.0</span>
    </div>
   </td>
  </tr>
@@ -77,7 +77,8 @@ $(function() {
 <ul>
 <li>python &gt;= 3.7</li>
 <li>(optional) gcc &gt;= 7.0.0</li>
-<li>(optional) cmake &gt;= 3.12.2</li>
+<li>(optional) cmake &gt;= 3.17</li>
+<li>(optional) Ninja</li>
 <li><a href="https://openjij.github.io/OpenJij_Documentation/build/html/">Documents</a></li>
 <li><a href="https://openjij.github.io/OpenJijTutorial/build/html/index.html">Tutorials</a></li>
 <li><a href="https://openjij.github.io/OpenJij/html/index.html">C++ Docs</a></li>
@@ -91,30 +92,36 @@ $(function() {
 </div><!-- fragment --><h2>install via pip from source codes</h2>
 <p>To install OpenJij from source codes, please install CMake first then install OpenJij.</p>
 <h3>cmake setup</h3>
-<p>If you had not installed cmake&gt;=3.12.2, you need install cmake&gt;=3.12.2</p>
-<ul>
+<p>If you want to use setup.py instead of PIP, You will need to install CMake&gt;=3.17. <br  />
+ We are Highly recommended install CMake via PYPI. </p><div class="fragment"><div class="line">$ pip install -U cmake</div>
+</div><!-- fragment --><ul>
 <li>macOS <div class="fragment"><div class="line">$ brew install cmake</div>
 </div><!-- fragment --></li>
 <li>Linux <div class="fragment"><div class="line"># if you installed old version by apt-get</div>
 <div class="line">$ apt-get purge cmake</div>
 <div class="line"> </div>
 <div class="line"># install cmake </div>
-<div class="line">$ wget https://cmake.org/files/v3.13/cmake-3.13.2.tar.gz</div>
-<div class="line">$ tar xvf cmake-3.13.2.tar.gz</div>
-<div class="line">$ cd cmake-3.13.2</div>
+<div class="line">$ wget https://cmake.org/files/v3.17/cmake-3.17.5.tar.gz</div>
+<div class="line">$ tar xvf cmake-3.17.5.tar.gz</div>
+<div class="line">$ cd cmake-3.17.5</div>
 <div class="line">$ ./bootstrap &amp;&amp; make &amp;&amp; sudo make install </div>
 </div><!-- fragment --></li>
 <li>Windows</li>
 </ul>
 <p>Please install cmake from <a href="https://cmake.org/download/">here</a>.</p>
-<p>Alternatively, you can use </p><div class="fragment"><div class="line">$ pip install -U cmake</div>
-</div><!-- fragment --><p> Make sure the enviroment path for CMake is set correctly.</p>
+<p>Make sure the enviroment path for CMake is set correctly.</p>
 <h3>install OpenJij</h3>
 <div class="fragment"><div class="line">$ pip install openjij --no-binary :all:</div>
 </div><!-- fragment --><h2>install from github repository</h2>
 <div class="fragment"><div class="line">$ git clone git@github.com:OpenJij/OpenJij.git</div>
 <div class="line">$ cd openjij</div>
-<div class="line">$ python setup.py install</div>
+<div class="line">$ python -m pip install .</div>
+</div><!-- fragment --><h1>Test</h1>
+<h2>Test only Python code</h2>
+<div class="fragment"><div class="line">$ python setup.py test</div>
+</div><!-- fragment --><h2>Test Python and C++ code</h2>
+<div class="fragment"><div class="line">$ export USE_TEST=1</div>
+<div class="line">$ python setup.py test</div>
 </div><!-- fragment --><h1>How to use</h1>
 <h2>Python example</h2>
 <div class="fragment"><div class="line">import openjij as oj</div>
