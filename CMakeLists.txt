@@ -25,10 +25,6 @@ option(USE_TEST "Use test code" No)
 
 
 # Use OpenMP as default behavior
-if(NOT DEFINED USE_OMP)
-    set(USE_OMP ${DEFAULT_USE_OMP})
-endif()
-
 if(NOT APPLE) 
   if(NOT DEFINED USE_OMP) 
     set(USE_OMP ${DEFAULT_USE_OMP})
