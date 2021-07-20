@@ -1,0 +1,5 @@
+pip>=19.3
+setuptools>=57.1.0
+wheel>=0.36.2
+build>=0.5.1
+cmake >= 3.20

@@ -4,12 +4,8 @@ include(FetchContent)
 FetchContent_Declare(
     googletest
     GIT_REPOSITORY  https://github.com/google/googletest.git
-    GIT_TAG         release-1.8.1
+    GIT_TAG         release-1.11.0
 )
-
-FetchContent_GetProperties(googletest)
-if(NOT googletest_POPULATED)
-    message(STATUS "Fetch googletest for C++ testing")
-    FetchContent_Populate(googletest)
-    add_subdirectory(${googletest_SOURCE_DIR} ${googletest_SOURCE_DIR}/googlemock)
-endif()
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+#add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} ) 
