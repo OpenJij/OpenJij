@@ -24,7 +24,7 @@ $ pip install openjij
 To install OpenJij from source codes, please install CMake first then install OpenJij.
 
 #### cmake setup
-If you want to use setup.py instead of PIP, you will need to install CMake>=3.17.
+If you want to use setup.py instead of PIP, You will need to install CMake>=3.17.
 We are Highly recommended install CMake via PYPI.
 ```
 $ pip install -U cmake
