@@ -1,13 +1,24 @@
 name: build-test
 
-on: [push]
-
+on: 
+  workflow_dispatch:
+  push:
+    branches: [master, main]
+  pull_request: 
+    types: [opened, reopened, synchronize]
 jobs:
   build:
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]
         os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+        - os: ubuntu-latest
+          path: ~/.cache/pip
+        - os: macos-latest
+          path: ~/Library/Caches/pip
+        - os: windows-latest
+          path: ~\AppData\Local\pip\Cache
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -16,9 +27,51 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version : ${{ matrix.python-version }}
-    - name: Install dependencies and test
+    - name: Set up Python ${{ matrix.python-version }} cache 
+      run: which python > ~/.python3_path.txt
+    - uses: actions/cache@v2
+      with:
+        path: ${{ matrix.path }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('~/.python3_path.txt') }}
+        restore-keys: |
+         ${{ runner.os }}-pip-
+    - name: Install dependencies 
       run: |
-        python -m pip install --upgrade pip
-        pip install cmake
+        pip install --upgrade pip wheel setuptools build
+        pip install -r requirements.txt
+    - name: Install Eigen3 on ${{ matrix.os }}
+      if: ${{ matrix.os == 'ubuntu-latest'}}
+      run: sudo apt-get install -y libeigen3-dev
+    - name: Install Eigen3 on ${{ matrix.os }}
+      if: ${{ matrix.os == 'macos-latest'}}
+      run: brew install libomp eigen
+    - name: Test 
+      shell: bash
+      run: |
+        export USE_TEST=1
         python setup.py build --debug test
-
+    - name: auditwheel show
+      if: ${{ matrix.os == 'ubuntu-latest'}}
+      run:  |
+        pip install auditwheel
+        python -m build 
+        cd dist
+        for f in *.whl; do auditwheel show $f; done
+    - name: delocate show
+      if: ${{ matrix.os == 'macos-latest'}}
+      run:  |
+        set -eux
+        pip install delocate
+        python -m build 
+        cd dist
+        echo '::group::delocate-listdeps'
+        for f in *.whl; do delocate-listdeps --all --depending $f; done
+        echo '::endgroup::'
+        echo '::group::delocate'
+        mkdir ../dist-new
+        for f in *.whl; do delocate-wheel -v -w ../dist-new $f; done 
+        echo '::endgroup::'
+        echo '::group::delocate-listdeps'
+        cd ../dist-new
+        for f in *.whl; do delocate-listdeps --all --depending $f; done
+        echo '::endgroup::'

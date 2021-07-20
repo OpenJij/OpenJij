@@ -1,11 +1,10 @@
-cmake_minimum_required(VERSION 3.11)
 
 add_executable(cxxjij_test
     EXCLUDE_FROM_ALL
     cxxtest.cpp
 )
 
-if(USE_CUDA)
+if(CUDAToolkit_FOUND)
     set_target_properties(cxxjij_test PROPERTIES
         CXX_VISIBILITY_PRESET "hidden"
         INTERPROCEDURAL_OPTIMIZATION TRUE
@@ -22,7 +21,12 @@ endif()
 
 target_link_libraries(cxxjij_test PRIVATE
     cxxjij_header_only
-    eigen_lib
+    $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen_lib>
+    $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
+    $<$<TARGET_EXISTS:cxxjij_chimera_gpu_kernel>:cxxjij_chimera_gpu_kernel>
+    $<$<TARGET_EXISTS:CUDA::cudart>:CUDA::cudart>
+    $<$<TARGET_EXISTS:CUDA::cublas>:CUDA::cublas>
+    $<$<TARGET_EXISTS:CUDA::curand>:CUDA::curand>
     nlohmann_json::nlohmann_json
     gmock_main
     gmock
@@ -30,10 +34,3 @@ target_link_libraries(cxxjij_test PRIVATE
     gtest
     pthread
 )
-
-if(USE_CUDA)
-    target_link_libraries(cxxjij_test PRIVATE cxxjij_chimera_gpu_kernel)
-    target_link_libraries(cxxjij_test PRIVATE ${CUDA_LIBRARIES})
-    target_link_libraries(cxxjij_test PRIVATE ${CUDA_curand_LIBRARY})
-    target_link_libraries(cxxjij_test PRIVATE ${CUDA_CUBLAS_LIBRARIES})
-endif()
