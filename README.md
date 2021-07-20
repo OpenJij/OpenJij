@@ -65,6 +65,19 @@ $ cd openjij
 $ python setup.py install
 ```
 
+## Test
+
+### Test only Python code
+```sh
+$ python setup.py test
+```
+
+### Test Python and C++ code
+```sh
+$ export USE_TEST=1
+$ python setup.py test
+```
+
 ## How to use
 
 ### Python example
