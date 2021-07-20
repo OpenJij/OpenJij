@@ -178,7 +178,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     python_requires = ">=3.7, <3.10",
-    install_requires=['dimod >= 0.9.1', 'numpy >= 1.18.4', 'scipy', 'requests', 'jij-cimod >= 1.2.3'],
+    install_requires=['dimod >= 0.9.1', 'numpy >= 1.18.4', 'scipy', 'requests', 'jij-cimod >= 1.2.3', 'typing-extensions >= 3.10.0; python_version < "3.8.0"'],
     ext_modules=[CMakeExtension('cxxjij')],
     cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
                   pytest=PyTestCommand),

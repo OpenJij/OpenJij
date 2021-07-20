@@ -29,6 +29,14 @@ class TestSamplers(unittest.TestCase):
         }
         self.str_qubo = {(str_ind[i], str_ind[j]): qij
                          for (i, j), qij in self.qubo.items()}
+        # qubo (ndarray)
+        self.qubo_ndarray = np.array(
+                [[-1,-1, 0, 0, 0],
+                 [ 0,-1, 0, 0, 0],
+                 [ 0, 0, 1, 0, 0],
+                 [ 0, 0, 0, 1, 1],
+                 [ 0, 0, 0, 0, 1]])
+
         self.ground_q = [1, 1, 0, 0, 0]
         self.e_q = -1-1-1
 
@@ -44,6 +52,9 @@ class TestSamplers(unittest.TestCase):
             initial_state=init_state, seed=1)
         self._test_response(res, self.e_g, self.ground_state)
         res = sampler.sample_qubo(self.qubo,
+                                  initial_state=init_q_state, schedule=schedule, seed=2)
+        self._test_response(res, self.e_q, self.ground_q)
+        res = sampler.sample_qubo(self.qubo_ndarray,
                                   initial_state=init_q_state, schedule=schedule, seed=2)
         self._test_response(res, self.e_q, self.ground_q)
 

@@ -54,12 +54,6 @@ class SQASampler(BaseSampler):
         self.num_reads = num_reads
         self.num_sweeps = num_sweeps
         self.schedule = schedule
-        self._schedule_setting = {
-            'beta': beta,
-            'gamma': gamma,
-            'num_sweeps': num_sweeps,
-            'num_reads': num_reads,
-        }
 
         self._make_system = {
             'singlespinflip': cxxjij.system.make_transverse_ising
@@ -122,7 +116,7 @@ class SQASampler(BaseSampler):
     def sample(self, bqm,
                      beta=None, gamma=None,
                      num_sweeps=None, schedule=None, trotter=None,
-                     num_reads=1,
+                     num_reads=None,
                      initial_state=None, updater='single spin flip',
                      sparse=False,
                      reinitialize_state=True, seed=None):
@@ -171,12 +165,12 @@ class SQASampler(BaseSampler):
         self._setting_overwrite(
             beta=beta, gamma=gamma,
             num_sweeps=num_sweeps, num_reads=num_reads,
-            trotter=trotter
+            trotter=trotter, schedule=schedule
         )
 
         # set annealing schedule -------------------------------
         self._annealing_schedule_setting(
-            bqm, beta, gamma, num_sweeps, schedule)
+            bqm, self.beta, self.gamma, self.num_sweeps, self.schedule)
         # ------------------------------- set annealing schedule
 
         # make init state generator --------------------------------
@@ -224,26 +218,23 @@ class SQASampler(BaseSampler):
                                     beta=None, gamma=None,
                                     num_sweeps=None,
                                     schedule=None):
-        self.beta = beta if beta else self.beta
-        self.gamma = gamma if gamma else self.gamma
-        if schedule or self.schedule:
+        if schedule:
             self._schedule = self._convert_validation_schedule(
-                schedule if schedule else self.schedule, self.beta
+                schedule, beta
             )
             self.schedule_info = {'schedule': 'custom schedule'}
         else:
 
-            self.num_sweeps = num_sweeps if num_sweeps else self.num_sweeps
             self._schedule, beta_gamma = quartic_ising_schedule(
                 model=model,
-                beta=self._schedule_setting['beta'],
-                gamma=self._schedule_setting['gamma'],
-                num_sweeps=self._schedule_setting['num_sweeps']
+                beta=beta,
+                gamma=gamma,
+                num_sweeps=num_sweeps
             )
             self.schedule_info = {
                 'beta': beta_gamma[0],
                 'gamma': beta_gamma[1],
-                'num_sweeps': self._schedule_setting['num_sweeps']
+                'num_sweeps': num_sweeps
             }
 
 
