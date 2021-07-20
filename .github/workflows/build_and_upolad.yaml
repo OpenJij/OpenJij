@@ -119,7 +119,7 @@ jobs:
           
           CIBW_BEFORE_ALL: "" 
           CIBW_BEFORE_ALL_LINUX: "yum install -y epel-release centos-release-scl && yum install -y devtoolset-10"
-          CIBW_BEFORE_ALL_MACOS: "brew install eigen"
+          CIBW_BEFORE_ALL_MACOS: ""
           CIBW_BEFORE_ALL_WINDOWS: ""
           
           CIBW_BEFORE_BUILD: "pip install cmake"      
