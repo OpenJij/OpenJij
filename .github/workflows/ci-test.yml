@@ -48,7 +48,7 @@ jobs:
       shell: bash
       run: |
         export USE_TEST=1
-        python -m build --config-setting="--debug=test"
+        python -m build --config-setting="--debug=test" --no-isolation
         python setup.py build --debug test
     - name: auditwheel show
       if: ${{ matrix.os == 'ubuntu-latest'}}
