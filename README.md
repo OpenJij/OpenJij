@@ -4,7 +4,7 @@
 
 * python >= 3.7
 * (optional) gcc >= 7.0.0
-* (optional) cmake >= 3.12.2
+* (optional) cmake >= 3.17
 
 - [Documents](https://openjij.github.io/OpenJij_Documentation/build/html/)
 - [Tutorials](https://openjij.github.io/OpenJijTutorial/build/html/index.html)
@@ -24,7 +24,7 @@ To install OpenJij from source codes, please install CMake first then install Op
 
 #### cmake setup
 
-If you had not installed cmake>=3.12.2, you need install cmake>=3.12.2
+If you had not installed cmake>=3.17, you need install cmake>=3.17
 
 * macOS
 ```
@@ -37,9 +37,9 @@ $ brew install cmake
 $ apt-get purge cmake
 
 # install cmake 
-$ wget https://cmake.org/files/v3.13/cmake-3.13.2.tar.gz
-$ tar xvf cmake-3.13.2.tar.gz
-$ cd cmake-3.13.2
+$ wget https://cmake.org/files/v3.17/cmake-3.17.5.tar.gz
+$ tar xvf cmake-3.17.5.tar.gz
+$ cd cmake-3.17.5
 $ ./bootstrap && make && sudo make install 
 ```
 
