@@ -12,8 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef k_local_polynomial_hpp
-#define k_local_polynomial_hpp
+#ifndef OPENJIJ_SYSTEM_K_LOCAL_POLYNOMIAL_HPP__
+#define OPENJIJ_SYSTEM_K_LOCAL_POLYNOMIAL_HPP__
 
 #include <graph/all.hpp>
 #include <nlohmann/json.hpp>
@@ -576,8 +576,7 @@ auto make_k_local_polynomial(const graph::Binaries &init_binaries, const nlohman
    return KLocalPolynomial<graph::Polynomial<double>>(init_binaries, init_obj);
 }
 
-
 } //namespace system
 } //namespace openjij
 
-#endif /* k_local_polynomial_hpp */
+#endif /* OPENJIJ_SYSTEM_K_LOCAL_POLYNOMIAL_HPP__ */

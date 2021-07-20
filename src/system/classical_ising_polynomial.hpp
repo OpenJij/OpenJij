@@ -12,8 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef classical_ising_polynomial_hpp
-#define classical_ising_polynomial_hpp
+#ifndef OPENJIJ_SYSTEM_CLASSICAL_ISING_POLYNOMIAL_HPP__
+#define OPENJIJ_SYSTEM_CLASSICAL_ISING_POLYNOMIAL_HPP__
 
 #include <vector>
 #include <algorithm>
@@ -478,6 +478,4 @@ auto make_classical_ising_polynomial(const graph::Spins &init_variables, const n
 } //namespace system
 } //namespace openjij
 
-
-
-#endif /* classical_ising_polynomial_hpp */
+#endif /* OPENJIJ_SYSTEM_CLASSICAL_ISING_POLYNOMIAL_HPP__ */
