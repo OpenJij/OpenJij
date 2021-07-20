@@ -31,29 +31,29 @@
 namespace py = pybind11;
 
 using namespace py::literals;
-using namespace openjij;
+//using namespace openjij;
 
 //graph
 inline void declare_Graph(py::module& m){
-   py::class_<graph::Graph>(m, "Graph")
+   py::class_<openjij::graph::Graph>(m, "Graph")
    .def(py::init<std::size_t>(), "num_spins"_a)
-   .def("gen_spin", [](const graph::Graph& self, std::size_t seed){
-      RandomEngine rng(seed);
+   .def("gen_spin", [](const openjij::graph::Graph& self, std::size_t seed){
+      openjij::RandomEngine rng(seed);
       return self.gen_spin(rng);
    }, "seed"_a)
-   .def("gen_spin", [](const graph::Graph& self){
-      RandomEngine rng(std::random_device{}());
+   .def("gen_spin", [](const openjij::graph::Graph& self){
+      openjij::RandomEngine rng(std::random_device{}());
       return self.gen_spin(rng);
    })
-   .def("gen_binary", [](const graph::Graph& self, std::size_t seed){
-      RandomEngine rng(seed);
+   .def("gen_binary", [](const openjij::graph::Graph& self, std::size_t seed){
+      openjij::RandomEngine rng(seed);
       return self.gen_binary(rng);
    }, "seed"_a)
-   .def("gen_binary", [](const graph::Graph& self){
-      RandomEngine rng(std::random_device{}());
+   .def("gen_binary", [](const openjij::graph::Graph& self){
+      openjij::RandomEngine rng(std::random_device{}());
       return self.gen_binary(rng);
    })
-   .def("size", &graph::Graph::size);
+   .def("size", &openjij::graph::Graph::size);
 }
 
 //dense
@@ -63,18 +63,18 @@ inline void declare_Dense(py::module& m, const std::string& suffix){
     using json = nlohmann::json;
 
     auto str = std::string("Dense") + suffix;
-    py::class_<graph::Dense<FloatType>, graph::Graph>(m, str.c_str())
+    py::class_<openjij::graph::Dense<FloatType>, openjij::graph::Graph>(m, str.c_str())
         .def(py::init<std::size_t>(), "num_spins"_a)
-        .def(py::init([](py::object obj){return std::unique_ptr<graph::Dense<FloatType>>(new graph::Dense<FloatType>(static_cast<json>(obj)));}), "obj"_a)
-        .def(py::init<const graph::Dense<FloatType>&>(), "other"_a)
-        .def("set_interaction_matrix", &graph::Dense<FloatType>::set_interaction_matrix, "interaction"_a)
-        .def("calc_energy", [](const graph::Dense<FloatType>& self, const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins){return self.calc_energy(spins);}, "spins"_a)
-        .def("calc_energy", [](const graph::Dense<FloatType>& self, const graph::Spins& spins){return self.calc_energy(spins);}, "spins"_a)
-        .def("__setitem__", [](graph::Dense<FloatType>& self, const std::pair<std::size_t, std::size_t>& key, FloatType val){self.J(key.first, key.second) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Dense<FloatType>& self, const std::pair<std::size_t, std::size_t>& key){return self.J(key.first, key.second);}, "key"_a)
-        .def("__setitem__", [](graph::Dense<FloatType>& self, std::size_t key, FloatType val){self.h(key) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Dense<FloatType>& self, std::size_t key){return self.h(key);}, "key"_a)
-        .def("get_interactions", &graph::Dense<FloatType>::get_interactions);
+        .def(py::init([](py::object obj){return std::unique_ptr<openjij::graph::Dense<FloatType>>(new openjij::graph::Dense<FloatType>(static_cast<json>(obj)));}), "obj"_a)
+        .def(py::init<const openjij::graph::Dense<FloatType>&>(), "other"_a)
+        .def("set_interaction_matrix", &openjij::graph::Dense<FloatType>::set_interaction_matrix, "interaction"_a)
+        .def("calc_energy", [](const openjij::graph::Dense<FloatType>& self, const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins){return self.calc_energy(spins);}, "spins"_a)
+        .def("calc_energy", [](const openjij::graph::Dense<FloatType>& self, const openjij::graph::Spins& spins){return self.calc_energy(spins);}, "spins"_a)
+        .def("__setitem__", [](openjij::graph::Dense<FloatType>& self, const std::pair<std::size_t, std::size_t>& key, FloatType val){self.J(key.first, key.second) = val;}, "key"_a, "val"_a)
+        .def("__getitem__", [](const openjij::graph::Dense<FloatType>& self, const std::pair<std::size_t, std::size_t>& key){return self.J(key.first, key.second);}, "key"_a)
+        .def("__setitem__", [](openjij::graph::Dense<FloatType>& self, std::size_t key, FloatType val){self.h(key) = val;}, "key"_a, "val"_a)
+        .def("__getitem__", [](const openjij::graph::Dense<FloatType>& self, std::size_t key){return self.h(key);}, "key"_a)
+        .def("get_interactions", &openjij::graph::Dense<FloatType>::get_interactions);
 }
 
 //sparse
@@ -84,20 +84,20 @@ inline void declare_Sparse(py::module& m, const std::string& suffix){
     using json = nlohmann::json;
 
     auto str = std::string("Sparse") + suffix;
-    py::class_<graph::Sparse<FloatType>, graph::Graph>(m, str.c_str())
+    py::class_<openjij::graph::Sparse<FloatType>, openjij::graph::Graph>(m, str.c_str())
         .def(py::init<std::size_t, std::size_t>(), "num_spins"_a, "num_edges"_a)
         .def(py::init<std::size_t>(),  "num_spins"_a)
-        .def(py::init([](py::object obj, std::size_t num_edges){return std::unique_ptr<graph::Sparse<FloatType>>(new graph::Sparse<FloatType>(static_cast<json>(obj), num_edges));}), "obj"_a, "num_edges"_a)
-        .def(py::init([](py::object obj){return std::unique_ptr<graph::Sparse<FloatType>>(new graph::Sparse<FloatType>(static_cast<json>(obj)));}), "obj"_a)
-        .def(py::init<const graph::Sparse<FloatType>&>(), "other"_a)
-        .def("adj_nodes", &graph::Sparse<FloatType>::adj_nodes)
-        .def("get_num_edges", &graph::Sparse<FloatType>::get_num_edges)
-        .def("calc_energy", [](const graph::Sparse<FloatType>& self, const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins){return self.calc_energy(spins);}, "spins"_a)
-        .def("calc_energy", [](const graph::Sparse<FloatType>& self, const graph::Spins& spins){return self.calc_energy(spins);}, "spins"_a)
-        .def("__setitem__", [](graph::Sparse<FloatType>& self, const std::pair<std::size_t, std::size_t>& key, FloatType val){self.J(key.first, key.second) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Sparse<FloatType>& self, const std::pair<std::size_t, std::size_t>& key){return self.J(key.first, key.second);}, "key"_a)
-        .def("__setitem__", [](graph::Sparse<FloatType>& self, std::size_t key, FloatType val){self.h(key) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Sparse<FloatType>& self, std::size_t key){return self.h(key);}, "key"_a);
+        .def(py::init([](py::object obj, std::size_t num_edges){return std::unique_ptr<openjij::graph::Sparse<FloatType>>(new openjij::graph::Sparse<FloatType>(static_cast<json>(obj), num_edges));}), "obj"_a, "num_edges"_a)
+        .def(py::init([](py::object obj){return std::unique_ptr<openjij::graph::Sparse<FloatType>>(new openjij::graph::Sparse<FloatType>(static_cast<json>(obj)));}), "obj"_a)
+        .def(py::init<const openjij::graph::Sparse<FloatType>&>(), "other"_a)
+        .def("adj_nodes", &openjij::graph::Sparse<FloatType>::adj_nodes)
+        .def("get_num_edges", &openjij::graph::Sparse<FloatType>::get_num_edges)
+        .def("calc_energy", [](const openjij::graph::Sparse<FloatType>& self, const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>& spins){return self.calc_energy(spins);}, "spins"_a)
+        .def("calc_energy", [](const openjij::graph::Sparse<FloatType>& self, const openjij::graph::Spins& spins){return self.calc_energy(spins);}, "spins"_a)
+        .def("__setitem__", [](openjij::graph::Sparse<FloatType>& self, const std::pair<std::size_t, std::size_t>& key, FloatType val){self.J(key.first, key.second) = val;}, "key"_a, "val"_a)
+        .def("__getitem__", [](const openjij::graph::Sparse<FloatType>& self, const std::pair<std::size_t, std::size_t>& key){return self.J(key.first, key.second);}, "key"_a)
+        .def("__setitem__", [](openjij::graph::Sparse<FloatType>& self, std::size_t key, FloatType val){self.h(key) = val;}, "key"_a, "val"_a)
+        .def("__getitem__", [](const openjij::graph::Sparse<FloatType>& self, std::size_t key){return self.h(key);}, "key"_a);
 }
 
 //Polynomial
@@ -105,19 +105,19 @@ template<typename FloatType>
 inline void declare_Polynomial(py::module& m, const std::string& suffix){
    
    using json = nlohmann::json;
-   using Poly = graph::Polynomial<FloatType>;
+   using Poly = openjij::graph::Polynomial<FloatType>;
    auto  str  = std::string("Polynomial") + suffix;
    
-   py::class_<Poly, graph::Graph>(m, str.c_str())
+   py::class_<Poly, openjij::graph::Graph>(m, str.c_str())
    .def(py::init<const std::size_t>(), "num_variables"_a)
-   .def(py::init([](const py::object& obj){return std::unique_ptr<graph::Polynomial<FloatType>>(new graph::Polynomial<FloatType>(static_cast<json>(obj)));}), "obj"_a)
+   .def(py::init([](const py::object& obj){return std::unique_ptr<openjij::graph::Polynomial<FloatType>>(new openjij::graph::Polynomial<FloatType>(static_cast<json>(obj)));}), "obj"_a)
    .def("get_num_interactions", &Poly::get_num_interactions)
    .def("calc_energy"  , &Poly::calc_energy, "spins"_a, "omp_flag"_a = true)
    .def("energy"       , &Poly::energy, "spins"_a, "omp_flag"_a = true)
-   .def("__setitem__"    , [](Poly& self, graph::Index key, FloatType val){ self.J(key) = val;}, "key"_a, "val"_a)
-   .def("__setitem__"    , [](Poly& self, std::vector<graph::Index>& key, FloatType val){ self.J(key) = val;}, "key"_a, "val"_a)
-   .def("__getitem__"    , [](const Poly& self, std::vector<graph::Index>& key){ return self.J(key); }, "key"_a)
-   .def("__getitem__"    , [](const Poly& self, graph::Index key){ return self.J(key); }, "key"_a)
+   .def("__setitem__"    , [](Poly& self, openjij::graph::Index key, FloatType val){ self.J(key) = val;}, "key"_a, "val"_a)
+   .def("__setitem__"    , [](Poly& self, std::vector<openjij::graph::Index>& key, FloatType val){ self.J(key) = val;}, "key"_a, "val"_a)
+   .def("__getitem__"    , [](const Poly& self, std::vector<openjij::graph::Index>& key){ return self.J(key); }, "key"_a)
+   .def("__getitem__"    , [](const Poly& self, openjij::graph::Index key){ return self.J(key); }, "key"_a)
    .def("get_polynomial" , [](const Poly& self) {
       py::dict py_polynomial;
       for (std::size_t i = 0; i < self.get_keys().size(); ++i) {
@@ -133,11 +133,11 @@ inline void declare_Polynomial(py::module& m, const std::string& suffix){
 
 //enum class Dir
 inline void declare_Dir(py::module& m){
-    py::enum_<graph::Dir>(m, "Dir")
-        .value("PLUS_R", graph::Dir::PLUS_R)
-        .value("MINUS_R", graph::Dir::MINUS_R)
-        .value("PLUS_C", graph::Dir::PLUS_C)
-        .value("MINUS_C", graph::Dir::MINUS_C);
+    py::enum_<openjij::graph::Dir>(m, "Dir")
+        .value("PLUS_R", openjij::graph::Dir::PLUS_R)
+        .value("MINUS_R", openjij::graph::Dir::MINUS_R)
+        .value("PLUS_C", openjij::graph::Dir::PLUS_C)
+        .value("MINUS_C", openjij::graph::Dir::MINUS_C);
 }
 
 //square
@@ -147,31 +147,31 @@ inline void declare_Square(py::module& m, const std::string& suffix){
     using json = nlohmann::json;
 
     auto str = std::string("Square") + suffix;
-    py::class_<graph::Square<FloatType>, graph::Sparse<FloatType>>(m, str.c_str())
+    py::class_<openjij::graph::Square<FloatType>, openjij::graph::Sparse<FloatType>>(m, str.c_str())
         .def(py::init<std::size_t, std::size_t, FloatType>(), "num_row"_a, "num_column"_a, "init_val"_a=0)
-        .def(py::init<const graph::Square<FloatType>&>(), "other"_a)
-        .def(py::init([](py::object obj, std::size_t num_row, std::size_t num_column, FloatType init_val){return std::unique_ptr<graph::Square<FloatType>>(new graph::Square<FloatType>(static_cast<json>(obj), num_row, num_column, init_val));}), "obj"_a, "num_row"_a, "num_column"_a, "init_val"_a = 0)
-        .def("to_ind", &graph::Square<FloatType>::to_ind)
-        .def("to_rc", &graph::Square<FloatType>::to_rc)
-        .def("get_num_row", &graph::Square<FloatType>::get_num_row)
-        .def("get_num_column", &graph::Square<FloatType>::get_num_column)
-        .def("__setitem__", [](graph::Square<FloatType>& self, const std::tuple<std::size_t, std::size_t, graph::Dir>& key, FloatType val){self.J(std::get<0>(key), std::get<1>(key), std::get<2>(key)) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Square<FloatType>& self, const std::tuple<std::size_t, std::size_t, graph::Dir>& key){return self.J(std::get<0>(key), std::get<1>(key), std::get<2>(key));}, "key"_a)
-        .def("__setitem__", [](graph::Square<FloatType>& self, const std::pair<std::size_t, std::size_t>& key, FloatType val){self.h(key.first, key.second) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Square<FloatType>& self, const std::pair<std::size_t, std::size_t>& key){return self.h(key.first, key.second);}, "key"_a);
+        .def(py::init<const openjij::graph::Square<FloatType>&>(), "other"_a)
+        .def(py::init([](py::object obj, std::size_t num_row, std::size_t num_column, FloatType init_val){return std::unique_ptr<openjij::graph::Square<FloatType>>(new openjij::graph::Square<FloatType>(static_cast<json>(obj), num_row, num_column, init_val));}), "obj"_a, "num_row"_a, "num_column"_a, "init_val"_a = 0)
+        .def("to_ind", &openjij::graph::Square<FloatType>::to_ind)
+        .def("to_rc", &openjij::graph::Square<FloatType>::to_rc)
+        .def("get_num_row", &openjij::graph::Square<FloatType>::get_num_row)
+        .def("get_num_column", &openjij::graph::Square<FloatType>::get_num_column)
+        .def("__setitem__", [](openjij::graph::Square<FloatType>& self, const std::tuple<std::size_t, std::size_t, openjij::graph::Dir>& key, FloatType val){self.J(std::get<0>(key), std::get<1>(key), std::get<2>(key)) = val;}, "key"_a, "val"_a)
+        .def("__getitem__", [](const openjij::graph::Square<FloatType>& self, const std::tuple<std::size_t, std::size_t, openjij::graph::Dir>& key){return self.J(std::get<0>(key), std::get<1>(key), std::get<2>(key));}, "key"_a)
+        .def("__setitem__", [](openjij::graph::Square<FloatType>& self, const std::pair<std::size_t, std::size_t>& key, FloatType val){self.h(key.first, key.second) = val;}, "key"_a, "val"_a)
+        .def("__getitem__", [](const openjij::graph::Square<FloatType>& self, const std::pair<std::size_t, std::size_t>& key){return self.h(key.first, key.second);}, "key"_a);
 }
 
 //enum class ChimeraDir
 inline void declare_ChimeraDir(py::module& m){
-    py::enum_<graph::ChimeraDir>(m, "ChimeraDir")
-        .value("PLUS_R", graph::ChimeraDir::PLUS_R)
-        .value("MINUS_R", graph::ChimeraDir::MINUS_R)
-        .value("PLUS_C", graph::ChimeraDir::PLUS_C)
-        .value("MINUS_C", graph::ChimeraDir::MINUS_C)
-        .value("IN_0or4", graph::ChimeraDir::IN_0or4)
-        .value("IN_1or5", graph::ChimeraDir::IN_1or5)
-        .value("IN_2or6", graph::ChimeraDir::IN_2or6)
-        .value("IN_3or7", graph::ChimeraDir::IN_3or7);
+    py::enum_<openjij::graph::ChimeraDir>(m, "ChimeraDir")
+        .value("PLUS_R", openjij::graph::ChimeraDir::PLUS_R)
+        .value("MINUS_R", openjij::graph::ChimeraDir::MINUS_R)
+        .value("PLUS_C", openjij::graph::ChimeraDir::PLUS_C)
+        .value("MINUS_C", openjij::graph::ChimeraDir::MINUS_C)
+        .value("IN_0or4", openjij::graph::ChimeraDir::IN_0or4)
+        .value("IN_1or5", openjij::graph::ChimeraDir::IN_1or5)
+        .value("IN_2or6", openjij::graph::ChimeraDir::IN_2or6)
+        .value("IN_3or7", openjij::graph::ChimeraDir::IN_3or7);
 }
 
 //chimera
@@ -181,19 +181,19 @@ inline void declare_Chimera(py::module& m, const std::string& suffix){
     using json = nlohmann::json;
 
     auto str = std::string("Chimera") + suffix;
-    py::class_<graph::Chimera<FloatType>, graph::Sparse<FloatType>>(m, str.c_str())
+    py::class_<openjij::graph::Chimera<FloatType>, openjij::graph::Sparse<FloatType>>(m, str.c_str())
         .def(py::init<std::size_t, std::size_t, FloatType>(), "num_row"_a, "num_column"_a, "init_val"_a=0)
-        .def(py::init<const graph::Chimera<FloatType>&>(), "other"_a)
-        .def(py::init([](py::object obj, std::size_t num_row, std::size_t num_column, FloatType init_val){return std::unique_ptr<graph::Chimera<FloatType>>(new graph::Chimera<FloatType>(static_cast<json>(obj), num_row, num_column, init_val));}), "obj"_a, "num_row"_a, "num_column"_a, "init_val"_a = 0)
-        .def("to_ind", &graph::Chimera<FloatType>::to_ind)
-        .def("to_rci", &graph::Chimera<FloatType>::to_rci)
-        .def("get_num_row", &graph::Chimera<FloatType>::get_num_row)
-        .def("get_num_column", &graph::Chimera<FloatType>::get_num_column)
-        .def("get_num_in_chimera", &graph::Chimera<FloatType>::get_num_in_chimera)
-        .def("__setitem__", [](graph::Chimera<FloatType>& self, const std::tuple<std::size_t, std::size_t, std::size_t, graph::ChimeraDir>& key, FloatType val){self.J(std::get<0>(key), std::get<1>(key), std::get<2>(key), std::get<3>(key)) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Chimera<FloatType>& self, const std::tuple<std::size_t, std::size_t, std::size_t, graph::ChimeraDir>& key){return self.J(std::get<0>(key), std::get<1>(key), std::get<2>(key), std::get<3>(key));}, "key"_a)
-        .def("__setitem__", [](graph::Chimera<FloatType>& self, const std::tuple<std::size_t, std::size_t, std::size_t>& key, FloatType val){self.h(std::get<0>(key), std::get<1>(key), std::get<2>(key)) = val;}, "key"_a, "val"_a)
-        .def("__getitem__", [](const graph::Chimera<FloatType>& self, const std::tuple<std::size_t, std::size_t, std::size_t>& key){return self.h(std::get<0>(key), std::get<1>(key), std::get<2>(key));}, "key"_a);
+        .def(py::init<const openjij::graph::Chimera<FloatType>&>(), "other"_a)
+        .def(py::init([](py::object obj, std::size_t num_row, std::size_t num_column, FloatType init_val){return std::unique_ptr<openjij::graph::Chimera<FloatType>>(new openjij::graph::Chimera<FloatType>(static_cast<json>(obj), num_row, num_column, init_val));}), "obj"_a, "num_row"_a, "num_column"_a, "init_val"_a = 0)
+        .def("to_ind", &openjij::graph::Chimera<FloatType>::to_ind)
+        .def("to_rci", &openjij::graph::Chimera<FloatType>::to_rci)
+        .def("get_num_row", &openjij::graph::Chimera<FloatType>::get_num_row)
+        .def("get_num_column", &openjij::graph::Chimera<FloatType>::get_num_column)
+        .def("get_num_in_chimera", &openjij::graph::Chimera<FloatType>::get_num_in_chimera)
+        .def("__setitem__", [](openjij::graph::Chimera<FloatType>& self, const std::tuple<std::size_t, std::size_t, std::size_t, openjij::graph::ChimeraDir>& key, FloatType val){self.J(std::get<0>(key), std::get<1>(key), std::get<2>(key), std::get<3>(key)) = val;}, "key"_a, "val"_a)
+        .def("__getitem__", [](const openjij::graph::Chimera<FloatType>& self, const std::tuple<std::size_t, std::size_t, std::size_t, openjij::graph::ChimeraDir>& key){return self.J(std::get<0>(key), std::get<1>(key), std::get<2>(key), std::get<3>(key));}, "key"_a)
+        .def("__setitem__", [](openjij::graph::Chimera<FloatType>& self, const std::tuple<std::size_t, std::size_t, std::size_t>& key, FloatType val){self.h(std::get<0>(key), std::get<1>(key), std::get<2>(key)) = val;}, "key"_a, "val"_a)
+        .def("__getitem__", [](const openjij::graph::Chimera<FloatType>& self, const std::tuple<std::size_t, std::size_t, std::size_t>& key){return self.h(std::get<0>(key), std::get<1>(key), std::get<2>(key));}, "key"_a);
 }
 
 //system
@@ -202,20 +202,20 @@ inline void declare_Chimera(py::module& m, const std::string& suffix){
 template<typename GraphType>
 inline void declare_ClassicalIsing(py::module &m, const std::string& gtype_str){
     //ClassicalIsing
-    using ClassicalIsing = system::ClassicalIsing<GraphType>;
+    using ClassicalIsing = openjij::system::ClassicalIsing<GraphType>;
 
     auto str = std::string("ClassicalIsing")+gtype_str;
     py::class_<ClassicalIsing>(m, str.c_str())
-        .def(py::init<const graph::Spins&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
-        .def("reset_spins", [](ClassicalIsing& self, const graph::Spins& init_spin){self.reset_spins(init_spin);},"init_spin"_a)
+        .def(py::init<const openjij::graph::Spins&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
+        .def("reset_spins", [](ClassicalIsing& self, const openjij::graph::Spins& init_spin){self.reset_spins(init_spin);},"init_spin"_a)
         .def_readwrite("spin", &ClassicalIsing::spin)
         .def_readonly("interaction", &ClassicalIsing::interaction)
         .def_readonly("num_spins", &ClassicalIsing::num_spins);
 
     //make_classical_ising
     auto mkci_str = std::string("make_classical_ising");
-    m.def(mkci_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction){
-            return system::make_classical_ising(init_spin, init_interaction);
+    m.def(mkci_str.c_str(), [](const openjij::graph::Spins& init_spin, const GraphType& init_interaction){
+            return openjij::system::make_classical_ising(init_spin, init_interaction);
             }, "init_spin"_a, "init_interaction"_a);
 }
 
@@ -223,13 +223,13 @@ inline void declare_ClassicalIsing(py::module &m, const std::string& gtype_str){
 template<typename GraphType>
 inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& gtype_str){
    
-   using CIP = system::ClassicalIsingPolynomial<GraphType>;
+   using CIP = openjij::system::ClassicalIsingPolynomial<GraphType>;
    auto  str = std::string("ClassicalIsing") + gtype_str;
    
    py::class_<CIP>(m, str.c_str())
-   .def(py::init<const graph::Spins&, const GraphType&, const cimod::Vartype>(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
-   .def(py::init<const graph::Spins&, const GraphType&, const std::string   >(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
-   .def(py::init([](const graph::Spins& init_spins, const py::object& obj){return std::unique_ptr<CIP>(new CIP(init_spins, static_cast<nlohmann::json>(obj)));}),"init_spin"_a, "obj"_a)
+   .def(py::init<const openjij::graph::Spins&, const GraphType&, const cimod::Vartype>(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
+   .def(py::init<const openjij::graph::Spins&, const GraphType&, const std::string   >(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
+   .def(py::init([](const openjij::graph::Spins& init_spins, const py::object& obj){return std::unique_ptr<CIP>(new CIP(init_spins, static_cast<nlohmann::json>(obj)));}),"init_spin"_a, "obj"_a)
    .def_readonly("vartype"      , &CIP::vartype      )
    .def_readonly("variables"    , &CIP::variables    )
    .def_readonly("num_variables", &CIP::num_variables)
@@ -244,18 +244,18 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
    
    //make_classical_ising_polynomial
    auto mkcip_str = std::string("make_classical_ising_polynomial");
-   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction, const cimod::Vartype vartype){
-           return system::make_classical_ising_polynomial(init_spin, init_interaction, vartype);
+   m.def(mkcip_str.c_str(), [](const openjij::graph::Spins& init_spin, const GraphType& init_interaction, const cimod::Vartype vartype){
+           return openjij::system::make_classical_ising_polynomial(init_spin, init_interaction, vartype);
            }, "init_spin"_a, "init_interaction"_a, "vartype"_a);
    
    //make_classical_ising_polynomial
-   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction, const std::string vartype){
-           return system::make_classical_ising_polynomial(init_spin, init_interaction, vartype);
+   m.def(mkcip_str.c_str(), [](const openjij::graph::Spins& init_spin, const GraphType& init_interaction, const std::string vartype){
+           return openjij::system::make_classical_ising_polynomial(init_spin, init_interaction, vartype);
            }, "init_spin"_a, "init_interaction"_a, "vartype"_a);
    
    //make_classical_ising_polynomial
-   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const py::object& obj){
-           return system::make_classical_ising_polynomial(init_spin, static_cast<nlohmann::json>(obj));
+   m.def(mkcip_str.c_str(), [](const openjij::graph::Spins& init_spin, const py::object& obj){
+           return openjij::system::make_classical_ising_polynomial(init_spin, static_cast<nlohmann::json>(obj));
            }, "init_spin"_a, "obj"_a);
 
 }
@@ -263,12 +263,12 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
 template<typename GraphType>
 inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str) {
    
-   using KLP = system::KLocalPolynomial<GraphType>;
+   using KLP = openjij::system::KLocalPolynomial<GraphType>;
    auto  str = std::string("KLocal") + gtype_str;
    
    py::class_<KLP>(m, str.c_str())
-   .def(py::init<const graph::Binaries&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
-   .def(py::init([](const graph::Binaries& init_binaries, const py::object& obj){return std::unique_ptr<KLP>(new KLP(init_binaries, static_cast<nlohmann::json>(obj)));}),"init_binaries"_a, "obj"_a)
+   .def(py::init<const openjij::graph::Binaries&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
+   .def(py::init([](const openjij::graph::Binaries& init_binaries, const py::object& obj){return std::unique_ptr<KLP>(new KLP(init_binaries, static_cast<nlohmann::json>(obj)));}),"init_binaries"_a, "obj"_a)
    .def_readonly("binaries"          , &KLP::binaries)
    .def_readonly("num_binaries"      , &KLP::num_binaries)
    .def_readonly("count_call_updater", &KLP::count_call_updater)
@@ -317,14 +317,14 @@ inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str
    
    //make_classical_ising_polynomial
    auto mkcip_str = std::string("make_k_local_polynomial");
-   m.def(mkcip_str.c_str(), [](const graph::Spins& init_spin, const GraphType& init_interaction){
-           return system::make_k_local_polynomial(init_spin, init_interaction);
+   m.def(mkcip_str.c_str(), [](const openjij::graph::Spins& init_spin, const GraphType& init_interaction){
+           return openjij::system::make_k_local_polynomial(init_spin, init_interaction);
            }, "init_spin"_a, "init_interaction"_a);
    
    //make_classical_ising_polynomial
    auto mkcip_json_str = std::string("make_k_local_polynomial");
-   m.def(mkcip_json_str.c_str(), [](const graph::Spins& init_spin, const py::object& obj){
-           return system::make_k_local_polynomial(init_spin, static_cast<nlohmann::json>(obj));
+   m.def(mkcip_json_str.c_str(), [](const openjij::graph::Spins& init_spin, const py::object& obj){
+           return openjij::system::make_k_local_polynomial(init_spin, static_cast<nlohmann::json>(obj));
            }, "init_spin"_a, "obj"_a);
    
 }
@@ -334,15 +334,15 @@ inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str
 template<typename GraphType>
 inline void declare_TransverseIsing(py::module &m, const std::string& gtype_str){
     //TransverseIsing
-    using TransverseIsing = system::TransverseIsing<GraphType>;
+    using TransverseIsing = openjij::system::TransverseIsing<GraphType>;
     using FloatType = typename GraphType::value_type;
 
     auto str = std::string("TransverseIsing")+gtype_str;
     py::class_<TransverseIsing>(m, str.c_str())
-        .def(py::init<const system::TrotterSpins&, const GraphType&, FloatType>(), "init_spin"_a, "init_interaction"_a, "gamma"_a)
-        .def(py::init<const graph::Spins&, const GraphType&, FloatType, size_t>(), "init_classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a)
-        .def("reset_spins", [](TransverseIsing& self, const system::TrotterSpins& init_trotter_spins){self.reset_spins(init_trotter_spins);},"init_trotter_spins"_a)
-        .def("reset_spins", [](TransverseIsing& self, const graph::Spins& classical_spins){self.reset_spins(classical_spins);},"classical_spins"_a)
+        .def(py::init<const openjij::system::TrotterSpins&, const GraphType&, FloatType>(), "init_spin"_a, "init_interaction"_a, "gamma"_a)
+        .def(py::init<const openjij::graph::Spins&, const GraphType&, FloatType, size_t>(), "init_classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a)
+        .def("reset_spins", [](TransverseIsing& self, const openjij::system::TrotterSpins& init_trotter_spins){self.reset_spins(init_trotter_spins);},"init_trotter_spins"_a)
+        .def("reset_spins", [](TransverseIsing& self, const openjij::graph::Spins& classical_spins){self.reset_spins(classical_spins);},"classical_spins"_a)
         .def_readwrite("trotter_spins", &TransverseIsing::trotter_spins)
         .def_readonly("interaction", &TransverseIsing::interaction)
         .def_readonly("num_classical_spins", &TransverseIsing::num_classical_spins)
@@ -350,12 +350,12 @@ inline void declare_TransverseIsing(py::module &m, const std::string& gtype_str)
 
     //make_transverse_ising
     auto mkci_str = std::string("make_transverse_ising");
-    m.def(mkci_str.c_str(), [](const system::TrotterSpins& init_trotter_spins, const GraphType& init_interaction, double gamma){
-            return system::make_transverse_ising(init_trotter_spins, init_interaction, gamma);
+    m.def(mkci_str.c_str(), [](const openjij::system::TrotterSpins& init_trotter_spins, const GraphType& init_interaction, double gamma){
+            return openjij::system::make_transverse_ising(init_trotter_spins, init_interaction, gamma);
             }, "init_trotter_spins"_a, "init_interaction"_a, "gamma"_a);
 
-    m.def(mkci_str.c_str(), [](const graph::Spins& classical_spins, const GraphType& init_interaction, double gamma, std::size_t num_trotter_slices){
-            return system::make_transverse_ising(classical_spins, init_interaction, gamma, num_trotter_slices);
+    m.def(mkci_str.c_str(), [](const openjij::graph::Spins& classical_spins, const GraphType& init_interaction, double gamma, std::size_t num_trotter_slices){
+            return openjij::system::make_transverse_ising(classical_spins, init_interaction, gamma, num_trotter_slices);
             }, "classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a);
 }
 
@@ -363,16 +363,16 @@ inline void declare_TransverseIsing(py::module &m, const std::string& gtype_str)
 template<typename GraphType>
 inline void declare_ContinuousTimeIsing(py::module &m, const std::string& gtype_str){
     //TransverseIsing
-    using TransverseIsing = system::ContinuousTimeIsing<GraphType>;
+    using TransverseIsing = openjij::system::ContinuousTimeIsing<GraphType>;
     using FloatType = typename GraphType::value_type;
     using SpinConfiguration = typename TransverseIsing::SpinConfiguration;
 
     auto str = std::string("ContinuousTimeIsing")+gtype_str;
     py::class_<TransverseIsing>(m, str.c_str())
         .def(py::init<const SpinConfiguration&, const GraphType&, FloatType>(), "init_spin_config"_a, "init_interaction"_a, "gamma"_a)
-        .def(py::init<const graph::Spins&, const GraphType&, FloatType>(), "init_spins"_a, "init_interaction"_a, "gamma"_a)
+        .def(py::init<const openjij::graph::Spins&, const GraphType&, FloatType>(), "init_spins"_a, "init_interaction"_a, "gamma"_a)
         .def("reset_spins", [](TransverseIsing& self, const SpinConfiguration& init_spin_config){self.reset_spins(init_spin_config);},"init_spin_config"_a)
-        .def("reset_spins", [](TransverseIsing& self, const graph::Spins& classical_spins){self.reset_spins(classical_spins);},"classical_spins"_a)
+        .def("reset_spins", [](TransverseIsing& self, const openjij::graph::Spins& classical_spins){self.reset_spins(classical_spins);},"classical_spins"_a)
         .def_readwrite("spin_config", &TransverseIsing::spin_config)
         .def_readonly("interaction", &TransverseIsing::interaction)
         .def_readonly("num_spins", &TransverseIsing::num_spins)
@@ -380,8 +380,8 @@ inline void declare_ContinuousTimeIsing(py::module &m, const std::string& gtype_
 
     //make_continuous_ising
     auto mkci_str = std::string("make_continuous_time_ising");
-    m.def(mkci_str.c_str(), [](const graph::Spins& classical_spins, const GraphType& init_interaction, double gamma){
-            return system::make_continuous_time_ising(classical_spins, init_interaction, gamma);
+    m.def(mkci_str.c_str(), [](const openjij::graph::Spins& classical_spins, const GraphType& init_interaction, double gamma){
+            return openjij::system::make_continuous_time_ising(classical_spins, init_interaction, gamma);
             }, "classical_spins"_a, "init_interaction"_a, "gamma"_a);
 }
 
@@ -393,21 +393,21 @@ template<typename FloatType,
     std::size_t cols_per_block,
     std::size_t trotters_per_block>
     inline void declare_ChimeraTranseverseGPU(py::module &m){
-        using ChimeraTransverseGPU = system::ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block>;
+        using ChimeraTransverseGPU = openjij::system::ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block>;
         py::class_<ChimeraTransverseGPU>(m, "ChimeraTransverseGPU")
-            .def(py::init<const system::TrotterSpins&, const graph::Chimera<FloatType>&, FloatType, int>(), "init_trotter_spins"_a, "init_interaction"_a, "gamma"_a, "device_num"_a=0)
-            .def(py::init<const graph::Spins&, const graph::Chimera<FloatType>&, FloatType, size_t, int>(), "classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a, "device_num"_a=0)
-            .def("reset_spins", [](ChimeraTransverseGPU& self, const system::TrotterSpins& init_trotter_spins){self.reset_spins(init_trotter_spins);},"init_trotter_spins"_a)
-            .def("reset_spins", [](ChimeraTransverseGPU& self, const graph::Spins& classical_spins){self.reset_spins(classical_spins);},"classical_spins"_a)
+            .def(py::init<const openjij::system::TrotterSpins&, const openjij::graph::Chimera<FloatType>&, FloatType, int>(), "init_trotter_spins"_a, "init_interaction"_a, "gamma"_a, "device_num"_a=0)
+            .def(py::init<const openjij::graph::Spins&, const openjij::graph::Chimera<FloatType>&, FloatType, size_t, int>(), "classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a, "device_num"_a=0)
+            .def("reset_spins", [](ChimeraTransverseGPU& self, const openjij::system::TrotterSpins& init_trotter_spins){self.reset_spins(init_trotter_spins);},"init_trotter_spins"_a)
+            .def("reset_spins", [](ChimeraTransverseGPU& self, const openjij::graph::Spins& classical_spins){self.reset_spins(classical_spins);},"classical_spins"_a)
             .def_readwrite("gamma", &ChimeraTransverseGPU::gamma);
 
         //make_chimera_transverse_gpu
-        m.def("make_chimera_transverse_gpu", [](const system::TrotterSpins& init_trotter_spins, const graph::Chimera<FloatType>& init_interaction, double gamma, int device_num){
-                return system::make_chimera_transverse_gpu<rows_per_block, cols_per_block, trotters_per_block>(init_trotter_spins, init_interaction, gamma, device_num);
+        m.def("make_chimera_transverse_gpu", [](const openjij::system::TrotterSpins& init_trotter_spins, const openjij::graph::Chimera<FloatType>& init_interaction, double gamma, int device_num){
+                return openjij::system::make_chimera_transverse_gpu<rows_per_block, cols_per_block, trotters_per_block>(init_trotter_spins, init_interaction, gamma, device_num);
                 }, "init_trotter_spins"_a, "init_interaction"_a, "gamma"_a, "device_num"_a=0);
 
-        m.def("make_chimera_transverse_gpu", [](const graph::Spins& classical_spins, const graph::Chimera<FloatType>& init_interaction, double gamma, size_t num_trotter_slices, int device_num){
-                return system::make_chimera_transverse_gpu<rows_per_block, cols_per_block, trotters_per_block>(classical_spins, init_interaction, gamma, num_trotter_slices, device_num);
+        m.def("make_chimera_transverse_gpu", [](const openjij::graph::Spins& classical_spins, const openjij::graph::Chimera<FloatType>& init_interaction, double gamma, size_t num_trotter_slices, int device_num){
+                return openjij::system::make_chimera_transverse_gpu<rows_per_block, cols_per_block, trotters_per_block>(classical_spins, init_interaction, gamma, num_trotter_slices, device_num);
                 }, "classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a, "device_num"_a=0);
     }
 
@@ -416,14 +416,14 @@ template<typename FloatType,
     std::size_t rows_per_block,
     std::size_t cols_per_block>
     inline void declare_ChimeraClassicalGPU(py::module &m){
-        using ChimeraClassicalGPU = system::ChimeraClassicalGPU<FloatType, rows_per_block, cols_per_block>;
+        using ChimeraClassicalGPU = openjij::system::ChimeraClassicalGPU<FloatType, rows_per_block, cols_per_block>;
         py::class_<ChimeraClassicalGPU, typename ChimeraClassicalGPU::Base>(m, "ChimeraClassicalGPU")
-            .def(py::init<const graph::Spins&, const graph::Chimera<FloatType>&, int>(), "init_spin"_a, "init_interaction"_a, "device_num"_a=0)
-            .def("reset_spins", [](ChimeraClassicalGPU& self, const graph::Spins& init_spin){self.reset_spins(init_spin);},"init_spin"_a);
+            .def(py::init<const openjij::graph::Spins&, const openjij::graph::Chimera<FloatType>&, int>(), "init_spin"_a, "init_interaction"_a, "device_num"_a=0)
+            .def("reset_spins", [](ChimeraClassicalGPU& self, const openjij::graph::Spins& init_spin){self.reset_spins(init_spin);},"init_spin"_a);
 
         //make_chimera_transverse_gpu
-        m.def("make_chimera_classical_gpu", [](const graph::Spins& init_spin, const graph::Chimera<FloatType>& init_interaction, int device_num){
-                return system::make_chimera_classical_gpu<rows_per_block, cols_per_block>(init_spin, init_interaction, device_num);
+        m.def("make_chimera_classical_gpu", [](const openjij::graph::Spins& init_spin, const openjij::graph::Chimera<FloatType>& init_interaction, int device_num){
+                return openjij::system::make_chimera_classical_gpu<rows_per_block, cols_per_block>(init_spin, init_interaction, device_num);
                 }, "init_spin"_a, "init_interaction"_a, "device_num"_a=0);
     }
 
@@ -434,57 +434,57 @@ template<typename FloatType,
 template<template<typename> class Updater, typename System, typename RandomNumberEngine>
 inline void declare_Algorithm_run(py::module &m, const std::string& updater_str){
     auto str = std::string("Algorithm_")+updater_str+std::string("_run");
-    using SystemType = typename system::get_system_type<System>::type;
+    using SystemType = typename openjij::system::get_system_type<System>::type;
     //with seed
-    m.def(str.c_str(), [](System& system, std::size_t seed, const utility::ScheduleList<SystemType>& schedule_list,
-                const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+    m.def(str.c_str(), [](System& system, std::size_t seed, const openjij::utility::ScheduleList<SystemType>& schedule_list,
+                const std::function<void(const System&, const typename openjij::utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
             py::gil_scoped_release release;
 
-            using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
+            using Callback = std::function<void(const System&, const openjij::utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(seed);
-            algorithm::Algorithm<Updater>::run(system, rng, schedule_list,
-                    callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
+            openjij::algorithm::Algorithm<Updater>::run(system, rng, schedule_list,
+                    callback ? [=](const System& system, const openjij::utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
 
             py::gil_scoped_acquire acquire;
             }, "system"_a, "seed"_a, "schedule_list"_a, "callback"_a = nullptr);
 
     //without seed
-    m.def(str.c_str(), [](System& system, const utility::ScheduleList<SystemType>& schedule_list,
-                const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+    m.def(str.c_str(), [](System& system, const openjij::utility::ScheduleList<SystemType>& schedule_list,
+                const std::function<void(const System&, const typename openjij::utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
             py::gil_scoped_release release;
 
-            using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
+            using Callback = std::function<void(const System&, const openjij::utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(std::random_device{}());
-            algorithm::Algorithm<Updater>::run(system, rng, schedule_list,
-                    callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
+            openjij::algorithm::Algorithm<Updater>::run(system, rng, schedule_list,
+                    callback ? [=](const System& system, const openjij::utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
 
             py::gil_scoped_acquire acquire;
             }, "system"_a, "schedule_list"_a, "callback"_a = nullptr);
 
     //schedule_list can be a list of tuples
-    using TupleList = std::vector<std::pair<typename utility::UpdaterParameter<SystemType>::Tuple, std::size_t>>;
+    using TupleList = std::vector<std::pair<typename openjij::utility::UpdaterParameter<SystemType>::Tuple, std::size_t>>;
     
     //with seed
     m.def(str.c_str(), [](System& system, std::size_t seed, const TupleList& tuplelist,
-                const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+                const std::function<void(const System&, const typename openjij::utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
             py::gil_scoped_release release;
 
-            using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
+            using Callback = std::function<void(const System&, const openjij::utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(seed);
-            algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist),
-                    callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
+            openjij::algorithm::Algorithm<Updater>::run(system, rng, openjij::utility::make_schedule_list<SystemType>(tuplelist),
+                    callback ? [=](const System& system, const openjij::utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
 
             py::gil_scoped_acquire acquire;
             }, "system"_a, "seed"_a, "tuplelist"_a, "callback"_a = nullptr);
 
     //without seed
     m.def(str.c_str(), [](System& system, const TupleList& tuplelist,
-                const std::function<void(const System&, const typename utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
+                const std::function<void(const System&, const typename openjij::utility::UpdaterParameter<SystemType>::Tuple&)>& callback){
             py::gil_scoped_release release;
-            using Callback = std::function<void(const System&, const utility::UpdaterParameter<SystemType>&)>;
+            using Callback = std::function<void(const System&, const openjij::utility::UpdaterParameter<SystemType>&)>;
             RandomNumberEngine rng(std::random_device{}());
-            algorithm::Algorithm<Updater>::run(system, rng, utility::make_schedule_list<SystemType>(tuplelist),
-                    callback ? [=](const System& system, const utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
+            openjij::algorithm::Algorithm<Updater>::run(system, rng, openjij::utility::make_schedule_list<SystemType>(tuplelist),
+                    callback ? [=](const System& system, const openjij::utility::UpdaterParameter<SystemType>& param){callback(system, param.get_tuple());} : Callback(nullptr));
 
             py::gil_scoped_acquire acquire;
             }, "system"_a, "tuplelist"_a, "callback"_a = nullptr);
@@ -493,54 +493,54 @@ inline void declare_Algorithm_run(py::module &m, const std::string& updater_str)
 
 //utility
 template<typename SystemType>
-inline std::string repr_impl(const utility::UpdaterParameter<SystemType>&);
+inline std::string repr_impl(const openjij::utility::UpdaterParameter<SystemType>&);
 
 template<>
-inline std::string repr_impl(const utility::UpdaterParameter<system::classical_system>& obj){
+inline std::string repr_impl(const openjij::utility::UpdaterParameter<openjij::system::classical_system>& obj){
     return "(beta: " + std::to_string(obj.beta) + ")";
 }
 
 template<>
-inline std::string repr_impl(const utility::UpdaterParameter<system::classical_constraint_system>& obj){
+inline std::string repr_impl(const openjij::utility::UpdaterParameter<openjij::system::classical_constraint_system>& obj){
     return "(beta: " + std::to_string(obj.beta) + ", lambda: " + std::to_string(obj.lambda) + ")";
 }
 
 template<>
-inline std::string repr_impl(const utility::UpdaterParameter<system::transverse_field_system>& obj){
+inline std::string repr_impl(const openjij::utility::UpdaterParameter<openjij::system::transverse_field_system>& obj){
     return "(beta: " + std::to_string(obj.beta) + ", s: " + std::to_string(obj.s) + ")";
 }
 
 
 inline void declare_ClassicalUpdaterParameter(py::module& m){
-    py::class_<utility::ClassicalUpdaterParameter>(m, "ClassicalUpdaterParameter")
+    py::class_<openjij::utility::ClassicalUpdaterParameter>(m, "ClassicalUpdaterParameter")
         .def(py::init<>())
         .def(py::init<double>(), "beta"_a)
-        .def_readwrite("beta", &utility::ClassicalUpdaterParameter::beta)
-        .def("__repr__", [](const utility::ClassicalUpdaterParameter& self){
+        .def_readwrite("beta", &openjij::utility::ClassicalUpdaterParameter::beta)
+        .def("__repr__", [](const openjij::utility::ClassicalUpdaterParameter& self){
                 return repr_impl(self);
                 });
 }
 
 inline void declare_ClassicalConstraintUpdaterParameter(py::module& m){
-    py::class_<utility::ClassicalConstraintUpdaterParameter>(m, "ClassicalConstraintUpdaterParameter")
+    py::class_<openjij::utility::ClassicalConstraintUpdaterParameter>(m, "ClassicalConstraintUpdaterParameter")
         .def(py::init<>())
         .def(py::init<double, double>(), "beta"_a, "lambda"_a)
         .def(py::init<const std::pair<double, double>&>(), "obj"_a)
-        .def_readwrite("beta", &utility::ClassicalConstraintUpdaterParameter::beta)
-        .def_readwrite("lambda", &utility::ClassicalConstraintUpdaterParameter::lambda)
-        .def("__repr__", [](const utility::ClassicalConstraintUpdaterParameter& self){
+        .def_readwrite("beta", &openjij::utility::ClassicalConstraintUpdaterParameter::beta)
+        .def_readwrite("lambda", &openjij::utility::ClassicalConstraintUpdaterParameter::lambda)
+        .def("__repr__", [](const openjij::utility::ClassicalConstraintUpdaterParameter& self){
                 return repr_impl(self);
                 });
 }
 
 inline void declare_TransverseFieldUpdaterParameter(py::module& m){
-    py::class_<utility::TransverseFieldUpdaterParameter>(m, "TransverseFieldUpdaterParameter")
+    py::class_<openjij::utility::TransverseFieldUpdaterParameter>(m, "TransverseFieldUpdaterParameter")
         .def(py::init<>())
         .def(py::init<double, double>(), "beta"_a, "s"_a)
         .def(py::init<const std::pair<double, double>&>(), "obj"_a)
-        .def_readwrite("beta", &utility::TransverseFieldUpdaterParameter::beta)
-        .def_readwrite("s", &utility::TransverseFieldUpdaterParameter::s)
-        .def("__repr__", [](const utility::TransverseFieldUpdaterParameter& self){
+        .def_readwrite("beta", &openjij::utility::TransverseFieldUpdaterParameter::beta)
+        .def_readwrite("s", &openjij::utility::TransverseFieldUpdaterParameter::s)
+        .def("__repr__", [](const openjij::utility::TransverseFieldUpdaterParameter& self){
                 return repr_impl(self);
                 });
 }
@@ -548,17 +548,17 @@ inline void declare_TransverseFieldUpdaterParameter(py::module& m){
 template<typename SystemType>
 inline void declare_Schedule(py::module &m, const std::string& systemtype_str){
     auto str = systemtype_str + "Schedule";
-    py::class_<utility::Schedule<SystemType>>(m, str.c_str())
+    py::class_<openjij::utility::Schedule<SystemType>>(m, str.c_str())
         .def(py::init<>())
-        .def(py::init<const std::pair<const utility::UpdaterParameter<SystemType>&, std::size_t>&>(), "obj"_a)
-        .def_readwrite("one_mc_step", &utility::Schedule<SystemType>::one_mc_step)
-        .def_readwrite("updater_parameter", &utility::Schedule<SystemType>::updater_parameter)
-        .def("__repr__", [](const utility::Schedule<SystemType>& self){
+        .def(py::init<const std::pair<const openjij::utility::UpdaterParameter<SystemType>&, std::size_t>&>(), "obj"_a)
+        .def_readwrite("one_mc_step", &openjij::utility::Schedule<SystemType>::one_mc_step)
+        .def_readwrite("updater_parameter", &openjij::utility::Schedule<SystemType>::updater_parameter)
+        .def("__repr__", [](const openjij::utility::Schedule<SystemType>& self){
                 return "(" + repr_impl(self.updater_parameter) + " mcs: " + std::to_string(self.one_mc_step) + ")";
                 });
 
     //define make_schedule_list
-    m.def("make_schedule_list", &utility::make_schedule_list<SystemType>, "tuplelist"_a);
+    m.def("make_schedule_list", &openjij::utility::make_schedule_list<SystemType>, "tuplelist"_a);
 
 }
 
@@ -566,7 +566,7 @@ inline void declare_Schedule(py::module &m, const std::string& systemtype_str){
 //get_solution
 template<typename System>
 inline void declare_get_solution(py::module &m){
-    m.def("get_solution", [](const System& system){return result::get_solution(system);}, "system"_a);
+    m.def("get_solution", [](const System& system){return openjij::result::get_solution(system);}, "system"_a);
 }
 
 
