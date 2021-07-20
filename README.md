@@ -5,6 +5,7 @@
 * python >= 3.7
 * (optional) gcc >= 7.0.0
 * (optional) cmake >= 3.17
+* (optional) Ninja 
 
 - [Documents](https://openjij.github.io/OpenJij_Documentation/build/html/)
 - [Tutorials](https://openjij.github.io/OpenJijTutorial/build/html/index.html)
