@@ -76,9 +76,9 @@ PYBIND11_MODULE(cxxjij, m){
    
 #ifdef USE_CUDA
    //ChimeraTransverseGPU
-   openjij::declare_ChimeraTranseverseGPU<openjij::GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>(m_system);
+   openjij::declare_ChimeraTranseverseGPU<openjij::GPUFloatType, openjij::BLOCK_ROW, openjij::BLOCK_COL, openjij::BLOCK_TROT>(m_system);
    //ChimeraClassicalGPU
-   openjij::declare_ChimeraClassicalGPU<openjij::GPUFloatType, BLOCK_ROW, BLOCK_COL>(m_system);
+   openjij::declare_ChimeraClassicalGPU<openjij::GPUFloatType, openjij::BLOCK_ROW, openjij::BLOCK_COL>(m_system);
 #endif
    
    /**********************************************************
@@ -102,8 +102,8 @@ PYBIND11_MODULE(cxxjij, m){
    
 #ifdef USE_CUDA
    //GPU
-   openjij::declare_Algorithm_run<openjij::updater::GPU, openjij::system::ChimeraTransverseGPU<openjij::GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>, openjij::utility::cuda::CurandWrapper<openjij::GPUFloatType, GPURandomEngine>>(m_algorithm, "GPU");
-   openjij::declare_Algorithm_run<openjij::updater::GPU, openjij::system::ChimeraClassicalGPU<openjij::GPUFloatType, BLOCK_ROW, BLOCK_COL>, openjij::utility::cuda::CurandWrapper<openjij::GPUFloatType, GPURandomEngine>>(m_algorithm, "GPU");
+   openjij::declare_Algorithm_run<openjij::updater::GPU, openjij::system::ChimeraTransverseGPU<openjij::GPUFloatType, openjij::BLOCK_ROW, openjij::BLOCK_COL, openjij::BLOCK_TROT>, openjij::utility::cuda::CurandWrapper<openjij::GPUFloatType, openjij::GPURandomEngine>>(m_algorithm, "GPU");
+   openjij::declare_Algorithm_run<openjij::updater::GPU, openjij::system::ChimeraClassicalGPU<openjij::GPUFloatType, openjij::BLOCK_ROW, openjij::BLOCK_COL>, openjij::utility::cuda::CurandWrapper<openjij::GPUFloatType, openjij::GPURandomEngine>>(m_algorithm, "GPU");
 #endif
    
    /**********************************************************
@@ -145,8 +145,8 @@ PYBIND11_MODULE(cxxjij, m){
    openjij::declare_get_solution<openjij::system::TransverseIsing<openjij::graph::Sparse<openjij::FloatType>>>(m_result);
    openjij::declare_get_solution<openjij::system::ContinuousTimeIsing<openjij::graph::Sparse<openjij::FloatType>>>(m_result);
 #ifdef USE_CUDA
-   openjij::declare_get_solution<openjij::system::ChimeraTransverseGPU<openjij::GPUFloatType, BLOCK_ROW, BLOCK_COL, BLOCK_TROT>>(m_result);
-   openjij::declare_get_solution<openjij::system::ChimeraClassicalGPU<openjij::GPUFloatType, BLOCK_ROW, BLOCK_COL>>(m_result);
+   openjij::declare_get_solution<openjij::system::ChimeraTransverseGPU<openjij::GPUFloatType, openjij::BLOCK_ROW, openjij::BLOCK_COL, openjij::BLOCK_TROT>>(m_result);
+   openjij::declare_get_solution<openjij::system::ChimeraClassicalGPU<openjij::GPUFloatType, openjij::BLOCK_ROW, openjij::BLOCK_COL>>(m_result);
 #endif
 }
 
