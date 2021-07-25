@@ -7,8 +7,11 @@ include pyproject.toml
 
 exclude requirements.txt
 exclude .gitignore 
+exclude .gitmodules
 exclude Doxyfile
 exclude Doxyfile.bak
+exclude build_gcc.sh
+exclude hoge.py
 
 graft openjij
 graft tests 
@@ -16,7 +19,9 @@ graft src
 graft external
 
 prune docs
-prine example
+prune example
+prune examples 
+prune project_template
 prune .github
 prune .git
-exclude .gitignore
+
