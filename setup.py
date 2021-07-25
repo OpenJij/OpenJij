@@ -58,6 +58,7 @@ class CMakeBuild(build_ext):
         cmake_generator = os.environ.get("CMAKE_GENERATOR", "")
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable, 
+                      "-DOPENJIJ_VERSION_INFO={}".format(self.distribution.get_version()),
                       "-DCMAKE_BUILD_TYPE={}".format(cfg),  # not used on MSVC, but no harm
                       #"-DCMAKE_FIND_DEBUG_MODE=1",
                      ]
