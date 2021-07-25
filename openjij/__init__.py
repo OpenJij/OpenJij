@@ -12,4 +12,4 @@ from openjij.variable_type import SPIN, BINARY, Vartype, cast_vartype
 from openjij.sampler import Response
 from openjij.sampler import SASampler, SQASampler, CSQASampler
 from openjij.model import BinaryQuadraticModel, BinaryPolynomialModel
-from ooenjij.utils import solver_benchmark, convert_response
+from openjij.utils import solver_benchmark, convert_response
