@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies 
         run: |
           pip install --upgrade pip wheel setuptools build
-          pip install -r requirements.txt
+          pip install setuptools-git-versioning
       - name: Build sdist
         run: |
           python setup.py sdist
