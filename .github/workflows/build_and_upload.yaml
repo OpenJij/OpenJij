@@ -18,6 +18,10 @@ jobs:
         name: Install Python
         with:
           python-version: ${{env.Python_Version}}
+      - name: Install dependencies 
+        run: |
+          pip install --upgrade pip wheel setuptools build
+          pip install setuptools-git-versioning
       - name: Build sdist
         run: |
           python setup.py sdist
