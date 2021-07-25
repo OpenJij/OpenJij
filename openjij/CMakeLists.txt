@@ -9,6 +9,7 @@ if(CUDAToolkit_FOUND)
         POSITION_INDEPENDENT_CODE ON
         CUDA_VISIBILITY_PRESET "hidden"
         CUDA_SEPARABLE_COMPILATION ON
+        VERSION_INFO "${OPENJIJ_VERSION_INFO}"
     )
 else()
     set_target_properties(cxxjij PROPERTIES
@@ -18,6 +19,7 @@ else()
         POSITION_INDEPENDENT_CODE ON
         PREFIX "${PYTHON_MODULE_PREFIX}"
         SUFFIX "${PYTHON_MODULE_EXTENSION}"
+        VERSION_INFO "${OPENJIJ_VERSION_INFO}"
     )
 endif()
 target_link_libraries(cxxjij PRIVATE
