@@ -1,8 +1,22 @@
-include *.cmake
-include FetchContent/*.cmake.in
+include setup.py
+include setup.cfg
 include CMakeLists.txt
+include LICENSE
+include README.md
+include pyproject.toml
 
-recursive-include openjij *
-recursive-include tests *
-recursive-include src *
-recursive-include external *
+exclude requirements.txt
+exclude .gitignore 
+exclude Doxyfile
+exclude Doxyfile.bak
+
+graft openjij
+graft tests 
+graft src 
+graft external
+
+prune docs
+prine example
+prune .github
+prune .git
+exclude .gitignore
