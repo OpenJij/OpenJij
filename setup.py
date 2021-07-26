@@ -5,7 +5,7 @@ import platform
 import sysconfig
 import subprocess
 import shutil
-from setuptools import setup, Extension, find_packages
+from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 from setuptools.command.test import test as TestCommand
 from distutils.version import LooseVersion
@@ -58,6 +58,7 @@ class CMakeBuild(build_ext):
         cmake_generator = os.environ.get("CMAKE_GENERATOR", "")
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable, 
+                      "-DOPENJIJ_VERSION_INFO={}".format(self.distribution.get_version()),
                       "-DCMAKE_BUILD_TYPE={}".format(cfg),  # not used on MSVC, but no harm
                       #"-DCMAKE_FIND_DEBUG_MODE=1",
                      ]
@@ -178,11 +179,34 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     python_requires = ">=3.7, <3.10",
-    install_requires=['dimod >= 0.9.1', 'numpy >= 1.18.4, !=1.21.0, !=1.21.1', 'scipy', 'requests', 'jij-cimod >= 1.2.3', 'typing-extensions >= 3.10.0; python_version < "3.8.0"'],
+    setup_requires=[
+        'pytest-runner', 
+        'setuptools-git-versioning', 
+    ],
+    install_requires=[
+        'dimod >= 0.9.1',
+        'numpy >= 1.18.4, !=1.21.0, !=1.21.1', 
+        'scipy', 
+        'requests',
+        'jij-cimod >= 1.2.3', 
+        'typing-extensions >= 3.10.0; python_version < "3.8.0"'
+    ],
+    tests_require = [
+        'pytest',
+        'pytest-mock',
+        'pytest-cov', 
+        'pytest-html',
+        ],
     ext_modules=[CMakeExtension('cxxjij')],
     cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand,
                   pytest=PyTestCommand),
-    packages=find_packages(exclude=('tests', 'docs', 'examples')),
+    packages=[  
+        'openjij', 
+        'openjij.model', 
+        'openjij.sampler', 
+        'openjij.sampler.chimera_gpu', 
+        'openjij.utils',
+        ],
     license='Apache License 2.0',
     classifiers=[
         'License :: OSI Approved :: Apache Software License',

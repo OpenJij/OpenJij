@@ -32,9 +32,9 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: ${{ matrix.path }}
-        key: ${{ runner.os }}-pip-${{ hashFiles('~/.python3_path.txt') }}
+        key: ${{ runner.os }}-python-${{ hashFiles('~/.python3_path.txt', 'setup.py') }}
         restore-keys: |
-         ${{ runner.os }}-pip-
+         ${{ runner.os }}-python-
     - name: Install dependencies 
       run: |
         pip install --upgrade pip wheel setuptools build

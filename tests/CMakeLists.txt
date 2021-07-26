@@ -21,7 +21,7 @@ endif()
 
 target_link_libraries(cxxjij_test PRIVATE
     cxxjij_header_only
-    $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen_lib>
+    $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,openjij-eigen_lib>
     $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
     $<$<TARGET_EXISTS:cxxjij_chimera_gpu_kernel>:cxxjij_chimera_gpu_kernel>
     $<$<TARGET_EXISTS:CUDA::cudart>:CUDA::cudart>
