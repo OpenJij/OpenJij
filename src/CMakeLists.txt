@@ -10,6 +10,6 @@ if(CUDAToolkit_FOUND)
     add_subdirectory(system)
 endif()
 target_link_libraries(cxxjij_header_only INTERFACE 
-    $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,pyqubo-eigen_lib>
+    $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,openjij-eigen_lib>
     $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
 )
