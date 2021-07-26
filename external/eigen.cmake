@@ -8,6 +8,7 @@ FetchContent_Declare(
     CMAKE_ARGS -DEIGEN_MPL2_ONLY
     )
 set(EIGEN_CPP_STANDARD 11)
+set(EIGEN_MPL2_ONLY ON)
 FetchContent_MakeAvailable(eigen)
 
 add_library(openjij-eigen_lib INTERFACE)
