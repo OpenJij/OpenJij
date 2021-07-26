@@ -193,6 +193,7 @@ setup(
     ],
     tests_require = [
         'pytest',
+        'pytest-cpp',
         'pytest-flakes',
         'pytest-mock',
         'pytest-cov', 
