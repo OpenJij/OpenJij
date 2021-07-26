@@ -7,7 +7,7 @@ FetchContent_Declare(
     GIT_TAG         3.3.9
     CMAKE_ARGS -DEIGEN_MPL2_ONLY
     )
-set(EIGEN_CPP_STANDARD -std=c++11)
+set(EIGEN_CPP_STANDARD 11)
 FetchContent_MakeAvailable(eigen)
 
 add_library(openjij-eigen_lib INTERFACE)
