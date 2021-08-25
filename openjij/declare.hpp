@@ -34,6 +34,8 @@ using namespace py::literals;
 
 namespace openjij {
 
+// NOTE: please add `py::module_local()` when defining `py::class_`
+
 //graph
 inline void declare_Graph(py::module& m){
    py::class_<graph::Graph>(m, "Graph", py::module_local())
