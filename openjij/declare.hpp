@@ -34,9 +34,11 @@ using namespace py::literals;
 
 namespace openjij {
 
+// NOTE: please add `py::module_local()` when defining `py::class_`
+
 //graph
 inline void declare_Graph(py::module& m){
-   py::class_<graph::Graph>(m, "Graph")
+   py::class_<graph::Graph>(m, "Graph", py::module_local())
    .def(py::init<std::size_t>(), "num_spins"_a)
    .def("gen_spin", [](const graph::Graph& self, std::size_t seed){
       RandomEngine rng(seed);
@@ -64,7 +66,7 @@ inline void declare_Dense(py::module& m, const std::string& suffix){
    using json = nlohmann::json;
    
    auto str = std::string("Dense") + suffix;
-   py::class_<graph::Dense<FloatType>, graph::Graph>(m, str.c_str())
+   py::class_<graph::Dense<FloatType>, graph::Graph>(m, str.c_str(), py::module_local())
    .def(py::init<std::size_t>(), "num_spins"_a)
    .def(py::init([](py::object obj){return std::unique_ptr<graph::Dense<FloatType>>(new graph::Dense<FloatType>(static_cast<json>(obj)));}), "obj"_a)
    .def(py::init<const graph::Dense<FloatType>&>(), "other"_a)
@@ -85,7 +87,7 @@ inline void declare_Sparse(py::module& m, const std::string& suffix){
    using json = nlohmann::json;
    
    auto str = std::string("Sparse") + suffix;
-   py::class_<graph::Sparse<FloatType>, graph::Graph>(m, str.c_str())
+   py::class_<graph::Sparse<FloatType>, graph::Graph>(m, str.c_str(), py::module_local())
    .def(py::init<std::size_t, std::size_t>(), "num_spins"_a, "num_edges"_a)
    .def(py::init<std::size_t>(),  "num_spins"_a)
    .def(py::init([](py::object obj, std::size_t num_edges){return std::unique_ptr<graph::Sparse<FloatType>>(new graph::Sparse<FloatType>(static_cast<json>(obj), num_edges));}), "obj"_a, "num_edges"_a)
@@ -109,7 +111,7 @@ inline void declare_Polynomial(py::module& m, const std::string& suffix){
    using Poly = graph::Polynomial<FloatType>;
    auto  str  = std::string("Polynomial") + suffix;
    
-   py::class_<Poly, graph::Graph>(m, str.c_str())
+   py::class_<Poly, graph::Graph>(m, str.c_str(), py::module_local())
    .def(py::init<const std::size_t>(), "num_variables"_a)
    .def(py::init([](const py::object& obj){return std::unique_ptr<graph::Polynomial<FloatType>>(new graph::Polynomial<FloatType>(static_cast<json>(obj)));}), "obj"_a)
    .def("get_num_interactions", &Poly::get_num_interactions)
@@ -134,7 +136,7 @@ inline void declare_Polynomial(py::module& m, const std::string& suffix){
 
 //enum class Dir
 inline void declare_Dir(py::module& m){
-   py::enum_<graph::Dir>(m, "Dir")
+   py::enum_<graph::Dir>(m, "Dir", py::module_local())
    .value("PLUS_R", graph::Dir::PLUS_R)
    .value("MINUS_R", graph::Dir::MINUS_R)
    .value("PLUS_C", graph::Dir::PLUS_C)
@@ -148,7 +150,7 @@ inline void declare_Square(py::module& m, const std::string& suffix){
    using json = nlohmann::json;
    
    auto str = std::string("Square") + suffix;
-   py::class_<graph::Square<FloatType>, graph::Sparse<FloatType>>(m, str.c_str())
+   py::class_<graph::Square<FloatType>, graph::Sparse<FloatType>>(m, str.c_str(), py::module_local())
    .def(py::init<std::size_t, std::size_t, FloatType>(), "num_row"_a, "num_column"_a, "init_val"_a=0)
    .def(py::init<const graph::Square<FloatType>&>(), "other"_a)
    .def(py::init([](py::object obj, std::size_t num_row, std::size_t num_column, FloatType init_val){return std::unique_ptr<graph::Square<FloatType>>(new graph::Square<FloatType>(static_cast<json>(obj), num_row, num_column, init_val));}), "obj"_a, "num_row"_a, "num_column"_a, "init_val"_a = 0)
@@ -182,7 +184,7 @@ inline void declare_Chimera(py::module& m, const std::string& suffix){
    using json = nlohmann::json;
    
    auto str = std::string("Chimera") + suffix;
-   py::class_<graph::Chimera<FloatType>, graph::Sparse<FloatType>>(m, str.c_str())
+   py::class_<graph::Chimera<FloatType>, graph::Sparse<FloatType>>(m, str.c_str(), py::module_local())
    .def(py::init<std::size_t, std::size_t, FloatType>(), "num_row"_a, "num_column"_a, "init_val"_a=0)
    .def(py::init<const graph::Chimera<FloatType>&>(), "other"_a)
    .def(py::init([](py::object obj, std::size_t num_row, std::size_t num_column, FloatType init_val){return std::unique_ptr<graph::Chimera<FloatType>>(new graph::Chimera<FloatType>(static_cast<json>(obj), num_row, num_column, init_val));}), "obj"_a, "num_row"_a, "num_column"_a, "init_val"_a = 0)
@@ -206,7 +208,7 @@ inline void declare_ClassicalIsing(py::module &m, const std::string& gtype_str){
    using ClassicalIsing = system::ClassicalIsing<GraphType>;
    
    auto str = std::string("ClassicalIsing")+gtype_str;
-   py::class_<ClassicalIsing>(m, str.c_str())
+   py::class_<ClassicalIsing>(m, str.c_str(), py::module_local())
    .def(py::init<const graph::Spins&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
    .def("reset_spins", [](ClassicalIsing& self, const graph::Spins& init_spin){self.reset_spins(init_spin);},"init_spin"_a)
    .def_readwrite("spin", &ClassicalIsing::spin)
@@ -227,7 +229,7 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
    using CIP = system::ClassicalIsingPolynomial<GraphType>;
    auto  str = std::string("ClassicalIsing") + gtype_str;
    
-   py::class_<CIP>(m, str.c_str())
+   py::class_<CIP>(m, str.c_str(), py::module_local())
    .def(py::init<const graph::Spins&, const GraphType&, const cimod::Vartype>(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
    .def(py::init<const graph::Spins&, const GraphType&, const std::string   >(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
    .def(py::init([](const graph::Spins& init_spins, const py::object& obj){return std::unique_ptr<CIP>(new CIP(init_spins, static_cast<nlohmann::json>(obj)));}),"init_spin"_a, "obj"_a)
@@ -267,7 +269,7 @@ inline void declare_KLocalPolynomial(py::module &m, const std::string &gtype_str
    using KLP = system::KLocalPolynomial<GraphType>;
    auto  str = std::string("KLocal") + gtype_str;
    
-   py::class_<KLP>(m, str.c_str())
+   py::class_<KLP>(m, str.c_str(), py::module_local())
    .def(py::init<const graph::Binaries&, const GraphType&>(), "init_spin"_a, "init_interaction"_a)
    .def(py::init([](const graph::Binaries& init_binaries, const py::object& obj){return std::unique_ptr<KLP>(new KLP(init_binaries, static_cast<nlohmann::json>(obj)));}),"init_binaries"_a, "obj"_a)
    .def_readonly("binaries"          , &KLP::binaries)
@@ -339,7 +341,7 @@ inline void declare_TransverseIsing(py::module &m, const std::string& gtype_str)
    using FloatType = typename GraphType::value_type;
    
    auto str = std::string("TransverseIsing")+gtype_str;
-   py::class_<TransverseIsing>(m, str.c_str())
+   py::class_<TransverseIsing>(m, str.c_str(), py::module_local())
    .def(py::init<const system::TrotterSpins&, const GraphType&, FloatType>(), "init_spin"_a, "init_interaction"_a, "gamma"_a)
    .def(py::init<const graph::Spins&, const GraphType&, FloatType, size_t>(), "init_classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a)
    .def("reset_spins", [](TransverseIsing& self, const system::TrotterSpins& init_trotter_spins){self.reset_spins(init_trotter_spins);},"init_trotter_spins"_a)
@@ -369,7 +371,7 @@ inline void declare_ContinuousTimeIsing(py::module &m, const std::string& gtype_
    using SpinConfiguration = typename TransverseIsing::SpinConfiguration;
    
    auto str = std::string("ContinuousTimeIsing")+gtype_str;
-   py::class_<TransverseIsing>(m, str.c_str())
+   py::class_<TransverseIsing>(m, str.c_str(), py::module_local())
    .def(py::init<const SpinConfiguration&, const GraphType&, FloatType>(), "init_spin_config"_a, "init_interaction"_a, "gamma"_a)
    .def(py::init<const graph::Spins&, const GraphType&, FloatType>(), "init_spins"_a, "init_interaction"_a, "gamma"_a)
    .def("reset_spins", [](TransverseIsing& self, const SpinConfiguration& init_spin_config){self.reset_spins(init_spin_config);},"init_spin_config"_a)
@@ -395,7 +397,7 @@ std::size_t cols_per_block,
 std::size_t trotters_per_block>
 inline void declare_ChimeraTranseverseGPU(py::module &m){
    using ChimeraTransverseGPU = system::ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, trotters_per_block>;
-   py::class_<ChimeraTransverseGPU>(m, "ChimeraTransverseGPU")
+   py::class_<ChimeraTransverseGPU>(m, "ChimeraTransverseGPU", py::module_local())
    .def(py::init<const system::TrotterSpins&, const graph::Chimera<FloatType>&, FloatType, int>(), "init_trotter_spins"_a, "init_interaction"_a, "gamma"_a, "device_num"_a=0)
    .def(py::init<const graph::Spins&, const graph::Chimera<FloatType>&, FloatType, size_t, int>(), "classical_spins"_a, "init_interaction"_a, "gamma"_a, "num_trotter_slices"_a, "device_num"_a=0)
    .def("reset_spins", [](ChimeraTransverseGPU& self, const system::TrotterSpins& init_trotter_spins){self.reset_spins(init_trotter_spins);},"init_trotter_spins"_a)
@@ -418,7 +420,7 @@ std::size_t rows_per_block,
 std::size_t cols_per_block>
 inline void declare_ChimeraClassicalGPU(py::module &m){
    using ChimeraClassicalGPU = system::ChimeraClassicalGPU<FloatType, rows_per_block, cols_per_block>;
-   py::class_<ChimeraClassicalGPU, typename ChimeraClassicalGPU::Base>(m, "ChimeraClassicalGPU")
+   py::class_<ChimeraClassicalGPU, typename ChimeraClassicalGPU::Base>(m, "ChimeraClassicalGPU", py::module_local())
    .def(py::init<const graph::Spins&, const graph::Chimera<FloatType>&, int>(), "init_spin"_a, "init_interaction"_a, "device_num"_a=0)
    .def("reset_spins", [](ChimeraClassicalGPU& self, const graph::Spins& init_spin){self.reset_spins(init_spin);},"init_spin"_a);
    
@@ -513,7 +515,7 @@ inline std::string repr_impl(const utility::UpdaterParameter<system::transverse_
 
 
 inline void declare_ClassicalUpdaterParameter(py::module& m){
-   py::class_<utility::ClassicalUpdaterParameter>(m, "ClassicalUpdaterParameter")
+   py::class_<utility::ClassicalUpdaterParameter>(m, "ClassicalUpdaterParameter", py::module_local())
    .def(py::init<>())
    .def(py::init<double>(), "beta"_a)
    .def_readwrite("beta", &utility::ClassicalUpdaterParameter::beta)
@@ -523,7 +525,7 @@ inline void declare_ClassicalUpdaterParameter(py::module& m){
 }
 
 inline void declare_ClassicalConstraintUpdaterParameter(py::module& m){
-   py::class_<utility::ClassicalConstraintUpdaterParameter>(m, "ClassicalConstraintUpdaterParameter")
+   py::class_<utility::ClassicalConstraintUpdaterParameter>(m, "ClassicalConstraintUpdaterParameter", py::module_local())
    .def(py::init<>())
    .def(py::init<double, double>(), "beta"_a, "lambda"_a)
    .def(py::init<const std::pair<double, double>&>(), "obj"_a)
@@ -535,7 +537,7 @@ inline void declare_ClassicalConstraintUpdaterParameter(py::module& m){
 }
 
 inline void declare_TransverseFieldUpdaterParameter(py::module& m){
-   py::class_<utility::TransverseFieldUpdaterParameter>(m, "TransverseFieldUpdaterParameter")
+   py::class_<utility::TransverseFieldUpdaterParameter>(m, "TransverseFieldUpdaterParameter", py::module_local())
    .def(py::init<>())
    .def(py::init<double, double>(), "beta"_a, "s"_a)
    .def(py::init<const std::pair<double, double>&>(), "obj"_a)
@@ -549,7 +551,7 @@ inline void declare_TransverseFieldUpdaterParameter(py::module& m){
 template<typename SystemType>
 inline void declare_Schedule(py::module &m, const std::string& systemtype_str){
    auto str = systemtype_str + "Schedule";
-   py::class_<utility::Schedule<SystemType>>(m, str.c_str())
+   py::class_<utility::Schedule<SystemType>>(m, str.c_str(), py::module_local())
    .def(py::init<>())
    .def(py::init<const std::pair<const utility::UpdaterParameter<SystemType>&, std::size_t>&>(), "obj"_a)
    .def_readwrite("one_mc_step", &utility::Schedule<SystemType>::one_mc_step)
