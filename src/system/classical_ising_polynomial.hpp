@@ -85,6 +85,12 @@ public:
       if (poly_key_list.size() != poly_value_list.size()) {
          throw std::runtime_error("The sizes of key_list and value_list must match each other");
       }
+      if (poly_key_list.size() == 0) {
+         throw std::runtime_error("The interaction is empty.");
+      }
+      if (num_variables == 0) {
+         throw std::runtime_error("The number of variables is zero.");
+      }
       
       num_interactions_ = static_cast<int64_t>(poly_key_list.size());
       
@@ -357,6 +363,10 @@ private:
          throw std::runtime_error("The sizes of key_list and value_list must match each other");
       }
 
+      if (poly_key_list.size() == 0) {
+         throw std::runtime_error("The interaction is empty.");
+      }
+      
       std::unordered_set<graph::Index> active_variable_set;
       
       poly_key_list_.clear();
