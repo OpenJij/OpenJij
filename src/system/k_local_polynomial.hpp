@@ -66,6 +66,9 @@ public:
       if (poly_key_list.size() != poly_value_list.size()) {
          throw std::runtime_error("The sizes of key_list and value_list must match each other");
       }
+      if (poly_key_list.size() == 0) {
+         throw std::runtime_error("The interaction is empty.");
+      }
 
       std::unordered_set<graph::Index> active_binary_set;
       
@@ -107,6 +110,9 @@ public:
       
       if (poly_key_list.size() != poly_value_list.size()) {
          throw std::runtime_error("The sizes of key_list and value_list must match each other");
+      }
+      if (poly_key_list.size() == 0) {
+         throw std::runtime_error("The interaction is empty.");
       }
       
       num_interactions_ = static_cast<int64_t>(poly_key_list.size());

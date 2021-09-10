@@ -74,6 +74,11 @@ inline auto json_parse_polynomial(const nlohmann::json& obj, const bool relabel 
    
    const std::size_t num_variables    = obj["variables"].size();
    const int64_t num_interactions = static_cast<int64_t>(obj["poly_value_list"].size());
+   
+   if (num_interactions == 0) {
+      throw std::runtime_error("The interaction is empty.");
+   }
+   
    const cimod::PolynomialKeyList<std::size_t> &poly_key_distance_list = obj["poly_key_distance_list"];
    const cimod::PolynomialValueList<FloatType> &poly_value_list        = obj["poly_value_list"];
    cimod::PolynomialKeyList<Index> poly_key_list(num_interactions);
