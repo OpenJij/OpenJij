@@ -102,7 +102,10 @@ class BaseSampler(dimod.Sampler):
                 # In reverse annealing,
                 # user can use previous result (if re-initilize is set to False)
                 if reinitialize_state:
-                    system.reset_spins(init_generator())
+                    if init_generator == None:
+                        system.reset_spins()
+                    else:
+                        system.reset_spins(init_generator())
                 # Run sampling algorithm
                 # and measure execution time
                 _exec_time = measure_time(sampling_algorithm)(system)
