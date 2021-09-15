@@ -385,16 +385,16 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
 
     return schedule, [beta_max, beta_min]
 
-def geometric_hubo_beta_schedule(sa_system: cxxjij.system.make_classical_ising_polynomial,
-                                beta_max=None, beta_min=None,
-                                num_sweeps=1000,
-                                ):
+def geometric_hubo_beta_schedule(sa_system, beta_max, beta_min, num_sweeps):
 
     max_delta_energy = sa_system.get_max_effective_dE()
     min_delta_energy = sa_system.get_min_effective_dE()
 
-    beta_min = np.log(2)   / max_delta_energy if beta_min is None else beta_min   
-    beta_max = np.log(100) / min_delta_energy if beta_max is None else beta_max
+    if beta_min == None:
+        beta_min = np.log(2) / max_delta_energy
+
+    if beta_max == None:
+        beta_max = np.log(100) / min_delta_energy
 
     num_sweeps_per_beta = max(1, num_sweeps // 1000)
 
