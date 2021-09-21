@@ -265,8 +265,7 @@ public:
    //! @param key
    //! @return Corresponding value of the interaction
    FloatType get_polynomial(std::vector<IndexType> &key) const {
-      std::sort(key.begin(), key.end());
-      CheckKeySelfLoop(key);
+      FormatPolynomialKey(&key, vartype_);
       if (poly_key_inv_.count(key) != 0) {
          return poly_value_list_[poly_key_inv_.at(key)];
       }
@@ -450,7 +449,7 @@ public:
    //! @brief Remove the specified interaction from the BinaryPolynomialModel.
    //! @param key
    void remove_interaction(std::vector<IndexType> &key) {
-      std::sort(key.begin(), key.end());
+      FormatPolynomialKey(&key, vartype_);
       if (poly_key_inv_.count(key) == 0) {
          return;
       }
@@ -533,9 +532,9 @@ public:
       if (std::abs(value) <= 0.0) {
          return;
       }
-      std::sort(key.begin(), key.end());
-      CheckKeySelfLoop(key);
+      
       if (vartype_ == vartype || vartype == Vartype::NONE) {
+         FormatPolynomialKey(&key, vartype_);
          SetKeyAndValue(key, value);
       }
       else {
@@ -543,6 +542,7 @@ public:
          const std::size_t changed_key_list_size = IntegerPower(2, original_key_size);
          
          if (vartype_ == Vartype::SPIN && vartype == Vartype::BINARY) {
+            FormatPolynomialKey(&key, vartype);
             for (std::size_t i = 0; i < changed_key_list_size; ++i) {
                const auto changed_key = GenerateChangedKey(key, i);
                int sign = ((original_key_size - changed_key.size())%2 == 0) ? 1.0 : -1.0;
@@ -550,6 +550,7 @@ public:
             }
          }
          else if (vartype_ == Vartype::BINARY && vartype == Vartype::SPIN) {
+            FormatPolynomialKey(&key, vartype);
             FloatType changed_value = value*(1.0/changed_key_list_size);
             for (std::size_t i = 0; i < changed_key_list_size; ++i) {
                SetKeyAndValue(GenerateChangedKey(key, i), changed_value);
@@ -1029,18 +1030,6 @@ protected:
    
    //! @brief The model's type. SPIN or BINARY
    Vartype vartype_ = Vartype::NONE;
-   
-   //! @brief Check if the key is not self-looped
-   void CheckKeySelfLoop(std::vector<IndexType> &key) const {
-      if (0 < key.size()) {
-         //key is assumed to be sorted
-         for (std::size_t i = 0; i < key.size() - 1; ++i) {
-            if (key[i] == key[i + 1]) {
-               throw std::runtime_error("No self-loops allowed");
-            }
-         }
-      }
-   }
    
    //! @brief Set key and value.
    //! @details Note that the key is assumed to be sorted.
