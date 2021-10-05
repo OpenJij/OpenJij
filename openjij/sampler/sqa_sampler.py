@@ -41,7 +41,7 @@ class SQASampler(BaseSampler):
             'trotter': ['parameters'],
         }
 
-    #@deprecated_alias(iteration='num_reads')
+    @deprecated_alias(iteration='num_reads')
     def __init__(self,
                  beta=5.0, gamma=1.0,
                  num_sweeps=1000, schedule=None,
