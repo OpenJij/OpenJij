@@ -20,6 +20,7 @@ from openjij.utils.decorator import deprecated_alias
 from openjij.utils.graph_utils import qubo_to_ising
 import cxxjij
 import dimod
+import cimod
 
 """
 This module contains Simulated Annealing sampler.
@@ -240,7 +241,7 @@ class SASampler(BaseSampler):
 
         return response
 
-    def sample_hubo(self, J, vartype,
+    def sample_hubo(self, J, vartype=None,
                     beta_min=None, beta_max=None,
                     num_sweeps=None, num_reads=None, schedule=None,
                     initial_state=None, updater=None,
@@ -275,7 +276,16 @@ class SASampler(BaseSampler):
                 >>> response = sampler.sample_hubo(J, "BINARY")
         """
 
-        model = openjij.BinaryPolynomialModel(J, vartype)
+        if str(type(J)) == str(type(openjij.BinaryPolynomialModel({}, "SPIN"))):
+            if vartype is not None:
+                raise ValueError("vartype must not be specified")
+            model = J
+        elif str(type(J)) == str(type(cimod.BinaryPolynomialModel({}, "SPIN"))):
+            if vartype is not None:
+                raise ValueError("vartype must not be specified")
+            model = J
+        else:
+            model = openjij.BinaryPolynomialModel(J, vartype)
   
         # make init state generator --------------------------------
         if initial_state is None:
