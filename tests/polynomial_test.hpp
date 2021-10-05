@@ -39,7 +39,7 @@ std::vector<openjij::graph::Spin> PolynomialGetSpinState(std::size_t basis, cons
 }
 
 std::vector<std::vector<openjij::graph::Index>> PolynomialGenerateCombinations(const std::vector<openjij::graph::Index> &vec_in) {
-   const std::size_t loop = std::pow(2, vec_in.size());
+   const std::size_t loop = static_cast<std::size_t>(std::pow(2, vec_in.size()));
    const std::size_t num  = vec_in.size();
    std::vector<std::vector<openjij::graph::Index>> vec_out(loop);
    for (std::size_t i = 0; i < loop; ++i) {
@@ -359,14 +359,14 @@ void TestPolyGraphSparse(const openjij::graph::Polynomial<FloatType> &poly_graph
 template<typename IndexType, typename FloatType>
 void TestPolyGraphConstructorCimodDense(const cimod::Polynomial<IndexType, FloatType> &polynomial) {
    cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, cimod::Vartype::SPIN);
-   openjij::graph::Polynomial<FloatType> poly_graph(bpm_cimod.to_serializable());
+   openjij::graph::Polynomial<FloatType> poly_graph(bpm_cimod.ToSerializable());
    TestPolyGraphDense(poly_graph);
 }
 
 template<typename IndexType, typename FloatType>
 void TestPolyGraphConstructorCimodSparse(const cimod::Polynomial<IndexType, FloatType> &polynomial) {
    cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, cimod::Vartype::SPIN);
-   openjij::graph::Polynomial<FloatType> poly_graph(bpm_cimod.to_serializable());
+   openjij::graph::Polynomial<FloatType> poly_graph(bpm_cimod.ToSerializable());
    TestPolyGraphSparse(poly_graph);
 }
 
@@ -557,7 +557,7 @@ void TestCIPConstructorCimod(const cimod::Polynomial<IndexType, FloatType> &poly
       init_spins_1 = openjij::graph::Polynomial<FloatType>(3).gen_binary(mt);
       init_spins_2 = openjij::graph::Polynomial<FloatType>(3).gen_binary(mt);
    }
-   auto system = openjij::system::make_classical_ising_polynomial(init_spins_1, bpm_cimod.to_serializable());
+   auto system = openjij::system::make_classical_ising_polynomial(init_spins_1, bpm_cimod.ToSerializable());
    if (type == "Dense") {
       TestCIPSystemDense(system);
       system.reset_variables(init_spins_2);
@@ -578,7 +578,7 @@ template<typename IndexType, typename FloatType>
 void TestCIPConstructorGraph(const cimod::Polynomial<IndexType, FloatType> &polynomial, cimod::Vartype vartype, std::string type) {
    cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, vartype);
    openjij::graph::Polynomial<FloatType> poly_graph(3);
-   for (const auto &it: bpm_cimod.get_polynomial()) {
+   for (const auto &it: bpm_cimod.GetPolynomial()) {
       poly_graph.J(it.first) = it.second;
    }
    std::random_device rnd;
@@ -757,7 +757,7 @@ void TestKLPConstructorCimod(const cimod::Polynomial<IndexType, FloatType> &poly
    std::mt19937 mt(rnd());
    openjij::graph::Binaries init_spins = openjij::graph::Polynomial<FloatType>(3).gen_binary(mt);
    
-   auto system = openjij::system::make_k_local_polynomial(init_spins, bpm_cimod.to_serializable());
+   auto system = openjij::system::make_k_local_polynomial(init_spins, bpm_cimod.ToSerializable());
    if (type == "Dense") {
       TestKLPSystemDense(system);
       system.reset_binaries(openjij::graph::Polynomial<FloatType>(3).gen_binary(mt));
@@ -778,7 +778,7 @@ template<typename IndexType, typename FloatType>
 void TestKLPConstructorGraph(const cimod::Polynomial<IndexType, FloatType> &polynomial, std::string type) {
    cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, cimod::Vartype::BINARY);
    openjij::graph::Polynomial<FloatType> poly_graph(3);
-   for (const auto &it: bpm_cimod.get_polynomial()) {
+   for (const auto &it: bpm_cimod.GetPolynomial()) {
       poly_graph.J(it.first) = it.second;
    }
    std::random_device rnd;

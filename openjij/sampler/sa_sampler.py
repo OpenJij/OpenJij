@@ -233,11 +233,11 @@ class SASampler(BaseSampler):
 
         return response
 
-    def sample_hubo(self, J, vartype, 
-                    beta_min = None, beta_max = None,
-                    num_sweeps = None, num_reads = None, schedule = None,
-                    initial_state = None, updater=None,
-                    reinitialize_state=True, seed = None):
+    def sample_hubo(self, J, vartype,
+                    beta_min=None, beta_max=None,
+                    num_sweeps=None, num_reads=None, schedule=None,
+                    initial_state=None, updater=None,
+                    reinitialize_state=True, seed=None):
 
         """sampling from higher order unconstrainted binary optimization.
 

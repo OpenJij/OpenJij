@@ -109,7 +109,7 @@ void FormatPolynomialKey(std::vector<IndexType> *key, const Vartype &vartype) {
 //! @brief Convert vartype from string to cimod::Vartype
 //! @param vartype_str "SPIN" or "BINARY"
 //! @return cimod::Vartype::SPIN or cimod::Vartype::BINARY
-cimod::Vartype toCimodVartype(const std::string &vartype_str) {
+cimod::Vartype ToCimodVartype(const std::string &vartype_str) {
    if      (vartype_str == "SPIN"  ) { return Vartype::SPIN;   }
    else if (vartype_str == "BINARY") { return Vartype::BINARY; }
    else                              { throw std::runtime_error("Unknown vartype detected"); }
