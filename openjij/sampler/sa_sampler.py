@@ -68,11 +68,21 @@ class SASampler(BaseSampler):
                  num_sweeps=1000, schedule=None,
                  num_reads=1):
 
-        self.beta_min = beta_min
-        self.beta_max = beta_max
-        self.num_sweeps = num_sweeps
-        self.schedule = schedule
-        self.num_reads = num_reads
+        self.default_params = {
+            'beta_min': beta_min,
+            'beta_max': beta_max,
+            'num_sweeps': num_sweeps,
+            'schedule': schedule,
+            'num_reads': num_reads
+        }
+
+        self.params = {
+            'beta_min': beta_min,
+            'beta_max': beta_max,
+            'num_sweeps': num_sweeps,
+            'schedule': schedule,
+            'num_reads': num_reads
+        }
 
         self._make_system = {
             'singlespinflip': cxxjij.system.make_classical_ising,
@@ -84,7 +94,6 @@ class SASampler(BaseSampler):
             'singlespinflippolynomial': cxxjij.algorithm.Algorithm_SingleSpinFlip_run,
             'swendsenwang': cxxjij.algorithm.Algorithm_SwendsenWang_run
         }
-
 
     def _convert_validation_schedule(self, schedule):
         """Checks if the schedule is valid and returns cxxjij schedule
@@ -120,6 +129,7 @@ class SASampler(BaseSampler):
                      sparse=False,
                      reinitialize_state=True, seed=None,
                      ):
+
         """sample Ising model.
 
         Args:
@@ -172,31 +182,28 @@ class SASampler(BaseSampler):
 
         ising_graph, offset = model.get_cxxjij_ising_graph()
 
-
-        self._setting_overwrite(
+        self._set_params(
             beta_min=beta_min, beta_max=beta_max,
-            num_sweeps=num_sweeps, num_reads=num_reads, schedule=schedule,
-        )
-
+            num_sweeps=num_sweeps, num_reads=num_reads,
+            schedule=schedule
+            )
 
         # set annealing schedule -------------------------------
-        if self.schedule:
-            self._schedule = self._convert_validation_schedule(
-                self.schedule
-            )
-            self.schedule_info = {'schedule': 'custom schedule'}
-        else:
-            self._schedule, beta_range = geometric_ising_beta_schedule(
+        if self.params['schedule'] is None:
+            self.params['schedule'], beta_range = geometric_ising_beta_schedule(
                 model=model,
-                beta_max=self.beta_max,
-                beta_min=self.beta_min,
-                num_sweeps=self.num_sweeps
+                beta_max=self.params['beta_max'],
+                beta_min=self.params['beta_min'],
+                num_sweeps=self.params['num_sweeps']
             )
             self.schedule_info = {
                 'beta_max': beta_range[0],
                 'beta_min': beta_range[1],
-                'num_sweeps': self.num_sweeps
+                'num_sweeps': self.params['num_sweeps']
             }
+        else:
+            self.params['schedule'] = self._convert_validation_schedule(self.params['schedule'])
+            self.schedule_info = {'schedule': 'custom schedule'}
         # ------------------------------- set annealing schedule
 
         # make init state generator --------------------------------
@@ -286,7 +293,7 @@ class SASampler(BaseSampler):
 
         # determine system class and algorithm --------------------------------
         if model.vartype == openjij.SPIN:
-            if updater == None or updater == "single spin flip":
+            if updater is None or updater == "single spin flip":
                 sa_system = cxxjij.system.make_classical_ising_polynomial(_generate_init_state(), model.to_serializable())
                 algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
             elif updater == "k-local":
@@ -294,7 +301,7 @@ class SASampler(BaseSampler):
             else:
                 raise ValueError("Unknown updater name")
         elif model.vartype == openjij.BINARY:
-            if updater == "k-local" or updater == None:
+            if updater == "k-local" or updater is None:
                 sa_system = cxxjij.system.make_k_local_polynomial(_generate_init_state(), model.to_serializable())
                 algorithm = cxxjij.algorithm.Algorithm_KLocal_run
             elif updater == "single spin flip":
@@ -306,29 +313,25 @@ class SASampler(BaseSampler):
             raise ValueError("Unknown vartype detected")
         # -------------------------------- determine system class and algorithm
 
-        self._setting_overwrite(
+        self._set_params(
             beta_min=beta_min, beta_max=beta_max,
-            num_sweeps=num_sweeps, num_reads=num_reads, schedule=schedule
-        )
+            num_sweeps=num_sweeps, num_reads=num_reads,
+            schedule=schedule
+            )
 
         # set annealing schedule -------------------------------
-        if self.schedule:
-            self._schedule = self._convert_validation_schedule(
-                self.schedule
-            )
-            self.schedule_info = {'schedule': 'custom schedule'}
-        else:
-            self._schedule, beta_range = geometric_hubo_beta_schedule(
-                sa_system=sa_system,
-                beta_max=self.beta_max,
-                beta_min=self.beta_min,
-                num_sweeps=self.num_sweeps
+        if self.params['schedule'] is None:
+            self.params['schedule'], beta_range = geometric_hubo_beta_schedule(
+                sa_system, self.params['beta_max'],
+                self.params['beta_min'], self.params['num_sweeps']
             )
             self.schedule_info = {
                 'beta_max': beta_range[0],
                 'beta_min': beta_range[1],
-                'num_sweeps': self.num_sweeps
+                'num_sweeps': self.params['num_sweeps']
             }
+        else:
+            self.schedule_info = {'schedule': 'custom schedule'}
         # ------------------------------- set annealing schedule
 
         response = self._cxxjij_sampling(

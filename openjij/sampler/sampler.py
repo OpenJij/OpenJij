@@ -48,15 +48,14 @@ class BaseSampler(dimod.Sampler):
     parameters = dict()
     properties = dict()
 
-    def _setting_overwrite(self, **kwargs):
-        """Overwrite the settings
-
-        Args:
-            **kwargs: options
-        """
+    def _set_params(self, **kwargs):
         for key, value in kwargs.items():
-            if value is not None and hasattr(self, key) is True:
-                setattr(self, key, value)
+            if key not in self.default_params:
+                raise ValueError("Unknown parameters detected")
+            if value is None:
+                self.params[key] = self.default_params[key]
+            else:
+                self.params[key] = value
 
     def _sampling(self, **kwargs):
         pass
@@ -83,10 +82,10 @@ class BaseSampler(dimod.Sampler):
         # set algorithm function and set random seed ----
         if seed is None:
             def sampling_algorithm(system):
-                return algorithm(system, self._schedule)
+                return algorithm(system, self.params['schedule'])
         else:
             def sampling_algorithm(system):
-                return algorithm(system, seed, self._schedule)
+                return algorithm(system, seed, self.params['schedule'])
         # ---- set algorithm function and set random seed
 
         # setting of response class
@@ -97,7 +96,7 @@ class BaseSampler(dimod.Sampler):
         system_info = {'system': []}
         @measure_time
         def exec_sampling():
-            for _ in range(self.num_reads):
+            for _ in range(self.params['num_reads']):
                 # Re-initialize at each sampling
                 # In reverse annealing,
                 # user can use previous result (if re-initilize is set to False)

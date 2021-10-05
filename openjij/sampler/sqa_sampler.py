@@ -41,19 +41,30 @@ class SQASampler(BaseSampler):
             'trotter': ['parameters'],
         }
 
-    @deprecated_alias(iteration='num_reads')
+    #@deprecated_alias(iteration='num_reads')
     def __init__(self,
                  beta=5.0, gamma=1.0,
                  num_sweeps=1000, schedule=None,
                  trotter=4,
                  num_reads=1):
 
-        self.beta = beta
-        self.gamma = gamma
-        self.trotter = trotter
-        self.num_reads = num_reads
-        self.num_sweeps = num_sweeps
-        self.schedule = schedule
+        self.default_params = {
+            'beta': beta,
+            'gamma': gamma,
+            'num_sweeps': num_sweeps,
+            'schedule': schedule,
+            'trotter': trotter,
+            'num_reads': num_reads
+        }
+
+        self.params = {
+            'beta': beta,
+            'gamma': gamma,
+            'num_sweeps': num_sweeps,
+            'schedule': schedule,
+            'trotter': trotter,
+            'num_reads': num_reads
+        }
 
         self._make_system = {
             'singlespinflip': cxxjij.system.make_transverse_ising
@@ -162,7 +173,7 @@ class SQASampler(BaseSampler):
 
         ising_graph, offset = bqm.get_cxxjij_ising_graph()
 
-        self._setting_overwrite(
+        self._set_params(
             beta=beta, gamma=gamma,
             num_sweeps=num_sweeps, num_reads=num_reads,
             trotter=trotter, schedule=schedule
@@ -170,13 +181,13 @@ class SQASampler(BaseSampler):
 
         # set annealing schedule -------------------------------
         self._annealing_schedule_setting(
-            bqm, self.beta, self.gamma, self.num_sweeps, self.schedule)
+            bqm, self.params['beta'], self.params['gamma'], self.params['num_sweeps'], self.params['schedule'])
         # ------------------------------- set annealing schedule
 
         # make init state generator --------------------------------
         if initial_state is None:
             def init_generator(): return [ising_graph.gen_spin(seed) if seed != None else ising_graph.gen_spin()
-                                          for _ in range(self.trotter)]
+                                          for _ in range(self.params['trotter'])]
         else:
             if isinstance(initial_state, dict):
                 initial_state = [initial_state[k] for k in bqm.variables]
@@ -189,7 +200,7 @@ class SQASampler(BaseSampler):
                     .format(ising_graph.size()))
 
             trotter_init_state = [_init_state
-                                  for _ in range(self.trotter)]
+                                  for _ in range(self.params['trotter'])]
 
             def init_generator(): return trotter_init_state
         # -------------------------------- make init state generator
@@ -200,7 +211,7 @@ class SQASampler(BaseSampler):
             raise ValueError('updater is one of "single spin flip"')
         algorithm = self._algorithm[_updater_name] 
         sqa_system = self._make_system[_updater_name](
-            init_generator(), ising_graph, self.gamma
+            init_generator(), ising_graph, self.params['gamma']
         )
         # ------------------------------------------- choose updater
 
@@ -219,13 +230,13 @@ class SQASampler(BaseSampler):
                                     num_sweeps=None,
                                     schedule=None):
         if schedule:
-            self._schedule = self._convert_validation_schedule(
+            self.params['schedule'] = self._convert_validation_schedule(
                 schedule, beta
             )
             self.schedule_info = {'schedule': 'custom schedule'}
         else:
 
-            self._schedule, beta_gamma = quartic_ising_schedule(
+            self.params['schedule'], beta_gamma = quartic_ising_schedule(
                 model=model,
                 beta=beta,
                 gamma=gamma,
