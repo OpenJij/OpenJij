@@ -117,7 +117,7 @@ class SQASampler(BaseSampler):
                      beta=None, gamma=None,
                      num_sweeps=None, schedule=None, trotter=None,
                      num_reads=None,
-                     initial_state=None, updater='single spin flip',
+                     initial_state=None, updater=None,
                      sparse=False,
                      reinitialize_state=True, seed=None):
         """Sampling from the Ising model
@@ -156,6 +156,10 @@ class SQASampler(BaseSampler):
                 >>> sampler = oj.SQASampler()
                 >>> res = sampler.sample_qubo(Q)
         """
+
+        #Set default updater
+        if updater is None:
+            updater='single spin flip'
 
         if type(bqm) == dimod.BinaryQuadraticModel:
             bqm = openjij.BinaryQuadraticModel(dict(bqm.linear), dict(bqm.quadratic), bqm.offset, bqm.vartype)

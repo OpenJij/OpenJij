@@ -64,7 +64,7 @@ class BaseSampler(dimod.Sampler):
     def _cxxjij_sampling(self, model, init_generator,
                          algorithm, system,
                          reinitialize_state=None,
-                         seed=None, offset=0):
+                         seed=None, offset=None):
         """Basic sampling function: for cxxjij sampling
 
         Args:
@@ -79,6 +79,9 @@ class BaseSampler(dimod.Sampler):
         Returns:
             :class:`openjij.sampler.response.Response`: results 
         """
+
+        if offset is None:
+            offset = 0
 
         # set algorithm function and set random seed ----
         if seed is None:

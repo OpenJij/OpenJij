@@ -51,7 +51,7 @@ class CSQASampler(SQASampler):
                      beta=None, gamma=None,
                      num_sweeps=None, schedule=None,
                      num_reads=None,
-                     initial_state=None, updater='swendsenwang',
+                     initial_state=None, updater=None,
                      reinitialize_state=True, seed=None):
         """Sampling from the Ising model.
 
@@ -87,6 +87,10 @@ class CSQASampler(SQASampler):
                 >>> res = sampler.sample_qubo(Q)
 
         """
+
+        #Set default updater
+        if updater is None:
+            updater='swendsenwang'
 
         bqm = openjij.BinaryQuadraticModel(
             linear=h, quadratic=J, vartype='SPIN', sparse=True
