@@ -157,6 +157,12 @@ class TestSamplers(unittest.TestCase):
         res = sampler.sample_ising(self.afih, self.afiJ, sparse=True, seed=1)
         self.assertDictEqual(self.afiground, res.first.sample)
 
+    def test_sa_with_negative_interactions(self):
+        # sa with negative interactions
+        sampler = oj.SASampler()
+        sampler.sample_ising({}, {(0,1): -1})
+        sampler.sample_ising({2:-1}, {(0,1): -1})
+
     def test_sqa(self):
         sampler = oj.SQASampler()
         
@@ -200,6 +206,12 @@ class TestSamplers(unittest.TestCase):
         sampler = oj.SQASampler(num_reads=100)
         res = sampler.sample_ising(self.afih, self.afiJ, seed=1)
         self.assertDictEqual(self.afiground, res.first.sample)
+
+    def test_sqa_with_negative_interactions(self):
+        # sa with negative interactions
+        sampler = oj.SQASampler()
+        sampler.sample_ising({}, {(0,1): -1})
+        sampler.sample_ising({2:-1}, {(0,1): -1})
 
     # currently disabled
     #def test_csqa(self):

@@ -357,17 +357,26 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
     if beta_min is None or beta_max is None:
         # generate Ising matrix
         ising_interaction = model.interaction_matrix()
+        # set the right-bottom element zero (see issue #209)
+        mat_size = ising_interaction.shape[0]
+        ising_interaction[mat_size-1, mat_size-1] = 0
+
+
         if (model.vartype == openjij.BINARY):
             # convert to ising matrix
             qubo_to_ising(ising_interaction)
 
-        ising_interaction = np.abs(ising_interaction)
+        abs_ising_interaction = np.abs(ising_interaction)
+        max_abs_ising_interaction = np.max(abs_ising_interaction)
 
         #automatical setting of min, max delta energy
-        abs_bias = np.sum(ising_interaction, axis=1)
+        abs_bias = np.sum(abs_ising_interaction, axis=1)
 
-        min_delta_energy = np.min(ising_interaction[ising_interaction > 0])
-        max_delta_energy = np.max(abs_bias[abs_bias > 0])
+        #apply threshold to avoid extremely large beta_max
+        THRESHOLD = 1e-8
+
+        min_delta_energy = np.min(abs_ising_interaction[abs_ising_interaction > max_abs_ising_interaction*THRESHOLD])
+        max_delta_energy = np.max(abs_bias[abs_bias > max_abs_ising_interaction*THRESHOLD])
 
     # TODO: More optimal schedule ?
 
