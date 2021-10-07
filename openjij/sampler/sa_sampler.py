@@ -116,7 +116,7 @@ class SASampler(BaseSampler):
 
     def sample(self, bqm, beta_min=None, beta_max=None,
                      num_sweeps=None, num_reads=None, schedule=None,
-                     initial_state=None, updater='single spin flip',
+                     initial_state=None, updater=None,
                      sparse=False,
                      reinitialize_state=True, seed=None,
                      ):
@@ -152,6 +152,10 @@ class SASampler(BaseSampler):
                 >>> res = sampler.sample_qubo(Q)
             
         """
+
+        #Set default updater
+        if updater is None:
+            updater='single spin flip'
 
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         # swendsen wang algorithm runs only on sparse ising graphs.
