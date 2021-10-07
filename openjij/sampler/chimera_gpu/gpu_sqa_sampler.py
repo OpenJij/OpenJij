@@ -72,9 +72,9 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
 
     def sample_ising(self, h, J,
                      beta=None, gamma=None,
-                     num_sweeps=None, schedule=None,num_reads=1,
+                     num_sweeps=None, schedule=None,num_reads=None,
                      unit_num_L=None,
-                     initial_state=None, updater='single spin flip',
+                     initial_state=None, updater=None,
                      reinitialize_state=True, seed=None):
         """Sampling from the Ising model
 
@@ -101,6 +101,13 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
             >>> J = {(0, 4): -1, (2, 5): -1}
             >>> res = sampler.sample_ising(h, J)
         """
+
+        #Set default updater
+        if updater is None:
+            updater = 'single spin flip'
+
+        if num_reads is None:
+            num_reads = 1
 
         self.unit_num_L = unit_num_L if unit_num_L else self.unit_num_L
 
