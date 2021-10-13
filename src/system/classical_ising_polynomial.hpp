@@ -60,7 +60,7 @@ public:
       ResetSignKey();
       reset_dE();
       const FloatType thres_hold = std::abs(FindMaxInteraction().second*utility::THRESHOLD<FloatType>);
-      min_effective_dE_ = FindMinInteraction(thres_hold).second;
+      min_effective_dE_ = std::abs(FindMinInteraction(thres_hold).second);
    }
    
    //! @brief Constructor of ClassicalIsingPolynomial
@@ -75,7 +75,7 @@ public:
       ResetSignKey();
       reset_dE();
       const FloatType thres_hold = std::abs(FindMaxInteraction().second*utility::THRESHOLD<FloatType>);
-      min_effective_dE_ = FindMinInteraction(thres_hold).second;
+      min_effective_dE_ = std::abs(FindMinInteraction(thres_hold).second);
    }
    
    //! @brief Constructor of ClassicalIsingPolynomial
@@ -116,7 +116,7 @@ public:
       ResetSignKey();
       reset_dE();
       const FloatType thres_hold = std::abs(FindMaxInteraction().second*utility::THRESHOLD<FloatType>);
-      min_effective_dE_ = FindMinInteraction(thres_hold).second;
+      min_effective_dE_ = std::abs(FindMinInteraction(thres_hold).second);
    }
    
    //! @brief Reset ClassicalIsingPolynomial system with new spin/binary configurations.

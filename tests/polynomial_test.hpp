@@ -430,9 +430,9 @@ void TestCIPSystemDense(const openjij::system::ClassicalIsingPolynomial<openjij:
       const double abs_dE2 = 2*(std::abs(polynomial.at({2})) + std::abs(polynomial.at({0, 2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2})));
 
       EXPECT_DOUBLE_EQ(cip_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
-      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), *std::min_element(cip_system.get_values().begin(), cip_system.get_values().end(), [](const auto a, const auto b) {
+      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::abs(*std::min_element(cip_system.get_values().begin(), cip_system.get_values().end(), [](const auto a, const auto b) {
          return std::abs(a) < std::abs(b);
-      }));
+      })));
    }
    else if (cip_system.vartype == cimod::Vartype::BINARY) {
       const double dE0 = (-2*s0 + 1)*(polynomial.at({0}) + s1*polynomial.at({0, 1}) + s2*polynomial.at({0, 2}) + s1*s2*polynomial.at({0, 1, 2}));
@@ -448,9 +448,9 @@ void TestCIPSystemDense(const openjij::system::ClassicalIsingPolynomial<openjij:
       const double abs_dE2 = std::abs(polynomial.at({2})) + std::abs(polynomial.at({0, 2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
 
       EXPECT_DOUBLE_EQ(cip_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
-      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), *std::min_element(cip_system.get_values().begin(), cip_system.get_values().end(), [](const auto a, const auto b) {
+      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::abs(*std::min_element(cip_system.get_values().begin(), cip_system.get_values().end(), [](const auto a, const auto b) {
          return std::abs(a) < std::abs(b);
-      }));
+      })));
    }
    else {
       throw std::runtime_error("Unknown vartype detected");
@@ -520,9 +520,9 @@ void TestCIPSystemSparse(const openjij::system::ClassicalIsingPolynomial<openjij
       const double abs_dE2 = 2*(std::abs(polynomial.at({2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2})));
 
       EXPECT_DOUBLE_EQ(cip_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
-      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), *std::min_element(cip_system.get_values().begin(), cip_system.get_values().end(), [](const auto a, const auto b) {
+      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::abs(*std::min_element(cip_system.get_values().begin(), cip_system.get_values().end(), [](const auto a, const auto b) {
          return std::abs(a) < std::abs(b);
-      }));
+      })));
    }
    else if (cip_system.vartype == cimod::Vartype::BINARY) {
       const double dE0 = (-2*s0 + 1)*(s1*polynomial.at({0, 1}) + s1*s2*polynomial.at({0, 1, 2}));
@@ -538,9 +538,9 @@ void TestCIPSystemSparse(const openjij::system::ClassicalIsingPolynomial<openjij
       const double abs_dE2 = std::abs(polynomial.at({2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
 
       EXPECT_DOUBLE_EQ(cip_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
-      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), *std::min_element(cip_system.get_values().begin(), cip_system.get_values().end(), [](const auto a, const auto b) {
+      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::abs(*std::min_element(cip_system.get_values().begin(), cip_system.get_values().end(), [](const auto a, const auto b) {
          return std::abs(a) < std::abs(b);
-      }));
+      })));
    }
    else {
       throw std::runtime_error("Unknown vartype detected");
@@ -677,9 +677,9 @@ void TestKLPSystemDense(const openjij::system::KLocalPolynomial<openjij::graph::
       const double abs_dE2 = std::abs(polynomial.at({2})) + std::abs(polynomial.at({0, 2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
 
       EXPECT_DOUBLE_EQ(klp_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
-      EXPECT_DOUBLE_EQ(klp_system.get_min_effective_dE(), *std::min_element(klp_system.get_values().begin(), klp_system.get_values().end(), [](const auto a, const auto b) {
+      EXPECT_DOUBLE_EQ(klp_system.get_min_effective_dE(), std::abs(*std::min_element(klp_system.get_values().begin(), klp_system.get_values().end(), [](const auto a, const auto b) {
          return std::abs(a) < std::abs(b);
-      }));
+      })));
    }
    else {
       throw std::runtime_error("Unknown vartype detected");
@@ -749,9 +749,9 @@ void TestKLPSystemSparse(const openjij::system::KLocalPolynomial<openjij::graph:
       const double abs_dE2 = std::abs(polynomial.at({2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
 
       EXPECT_DOUBLE_EQ(klp_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
-      EXPECT_DOUBLE_EQ(klp_system.get_min_effective_dE(), *std::min_element(klp_system.get_values().begin(), klp_system.get_values().end(), [](const auto a, const auto b) {
+      EXPECT_DOUBLE_EQ(klp_system.get_min_effective_dE(), std::abs(*std::min_element(klp_system.get_values().begin(), klp_system.get_values().end(), [](const auto a, const auto b) {
          return std::abs(a) < std::abs(b);
-      }));
+      })));
    }
    else {
       throw std::runtime_error("Unknown vartype detected");
