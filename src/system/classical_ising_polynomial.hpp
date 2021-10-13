@@ -59,7 +59,7 @@ public:
       ResetZeroCount();
       ResetSignKey();
       reset_dE();
-      const FloatType thres_hold = FindMaxInteraction().second*utility::THRESHOLD<FloatType>;
+      const FloatType thres_hold = std::abs(FindMaxInteraction().second*utility::THRESHOLD<FloatType>);
       min_effective_dE_ = FindMinInteraction(thres_hold).second;
    }
    
@@ -74,7 +74,7 @@ public:
       ResetZeroCount();
       ResetSignKey();
       reset_dE();
-      const FloatType thres_hold = FindMaxInteraction().second*utility::THRESHOLD<FloatType>;
+      const FloatType thres_hold = std::abs(FindMaxInteraction().second*utility::THRESHOLD<FloatType>);
       min_effective_dE_ = FindMinInteraction(thres_hold).second;
    }
    
@@ -115,7 +115,7 @@ public:
       ResetZeroCount();
       ResetSignKey();
       reset_dE();
-      const FloatType thres_hold = FindMaxInteraction().second*utility::THRESHOLD<FloatType>;
+      const FloatType thres_hold = std::abs(FindMaxInteraction().second*utility::THRESHOLD<FloatType>);
       min_effective_dE_ = FindMinInteraction(thres_hold).second;
    }
    
@@ -445,6 +445,8 @@ private:
       }
    }
    
+   //! @brief Return the key and value of the absolute maximum interaction.
+   //! @return The key and value of the absolute maximum interaction as std::pair.
    std::pair<std::vector<graph::Index>, FloatType> FindMaxInteraction() const {
       if (poly_key_list_.size() == 0) {
          throw std::runtime_error("Interactions are empty.");
@@ -452,7 +454,7 @@ private:
       FloatType max_val = 0.0;
       std::vector<graph::Index> max_key = {};
       for (std::size_t i = 0; i < poly_key_list_.size(); ++i) {
-         if (max_val < std::abs(poly_value_list_[i])) {
+         if (std::abs(max_val) < std::abs(poly_value_list_[i])) {
             max_val = poly_value_list_[i];
             max_key = poly_key_list_[i];
          }
@@ -460,6 +462,8 @@ private:
       return std::pair<std::vector<graph::Index>, FloatType>(max_key, max_val);
    }
    
+   //! @brief Return the key and value of the absolute minimum interaction.
+   //! @return The key and value of the absolute minimum interaction as std::pair.
    std::pair<std::vector<graph::Index>, FloatType> FindMinInteraction(const FloatType threshold = 0.0) const {
       if (poly_key_list_.size() == 0) {
          throw std::runtime_error("Interactions are empty.");
@@ -467,7 +471,7 @@ private:
       FloatType min_val = poly_value_list_[0];
       std::vector<graph::Index> min_key = poly_key_list_[0];
       for (std::size_t i = 0; i < poly_key_list_.size(); ++i) {
-         if (poly_value_list_[i] != 0.0 && min_val > std::abs(poly_value_list_[i]) && threshold < std::abs(poly_value_list_[i])) {
+         if (poly_value_list_[i] != 0.0 && std::abs(poly_value_list_[i]) < std::abs(min_val) && threshold < std::abs(poly_value_list_[i])) {
             min_val = poly_value_list_[i];
             min_key = poly_key_list_[i];
          }
