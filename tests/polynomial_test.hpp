@@ -39,7 +39,7 @@ std::vector<openjij::graph::Spin> PolynomialGetSpinState(std::size_t basis, cons
 }
 
 std::vector<std::vector<openjij::graph::Index>> PolynomialGenerateCombinations(const std::vector<openjij::graph::Index> &vec_in) {
-   const std::size_t loop = std::pow(2, vec_in.size());
+   const std::size_t loop = static_cast<std::size_t>(std::pow(2, vec_in.size()));
    const std::size_t num  = vec_in.size();
    std::vector<std::vector<openjij::graph::Index>> vec_out(loop);
    for (std::size_t i = 0; i < loop; ++i) {
@@ -359,14 +359,14 @@ void TestPolyGraphSparse(const openjij::graph::Polynomial<FloatType> &poly_graph
 template<typename IndexType, typename FloatType>
 void TestPolyGraphConstructorCimodDense(const cimod::Polynomial<IndexType, FloatType> &polynomial) {
    cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, cimod::Vartype::SPIN);
-   openjij::graph::Polynomial<FloatType> poly_graph(bpm_cimod.to_serializable());
+   openjij::graph::Polynomial<FloatType> poly_graph(bpm_cimod.ToSerializable());
    TestPolyGraphDense(poly_graph);
 }
 
 template<typename IndexType, typename FloatType>
 void TestPolyGraphConstructorCimodSparse(const cimod::Polynomial<IndexType, FloatType> &polynomial) {
    cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, cimod::Vartype::SPIN);
-   openjij::graph::Polynomial<FloatType> poly_graph(bpm_cimod.to_serializable());
+   openjij::graph::Polynomial<FloatType> poly_graph(bpm_cimod.ToSerializable());
    TestPolyGraphSparse(poly_graph);
 }
 
@@ -430,7 +430,9 @@ void TestCIPSystemDense(const openjij::system::ClassicalIsingPolynomial<openjij:
       const double abs_dE2 = 2*(std::abs(polynomial.at({2})) + std::abs(polynomial.at({0, 2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2})));
 
       EXPECT_DOUBLE_EQ(cip_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
-      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::min({abs_dE0/4.0, abs_dE1/4.0, abs_dE2/4.0}));
+      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::abs(*std::min_element(cip_system.get_values().begin(), cip_system.get_values().end(), [](const auto a, const auto b) {
+         return std::abs(a) < std::abs(b);
+      })));
    }
    else if (cip_system.vartype == cimod::Vartype::BINARY) {
       const double dE0 = (-2*s0 + 1)*(polynomial.at({0}) + s1*polynomial.at({0, 1}) + s2*polynomial.at({0, 2}) + s1*s2*polynomial.at({0, 1, 2}));
@@ -446,7 +448,9 @@ void TestCIPSystemDense(const openjij::system::ClassicalIsingPolynomial<openjij:
       const double abs_dE2 = std::abs(polynomial.at({2})) + std::abs(polynomial.at({0, 2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
 
       EXPECT_DOUBLE_EQ(cip_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
-      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::min({abs_dE0/4.0, abs_dE1/4.0, abs_dE2/4.0}));
+      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::abs(*std::min_element(cip_system.get_values().begin(), cip_system.get_values().end(), [](const auto a, const auto b) {
+         return std::abs(a) < std::abs(b);
+      })));
    }
    else {
       throw std::runtime_error("Unknown vartype detected");
@@ -516,7 +520,9 @@ void TestCIPSystemSparse(const openjij::system::ClassicalIsingPolynomial<openjij
       const double abs_dE2 = 2*(std::abs(polynomial.at({2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2})));
 
       EXPECT_DOUBLE_EQ(cip_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
-      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::min({abs_dE0/2.0, abs_dE1/3.0, abs_dE2/3.0}));
+      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::abs(*std::min_element(cip_system.get_values().begin(), cip_system.get_values().end(), [](const auto a, const auto b) {
+         return std::abs(a) < std::abs(b);
+      })));
    }
    else if (cip_system.vartype == cimod::Vartype::BINARY) {
       const double dE0 = (-2*s0 + 1)*(s1*polynomial.at({0, 1}) + s1*s2*polynomial.at({0, 1, 2}));
@@ -532,7 +538,9 @@ void TestCIPSystemSparse(const openjij::system::ClassicalIsingPolynomial<openjij
       const double abs_dE2 = std::abs(polynomial.at({2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
 
       EXPECT_DOUBLE_EQ(cip_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
-      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::min({abs_dE0/2.0, abs_dE1/3.0, abs_dE2/3.0}));
+      EXPECT_DOUBLE_EQ(cip_system.get_min_effective_dE(), std::abs(*std::min_element(cip_system.get_values().begin(), cip_system.get_values().end(), [](const auto a, const auto b) {
+         return std::abs(a) < std::abs(b);
+      })));
    }
    else {
       throw std::runtime_error("Unknown vartype detected");
@@ -557,7 +565,7 @@ void TestCIPConstructorCimod(const cimod::Polynomial<IndexType, FloatType> &poly
       init_spins_1 = openjij::graph::Polynomial<FloatType>(3).gen_binary(mt);
       init_spins_2 = openjij::graph::Polynomial<FloatType>(3).gen_binary(mt);
    }
-   auto system = openjij::system::make_classical_ising_polynomial(init_spins_1, bpm_cimod.to_serializable());
+   auto system = openjij::system::make_classical_ising_polynomial(init_spins_1, bpm_cimod.ToSerializable());
    if (type == "Dense") {
       TestCIPSystemDense(system);
       system.reset_variables(init_spins_2);
@@ -578,7 +586,7 @@ template<typename IndexType, typename FloatType>
 void TestCIPConstructorGraph(const cimod::Polynomial<IndexType, FloatType> &polynomial, cimod::Vartype vartype, std::string type) {
    cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, vartype);
    openjij::graph::Polynomial<FloatType> poly_graph(3);
-   for (const auto &it: bpm_cimod.get_polynomial()) {
+   for (const auto &it: bpm_cimod.GetPolynomial()) {
       poly_graph.J(it.first) = it.second;
    }
    std::random_device rnd;
@@ -669,7 +677,9 @@ void TestKLPSystemDense(const openjij::system::KLocalPolynomial<openjij::graph::
       const double abs_dE2 = std::abs(polynomial.at({2})) + std::abs(polynomial.at({0, 2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
 
       EXPECT_DOUBLE_EQ(klp_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
-      EXPECT_DOUBLE_EQ(klp_system.get_min_effective_dE(), std::min({abs_dE0/4.0, abs_dE1/4.0, abs_dE2/4.0}));
+      EXPECT_DOUBLE_EQ(klp_system.get_min_effective_dE(), std::abs(*std::min_element(klp_system.get_values().begin(), klp_system.get_values().end(), [](const auto a, const auto b) {
+         return std::abs(a) < std::abs(b);
+      })));
    }
    else {
       throw std::runtime_error("Unknown vartype detected");
@@ -739,7 +749,9 @@ void TestKLPSystemSparse(const openjij::system::KLocalPolynomial<openjij::graph:
       const double abs_dE2 = std::abs(polynomial.at({2})) + std::abs(polynomial.at({1, 2})) + std::abs(polynomial.at({0, 1, 2}));
 
       EXPECT_DOUBLE_EQ(klp_system.get_max_effective_dE(), std::max({abs_dE0    , abs_dE1    , abs_dE2})    );
-      EXPECT_DOUBLE_EQ(klp_system.get_min_effective_dE(), std::min({abs_dE0/2.0, abs_dE1/3.0, abs_dE2/3.0}));
+      EXPECT_DOUBLE_EQ(klp_system.get_min_effective_dE(), std::abs(*std::min_element(klp_system.get_values().begin(), klp_system.get_values().end(), [](const auto a, const auto b) {
+         return std::abs(a) < std::abs(b);
+      })));
    }
    else {
       throw std::runtime_error("Unknown vartype detected");
@@ -757,7 +769,7 @@ void TestKLPConstructorCimod(const cimod::Polynomial<IndexType, FloatType> &poly
    std::mt19937 mt(rnd());
    openjij::graph::Binaries init_spins = openjij::graph::Polynomial<FloatType>(3).gen_binary(mt);
    
-   auto system = openjij::system::make_k_local_polynomial(init_spins, bpm_cimod.to_serializable());
+   auto system = openjij::system::make_k_local_polynomial(init_spins, bpm_cimod.ToSerializable());
    if (type == "Dense") {
       TestKLPSystemDense(system);
       system.reset_binaries(openjij::graph::Polynomial<FloatType>(3).gen_binary(mt));
@@ -778,7 +790,7 @@ template<typename IndexType, typename FloatType>
 void TestKLPConstructorGraph(const cimod::Polynomial<IndexType, FloatType> &polynomial, std::string type) {
    cimod::BinaryPolynomialModel<IndexType, FloatType> bpm_cimod(polynomial, cimod::Vartype::BINARY);
    openjij::graph::Polynomial<FloatType> poly_graph(3);
-   for (const auto &it: bpm_cimod.get_polynomial()) {
+   for (const auto &it: bpm_cimod.GetPolynomial()) {
       poly_graph.J(it.first) = it.second;
    }
    std::random_device rnd;

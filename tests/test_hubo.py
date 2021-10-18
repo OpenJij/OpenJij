@@ -1,6 +1,7 @@
 import unittest
 import random
 import openjij as oj
+import cimod
 
 def calculate_bpm_energy(polynomial, variables):
     energy = 0.0
@@ -28,13 +29,19 @@ class HUBOTest(unittest.TestCase):
         return J, true_energy
 
     def test_SASampler_hubo_spin_1(self):
-        sampler = oj.SASampler()
         K, true_energy = self.gen_testcase_polynomial()
-        response = sampler.sample_hubo(K, vartype="SPIN", seed = 3)
+        response = oj.SASampler().sample_hubo(K, vartype="SPIN", seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+        bpm_oj = oj.BinaryPolynomialModel(K, "SPIN")
+        response = oj.SASampler().sample_hubo(bpm_oj, seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+        bpm_ci = cimod.BinaryPolynomialModel(K, "SPIN")
+        response = oj.SASampler().sample_hubo(bpm_ci, seed = 3)
         self.assertAlmostEqual(true_energy, response.energies[0])
 
     def test_SASampler_hubo_spin_2(self):
-        sampler = oj.SASampler()
         K = {}
         K[0,]  = +1
         K[0,1] = -1
@@ -50,11 +57,18 @@ class HUBOTest(unittest.TestCase):
         K[1,2,3] = -1.0
         K[2,3,4] = +0.9
         true_energy = -15.1
-        response = sampler.sample_hubo(K, vartype="SPIN", seed = 3)
+        response = oj.SASampler().sample_hubo(K, vartype="SPIN", seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+        bpm_oj = oj.BinaryPolynomialModel(K, "SPIN")
+        response = oj.SASampler().sample_hubo(bpm_oj, seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+        bpm_ci = cimod.BinaryPolynomialModel(K, "SPIN")
+        response = oj.SASampler().sample_hubo(bpm_ci, seed = 3)
         self.assertAlmostEqual(true_energy, response.energies[0])
     
     def test_SASampler_hubo_binary_1(self):
-        sampler = oj.SASampler()
         K = {}
         K[0,]  = +1
         K[0,1] = -1
@@ -70,41 +84,78 @@ class HUBOTest(unittest.TestCase):
         K[1,2,3] = -1.0
         K[2,3,4] = +0.9
         true_energy = -3.1
-        response = sampler.sample_hubo(K, vartype="BINARY", updater = "single spin flip", seed = 3)
+        response = oj.SASampler().sample_hubo(K, vartype="BINARY", updater = "single spin flip", seed = 3)
         self.assertAlmostEqual(true_energy, response.energies[0])
-        response = sampler.sample_hubo(K, vartype="BINARY", updater = "k-local", seed = 3)
+        response = oj.SASampler().sample_hubo(K, vartype="BINARY", updater = "k-local", seed = 3)
         self.assertAlmostEqual(true_energy, response.energies[0])
-        response = sampler.sample_hubo(K, vartype="BINARY", seed = 3)
+        response = oj.SASampler().sample_hubo(K, vartype="BINARY", seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+        bpm_oj = oj.BinaryPolynomialModel(K, "BINARY")
+        response = oj.SASampler().sample_hubo(bpm_oj, updater = "single spin flip", seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+        response = oj.SASampler().sample_hubo(bpm_oj, updater = "k-local", seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+        response = oj.SASampler().sample_hubo(bpm_oj, seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+        bpm_ci = cimod.BinaryPolynomialModel(K, "BINARY")
+        response = oj.SASampler().sample_hubo(bpm_ci, updater = "single spin flip", seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+        response = oj.SASampler().sample_hubo(bpm_ci, updater = "k-local", seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+        response = oj.SASampler().sample_hubo(bpm_ci, seed = 3)
         self.assertAlmostEqual(true_energy, response.energies[0])
     
     def test_SASampler_hubo_binary_2(self):
-        sampler = oj.SASampler()
         K = {}
         K[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] = -1
         true_energy = -1
-        response = sampler.sample_hubo(K, vartype="BINARY", seed = 3)
+        response = oj.SASampler().sample_hubo(K, vartype="BINARY", seed = 3)
         self.assertAlmostEqual(true_energy, response.energies[0])
-    
+
+        bpm_oj = oj.BinaryPolynomialModel(K, "BINARY")
+        response = oj.SASampler().sample_hubo(bpm_oj, seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+        bpm_ci = cimod.BinaryPolynomialModel(K, "BINARY")
+        response = oj.SASampler().sample_hubo(bpm_ci, seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
     def test_SASampler_hubo_binary_3(self):
-        sampler = oj.SASampler()
         K = {}
         K[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] = +1
         K[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,   17,18,19,20,21,22,23,24,25,26,27,28,29] = -1
         true_energy = -1
-        #TO DO beta_max must be set automatically
-        response = sampler.sample_hubo(K, vartype="BINARY", seed = 3)
+
+        response = oj.SASampler().sample_hubo(K, vartype="BINARY", seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+        bpm_oj = oj.BinaryPolynomialModel(K, "BINARY")
+        response = oj.SASampler().sample_hubo(bpm_oj, seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+        bpm_ci = cimod.BinaryPolynomialModel(K, "BINARY")
+        response = oj.SASampler().sample_hubo(bpm_ci, seed = 3)
         self.assertAlmostEqual(true_energy, response.energies[0])
     
     def test_SASampler_hubo_binary_4(self):
-        sampler = oj.SASampler()
         K = {}
         K[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] = -1
         K[0,1,2,3,4,5,6,7,8,  10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] = +1
         K[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,   24,25,26,27,28,29] = +1
         K[0,1,2,3,4,5,6,7,8,  10,11,12,13,14,15,16,17,18,19,20,21,22,   24,25,26,27,28,29] = -1
         true_energy = -1
-        response = sampler.sample_hubo(K, vartype="BINARY", seed = 3)
+        response = oj.SASampler().sample_hubo(K, vartype="BINARY", seed = 3)
         self.assertAlmostEqual(true_energy, response.energies[0])  
+
+        bpm_oj = oj.BinaryPolynomialModel(K, "BINARY")
+        response = oj.SASampler().sample_hubo(bpm_oj, seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
+
+        bpm_ci = cimod.BinaryPolynomialModel(K, "BINARY")
+        response = oj.SASampler().sample_hubo(bpm_ci, seed = 3)
+        self.assertAlmostEqual(true_energy, response.energies[0])
     
     def test_hubo_constructor(self):
         hubo_spin = oj.BinaryPolynomialModel(self.J_quad, oj.SPIN)

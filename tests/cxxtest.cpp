@@ -606,15 +606,15 @@ TEST(PolyUpdater, SingleSpinFlipBINARY) {
    
    for (int i = 0; i < system_size; ++i) {
       for (int j = i + 1; j < system_size; ++j) {
-         cimod_bpm.add_interaction({i, j}, urd(engin_for_interaction));
+         cimod_bpm.AddInteraction({i, j}, urd(engin_for_interaction));
       }
    }
    
-   auto interaction_binary = openjij::graph::Polynomial<double>(cimod_bpm.to_serializable());
-   cimod_bpm.change_vartype(cimod::Vartype::SPIN);
+   auto interaction_binary = openjij::graph::Polynomial<double>(cimod_bpm.ToSerializable());
+   cimod_bpm.ChangeVartype(cimod::Vartype::SPIN);
    auto interaction_spin   = openjij::graph::Sparse<double>(system_size);
    
-   for (const auto &it: cimod_bpm.get_polynomial()) {
+   for (const auto &it: cimod_bpm.GetPolynomial()) {
       if (it.first.size() == 2) {
          interaction_spin.J(it.first[0], it.first[1]) = it.second;
       }
@@ -623,7 +623,7 @@ TEST(PolyUpdater, SingleSpinFlipBINARY) {
       }
    }
    
-   const auto offset = cimod_bpm.get_offset();
+   const auto offset = cimod_bpm.GetOffset();
    
    auto engine_for_spin   = std::mt19937(seed);
    auto engine_for_binary = std::mt19937(seed);

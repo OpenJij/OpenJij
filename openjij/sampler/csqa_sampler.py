@@ -23,7 +23,6 @@ class CSQASampler(SQASampler):
         schedule_info (dict): Information about a annealing schedule.
         num_reads (int): Number of iterations.
         num_sweeps (int): number of sweeps
-        num_reads (int): Number of iterations.
         schedule_info (dict): Information about a annealing schedule.
 
     """
@@ -32,12 +31,21 @@ class CSQASampler(SQASampler):
                  num_sweeps=1000, schedule=None,
                  num_reads=1):
 
-        self.beta = beta
-        self.gamma = gamma
-        self.num_reads = num_reads
-        self.num_sweeps = num_sweeps
-        self.schedule = schedule
-        self.energy_bias = 0.0
+        self.default_params = {
+            'beta': beta,
+            'gamma': gamma,
+            'num_sweeps': num_sweeps,
+            'schedule': schedule,
+            'num_reads': num_reads
+        }
+
+        self.params = {
+            'beta': beta,
+            'gamma': gamma,
+            'num_sweeps': num_sweeps,
+            'schedule': schedule,
+            'num_reads': num_reads
+        }
 
     def _get_result(self, system, model):
         info = {}
@@ -100,12 +108,12 @@ class CSQASampler(SQASampler):
 
         ising_graph = bqm.get_cxxjij_ising_graph()
 
-        self._setting_overwrite(
+        self._set_params(
             beta=beta, gamma=gamma,
             num_sweeps=num_sweeps, num_reads=num_reads
         )
         self._annealing_schedule_setting(
-            bqm, beta, gamma, num_sweeps, schedule)
+            bqm, self.params['beta'], self.params['gamma'], self.params['num_sweeps'], self.params['schedule'])
 
         # make init state generator --------------------------------
         if initial_state is None:

@@ -171,7 +171,7 @@ public:
       if (vartype_ == Vartype::NONE) {
          throw std::runtime_error("Unknown vartype detected");
       }
-      add_interactions_from(poly_map);
+      AddInteractionsFrom(poly_map);
       UpdateVariablesToIntegers();
    }
    
@@ -183,7 +183,7 @@ public:
       if (vartype_ == Vartype::NONE) {
          throw std::runtime_error("Unknown vartype detected");
       }
-      add_interactions_from(key_list, value_list);
+      AddInteractionsFrom(key_list, value_list);
       UpdateVariablesToIntegers();
    }
    
@@ -195,7 +195,7 @@ public:
       if (vartype_ == Vartype::NONE) {
          throw std::runtime_error("Unknown vartype detected");
       }
-      add_interactions_from(key_list, value_list);
+      AddInteractionsFrom(key_list, value_list);
       UpdateVariablesToIntegers();
    }
    
@@ -252,7 +252,7 @@ public:
    
    //! @brief Get the Polynomial object.
    //! @return Polynomial object as std::unordered_map.
-   Polynomial<IndexType, FloatType> get_polynomial() const {
+   Polynomial<IndexType, FloatType> GetPolynomial() const {
       Polynomial<IndexType, FloatType> poly_map;
       for (std::size_t i = 0; i < poly_key_list_.size(); ++i) {
          poly_map[poly_key_list_[i]] = poly_value_list_[i];
@@ -264,9 +264,8 @@ public:
    //! @details If the interaction corresponding to the key dose not exist, return 0
    //! @param key
    //! @return Corresponding value of the interaction
-   FloatType get_polynomial(std::vector<IndexType> &key) const {
-      std::sort(key.begin(), key.end());
-      CheckKeySelfLoop(key);
+   FloatType GetPolynomial(std::vector<IndexType> &key) const {
+      FormatPolynomialKey(&key, vartype_);
       if (poly_key_inv_.count(key) != 0) {
          return poly_value_list_[poly_key_inv_.at(key)];
       }
@@ -279,15 +278,15 @@ public:
    //! @details If the interaction corresponding to the key dose not exist, return 0
    //! @param key
    //! @return Corresponding value of the interaction
-   FloatType get_polynomial(const std::vector<IndexType> &key) const {
+   FloatType GetPolynomial(const std::vector<IndexType> &key) const {
       std::vector<IndexType> copied_key = key;
-      return get_polynomial(copied_key);
+      return GetPolynomial(copied_key);
    }
    
    //! @brief Get variables_to_integers object
    //! @details This function may need O(N) calculation time (N is the number of the variables).
    //! @return variables_to_integers object, which represents the correspondence from variables to integer numbers
-   const std::unordered_map<IndexType, int64_t> &get_variables_to_integers() {
+   const std::unordered_map<IndexType, int64_t> &GetVariablesToIntegers() {
       if (relabel_flag_for_variables_to_integers_) {
          UpdateVariablesToIntegers();
       }
@@ -297,7 +296,7 @@ public:
    //! @brief Get variables_to_integers object
    //! @details This function may need O(N) calculation time (N is the number of the variables).
    //! @return variables_to_integers, which represents the correspondence from variables to integer numbers
-   std::unordered_map<IndexType, int64_t> get_variables_to_integers() const {
+   std::unordered_map<IndexType, int64_t> GetVariablesToIntegers() const {
       if (relabel_flag_for_variables_to_integers_) {
          return GenerateVariablesToIntegers();
       }
@@ -310,7 +309,7 @@ public:
    //! @details This function may need O(N) calculation time (N is the number of the variables).
    //! @param index
    //! @return Non-negative integer number if the input variable is in the BinaryPolynomialModel, else -1
-   int64_t get_variables_to_integers(const IndexType &index) {
+   int64_t GetVariablesToIntegers(const IndexType &index) {
       if (relabel_flag_for_variables_to_integers_) {
          UpdateVariablesToIntegers();
       }
@@ -326,25 +325,25 @@ public:
    //! @details This function may need O(N) calculation time (N is the number of the variables).
    //! @param index
    //! @return Non-negative integer number if the input variable is in the BinaryPolynomialModel, else -1
-   int64_t get_variables_to_integers(const IndexType &index) const {
+   int64_t GetVariablesToIntegers(const IndexType &index) const {
       if (variables_.count(index) == 0) {
          return -1;
       }
       else {
-         std::vector<IndexType> sorted_variables = get_sorted_variables();
+         std::vector<IndexType> sorted_variables = GetSortedVariables();
          return std::distance(sorted_variables.begin(), std::lower_bound(sorted_variables.begin(), sorted_variables.end(), index));
       }
    }
    
    //! @brief Get the PolynomialKeyList object.
    //! @return PolynomialKeyList object as std::vector<std::vector>>.
-   const PolynomialKeyList<IndexType> &_get_keys() const {
+   const PolynomialKeyList<IndexType> &GetKeyList() const {
       return poly_key_list_;
    }
    
    //! @brief Get the PolynomialValueList object.
    //! @return PolynomialValueList object as std::vector.
-   const PolynomialValueList<FloatType> &_get_values() const {
+   const PolynomialValueList<FloatType> &GetValueList() const {
       return poly_value_list_;
    }
 
@@ -359,12 +358,11 @@ public:
    const std::unordered_set<IndexType> &GetVariables() const {
       return variables_;
    }
-      
+   
    //! @brief Return the sorted variables as std::vector.
    //! @details This function may need O(N) calculation time (N is the number of the variables).
    //! @return sorted variables as std::vector.
-   //! @deprecated Please use get_sorted_variables()
-   const std::vector<IndexType> &indices() {
+   const std::vector<IndexType> &GetSortedVariables() {
       if (relabel_flag_for_variables_to_integers_) {
          UpdateVariablesToIntegers();
       }
@@ -374,17 +372,7 @@ public:
    //! @brief Return the sorted variables as std::vector.
    //! @details This function may need O(N) calculation time (N is the number of the variables).
    //! @return sorted variables as std::vector.
-   const std::vector<IndexType> &get_sorted_variables() {
-      if (relabel_flag_for_variables_to_integers_) {
-         UpdateVariablesToIntegers();
-      }
-      return sorted_variables_;
-   }
-   
-   //! @brief Return the sorted variables as std::vector.
-   //! @details This function may need O(N) calculation time (N is the number of the variables).
-   //! @return sorted variables as std::vector.
-   std::vector<IndexType> get_sorted_variables() const {
+   std::vector<IndexType> GetSortedVariables() const {
       if (relabel_flag_for_variables_to_integers_) {
          return GenerateSortedVariables();
       }
@@ -395,7 +383,7 @@ public:
    
    //! @brief Return the maximum degree of interaction.
    //! @return degree
-   std::size_t get_degree() const {
+   std::size_t GetDegree() const {
       std::size_t degree = 0;
       for (const auto &it: poly_key_list_) {
          if (degree < it.size()) {
@@ -407,37 +395,37 @@ public:
    
    //! @brief Return the offset.
    //! @return The offset
-   FloatType get_offset() const {
-      return get_polynomial(std::vector<IndexType>{});
+   FloatType GetOffset() const {
+      return GetPolynomial(std::vector<IndexType>{});
    }
    
    //! @brief Return the vartype.
    //! @return The vartype
-   Vartype get_vartype() const {
+   Vartype GetVartype() const {
       return vartype_;
    }
    
    //! @brief Return the number of the interactions.
    //! @return The number of the interactions.
-   std::size_t get_num_interactions() const {
+   std::size_t GetNumInteractions() const {
       return poly_key_list_.size();
    }
    
    //! @brief Return the number of variables.
    //! @return The number of the variables.
-   std::size_t get_num_variables() const {
+   std::size_t GetNumVariables() const {
       return variables_.size();
    }
    
    //! @brief Create an empty BinaryPolynomialModel.
    //! @param vartype
    //! @return The empty BinaryPolynomialModel.
-   BinaryPolynomialModel empty(const Vartype vartype) const {
+   BinaryPolynomialModel Empty(const Vartype vartype) const {
       return BinaryPolynomialModel({}, vartype);
    }
    
    //! @brief Clear the BinaryPolynomialModel.
-   void clear() {
+   void Clear() {
       each_variable_num_.clear();
       variables_to_integers_.clear();
       PolynomialKeyList<IndexType>().swap(poly_key_list_);
@@ -449,8 +437,8 @@ public:
    
    //! @brief Remove the specified interaction from the BinaryPolynomialModel.
    //! @param key
-   void remove_interaction(std::vector<IndexType> &key) {
-      std::sort(key.begin(), key.end());
+   void RemoveInteraction(std::vector<IndexType> &key) {
+      FormatPolynomialKey(&key, vartype_);
       if (poly_key_inv_.count(key) == 0) {
          return;
       }
@@ -481,47 +469,47 @@ public:
    
    //! @brief Remove the specified interaction from the BinaryPolynomialModel.
    //! @param key
-   void remove_interaction(const std::vector<IndexType> &key) {
+   void RemoveInteraction(const std::vector<IndexType> &key) {
       std::vector<IndexType> copied_key = key;
-      remove_interaction(copied_key);
+      RemoveInteraction(copied_key);
    }
    
    //! @brief Remove the specified interactions from the BinaryPolynomialModel.
    //! @param key_list
-   void remove_interactions_from(PolynomialKeyList<IndexType> &key_list) {
+   void RemoveInteractionsFrom(PolynomialKeyList<IndexType> &key_list) {
       for (auto &&key: key_list) {
-         remove_interaction(key);
+         RemoveInteraction(key);
       }
    }
    
    //! @brief Remove the specified interactions from the BinaryPolynomialModel.
    //! @param key_list
-   void remove_interactions_from(const PolynomialKeyList<IndexType> &key_list) {
+   void RemoveInteractionsFrom(const PolynomialKeyList<IndexType> &key_list) {
       for (const auto &key: key_list) {
-         remove_interaction(key);
+         RemoveInteraction(key);
       }
    }
    
    //! @brief Set the offset of the BinaryPolynomialModel to zero.
-   void remove_offset() {
-      remove_interaction(std::vector<IndexType>{});
+   void RemoveOffset() {
+      RemoveInteraction(std::vector<IndexType>{});
    }
    
    //! @brief Remove a variable from the BinaryPolynomialModel.
    //! @param index
-   void remove_variable(const IndexType &index) {
+   void RemoveVariable(const IndexType &index) {
       for (auto &&key: poly_key_list_) {
          if (std::binary_search(key.begin(), key.end(), index)) {
-            remove_interaction(key);
+            RemoveInteraction(key);
          }
       }
    }
    
    //! @brief Remove the specified variables from the BinaryPolynomialModel.
    //! @param key
-   void remove_variables_from(const std::vector<IndexType> &key) {
+   void RemoveVariablesFrom(const std::vector<IndexType> &key) {
       for (const auto &index: key) {
-         remove_variable(index);
+         RemoveVariable(index);
       }
    }
    
@@ -529,13 +517,13 @@ public:
    //! @param key
    //! @param value
    //! @param vartype
-   void add_interaction(std::vector<IndexType> &key, const FloatType &value, const Vartype vartype = Vartype::NONE) {
+   void AddInteraction(std::vector<IndexType> &key, const FloatType &value, const Vartype vartype = Vartype::NONE) {
       if (std::abs(value) <= 0.0) {
          return;
       }
-      std::sort(key.begin(), key.end());
-      CheckKeySelfLoop(key);
+      
       if (vartype_ == vartype || vartype == Vartype::NONE) {
+         FormatPolynomialKey(&key, vartype_);
          SetKeyAndValue(key, value);
       }
       else {
@@ -543,6 +531,7 @@ public:
          const std::size_t changed_key_list_size = IntegerPower(2, original_key_size);
          
          if (vartype_ == Vartype::SPIN && vartype == Vartype::BINARY) {
+            FormatPolynomialKey(&key, vartype);
             for (std::size_t i = 0; i < changed_key_list_size; ++i) {
                const auto changed_key = GenerateChangedKey(key, i);
                int sign = ((original_key_size - changed_key.size())%2 == 0) ? 1.0 : -1.0;
@@ -550,6 +539,7 @@ public:
             }
          }
          else if (vartype_ == Vartype::BINARY && vartype == Vartype::SPIN) {
+            FormatPolynomialKey(&key, vartype);
             FloatType changed_value = value*(1.0/changed_key_list_size);
             for (std::size_t i = 0; i < changed_key_list_size; ++i) {
                SetKeyAndValue(GenerateChangedKey(key, i), changed_value);
@@ -565,17 +555,17 @@ public:
    //! @param key
    //! @param value
    //! @param vartype
-   void add_interaction(const std::vector<IndexType> &key, const FloatType &value, const Vartype vartype = Vartype::NONE) {
+   void AddInteraction(const std::vector<IndexType> &key, const FloatType &value, const Vartype vartype = Vartype::NONE) {
       std::vector<IndexType> copied_key = key;
-      add_interaction(copied_key, value, vartype);
+      AddInteraction(copied_key, value, vartype);
    }
    
    //! @brief Add interactions to the BinaryPolynomialModel.
    //! @param poly_map
    //! @param vartype
-   void add_interactions_from(const Polynomial<IndexType, FloatType> &poly_map, const Vartype vartype = Vartype::NONE) {
+   void AddInteractionsFrom(const Polynomial<IndexType, FloatType> &poly_map, const Vartype vartype = Vartype::NONE) {
       for (const auto &it: poly_map) {
-         add_interaction(it.first, it.second, vartype);
+         AddInteraction(it.first, it.second, vartype);
       }
    }
    
@@ -583,12 +573,12 @@ public:
    //! @param key_list
    //! @param value_list
    //! @param vartype
-   void add_interactions_from(PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list, const Vartype vartype = Vartype::NONE) {
+   void AddInteractionsFrom(PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list, const Vartype vartype = Vartype::NONE) {
       if (key_list.size() != value_list.size()) {
          throw std::runtime_error("The sizes of key_list and value_list must match each other");
       }
       for (std::size_t i = 0; i < key_list.size(); ++i) {
-         add_interaction(key_list[i], value_list[i], vartype);
+         AddInteraction(key_list[i], value_list[i], vartype);
       }
    }
    
@@ -596,20 +586,20 @@ public:
    //! @param key_list
    //! @param value_list
    //! @param vartype
-   void add_interactions_from(const PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list, const Vartype vartype = Vartype::NONE) {
+   void AddInteractionsFrom(const PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list, const Vartype vartype = Vartype::NONE) {
       if (key_list.size() != value_list.size()) {
          throw std::runtime_error("The sizes of key_list and value_list must match each other");
       }
       for (std::size_t i = 0; i < key_list.size(); ++i) {
          std::vector<IndexType> copied_key = key_list[i];
-         add_interaction(copied_key, value_list[i], vartype);
+         AddInteraction(copied_key, value_list[i], vartype);
       }
    }
    
    //! @brief Add specified value to the offset of the BinaryPolynomialModel.
    //! @param offset
-   void add_offset(FloatType offset) {
-      add_interaction(std::vector<IndexType>{}, offset);
+   void AddOffset(FloatType offset) {
+      AddInteraction(std::vector<IndexType>{}, offset);
    }
    
    //! @brief Determine the energy of the specified sample of the BinaryPolynomialModel.
@@ -617,16 +607,16 @@ public:
    //! @param sample
    //! @param omp_flag
    //! @return An energy with respect to the sample.
-   FloatType energy(const Sample<IndexType> &sample, bool omp_flag = true) const {
-      if (sample.size() != get_num_variables()) {
+   FloatType Energy(const Sample<IndexType> &sample, bool omp_flag = true) const {
+      if (sample.size() != GetNumVariables()) {
          throw std::runtime_error("The size of sample must be equal to num_variables");
       }
       
-      if (get_num_interactions() == 0) {
+      if (GetNumInteractions() == 0) {
          return 0.0;
       }
       
-      std::size_t num_interactions = get_num_interactions();
+      std::size_t num_interactions = GetNumInteractions();
       FloatType val = 0.0;
       
       if (omp_flag) {
@@ -662,12 +652,12 @@ public:
    //! @param sample_vec
    //! @param omp_flag
    //! @return An energy with respect to the sample.
-   FloatType energy(const std::vector<int32_t> &sample_vec, bool omp_flag = true) {
-      if (sample_vec.size() != get_num_variables()) {
+   FloatType Energy(const std::vector<int32_t> &sample_vec, bool omp_flag = true) {
+      if (sample_vec.size() != GetNumVariables()) {
          throw std::runtime_error("The size of sample must be equal to num_variables");
       }
       
-      if (get_num_interactions() == 0) {
+      if (GetNumInteractions() == 0) {
          return 0.0;
       }
       
@@ -675,7 +665,7 @@ public:
          UpdateVariablesToIntegers();
       }
       
-      std::size_t num_interactions = get_num_interactions();
+      std::size_t num_interactions = GetNumInteractions();
       FloatType val = 0.0;
       
       if (omp_flag) {
@@ -709,11 +699,11 @@ public:
    //! @brief Determine the energies of the given samples.
    //! @param samples
    //! @return Energies with respect to the samples as std::vector
-   PolynomialValueList<FloatType> energies(const std::vector<Sample<IndexType>> &samples) const {
+   PolynomialValueList<FloatType> Energies(const std::vector<Sample<IndexType>> &samples) const {
       PolynomialValueList<FloatType> val_list(samples.size());
 #pragma omp parallel for
       for (int64_t i = 0; i < (int64_t)samples.size(); ++i) {
-         val_list[i] = energy(samples[i], false);
+         val_list[i] = Energy(samples[i], false);
       }
       return val_list;
    }
@@ -721,11 +711,11 @@ public:
    //! @brief Determine the energies of the given samples_vec.
    //! @param samples_vec
    //! @return Energies with respect to the samples as std::vector
-   PolynomialValueList<FloatType> energies(const std::vector<std::vector<int32_t>> &samples_vec) {
+   PolynomialValueList<FloatType> Energies(const std::vector<std::vector<int32_t>> &samples_vec) {
       PolynomialValueList<FloatType> val_list(samples_vec.size());
 #pragma omp parallel for
       for (int64_t i = 0; i < (int64_t)samples_vec.size(); ++i) {
-         val_list[i] = energy(samples_vec[i], false);
+         val_list[i] = Energy(samples_vec[i], false);
       }
       return val_list;
    }
@@ -734,11 +724,11 @@ public:
    //! @param scalar
    //! @param ignored_interactions
    //! @param ignored_offset
-   void scale(const FloatType scalar,
+   void Scale(const FloatType scalar,
               const PolynomialKeyList<IndexType> &ignored_interactions = {},
               const bool ignored_offset = false) {
       
-      std::size_t num_interactions = get_num_interactions();
+      std::size_t num_interactions = GetNumInteractions();
       
       for (std::size_t i = 0; i < num_interactions; ++i) {
          poly_value_list_[i] *= scalar;
@@ -764,7 +754,7 @@ public:
                   const PolynomialKeyList<IndexType> &ignored_interactions = {},
                   const bool ignored_offset = false) {
       
-      if (get_num_interactions() == 0) {
+      if (GetNumInteractions() == 0) {
          return;
       }
       
@@ -783,7 +773,7 @@ public:
       FloatType inv_scale = std::max(min_poly_value/range.first, max_poly_value/range.second);
       
       if (inv_scale != 0.0) {
-         scale(1.0/inv_scale, ignored_interactions, ignored_offset);
+         Scale(1.0/inv_scale, ignored_interactions, ignored_offset);
       }
    }
    
@@ -791,7 +781,7 @@ public:
    //! @param vartype
    //! @param inplace
    //! @return A new instance of the BinaryPolynomialModel.
-   BinaryPolynomialModel change_vartype(const Vartype vartype, const bool inplace) {
+   BinaryPolynomialModel ChangeVartype(const Vartype vartype, const bool inplace) {
       
       if (vartype == Vartype::SPIN) {
          if (inplace) {
@@ -817,7 +807,7 @@ public:
    }
    
    //! @brief Change the vartype of the BinaryPolynomialModel.
-   void change_vartype(const Vartype vartype) {
+   void ChangeVartype(const Vartype vartype) {
       if (vartype == Vartype::SPIN) {
          *this = ToSpin();
       }
@@ -832,7 +822,7 @@ public:
    //! @brief Check if the specified index is in the BinaryPolynomialModel.
    //! @param index
    //! @return true or false
-   bool has_variable(const IndexType &index) {
+   bool HasVariable(const IndexType &index) {
       if (variables_.count(index) != 0) {
          return true;
       }
@@ -843,12 +833,12 @@ public:
    
    //! @brief Generate the polynomial interactions corresponding to the vartype being BINARY from the BinaryPolynomialModel.
    //! @return The polynomial interaction as std::unordered_map.
-   Polynomial<IndexType, FloatType> to_hubo() const {
+   Polynomial<IndexType, FloatType> ToHubo() const {
       if (vartype_ == Vartype::BINARY) {
-         return get_polynomial();
+         return GetPolynomial();
       }
       Polynomial<IndexType, FloatType> poly_map;
-      std::size_t num_interactions = get_num_interactions();
+      std::size_t num_interactions = GetNumInteractions();
       for (std::size_t i = 0; i < num_interactions; ++i) {
          const std::vector<IndexType> &original_key = poly_key_list_[i];
          const FloatType   original_value           = poly_value_list_[i];
@@ -870,12 +860,12 @@ public:
    
    //! @brief Generate the polynomial interactions corresponding to the vartype being SPIN from the BinaryPolynomialModel.
    //! @return The polynomial interaction as std::unordered_map.
-   Polynomial<IndexType, FloatType> to_hising() const {
+   Polynomial<IndexType, FloatType> ToHising() const {
       if (vartype_ == Vartype::SPIN) {
-         return get_polynomial();
+         return GetPolynomial();
       }
       Polynomial<IndexType, FloatType> poly_map;
-      const std::size_t num_interactions = get_num_interactions();
+      const std::size_t num_interactions = GetNumInteractions();
       for (std::size_t i = 0; i < num_interactions; ++i) {
          const std::vector<IndexType> &original_key = poly_key_list_[i];
          const FloatType   original_value           = poly_value_list_[i];
@@ -896,7 +886,7 @@ public:
    
    //! @brief Convert the BinaryPolynomialModel to a serializable object
    //! @return An object that can be serialized (nlohmann::json)
-   nlohmann::json to_serializable() const {
+   nlohmann::json ToSerializable() const {
       nlohmann::json output;
       if (vartype_ == Vartype::BINARY) {
          output["vartype"] = "BINARY";
@@ -908,9 +898,9 @@ public:
          throw std::runtime_error("Variable type must be SPIN or BINARY.");
       }
       
-      std::size_t num_interactions = get_num_interactions();
+      std::size_t num_interactions = GetNumInteractions();
       PolynomialKeyList<std::size_t> poly_key_distance_list(num_interactions);
-      std::vector<IndexType> sorted_variables = get_sorted_variables();
+      std::vector<IndexType> sorted_variables = GetSortedVariables();
       
 #pragma omp parallel for
       for (int64_t i = 0; i < (int64_t)num_interactions; ++i) {
@@ -937,7 +927,7 @@ public:
    //! @param input
    //! @return BinaryPolynomialModel instance
    template <typename IndexType_serial = IndexType, typename FloatType_serial = FloatType>
-   static BinaryPolynomialModel<IndexType_serial, FloatType_serial> from_serializable(const nlohmann::json &input) {
+   static BinaryPolynomialModel<IndexType_serial, FloatType_serial> FromSerializable(const nlohmann::json &input) {
       if(input.at("type") != "BinaryPolynomialModel") {
          throw std::runtime_error("Type must be \"BinaryPolynomialModel\".\n");
       }
@@ -957,7 +947,7 @@ public:
    //! @brief Create a BinaryPolynomialModel from a Hubo model.
    //! @param poly_map
    //! @return BinaryPolynomialModel instance with the vartype being BINARY.
-   static BinaryPolynomialModel from_hubo(const Polynomial<IndexType, FloatType> &poly_map) {
+   static BinaryPolynomialModel FromHubo(const Polynomial<IndexType, FloatType> &poly_map) {
       return BinaryPolynomialModel<IndexType, FloatType>(poly_map, Vartype::BINARY);
    }
    
@@ -965,7 +955,7 @@ public:
    //! @param key_list
    //! @param value_list
    //! @return BinaryPolynomialModel instance with the vartype being BINARY.
-   static BinaryPolynomialModel from_hubo(const PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list) {
+   static BinaryPolynomialModel FromHubo(const PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list) {
       return BinaryPolynomialModel<IndexType, FloatType>(key_list, value_list, Vartype::BINARY);
    }
    
@@ -973,14 +963,14 @@ public:
    //! @param key_list
    //! @param value_list
    //! @return BinaryPolynomialModel instance with the vartype being BINARY.
-   static BinaryPolynomialModel from_hubo(PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list) {
+   static BinaryPolynomialModel FromHubo(PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list) {
       return BinaryPolynomialModel<IndexType, FloatType>(key_list, value_list, Vartype::BINARY);
    }
    
    //! @brief Create a BinaryPolynomialModel from a higher ordere Ising model.
    //! @param poly_map
    //! @return BinaryPolynomialModel instance with the vartype being SPIN.
-   static BinaryPolynomialModel from_hising(const Polynomial<IndexType, FloatType> &poly_map) {
+   static BinaryPolynomialModel FromHising(const Polynomial<IndexType, FloatType> &poly_map) {
       return BinaryPolynomialModel<IndexType, FloatType>(poly_map, Vartype::SPIN);
    }
    
@@ -988,7 +978,7 @@ public:
    //! @param key_list
    //! @param value_list
    //! @return BinaryPolynomialModel instance with the vartype being SPIN.
-   static BinaryPolynomialModel from_hising(const PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list) {
+   static BinaryPolynomialModel FromHising(const PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list) {
       return BinaryPolynomialModel<IndexType, FloatType>(key_list, value_list, Vartype::SPIN);
    }
    
@@ -996,7 +986,7 @@ public:
    //! @param key_list
    //! @param value_list
    //! @return BinaryPolynomialModel instance with the vartype being SPIN.
-   static BinaryPolynomialModel from_hising(PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list) {
+   static BinaryPolynomialModel FromHising(PolynomialKeyList<IndexType> &key_list, const PolynomialValueList<FloatType> &value_list) {
       return BinaryPolynomialModel<IndexType, FloatType>(key_list, value_list, Vartype::SPIN);
    }
    
@@ -1030,18 +1020,6 @@ protected:
    //! @brief The model's type. SPIN or BINARY
    Vartype vartype_ = Vartype::NONE;
    
-   //! @brief Check if the key is not self-looped
-   void CheckKeySelfLoop(std::vector<IndexType> &key) const {
-      if (0 < key.size()) {
-         //key is assumed to be sorted
-         for (std::size_t i = 0; i < key.size() - 1; ++i) {
-            if (key[i] == key[i + 1]) {
-               throw std::runtime_error("No self-loops allowed");
-            }
-         }
-      }
-   }
-   
    //! @brief Set key and value.
    //! @details Note that the key is assumed to be sorted.
    //! @param key
@@ -1055,7 +1033,7 @@ protected:
       }
       else {
          if (poly_value_list_[poly_key_inv_[key]] + value == 0.0) {
-            remove_interaction(key);
+            RemoveInteraction(key);
             return;
          }
          poly_value_list_[poly_key_inv_[key]] += value;
@@ -1104,7 +1082,7 @@ protected:
       if (vartype_ == Vartype::SPIN) {
          return *this;
       }
-      return BinaryPolynomialModel(to_hising(), Vartype::SPIN);
+      return BinaryPolynomialModel(ToHising(), Vartype::SPIN);
    }
    
    //! @brief Generate BinaryPolynomialModel with the vartype being BINARY.
@@ -1113,7 +1091,7 @@ protected:
       if (vartype_ == Vartype::BINARY) {
          return *this;
       }
-      return BinaryPolynomialModel(to_hubo(), Vartype::BINARY);
+      return BinaryPolynomialModel(ToHubo(), Vartype::BINARY);
    }
 
    //! @brief Update sorted_variables_ and variables_to_integers_

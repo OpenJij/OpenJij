@@ -20,6 +20,7 @@
 #include <graph/all.hpp>
 #include <nlohmann/json.hpp>
 #include <graph/json/parse.hpp>
+#include <utility/thres_hold.hpp>
 
 namespace openjij {
 namespace system {
@@ -58,6 +59,8 @@ public:
       ResetZeroCount();
       ResetSignKey();
       reset_dE();
+      const FloatType thres_hold = std::abs(FindMaxInteraction().second*utility::THRESHOLD<FloatType>);
+      min_effective_dE_ = std::abs(FindMinInteraction(thres_hold).second);
    }
    
    //! @brief Constructor of ClassicalIsingPolynomial
@@ -71,6 +74,8 @@ public:
       ResetZeroCount();
       ResetSignKey();
       reset_dE();
+      const FloatType thres_hold = std::abs(FindMaxInteraction().second*utility::THRESHOLD<FloatType>);
+      min_effective_dE_ = std::abs(FindMinInteraction(thres_hold).second);
    }
    
    //! @brief Constructor of ClassicalIsingPolynomial
@@ -110,6 +115,8 @@ public:
       ResetZeroCount();
       ResetSignKey();
       reset_dE();
+      const FloatType thres_hold = std::abs(FindMaxInteraction().second*utility::THRESHOLD<FloatType>);
+      min_effective_dE_ = std::abs(FindMinInteraction(thres_hold).second);
    }
    
    //! @brief Reset ClassicalIsingPolynomial system with new spin/binary configurations.
@@ -156,11 +163,6 @@ public:
       if (vartype == cimod::Vartype::SPIN) {
          //Initialize
          max_effective_dE_ = 2.0*std::abs(poly_value_list_.front());
-         min_effective_dE_ = 0.0;
-         for (const auto &index_key: adj_[active_variables_.front()]) {
-            min_effective_dE_ += std::abs(poly_value_list_[index_key]);
-         }
-         min_effective_dE_ = 2.0*min_effective_dE_/adj_[active_variables_.front()].size();
          for (const auto &index_binary: active_variables_) {
             FloatType val     = 0.0;
             FloatType abs_val = 0.0;
@@ -174,20 +176,11 @@ public:
             if (flag && max_effective_dE_ < 2*abs_val) {
                max_effective_dE_ = 2*abs_val;
             }
-            abs_val = 2.0*abs_val/adj_[index_binary].size();
-            if (flag && min_effective_dE_ > abs_val) {
-               min_effective_dE_ = abs_val;
-            }
          }
       }
       else if (vartype == cimod::Vartype::BINARY) {
          //Initialize
          max_effective_dE_ = std::abs(poly_value_list_.front());
-         min_effective_dE_ = 0.0;
-         for (const auto &index_key: adj_[active_variables_.front()]) {
-            min_effective_dE_ += std::abs(poly_value_list_[index_key]);
-         }
-         min_effective_dE_ = min_effective_dE_/adj_[active_variables_.front()].size();
          for (const auto &index_binary: active_variables_) {
             FloatType val     = 0.0;
             FloatType abs_val = 0.0;
@@ -204,10 +197,6 @@ public:
             
             if (flag && max_effective_dE_ < abs_val) {
                max_effective_dE_ = abs_val;
-            }
-            abs_val = abs_val/adj_[index_binary].size();
-            if (flag && min_effective_dE_ > abs_val) {
-               min_effective_dE_ = abs_val;
             }
          }
       }
@@ -454,6 +443,44 @@ private:
       else {
          throw std::runtime_error("Unknown vartype detected");
       }
+   }
+   
+   //! @brief Return the key and value of the absolute maximum interaction.
+   //! @return The key and value of the absolute maximum interaction as std::pair.
+   std::pair<std::vector<graph::Index>, FloatType> FindMaxInteraction() const {
+      if (poly_key_list_.size() == 0) {
+         throw std::runtime_error("Interactions are empty.");
+      }
+      FloatType max_val = 0.0;
+      std::vector<graph::Index> max_key = {};
+      for (std::size_t i = 0; i < poly_key_list_.size(); ++i) {
+         if (std::abs(max_val) < std::abs(poly_value_list_[i])) {
+            max_val = poly_value_list_[i];
+            max_key = poly_key_list_[i];
+         }
+      }
+      return std::pair<std::vector<graph::Index>, FloatType>(max_key, max_val);
+   }
+   
+   //! @brief Return the key and value of the absolute minimum interaction.
+   //! @return The key and value of the absolute minimum interaction as std::pair.
+   std::pair<std::vector<graph::Index>, FloatType> FindMinInteraction(const FloatType threshold = 0.0) const {
+      if (poly_key_list_.size() == 0) {
+         throw std::runtime_error("Interactions are empty.");
+      }
+      FloatType min_val = poly_value_list_[0];
+      std::vector<graph::Index> min_key = poly_key_list_[0];
+      for (std::size_t i = 0; i < poly_key_list_.size(); ++i) {
+         if (poly_value_list_[i] != 0.0 && std::abs(poly_value_list_[i]) < std::abs(min_val) && threshold < std::abs(poly_value_list_[i])) {
+            min_val = poly_value_list_[i];
+            min_key = poly_key_list_[i];
+         }
+      }
+      
+      if (std::abs(min_val) <= threshold) {
+         throw std::runtime_error("No minimum value in interactions");
+      }
+      return std::pair<std::vector<graph::Index>, FloatType>(min_key, min_val);
    }
    
 };
