@@ -50,8 +50,8 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
             linear (dict): represents linear term
             quadratic (dict): represents quadratic term
             offset (float): represents constant energy term when convert to SPIN from BINARY
-            num_variables (int): represents constant energy term when convert to SPIN from BINARY
-            variables (list): represents constant energy term when convert to SPIN from BINARY
+            num_variables (int): represents number of variables in the model
+            variables (list): represents variables of the binary quadratic model
         """
 
         def __init__(self, *args, **kwargs):
@@ -148,8 +148,8 @@ def BinaryQuadraticModel(linear, quadratic, *args, **kwargs):
         linear (dict): represents linear term
         quadratic (dict): represents quadratic term
         offset (float): represents constant energy term when convert to SPIN from BINARY
-        num_variables (int): represents constant energy term when convert to SPIN from BINARY
-        variables (list): represents constant energy term when convert to SPIN from BINARY
+        num_variables (int): represents number of variables in the model
+        variables (list): represents variables of the binary quadratic model
     Args:
         linear (dict): linear biases
         quadratic (dict): quadratic biases
