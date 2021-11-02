@@ -31,7 +31,7 @@ class CSQASampler(SQASampler):
                  num_sweeps=1000, schedule=None,
                  num_reads=1):
 
-        self.default_params = {
+        self._default_params = {
             'beta': beta,
             'gamma': gamma,
             'num_sweeps': num_sweeps,
@@ -39,7 +39,7 @@ class CSQASampler(SQASampler):
             'num_reads': num_reads
         }
 
-        self.params = {
+        self._params = {
             'beta': beta,
             'gamma': gamma,
             'num_sweeps': num_sweeps,
@@ -113,7 +113,7 @@ class CSQASampler(SQASampler):
             num_sweeps=num_sweeps, num_reads=num_reads
         )
         self._annealing_schedule_setting(
-            bqm, self.params['beta'], self.params['gamma'], self.params['num_sweeps'], self.params['schedule'])
+            bqm, self._params['beta'], self._params['gamma'], self._params['num_sweeps'], self._params['schedule'])
 
         # make init state generator --------------------------------
         if initial_state is None:

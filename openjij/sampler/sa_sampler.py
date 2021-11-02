@@ -127,7 +127,8 @@ class SASampler(BaseSampler):
         return cxxjij_schedule
 
     def sample(self,
-               bqm: openjij.BinaryQuadraticModel,
+               bqm: Union[openjij.BinaryQuadraticModel,
+                          dimod.BinaryQuadraticModel],
                beta_min: Optional[float] = None,
                beta_max: Optional[float] = None,
                num_sweeps: Optional[int] = None,
@@ -257,11 +258,20 @@ class SASampler(BaseSampler):
 
         return response
 
-    def sample_hubo(self, J, vartype=None,
-                    beta_min=None, beta_max=None,
-                    num_sweeps=None, num_reads=None, schedule=None,
-                    initial_state=None, updater=None,
-                    reinitialize_state=True, seed=None):
+    def sample_hubo(self,
+                    J: Union[dict,
+                             openjij.BinaryPolynomialModel,
+                             cimod.BinaryPolynomialModel],
+                    vartype: Optional[str] = None,
+                    beta_min: Optional[float] = None,
+                    beta_max: Optional[float] = None,
+                    num_sweeps: Optional[int] = None,
+                    num_reads: Optional[int] = None,
+                    schedule: Optional[list[list[float, int]]] = None,
+                    initial_state: Optional[Union[list, dict]] = None,
+                    updater: Optional[str] = None,
+                    reinitialize_state: Optional[bool] = None,
+                    seed: Optional[int] = None) -> openjij.sampler.response.Response:
 
         """sampling from higher order unconstrainted binary optimization.
 
@@ -292,6 +302,11 @@ class SASampler(BaseSampler):
                 >>> response = sampler.sample_hubo(J, "BINARY")
         """
 
+        # Set default parameters
+        if reinitialize_state is None:
+            reinitialize_state = True
+
+        # Set model
         if str(type(J)) == str(type(openjij.BinaryPolynomialModel({}, "SPIN"))):
             if vartype is not None:
                 raise ValueError("vartype must not be specified")
