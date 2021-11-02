@@ -24,6 +24,7 @@ from cimod.utils import get_state_and_energy
 
 import time
 
+
 def measure_time(func):
     """Decorator for measuring calculation time.
 
@@ -50,12 +51,12 @@ class BaseSampler(dimod.Sampler):
 
     def _set_params(self, **kwargs):
         for key, value in kwargs.items():
-            if key not in self.default_params:
+            if key not in self._default_params:
                 raise ValueError("Unknown parameters detected")
             if value is None:
-                self.params[key] = self.default_params[key]
+                self._params[key] = self._default_params[key]
             else:
-                self.params[key] = value
+                self._params[key] = value
 
     def _sampling(self, **kwargs):
         pass
@@ -85,10 +86,10 @@ class BaseSampler(dimod.Sampler):
         # set algorithm function and set random seed ----
         if seed is None:
             def sampling_algorithm(system):
-                return algorithm(system, self.params['schedule'])
+                return algorithm(system, self._params['schedule'])
         else:
             def sampling_algorithm(system):
-                return algorithm(system, seed, self.params['schedule'])
+                return algorithm(system, seed, self._params['schedule'])
         # ---- set algorithm function and set random seed
 
         # setting of response class
@@ -99,7 +100,7 @@ class BaseSampler(dimod.Sampler):
         system_info = {'system': []}
         @measure_time
         def exec_sampling():
-            for _ in range(self.params['num_reads']):
+            for _ in range(self._params['num_reads']):
                 # Re-initialize at each sampling
                 # In reverse annealing,
                 # user can use previous result (if re-initilize is set to False)

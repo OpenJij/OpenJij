@@ -16,15 +16,16 @@ import numpy as np
 import openjij
 import openjij.model
 from openjij.sampler import BaseSampler
-from openjij.utils.decorator import deprecated_alias
 from openjij.utils.graph_utils import qubo_to_ising
 import cxxjij
 import dimod
 import cimod
+from typing import Union, Optional
 
 """
 This module contains Simulated Annealing sampler.
 """
+
 
 class SASampler(BaseSampler):
     """Sampler with Simulated Annealing (SA).
@@ -54,7 +55,6 @@ class SASampler(BaseSampler):
         - not list or numpy.array.
         - not list of tuple (beta : float, step_length : int).
         - beta is less than zero.
-
     """
 
     @property
@@ -65,11 +65,19 @@ class SASampler(BaseSampler):
         }
 
     def __init__(self,
-                 beta_min=None, beta_max=None,
-                 num_sweeps=1000, schedule=None,
-                 num_reads=1):
+                 beta_min: Optional[float] = None,
+                 beta_max: Optional[float] = None,
+                 num_sweeps: Optional[int] = None,
+                 num_reads: Optional[int] = None,
+                 schedule: Optional[list[list[float, int]]] = None):
 
-        self.default_params = {
+        # Set default parameters
+        if num_sweeps is None:
+            num_sweeps = 1000
+        if num_reads is None:
+            num_reads = 1
+
+        self._default_params = {
             'beta_min': beta_min,
             'beta_max': beta_max,
             'num_sweeps': num_sweeps,
@@ -77,13 +85,7 @@ class SASampler(BaseSampler):
             'num_reads': num_reads
         }
 
-        self.params = {
-            'beta_min': beta_min,
-            'beta_max': beta_max,
-            'num_sweeps': num_sweeps,
-            'schedule': schedule,
-            'num_reads': num_reads
-        }
+        self._params = self._default_params.copy()
 
         self._make_system = {
             'singlespinflip': cxxjij.system.make_classical_ising,
@@ -124,12 +126,18 @@ class SASampler(BaseSampler):
 
         return cxxjij_schedule
 
-    def sample(self, bqm, beta_min=None, beta_max=None,
-                     num_sweeps=None, num_reads=None, schedule=None,
-                     initial_state=None, updater=None,
-                     sparse=False,
-                     reinitialize_state=True, seed=None,
-                     ):
+    def sample(self,
+               bqm: openjij.BinaryQuadraticModel,
+               beta_min: Optional[float] = None,
+               beta_max: Optional[float] = None,
+               num_sweeps: Optional[int] = None,
+               num_reads: Optional[int] = None,
+               schedule: Optional[list[list[float, int]]] = None,
+               initial_state: Optional[Union[list, dict]] = None,
+               updater: Optional[str] = None,
+               sparse: Optional[bool] = None,
+               reinitialize_state: Optional[bool] = None,
+               seed: Optional[int] = None) -> openjij.sampler.response.Response:
 
         """sample Ising model.
 
@@ -164,9 +172,13 @@ class SASampler(BaseSampler):
             
         """
 
-        #Set default updater
+        # Set default parameters
         if updater is None:
-            updater='single spin flip'
+            updater = 'single spin flip'
+        if sparse is None:
+            sparse = False
+        if reinitialize_state is None:
+            reinitialize_state = True
 
         _updater_name = updater.lower().replace('_', '').replace(' ', '')
         # swendsen wang algorithm runs only on sparse ising graphs.
@@ -194,20 +206,20 @@ class SASampler(BaseSampler):
             )
 
         # set annealing schedule -------------------------------
-        if self.params['schedule'] is None:
-            self.params['schedule'], beta_range = geometric_ising_beta_schedule(
+        if self._params['schedule'] is None:
+            self._params['schedule'], beta_range = geometric_ising_beta_schedule(
                 model=model,
-                beta_max=self.params['beta_max'],
-                beta_min=self.params['beta_min'],
-                num_sweeps=self.params['num_sweeps']
+                beta_max=self._params['beta_max'],
+                beta_min=self._params['beta_min'],
+                num_sweeps=self._params['num_sweeps']
             )
             self.schedule_info = {
                 'beta_max': beta_range[0],
                 'beta_min': beta_range[1],
-                'num_sweeps': self.params['num_sweeps']
+                'num_sweeps': self._params['num_sweeps']
             }
         else:
-            self.params['schedule'] = self._convert_validation_schedule(self.params['schedule'])
+            self._params['schedule'] = self._convert_validation_schedule(self._params['schedule'])
             self.schedule_info = {'schedule': 'custom schedule'}
         # ------------------------------- set annealing schedule
 
@@ -334,15 +346,15 @@ class SASampler(BaseSampler):
             )
 
         # set annealing schedule -------------------------------
-        if self.params['schedule'] is None:
-            self.params['schedule'], beta_range = geometric_hubo_beta_schedule(
-                sa_system, self.params['beta_max'],
-                self.params['beta_min'], self.params['num_sweeps']
+        if self._params['schedule'] is None:
+            self._params['schedule'], beta_range = geometric_hubo_beta_schedule(
+                sa_system, self._params['beta_max'],
+                self._params['beta_min'], self._params['num_sweeps']
             )
             self.schedule_info = {
                 'beta_max': beta_range[0],
                 'beta_min': beta_range[1],
-                'num_sweeps': self.params['num_sweeps']
+                'num_sweeps': self._params['num_sweeps']
             }
         else:
             self.schedule_info = {'schedule': 'custom schedule'}
