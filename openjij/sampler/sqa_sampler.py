@@ -141,7 +141,7 @@ class SQASampler(BaseSampler):
         return state, info
 
     def sample(self,
-               bqm: Union[openjij.BinaryQuadraticModel,
+               bqm: Union['openjij.BinaryQuadraticModel',
                           dimod.BinaryQuadraticModel],
                beta: Optional[float] = None,
                gamma: Optional[float] = None,
@@ -153,7 +153,7 @@ class SQASampler(BaseSampler):
                updater: Optional[str] = None,
                sparse: Optional[bool] = None,
                reinitialize_state: Optional[bool] = None,
-               seed: Optional[int] = None):
+               seed: Optional[int] = None) -> 'openjij.sampler.response.Response':
 
         """Sampling from the Ising model
 

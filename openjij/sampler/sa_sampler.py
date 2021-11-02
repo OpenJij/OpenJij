@@ -14,7 +14,6 @@
 
 import numpy as np
 import openjij
-import openjij.model
 from openjij.sampler import BaseSampler
 from openjij.utils.graph_utils import qubo_to_ising
 import cxxjij
@@ -127,7 +126,7 @@ class SASampler(BaseSampler):
         return cxxjij_schedule
 
     def sample(self,
-               bqm: Union[openjij.BinaryQuadraticModel,
+               bqm: Union['openjij.BinaryQuadraticModel',
                           dimod.BinaryQuadraticModel],
                beta_min: Optional[float] = None,
                beta_max: Optional[float] = None,
@@ -138,7 +137,7 @@ class SASampler(BaseSampler):
                updater: Optional[str] = None,
                sparse: Optional[bool] = None,
                reinitialize_state: Optional[bool] = None,
-               seed: Optional[int] = None) -> openjij.sampler.response.Response:
+               seed: Optional[int] = None) -> 'openjij.sampler.response.Response':
 
         """sample Ising model.
 
@@ -189,11 +188,11 @@ class SASampler(BaseSampler):
             sparse = False
 
         if type(bqm) == dimod.BinaryQuadraticModel:
-            bqm = openjij.BinaryQuadraticModel(dict(bqm.linear), dict(bqm.quadratic), bqm.offset, bqm.vartype, sparse=sparse)
+            bqm = openjij.model.BinaryQuadraticModel(dict(bqm.linear), dict(bqm.quadratic), bqm.offset, bqm.vartype, sparse=sparse)
 
         if sparse and bqm.sparse == False:
             # convert to sparse bqm
-            bqm = openjij.BinaryQuadraticModel(bqm.linear, bqm.quadratic, bqm.offset, bqm.vartype, sparse=True)
+            bqm = openjij.model.BinaryQuadraticModel(bqm.linear, bqm.quadratic, bqm.offset, bqm.vartype, sparse=True)
 
         # alias 
         model = bqm
@@ -260,7 +259,7 @@ class SASampler(BaseSampler):
 
     def sample_hubo(self,
                     J: Union[dict,
-                             openjij.BinaryPolynomialModel,
+                             'openjij.BinaryPolynomialModel',
                              cimod.BinaryPolynomialModel],
                     vartype: Optional[str] = None,
                     beta_min: Optional[float] = None,
@@ -271,7 +270,7 @@ class SASampler(BaseSampler):
                     initial_state: Optional[Union[list, dict]] = None,
                     updater: Optional[str] = None,
                     reinitialize_state: Optional[bool] = None,
-                    seed: Optional[int] = None) -> openjij.sampler.response.Response:
+                    seed: Optional[int] = None) -> 'openjij.sampler.response.Response':
 
         """sampling from higher order unconstrainted binary optimization.
 
@@ -307,7 +306,7 @@ class SASampler(BaseSampler):
             reinitialize_state = True
 
         # Set model
-        if str(type(J)) == str(type(openjij.BinaryPolynomialModel({}, "SPIN"))):
+        if str(type(J)) == str(type(openjij.model.BinaryPolynomialModel({}, "SPIN"))):
             if vartype is not None:
                 raise ValueError("vartype must not be specified")
             model = J
@@ -316,7 +315,7 @@ class SASampler(BaseSampler):
                 raise ValueError("vartype must not be specified")
             model = J
         else:
-            model = openjij.BinaryPolynomialModel(J, vartype)
+            model = openjij.model.BinaryPolynomialModel(J, vartype)
   
         # make init state generator --------------------------------
         if initial_state is None:
@@ -391,7 +390,7 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
     """make geometric cooling beta schedule
 
     Args:
-        model (openjij.BinaryQuadraticModel)
+        model (openjij.model.BinaryQuadraticModel)
         beta_max (float, optional): [description]. Defaults to None.
         beta_min (float, optional): [description]. Defaults to None.
         num_sweeps (int, optional): [description]. Defaults to 1000.
