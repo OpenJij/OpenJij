@@ -49,7 +49,7 @@ class SQASampler(BaseSampler):
                  gamma: Optional[float] = None,
                  num_sweeps: Optional[int] = None,
                  num_reads: Optional[int] = None,
-                 schedule: Optional[list[list[float, int]]] = None,
+                 schedule: Optional[list] = None,
                  trotter: Optional[int] = None):
 
         # Set default parameters
@@ -146,7 +146,7 @@ class SQASampler(BaseSampler):
                beta: Optional[float] = None,
                gamma: Optional[float] = None,
                num_sweeps: Optional[int] = None,
-               schedule: Optional[list[list[float, int]]] = None,
+               schedule: Optional[list] = None,
                trotter: Optional[int] = None,
                num_reads: Optional[int] = None,
                initial_state: Optional[Union[list, dict]] = None,

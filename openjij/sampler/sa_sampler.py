@@ -68,7 +68,7 @@ class SASampler(BaseSampler):
                  beta_max: Optional[float] = None,
                  num_sweeps: Optional[int] = None,
                  num_reads: Optional[int] = None,
-                 schedule: Optional[list[list[float, int]]] = None):
+                 schedule: Optional[list] = None):
 
         # Set default parameters
         if num_sweeps is None:
@@ -132,7 +132,7 @@ class SASampler(BaseSampler):
                beta_max: Optional[float] = None,
                num_sweeps: Optional[int] = None,
                num_reads: Optional[int] = None,
-               schedule: Optional[list[list[float, int]]] = None,
+               schedule: Optional[list] = None,
                initial_state: Optional[Union[list, dict]] = None,
                updater: Optional[str] = None,
                sparse: Optional[bool] = None,
@@ -266,7 +266,7 @@ class SASampler(BaseSampler):
                     beta_max: Optional[float] = None,
                     num_sweeps: Optional[int] = None,
                     num_reads: Optional[int] = None,
-                    schedule: Optional[list[list[float, int]]] = None,
+                    schedule: Optional[list] = None,
                     initial_state: Optional[Union[list, dict]] = None,
                     updater: Optional[str] = None,
                     reinitialize_state: Optional[bool] = None,
