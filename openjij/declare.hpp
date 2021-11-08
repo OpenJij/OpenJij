@@ -233,7 +233,6 @@ inline void declare_ClassicalIsingPolynomial(py::module &m, const std::string& g
    .def(py::init<const graph::Spins&, const GraphType&, const cimod::Vartype>(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
    .def(py::init<const graph::Spins&, const GraphType&, const std::string   >(), "init_variables"_a, "init_interaction"_a, "vartype"_a)
    .def(py::init([](const graph::Spins& init_spins, const py::object& obj){return std::unique_ptr<CIP>(new CIP(init_spins, static_cast<nlohmann::json>(obj)));}),"init_spin"_a, "obj"_a)
-   .def_readonly("vartype"      , &CIP::vartype      )
    .def_readonly("variables"    , &CIP::variables    )
    .def_readonly("num_variables", &CIP::num_variables)
    .def("reset_variables"       , &CIP::reset_variables, "init_variables"_a)
