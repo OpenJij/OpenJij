@@ -25,7 +25,9 @@
 
 PYBIND11_MODULE(cxxjij, m){
    m.doc() = "openjij is a framework for ising and qubo";
-   
+
+   py::module_::import("cxxcimod");
+
    /**********************************************************
     //namespace graph
     **********************************************************/
