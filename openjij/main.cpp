@@ -25,7 +25,7 @@
 
 PYBIND11_MODULE(cxxjij, m){
    m.doc() = "openjij is a framework for ising and qubo";
-   
+
    /**********************************************************
     //namespace graph
     **********************************************************/
@@ -128,9 +128,6 @@ PYBIND11_MODULE(cxxjij, m){
    
    m_utility.def("make_transverse_field_schedule_list", &openjij::utility::make_transverse_field_schedule_list,
                  "beta"_a, "one_mc_step"_a, "num_call_updater"_a);
-   
-   
-   
    
    /**********************************************************
     //namespace result

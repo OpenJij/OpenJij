@@ -41,7 +41,7 @@ const graph::Spins get_solution(const system::ClassicalIsing<GraphType>& system)
    //convert from Eigen::Vector to std::vector
    graph::Spins ret_spins(system.num_spins);
    for(std::size_t i=0; i<system.num_spins; i++){
-      ret_spins[i] = system.spin(i)*system.spin(system.num_spins);
+      ret_spins[i] = static_cast<graph::Spin>(system.spin(i)*system.spin(system.num_spins));
    }
    return ret_spins;
 }
@@ -75,7 +75,7 @@ const graph::Spins get_solution(const system::TransverseIsing<GraphType>& system
    //convert from Eigen::Vector to std::vector
    graph::Spins ret_spins(system.num_classical_spins);
    for(std::size_t i=0; i<system.num_classical_spins; i++){
-      ret_spins[i] = spins(i, minimum_trotter);
+      ret_spins[i] = static_cast<graph::Spin>(spins(i, minimum_trotter));
    }
    return ret_spins;
 }
