@@ -111,15 +111,15 @@ class HUBOTest(unittest.TestCase):
         K = {}
         K[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29] = -1
         true_energy = -1
-        response = oj.SASampler().sample_hubo(K, vartype="BINARY", seed = 3)
+        response = oj.SASampler().sample_hubo(K, vartype="BINARY", seed = 3, updater="k-local")
         self.assertAlmostEqual(true_energy, response.energies[0])
 
         bpm_oj = oj.BinaryPolynomialModel(K, "BINARY")
-        response = oj.SASampler().sample_hubo(bpm_oj, seed = 3)
+        response = oj.SASampler().sample_hubo(bpm_oj, seed = 3, updater="k-local")
         self.assertAlmostEqual(true_energy, response.energies[0])
 
         bpm_ci = cimod.BinaryPolynomialModel(K, "BINARY")
-        response = oj.SASampler().sample_hubo(bpm_ci, seed = 3)
+        response = oj.SASampler().sample_hubo(bpm_ci, seed = 3, updater="k-local")
         self.assertAlmostEqual(true_energy, response.energies[0])
 
     def test_SASampler_hubo_binary_3(self):
@@ -128,15 +128,15 @@ class HUBOTest(unittest.TestCase):
         K[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,   17,18,19,20,21,22,23,24,25,26,27,28,29] = -1
         true_energy = -1
 
-        response = oj.SASampler().sample_hubo(K, vartype="BINARY", seed = 3)
+        response = oj.SASampler().sample_hubo(K, vartype="BINARY", seed = 3, updater="k-local")
         self.assertAlmostEqual(true_energy, response.energies[0])
 
         bpm_oj = oj.BinaryPolynomialModel(K, "BINARY")
-        response = oj.SASampler().sample_hubo(bpm_oj, seed = 3)
+        response = oj.SASampler().sample_hubo(bpm_oj, seed = 3, updater="k-local")
         self.assertAlmostEqual(true_energy, response.energies[0])
 
         bpm_ci = cimod.BinaryPolynomialModel(K, "BINARY")
-        response = oj.SASampler().sample_hubo(bpm_ci, seed = 3)
+        response = oj.SASampler().sample_hubo(bpm_ci, seed = 3, updater="k-local")
         self.assertAlmostEqual(true_energy, response.energies[0])
     
     def test_SASampler_hubo_binary_4(self):
@@ -146,15 +146,15 @@ class HUBOTest(unittest.TestCase):
         K[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,   24,25,26,27,28,29] = +1
         K[0,1,2,3,4,5,6,7,8,  10,11,12,13,14,15,16,17,18,19,20,21,22,   24,25,26,27,28,29] = -1
         true_energy = -1
-        response = oj.SASampler().sample_hubo(K, vartype="BINARY", seed = 3)
+        response = oj.SASampler().sample_hubo(K, vartype="BINARY", seed = 3, updater="k-local")
         self.assertAlmostEqual(true_energy, response.energies[0])  
 
         bpm_oj = oj.BinaryPolynomialModel(K, "BINARY")
-        response = oj.SASampler().sample_hubo(bpm_oj, seed = 3)
+        response = oj.SASampler().sample_hubo(bpm_oj, seed = 3, updater="k-local")
         self.assertAlmostEqual(true_energy, response.energies[0])
 
         bpm_ci = cimod.BinaryPolynomialModel(K, "BINARY")
-        response = oj.SASampler().sample_hubo(bpm_ci, seed = 3)
+        response = oj.SASampler().sample_hubo(bpm_ci, seed = 3, updater="k-local")
         self.assertAlmostEqual(true_energy, response.energies[0])
     
     def test_hubo_constructor(self):

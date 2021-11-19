@@ -341,10 +341,10 @@ class SASampler(BaseSampler):
             else:
                 raise ValueError("Unknown updater name")
         elif model.vartype == openjij.BINARY:
-            if updater == "k-local" or updater is None:
+            if updater == "k-local":
                 sa_system = cxxjij.system.make_k_local_polynomial(_generate_init_state(), model.to_serializable())
                 algorithm = cxxjij.algorithm.Algorithm_KLocal_run
-            elif updater == "single spin flip":
+            elif updater is None or updater == "single spin flip":
                 sa_system = cxxjij.system.make_classical_ising_polynomial(_generate_init_state(), model.to_serializable())
                 algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
             else:
