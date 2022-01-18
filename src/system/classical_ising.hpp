@@ -24,6 +24,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
+#include <graph/cimod/src/utilities.hpp>
 
 namespace openjij {
     namespace system {
@@ -61,6 +62,7 @@ namespace openjij {
                     : spin(utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(init_spin)),
                     interaction(init_interaction.get_interactions()),
                     num_spins(init_interaction.get_num_spins()){
+                        cimod::CheckVariables(init_spin, cimod::Vartype::SPIN);
                         assert(init_spin.size() == init_interaction.get_num_spins());
                         reset_dE();
                     }
