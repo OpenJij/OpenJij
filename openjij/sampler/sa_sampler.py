@@ -227,9 +227,41 @@ class SASampler(BaseSampler):
         if initial_state is None:
             def _generate_init_state(): return ising_graph.gen_spin(seed) if seed != None else ising_graph.gen_spin()
         else:
+            temp_initial_state = []
             if isinstance(initial_state, dict):
-                initial_state = [initial_state[k] for k in model.variables]
-            _init_state = np.array(initial_state)
+                if model.vartype == openjij.BINARY:
+                    for k in model.variables:
+                        v = initial_state[k]
+                        if v != 0 and v != 1:
+                            raise RuntimeError("The initial variables must be 0 or 1.")
+                        temp_initial_state.append(2*v - 1)
+                elif model.vartype == openjij.SPIN:
+                    for k in model.variables:
+                        v = initial_state[k]
+                        if v != -1 and v != 1:
+                            raise RuntimeError("The initial variables must be -1 or +1.")
+                        temp_initial_state.append(v)
+                else:
+                    raise RuntimeError("Unknown vartype detected.")
+            elif isinstance(initial_state, (list, tuple)):
+                if model.vartype == openjij.BINARY:
+                    for k in range(len(model.variables)):
+                        v = initial_state[k]
+                        if v != 0 and v != 1:
+                            raise RuntimeError("The initial variables must be 0 or 1.")
+                        temp_initial_state.append(2*v - 1)
+                elif model.vartype == openjij.SPIN:
+                    for k in range(len(model.variables)):
+                        v = initial_state[k]
+                        if v != -1 and v != 1:
+                            raise RuntimeError("The initial variables must be -1 or +1.")
+                        temp_initial_state.append(v)
+                else:
+                    raise RuntimeError("Unknown vartype detected.")
+            else:
+                raise RuntimeError("Unsupported type of initial_state.")
+
+            _init_state = np.array(temp_initial_state)
 
             # validate initial_state size
             if len(initial_state) != ising_graph.size():
