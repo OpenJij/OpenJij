@@ -132,7 +132,7 @@ jobs:
         with:
             install: true
       - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
-        uses: pypa/cibuildwheel@v@v2.3.1
+        uses: pypa/cibuildwheel@v2.3.1
         env:
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
           CIBW_BUILD: ${{matrix.CIBW_BUILD}}
