@@ -53,7 +53,7 @@ public:
    //! @param poly_graph graph::Polynomial<FloatType>& (Polynomial graph class). The initial interacrtions.
    //! @param init_vartype const cimod::Vartype. The model's variable type. SPIN or BINARY.
    ClassicalIsingPolynomial(const graph::Spins &init_variables, const graph::Polynomial<FloatType> &poly_graph, const cimod::Vartype init_vartype): num_variables(poly_graph.size()), variables(init_variables), vartype(init_vartype) {
-      CheckVariables(variables);
+      cimod::CheckVariables(variables, vartype);
       SetInteractions(poly_graph);
       SetAdj();
       ResetZeroCount();
@@ -68,7 +68,7 @@ public:
    //! @param poly_graph graph::Polynomial<FloatType>& (Polynomial graph class). The initial interacrtions.
    //! @param init_vartype const std::string. The model's variable type. "SPIN" or "BINARY".
    ClassicalIsingPolynomial(const graph::Spins &init_variables, const graph::Polynomial<FloatType> &poly_graph, const std::string init_vartype): num_variables(poly_graph.size()), variables(init_variables), vartype(ConvertVartype(init_vartype)) {
-      CheckVariables(variables);
+      cimod::CheckVariables(variables, vartype);
       SetInteractions(poly_graph);
       SetAdj();
       ResetZeroCount();
@@ -82,7 +82,7 @@ public:
    //! @param init_variables graph::Spins& or graph::Binaries& (both are equal). The initial spin/binary configurations.
    //! @param j const nlohmann::json object
    ClassicalIsingPolynomial(const graph::Spins &init_variables, const nlohmann::json &j):num_variables(init_variables.size()), variables(init_variables), vartype(j.at("vartype") == "SPIN" ? cimod::Vartype::SPIN: cimod::Vartype::BINARY) {
-      CheckVariables(variables);
+      cimod::CheckVariables(variables, vartype);
       const auto &v_k_v = graph::json_parse_polynomial<FloatType>(j);
       const auto &poly_key_list   = std::get<0>(v_k_v);
       const auto &poly_value_list = std::get<1>(v_k_v);
@@ -125,7 +125,7 @@ public:
       if (init_variables.size() != variables.size()) {
          throw std::runtime_error("The size of initial spins/binaries does not equal to system size");
       }
-      CheckVariables(init_variables);
+      cimod::CheckVariables(init_variables, vartype);
       if (vartype == cimod::Vartype::SPIN) {
          for (const auto &index_variable: active_variables_) {
             if (variables[index_variable] != init_variables[index_variable]) {
@@ -422,29 +422,7 @@ private:
          throw std::runtime_error("Unknown vartype detected");
       }
    }
-   
-   //! @brief Check if variables are valid
-   //! @param init_variables const graph::Spins&
-   void CheckVariables(const graph::Spins &init_variables) const {
-      if (vartype == cimod::Vartype::SPIN) {
-         for (const auto &v: init_variables) {
-            if (!(v == -1 || v == +1)) {
-               throw std::runtime_error("The initial variables must be -1 or +1");
-            }
-         }
-      }
-      else if (vartype == cimod::Vartype::BINARY) {
-         for (const auto &v: init_variables) {
-            if (!(v == 0 || v == 1)) {
-               throw std::runtime_error("The initial variables must be 0 or 1");
-            }
-         }
-      }
-      else {
-         throw std::runtime_error("Unknown vartype detected");
-      }
-   }
-   
+      
    //! @brief Return the key and value of the absolute maximum interaction.
    //! @return The key and value of the absolute maximum interaction as std::pair.
    std::pair<std::vector<graph::Index>, FloatType> FindMaxInteraction() const {
