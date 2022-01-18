@@ -178,7 +178,7 @@ setup(
     description='Framework for the Ising model and QUBO',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    python_requires = ">=3.7, <3.10",
+    python_requires = ">=3.7, <3.11",
     setup_requires=[
         'pytest-runner', 
         'setuptools-git-versioning', 
@@ -215,6 +215,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ],
     platforms=[
                 'Operating System :: Microsoft :: Windows :: Windows 10',
