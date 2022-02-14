@@ -21,6 +21,9 @@
 #include <nlohmann/json.hpp>
 #include <graph/json/parse.hpp>
 #include <utility/thres_hold.hpp>
+#include <iostream>
+#include <iomanip>
+#include <limits>
 
 namespace openjij {
 namespace system {
@@ -446,17 +449,36 @@ private:
       if (poly_key_list_.size() == 0) {
          throw std::runtime_error("Interactions are empty.");
       }
-      FloatType min_val = poly_value_list_[0];
-      std::vector<graph::Index> min_key = poly_key_list_[0];
+      FloatType min_val = 0.0;
+      std::vector<graph::Index> min_key;
+
+      // Set initial value larger than threshold.
+      bool flag_success_initialize = false;
       for (std::size_t i = 0; i < poly_key_list_.size(); ++i) {
-         if (poly_value_list_[i] != 0.0 && std::abs(poly_value_list_[i]) < std::abs(min_val) && threshold < std::abs(poly_value_list_[i])) {
+         if (std::abs(threshold) < std::abs(poly_value_list_[i])) {
+            min_val = poly_value_list_[i];
+            min_key = poly_key_list_[i];
+            flag_success_initialize = true;
+            break;
+         }
+      }
+      if (!flag_success_initialize) {
+         std::stringstream ss;
+         ss << "No interactions larger than threshold=" << std::abs(threshold) << std::endl;
+         throw std::runtime_error(ss.str());
+      }
+
+      for (std::size_t i = 0; i < poly_key_list_.size(); ++i) {
+         if (std::abs(threshold) < std::abs(poly_value_list_[i]) && std::abs(poly_value_list_[i]) < std::abs(min_val)) {
             min_val = poly_value_list_[i];
             min_key = poly_key_list_[i];
          }
       }
       
-      if (std::abs(min_val) <= threshold) {
-         throw std::runtime_error("No minimum value in interactions");
+      if (std::abs(min_val) <= std::abs(threshold)) {
+         std::stringstream ss;
+         ss << "Unknown error in " << __func__ << std::endl;
+         throw std::runtime_error(ss.str());
       }
       return std::pair<std::vector<graph::Index>, FloatType>(min_key, min_val);
    }
