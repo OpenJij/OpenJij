@@ -131,7 +131,7 @@ class BaseSampler(dimod.Sampler):
 
         # construct response instance
         response = openjij.Response.from_samples(
-            (states, model.indices), model.vartype, energies,
+            states, model.vartype, energies,
             info=system_info
         )
 
