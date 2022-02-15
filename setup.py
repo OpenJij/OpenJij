@@ -184,7 +184,7 @@ setup(
         'setuptools-git-versioning', 
     ],
     install_requires=[
-        'dimod >= 0.9.1, <0.10.13',
+        'dimod >= 0.9.1',
         'numpy >= 1.18.4, !=1.21.0, !=1.21.1', 
         'scipy', 
         'requests',
