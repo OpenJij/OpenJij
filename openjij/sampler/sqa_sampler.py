@@ -226,10 +226,13 @@ class SQASampler(BaseSampler):
 
             # convert to spin variable
             if bqm.vartype == openjij.BINARY:
-                for k,v in enumerate(initial_state):
+                temp_initial_state = []
+                for v in initial_state:
                     if v != 0 and v != 1:
                         raise RuntimeError("The initial variables must be 0 or 1 if vartype is BINARY.")
-                    initial_state[k] = 2 * v - 1
+                    temp_initial_state.append(2 * v - 1)
+
+                initial_state = temp_initial_state
 
             _init_state = np.array(initial_state)
 
