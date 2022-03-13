@@ -114,5 +114,5 @@ The result spins are [1 1 1 1 1 ]
 This product is maintained by Jij Inc.
 
 **Please visit our website for more information!**
-https://j-ij.com/
+https://www.j-ij.com/
 
