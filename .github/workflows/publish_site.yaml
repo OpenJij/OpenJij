@@ -1,0 +1,25 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - released
+defaults:
+  run:
+    shell: bash
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    name: Publish
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set Secret
+        working-directory: ./www
+        run: |
+           sed -i 's/ACCOUNT_ID/${{ secrets.CLOUDFLARE_ACCOUANT_ID }}/' ./wrangler.toml
+      - name: Publish
+        uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          workingDirectory: ./www
