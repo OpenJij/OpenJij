@@ -1,0 +1,640 @@
+body {
+  font-family: "Helvetica Neue";
+}
+
+div,
+p,
+h1,
+h2,
+ul,
+li,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.section {
+  padding: 100px 0;
+}
+
+.header-flex {
+  color: #929292;
+  padding: 10px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+}
+
+.header-flex-item {
+  color: #878787;
+}
+
+.header-logo-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.header-link {
+  margin-right: 20px;
+}
+
+.header-link a {
+  color: #878787 !important;
+}
+
+.header-link:hover {
+  text-decoration: underline;
+}
+
+.logo-image {
+  width: 24px;
+}
+
+.logo-text {
+  margin-left: 5px;
+}
+
+.top-section {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.top-text {
+  color: #6b7683;
+  text-align: center;
+  position: absolute;
+  font-size: 16px;
+  top: 64%;
+  max-width: 420px;
+  line-height: 1.7;
+}
+
+.top-text-install {
+  color: #6b7683;
+  border-bottom: 1px solid #6b7683;
+  cursor: pointer;
+}
+
+.top-section-image-sp {
+  display: none;
+}
+
+.page-link-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.page-image-wrap {
+  box-shadow: 0 0 8px gray;
+}
+
+.doc-image {
+  width: 265px;
+  height: 192px;
+}
+
+.page-link-first {
+  margin-right: 10px;
+}
+
+.page-link-second {
+  margin: 0 10px;
+}
+
+.page-link-third {
+  margin-left: 10px;
+}
+
+.button-gray {
+  width: 187px;
+  height: 33px;
+  border-radius: 20px;
+  color: #6b7683;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  cursor: pointer;
+  margin: 10px auto;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    0 2px 2px rgba(0, 0, 0, 0.19);
+  font-weight: bold;
+  /* border: 1px solid#4f4f4f; */
+}
+
+.button-gray:active {
+  border-bottom: solid 2px #808080;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+.button-red {
+  width: 187px;
+  height: 33px;
+  border-radius: 20px;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ed6d57;
+  cursor: pointer;
+  margin: 20px auto;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    0 2px 2px rgba(0, 0, 0, 0.19);
+  font-weight: bold;
+}
+
+.button-red:active {
+  border-bottom: solid 2px #ed6d57;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+.install-area-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 0 auto;
+  background-color: black;
+  background: linear-gradient(to right, #5e5f5e, #d5d6d6);
+}
+
+.install-section {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.section-title {
+  color: #fff;
+}
+
+.install-code {
+  background-color: #fff;
+  border-radius: 20px;
+  height: 100px;
+  width: 812px;
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-left: 20px;
+}
+
+.code-area-wrap {
+  margin: 0 auto;
+}
+
+.tutorial-section {
+  margin: 0 auto;
+  width: 832px;
+}
+
+.tutorial-section-title {
+  color: #ed6d57;
+}
+
+.detail-area-wrap {
+  display: flex;
+  margin-top: 20px;
+}
+
+.detail-image-wrap {
+  box-shadow: 0 0 8px gray;
+}
+
+.detail-area-image {
+  width: 425px;
+  height: 255px;
+}
+
+.detail-text-area {
+  width: 412px;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.detail-text {
+  color: #929292;
+  font-size: 16px;
+}
+
+.try-button {
+  width: 256px;
+  height: 51px;
+  border-radius: 30px;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #929292;
+  cursor: pointer;
+  margin: 20px auto;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    0 2px 2px rgba(0, 0, 0, 0.19);
+  font-weight: bold;
+}
+
+.try-button:active {
+  border-bottom: solid 2px #929292;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+.community-section {
+  width: 832px;
+}
+
+.community-area-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 0 auto;
+  background-color: black;
+  background: linear-gradient(to right, #ff8b83, #f12613);
+}
+
+.community-detail-text {
+  margin: 0 auto;
+  margin-top: 20px;
+  text-align: center;
+  color: #fff;
+  width: 583px;
+  font-size: 16px;
+}
+
+.join-slack-button {
+  width: 256px;
+  height: 51px;
+  border-radius: 30px;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin: 30px auto;
+  border: 2px solid #fff;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    0 2px 2px rgba(0, 0, 0, 0.19);
+  font-weight: bold;
+}
+
+.footer-flex {
+  color: #929292;
+  padding: 10px;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 100px;
+}
+
+.footer-info {
+  display: flex;
+  align-items: center;
+}
+
+.footer-flex-item {
+  color: #878787;
+}
+
+.footer-logo-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.footer-link {
+  margin-right: 20px;
+}
+
+.footer-link a {
+  color: #878787 !important;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+}
+
+.logo-github {
+  height: 20px;
+}
+
+.logo-slack {
+  height: 30px;
+}
+
+.logo-slack-white {
+  height: 17px;
+}
+
+/* 960px〜1279px：小型PC
+------------------------------ */
+@media screen and (min-width: 852px) and (max-width: 1279px) {
+  /* p {color: #00a099} */
+  .top-section-image-sp {
+    display: none;
+  }
+
+  .button-gray {
+    width: 187px;
+    height: 33px;
+    border-radius: 20px;
+    color: #6b7683;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    cursor: pointer;
+    margin: 10px auto;
+    margin-top: 0;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2),
+      0 2px 2px rgba(0, 0, 0, 0.19);
+    font-weight: bold;
+    border: 1px solid#4f4f4f;
+  }
+}
+
+/* 600px〜959px：タブレット
+------------------------------ */
+@media screen and (min-width: 600px) and (max-width: 851px) {
+  /* p {color: #008d36} */
+
+  .top-section-image-sp {
+    display: none;
+  }
+
+  .page-link-wrap {
+    flex-wrap: wrap;
+  }
+
+  .page-link-first {
+    margin: 0 10px;
+  }
+
+  .page-link-second {
+    margin: 0 10px;
+  }
+
+  .page-link-third {
+    margin: 0 10px;
+  }
+
+  .top-text {
+    top: 50%;
+    color: #666666;
+  }
+
+  .top-text-install {
+    color: #666666;
+  }
+
+  .install-code {
+    width: 500px;
+  }
+
+  .detail-area-wrap {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .detail-text-area {
+    padding-left: 0;
+    margin-top: 20px;
+  }
+
+  .tutorial-section {
+    width: 540px;
+  }
+
+  .community-section {
+    width: 540px;
+  }
+
+  .button-gray {
+    width: 187px;
+    height: 33px;
+    border-radius: 20px;
+    color: #6b7683;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    cursor: pointer;
+    margin: 10px auto;
+    margin-top: 0;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2),
+      0 2px 2px rgba(0, 0, 0, 0.19);
+    font-weight: bold;
+    border: 1px solid#4f4f4f;
+  }
+}
+
+/* 480px〜599px：SP横
+------------------------------ */
+@media screen and (min-width: 480px) and (max-width: 599px) {
+  /* p {color: #93c01e} */
+
+  .page-link-wrap {
+    flex-wrap: wrap;
+  }
+
+  .page-link-first {
+    margin: 0 10px;
+  }
+
+  .page-link-second {
+    margin: 0 10px;
+  }
+
+  .page-link-third {
+    margin: 0 10px;
+  }
+
+  .top-text {
+    top: 120%;
+    color: #666666;
+  }
+
+  .top-section-image-sp {
+    display: none;
+  }
+
+  .section.page-section-sp {
+    padding: 250px 0;
+    padding-bottom: 100px;
+  }
+
+  .top-text-install {
+    color: #666666;
+  }
+
+  .install-code {
+    width: 300px;
+  }
+
+  .detail-area-wrap {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .detail-text-area {
+    padding-left: 0;
+    margin-top: 20px;
+  }
+
+  .tutorial-section {
+    width: 340px;
+  }
+
+  .detail-area-image {
+    width: 340px;
+    /* height: 255px; */
+  }
+
+  .community-section {
+    width: 340px;
+  }
+
+  .community-detail-text {
+    width: 340px;
+  }
+
+  .button-gray {
+    width: 187px;
+    height: 33px;
+    border-radius: 20px;
+    color: #6b7683;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    cursor: pointer;
+    margin: 10px auto;
+    margin-top: 0;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2),
+      0 2px 2px rgba(0, 0, 0, 0.19);
+    font-weight: bold;
+    border: 1px solid#4f4f4f;
+  }
+}
+
+/* 〜479px：SP縦
+------------------------------ */
+@media screen and (max-width: 479px) {
+  /* p {color: #fcea0c} */
+
+  .top-section-image {
+    display: none;
+  }
+
+  /* .top-section {
+    background-image: url('./webp/OpenJijTopImage480.webp');
+  } */
+
+  .top-section-image-sp {
+    display: block;
+  }
+
+  .page-link-wrap {
+    flex-wrap: wrap;
+  }
+
+  .page-link-first {
+    margin: 0 10px;
+  }
+
+  .page-link-second {
+    margin: 0 10px;
+  }
+
+  .page-link-third {
+    margin: 0 10px;
+  }
+
+  .top-text {
+    top: 120%;
+    color: #666666;
+  }
+
+  .section.page-section-sp {
+    padding: 180px 0;
+    padding-bottom: 100px;
+  }
+
+  .top-text-install {
+    color: #666666;
+  }
+
+  .install-code {
+    width: 300px;
+  }
+
+  .detail-area-wrap {
+    flex-wrap: wrap;
+    /* justify-content: center; */
+  }
+
+  .detail-text-area {
+    padding-left: 0;
+    margin-top: 20px;
+  }
+
+  .tutorial-section {
+    width: 340px;
+  }
+
+  .detail-area-image {
+    width: 340px;
+    /* height: 255px; */
+  }
+
+  .community-section {
+    width: 340px;
+  }
+
+  .community-detail-text {
+    width: 340px;
+  }
+
+  .header-flex {
+    justify-content: start;
+  }
+
+  .header-info {
+    display: none;
+  }
+
+  .footer-flex {
+    justify-content: start;
+  }
+
+  .footer-info {
+    display: none;
+  }
+
+  .button-gray {
+    width: 187px;
+    height: 33px;
+    border-radius: 20px;
+    color: #6b7683;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    cursor: pointer;
+    margin: 10px auto;
+    margin-top: 0px;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2),
+      0 2px 2px rgba(0, 0, 0, 0.19);
+    font-weight: bold;
+    border: 1px solid#4f4f4f;
+  }
+}
