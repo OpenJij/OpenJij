@@ -8,6 +8,7 @@ on:
 defaults:
   run:
     shell: bash
+    
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -23,3 +24,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           workingDirectory: ./www
+
