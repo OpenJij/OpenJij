@@ -19,6 +19,7 @@ graft src
 graft external
 
 prune docs
+prune www
 prune example
 prune examples 
 prune project_template
