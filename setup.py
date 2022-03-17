@@ -106,6 +106,7 @@ class CMakeBuild(build_ext):
                 cmake_args += ['-DFORCE_USE_OMP=No']
             else:
                 print("FORCE_USE_OMP=Yes")
+                cmake_args += ['-DFORCE_USE_OMP=Yes']
             # Cross-compile support for macOS - respect ARCHFLAGS if set
             archs = re.findall(r"-arch (\S+)", os.environ.get("ARCHFLAGS", ""))
             if archs:
