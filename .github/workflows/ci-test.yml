@@ -29,7 +29,7 @@ jobs:
         python-version : ${{ matrix.python-version }}
     - name: Set up Python ${{ matrix.python-version }} cache 
       run: which python > ~/.python3_path.txt
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3
       with:
         path: ${{ matrix.path }}
         key: ${{ runner.os }}-python-${{ hashFiles('~/.python3_path.txt', 'setup.py') }}
