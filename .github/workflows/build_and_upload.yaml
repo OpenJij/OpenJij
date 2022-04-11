@@ -25,7 +25,7 @@ jobs:
       - name: Build sdist
         run: |
           python setup.py sdist
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: WHEEL
           path: dist/*.tar.gz
@@ -165,7 +165,7 @@ jobs:
               CFLAGS="-flto -O3 -pipe  -lcblas -lclapack -framework Accelerate -framework OpenCL"
               CXXFLAGS="-flto -O3 -pipe  -lcblas -lclapack -framework Accelerate -framework OpenCL"
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: WHEEL
           path: ./wheelhouse/*.whl
