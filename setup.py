@@ -144,7 +144,7 @@ class GoogleTestCommand(TestCommand):
 
     def distutils_dir_name(self, dname):
         """Returns the name of a distutils build directory"""
-        dir_name = "{dirname}.{platform}-{version[0]}.{version[1]}"
+        dir_name = "{dirname}.{platform}-cpython-{version[0]}{version[1]}"
         return dir_name.format(dirname=dname,
                                platform=sysconfig.get_platform(),
                                version=sys.version_info)
