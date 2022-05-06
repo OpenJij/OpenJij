@@ -128,7 +128,7 @@ jobs:
       - name: Set up Docker Buildx
         if: ${{ matrix.CIBW_PLATFORM  == 'linux' }}
         id: buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
         with:
             install: true
       - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
