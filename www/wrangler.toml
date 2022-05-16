@@ -1,10 +1,13 @@
 name = "openjij-web"
-type = 'webpack'
+type = "javascript"
 usage_model = 'unbound'
 workers_dev = true
-target_type = "webpack"
 compatibility_date = "2022-03-16"
 account_id = 'ACCOUNT_ID'
+minify = true
+main = "./worker/script.js"
+[build]
+command = "npm run build"
 [site]
 bucket = "./public"
 entry-point = "workers-site"
