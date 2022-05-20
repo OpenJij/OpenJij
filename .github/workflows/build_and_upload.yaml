@@ -146,14 +146,6 @@ jobs:
           CIBW_BEFORE_ALL_MACOS: ""
           CIBW_BEFORE_ALL_WINDOWS: ""
           
-          CIBW_BEFORE_BUILD: "pip install cmake"      
-          CIBW_BEFORE_BUILD_LINUX: "source scl_source enable devtoolset-10 && pip install cmake"
-          CIBW_BEFORE_BUILD_MACOS: "pip install cmake"      
-          CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel cmake"
-          
-          CIBW_REPAIR_WHEEL_COMMAND_MACOS: "echo '::group::delocate-listdeps' && delocate-listdeps --all --depending {wheel} && echo '::endgroup::' && echo '::group::delocate-wheel' && delocate-wheel  --require-archs {delocate_archs} -w {dest_dir} -v {wheel} && echo '::endgroup::' && echo '::group::delocate-listdeps' && delocate-listdeps --all --depending {wheel} && echo '::endgroup::'"
-          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel show {wheel} && delvewheel repair -w {dest_dir} {wheel}"
-          
           CIBW_MANYLINUX_X86_64_IMAGE: quay.io/pypa/manylinux2014_x86_64:latest
           CIBW_MANYLINUX_AARCH64_IMAGE: quay.io/pypa/manylinux2014_aarch64:latest
           
