@@ -15,4 +15,5 @@ if platform.system() == 'Darwin':
 
 setup(
     cmake_args = cmake_args,
+    cmake_install_dir='openjij',
 )
