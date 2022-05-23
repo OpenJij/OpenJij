@@ -70,6 +70,7 @@ jobs:
       shell: bash
       run: |
         export MACOSX_DEPLOYMENT_TARGET="11.0"
+        python setup.py build
         python setup.py test
     - name: C++ Test 
       shell: bash
