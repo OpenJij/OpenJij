@@ -42,9 +42,6 @@ add_custom_target(python
 if(APPLE)
     set_target_properties(
       cxxjij PROPERTIES INSTALL_RPATH "@loader_path/${CMAKE_INSTALL_LIBDIR}")
-else()
-    set_target_properties(
-      cxxjij PROPERTIES INSTALL_RPATH "$ORIGIN/${CMAKE_INSTALL_LIBDIR}")
 endif()  
 #install(TARGETS cxxjij DESTINATION .)
 #if(APPLE AND OpenMP_FOUND)
