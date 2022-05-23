@@ -181,7 +181,6 @@ endif()
 
 if(USE_TEST)
        include(external/googletest.cmake)    
-       enable_testing()
 else()
 	message(STATUS "Skip downloding googletest")
 endif()
