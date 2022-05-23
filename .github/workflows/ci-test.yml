@@ -51,7 +51,7 @@ jobs:
       shell: bash
       run: |
         export USE_TEST=1
-        export MACOSX_DEPLOYMENT_TARGET="11"
+        export MACOSX_DEPLOYMENT_TARGET="11.0"
         python setup.py build --debug test
     - name: auditwheel show
       if: ${{ matrix.os == 'ubuntu-latest'}}
