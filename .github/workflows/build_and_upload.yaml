@@ -153,7 +153,7 @@ jobs:
               CFLAGS="-flto -O3 -pipe "
               CXXFLAGS="-flto -O3 -pipe "
           CIBW_ENVIRONMENT_MACOS:
-              #MACOSX_DEPLOYMENT_TARGET=11
+              MACOSX_DEPLOYMENT_TARGET="11.0"
               CFLAGS="-flto -O3 -pipe  -lcblas -lclapack -framework Accelerate -framework OpenCL"
               CXXFLAGS="-flto -O3 -pipe  -lcblas -lclapack -framework Accelerate -framework OpenCL"
 
