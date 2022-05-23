@@ -2,6 +2,7 @@ import os
 import platform
 
 from skbuild import setup
+from setuptools.command.build_ext import build_ext
 
 cmake_args = []
 if platform.system() == 'Darwin':
@@ -14,6 +15,7 @@ if platform.system() == 'Darwin':
         cmake_args += ['-DFORCE_USE_OMP=Yes']
 
 setup(
+    cmdclass={"build_ext": build_ext},
     cmake_args = cmake_args,
     cmake_install_dir='openjij',
 )
