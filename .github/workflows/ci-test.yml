@@ -76,8 +76,8 @@ jobs:
       shell: bash
       run: |
         export MACOSX_DEPLOYMENT_TARGET="11.0"
-        cmake -DUSE_TEST=TRUE 
-        cmake --build
+        cmake -DUSE_TEST=TRUE .
+        cmake --build .
     - name: Show 
       shell: bash
       run: |
@@ -85,6 +85,4 @@ jobs:
     - name: C++ Test 
       shell: bash
       run: |
-        export MACOSX_DEPLOYMENT_TARGET="11.0"
-        cmake -DUSE_TEST=TRUE 
         ctest
