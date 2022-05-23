@@ -120,9 +120,14 @@ class CMakeBuild(build_ext):
         build_temp = os.path.join(self.build_temp, ext.name)
         if not os.path.exists(build_temp):
             os.makedirs(build_temp)
-
+        if "USE_TEST" in os.environ:  
+            cmake_args += ["-DUSE_TEST=Yes", "-LA", "-LH"]
+            
         subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=build_temp)
         subprocess.check_call(["cmake", "--build", "."] + build_args, cwd=build_temp)
+        if "USE_TEST" in os.environ:  
+            subprocess.check_call(["ctest", "."] + build_args, cwd=build_temp)
+        
 
 
 setup(
