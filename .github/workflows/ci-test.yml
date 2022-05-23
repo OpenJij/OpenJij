@@ -70,11 +70,20 @@ jobs:
       shell: bash
       run: |
         export MACOSX_DEPLOYMENT_TARGET="11.0"
+        export DEBUG=1
         python setup.py test
+    - name: Prepare C++ Test
+      shell: bash
+      run: |
+        export MACOSX_DEPLOYMENT_TARGET="11.0"
+        cmake -DUSE_TEST=TRUE 
+    - name: Show 
+      shell: bash
+      run: |
+        du -a
     - name: C++ Test 
       shell: bash
       run: |
         export MACOSX_DEPLOYMENT_TARGET="11.0"
         cmake -DUSE_TEST=TRUE 
-        du -a
         ctest
