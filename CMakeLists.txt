@@ -18,6 +18,7 @@ set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 if (APPLE)
     set(CMAKE_MACOSX_RPATH TRUE)
+    set(MACOSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum OS X deployment version")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-command-line-argument")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wno-unused-command-line-argument")
 endif()
@@ -25,7 +26,7 @@ endif()
 set(CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 set(CMAKE_CXX_STANDARD 17)
-
+set(C_STANDARD 17)
  
 
 ##### Set default behavior #####
