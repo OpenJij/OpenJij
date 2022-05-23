@@ -71,22 +71,23 @@ jobs:
       run: |
         export MACOSX_DEPLOYMENT_TARGET="11.0"
         export DEBUG=1
+        export USE_TEST=TRUE
         python setup.py test
-    - name: Prepare C++ Test
-      shell: bash
-      run: |
-        export MACOSX_DEPLOYMENT_TARGET="11.0"
-        mkdir gtest 
-        cd gtest
-        cmake -DUSE_TEST=TRUE ..
-        cmake --build ..
-    - name: Show 
-      shell: bash
-      run: |
-        cd gtest
-        du -a
-    - name: C++ Test 
-      shell: bash
-      run: |
-        cd gtest
-        ctest --verbose
+    #- name: Prepare C++ Test
+    #  shell: bash
+    #  run: |
+    #    export MACOSX_DEPLOYMENT_TARGET="11.0"
+    #    mkdir gtest 
+    #    cd gtest
+    #    cmake -DUSE_TEST=TRUE ..
+    #    cmake --build ..
+    #- name: Show 
+    #  shell: bash
+    #  run: |
+    #    cd gtest
+    #    du -a
+    #- name: C++ Test 
+    #  shell: bash
+    #  run: |
+    #    cd gtest
+    #    ctest --verbose
