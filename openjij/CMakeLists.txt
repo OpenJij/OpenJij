@@ -46,7 +46,7 @@ else()
     set_target_properties(
       cxxjij PROPERTIES INSTALL_RPATH "$ORIGIN/${CMAKE_INSTALL_LIBDIR}")
 endif()  
-install(TARGETS cxxjij DESTINATION .)
+#install(TARGETS cxxjij DESTINATION .)
 #if(APPLE AND OpenMP_FOUND)
 #   add_custom_command(TARGET cxxjij
 #           POST_BUILD COMMAND
