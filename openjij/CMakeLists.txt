@@ -40,8 +40,8 @@ add_custom_target(python
     DEPENDS cxxjij
 )
   
-if(APPLE AND OpenMP_FOUND)
-   add_custom_command(TARGET cxxjij
-           POST_BUILD COMMAND
-           ${CMAKE_INSTALL_NAME_TOOL} -change libomp.dylib @loader_path/libomp.dylib $<TARGET_FILE:cxxjij>)
-endif()
+#if(APPLE AND OpenMP_FOUND)
+#   add_custom_command(TARGET cxxjij
+#           POST_BUILD COMMAND
+#           ${CMAKE_INSTALL_NAME_TOOL} -change libomp.dylib @loader_path/libomp.dylib $<TARGET_FILE:cxxjij>)
+#endif()
