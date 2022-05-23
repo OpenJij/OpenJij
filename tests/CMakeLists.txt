@@ -1,7 +1,6 @@
 enable_testing()
 include(GoogleTest)
 add_executable(cxxjij_test
-    EXCLUDE_FROM_ALL
     cxxtest.cpp
 )
 
