@@ -76,13 +76,17 @@ jobs:
       shell: bash
       run: |
         export MACOSX_DEPLOYMENT_TARGET="11.0"
-        cmake -DUSE_TEST=TRUE .
-        cmake --build .
+        mkdir gtest 
+        cd gtest
+        cmake -DUSE_TEST=TRUE ..
+        cmake --build ..
     - name: Show 
       shell: bash
       run: |
+        cd gtest
         du -a
     - name: C++ Test 
       shell: bash
       run: |
-        ctest
+        cd gtest
+        ctest --verbose
