@@ -1,4 +1,5 @@
-
+enable_testing()
+include(GoogleTest)
 add_executable(cxxjij_test
     EXCLUDE_FROM_ALL
     cxxtest.cpp
@@ -34,3 +35,5 @@ target_link_libraries(cxxjij_test PRIVATE
     gtest
     pthread
 )
+
+gtest_discover_tests(cxxjij_test)
