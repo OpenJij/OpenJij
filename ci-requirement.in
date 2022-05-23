@@ -1,7 +1,7 @@
 setuptools_scm[toml]
 pytest-runner
 cmake 
-scikit-build
+pybind11
 dimod >= 0.9.1
 numpy >= 1.18.4, !=1.21.0, !=1.21.1
 scipy
