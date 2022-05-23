@@ -1,12 +1,83 @@
 [build-system]
 requires = [
-   'setuptools-git-versioning', 
+   'setuptools_scm[toml]', 
    'setuptools',
    'wheel',
    'build',
    'cmake',
+   'scikit-build', 
+   'pytest-runner',
    ]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "_version.py"
+
+[tool.pytest.ini_options]
+addopts = "-vv -s --doctest-modules --diff-symbols --color=yes --code-highlight=yes --cov-context=test --cov --cov-append --cov-report term --cov-report html --junit-xml=result.xml --html=report.html --randomly-seed=last"
+testpaths = [
+    "tests",
+]
+spec_header_format = "{module_path}:"
+spec_test_format = "{result} {name}"
+log_level = "INFO"
+console_output_style = "count"
+log_auto_indent = true
+junit_logging = "all"
+
+[tool.flake8] 
+show-source = true
+statistics = true
+doctests = true
+max-complexity = 10
+max-line-length = 999 
+
+[tool.isort]
+profile= "black"
+multi_line_output = 3
+force_grid_wrap = 0
+include_trailing_comma = false
+ensure_newline_before_comments = true
+use_parentheses = true 
+balanced_wrapping = false
+lines_between_types = 1
+#order_by_type = true 
+combine_as_imports = true
+combine_star = true
+combine_straight_imports = true
+group_by_package = true
+auto_identify_namespace_packages = true
+src_paths = ["openjij", "tests"]
+
+[tool.black]
+target-version = ['py39', 'py310']
+
+[tool.mypy]
+ignore_missing_imports = true
+#show_traceback = true
+warn_return_any = true
+warn_unused_configs = true
+warn_unreachable = true
+namespace_packages = true
+explicit_package_bases = true
+#show_error_context = true 
+#show_column_numbers = true
+
+[tool.pyright]
+pythonVersion = "3.9"
+typeCheckingMode = "basic"
+include = [
+    "openjij", 
+    "tests",
+  ]
+ignore = [ 
+  "*.c", 
+  "*.so",
+]
+reportImportCycles = 'warning'
+reportUnusedImport = 'warning'
+reportUnusedVariable =  'warning'
+reportDuplicateImport = 'warning'
 
 [tool.cibuildwheel]
 skip = ["pp*"]
