@@ -5,8 +5,8 @@ requires = [
    'wheel',
    'build',
    'cmake',
-   'scikit-build', 
    'pytest-runner',
+   'pybind11',
    ]
 build-backend = "setuptools.build_meta"
 
