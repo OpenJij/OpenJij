@@ -126,7 +126,7 @@ class CMakeBuild(build_ext):
         subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=build_temp)
         subprocess.check_call(["cmake", "--build", "."] + build_args, cwd=build_temp)
         if "USE_TEST" in os.environ:  
-            subprocess.check_call(["ctest", "."] + build_args, cwd=build_temp)
+            subprocess.check_call(["ctest", "--verbose",  "."] + build_args, cwd=build_temp)
         
 
 
