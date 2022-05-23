@@ -18,4 +18,5 @@ setup(
     cmdclass={"build_ext": build_ext},
     cmake_args = cmake_args,
     cmake_install_dir='openjij',
+    cmake_with_sdist=True,
 )
