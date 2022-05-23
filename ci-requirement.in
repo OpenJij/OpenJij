@@ -1,0 +1,19 @@
+setuptools_scm[toml]
+pytest-runner
+cmake 
+scikit-build
+dimod >= 0.9.1
+numpy >= 1.18.4, !=1.21.0, !=1.21.1
+scipy
+requests
+jij-cimod >= 1.2.3
+typing-extensions >= 3.10.0; python_version < "3.8.0"
+pytest
+pytest-mock
+pytest-cov
+pytest-html
+pytest-runner
+pytest-randomly
+pytest-clarity
+pytest-spec
+coverage
