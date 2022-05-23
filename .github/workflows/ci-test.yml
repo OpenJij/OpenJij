@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         python-version: ['3.7', '3.8', '3.9', '3.10']
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -39,16 +40,18 @@ jobs:
       run: |
         pip install --upgrade pip wheel setuptools build
         pip install -r requirements.txt
-    - name: Install Eigen3 on ${{ matrix.os }}
-      if: ${{ matrix.os == 'ubuntu-latest'}}
-      run: sudo apt-get install -y libeigen3-dev
-    - name: Install Eigen3 on ${{ matrix.os }}
-      if: ${{ matrix.os == 'macos-latest'}}
-      run: brew install libomp eigen
+        pip install --upgtade cmake
+    #- name: Install Eigen3 on ${{ matrix.os }}
+    #  if: ${{ matrix.os == 'ubuntu-latest'}}
+    #  run: sudo apt-get install -y libeigen3-dev
+    #- name: Install Eigen3 on ${{ matrix.os }}
+    #  if: ${{ matrix.os == 'macos-latest'}}
+    #  run: brew install libomp eigen
     - name: Test 
       shell: bash
       run: |
         export USE_TEST=1
+        export MACOSX_DEPLOYMENT_TARGET="11"
         python setup.py build --debug test
     - name: auditwheel show
       if: ${{ matrix.os == 'ubuntu-latest'}}
