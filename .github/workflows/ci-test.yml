@@ -29,18 +29,37 @@ jobs:
       with:
         python-version : ${{ matrix.python-version }}
     - name: Set up Python ${{ matrix.python-version }} cache 
+      shell: bash
       run: which python > ~/.python3_path.txt
+    - name: Get Python Version
+      shell: bash
+      run: |
+          set -eux
+          python --version > python_version.txt
+          cat python_version.txt
+    - name: Pip-Tools 
+      shell: bash
+      run: |
+          python -m pip install pip-tools 
+          pip-compile ci-requirement.in
     - uses: actions/cache@v3
       with:
-        path: ${{ matrix.path }}
-        key: ${{ runner.os }}-python-${{ hashFiles('~/.python3_path.txt', 'setup.py') }}
-        restore-keys: |
-         ${{ runner.os }}-python-
-    - name: Install dependencies 
+          path: ${{ matrix.path }}
+          key: ${{ runner.os }}-${{ hashFiles('setup.cfg') }}-pip-${{ github.base_ref }}-${{ hashFiles('python_version.txt') }}-${{ hashFiles('ci-requirement.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ hashFiles('setup.cfg') }}-pip-${{ github.base_ref }}-${{ hashFiles('python_version.txt') }}-${{ hashFiles('ci-requirement.txt') }}
+            ${{ runner.os }}-${{ hashFiles('setup.cfg') }}-pip-${{ github.base_ref }}-${{ hashFiles('python_version.txt') }}
+            ${{ runner.os }}-${{ hashFiles('setup.cfg') }}-pip-${{ github.base_ref }}
+    - name: Update
+      shell: bash
       run: |
-        python -m pip install --upgrade pip wheel setuptools build
-        pip install -r requirements.txt
-        pip install --upgrade cmake
+          set -ux
+          python -m pip install --upgrade pip setuptools wheel build
+    - name: Install Dependencies
+      shell: bash
+      run: |
+          set -eux
+          pip-sync ci-requirement.txt
     #- name: Install Eigen3 on ${{ matrix.os }}
     #  if: ${{ matrix.os == 'ubuntu-latest'}}
     #  run: sudo apt-get install -y libeigen3-dev
@@ -50,39 +69,12 @@ jobs:
     - name: Python Test 
       shell: bash
       run: |
-        export USE_TEST=1
         export MACOSX_DEPLOYMENT_TARGET="11.0"
         python setup.py test
     - name: C++ Test 
       shell: bash
       run: |
-        export USE_TEST=1
         export MACOSX_DEPLOYMENT_TARGET="11.0"
         cmake -DUSE_TEST=TRUE 
         du -a
         ctest
-    - name: auditwheel show
-      if: ${{ matrix.os == 'ubuntu-latest'}}
-      run:  |
-        pip install auditwheel
-        python -m build 
-        cd dist
-        for f in *.whl; do auditwheel show $f; done
-    - name: delocate show
-      if: ${{ matrix.os == 'macos-latest'}}
-      run:  |
-        set -eux
-        pip install delocate
-        python -m build 
-        cd dist
-        echo '::group::delocate-listdeps'
-        for f in *.whl; do delocate-listdeps --all --depending $f; done
-        echo '::endgroup::'
-        echo '::group::delocate'
-        mkdir ../dist-new
-        for f in *.whl; do delocate-wheel -v -w ../dist-new $f; done 
-        echo '::endgroup::'
-        echo '::group::delocate-listdeps'
-        cd ../dist-new
-        for f in *.whl; do delocate-listdeps --all --depending $f; done
-        echo '::endgroup::'
