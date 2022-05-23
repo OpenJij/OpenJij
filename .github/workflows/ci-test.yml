@@ -47,12 +47,20 @@ jobs:
     #- name: Install Eigen3 on ${{ matrix.os }}
     #  if: ${{ matrix.os == 'macos-latest'}}
     #  run: brew install libomp eigen
-    - name: Test 
+    - name: Python Test 
       shell: bash
       run: |
         export USE_TEST=1
         export MACOSX_DEPLOYMENT_TARGET="11.0"
-        python setup.py test --debug
+        python setup.py test
+    - name: C++ Test 
+      shell: bash
+      run: |
+        export USE_TEST=1
+        export MACOSX_DEPLOYMENT_TARGET="11.0"
+        cmake -DUSE_TEST=TRUE 
+        du -a
+        ctest
     - name: auditwheel show
       if: ${{ matrix.os == 'ubuntu-latest'}}
       run:  |
