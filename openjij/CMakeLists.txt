@@ -39,10 +39,10 @@ target_link_libraries(cxxjij PRIVATE
 add_custom_target(python
     DEPENDS cxxjij
 )
-if(APPLE)
-    set_target_properties(
-      cxxjij PROPERTIES INSTALL_RPATH "@loader_path/${CMAKE_INSTALL_LIBDIR}")
-endif()  
+#if(APPLE)
+#    set_target_properties(
+#      cxxjij PROPERTIES INSTALL_RPATH "@loader_path/${CMAKE_INSTALL_LIBDIR}")
+#endif()  
 #install(TARGETS cxxjij DESTINATION .)
 #if(APPLE AND OpenMP_FOUND)
 #   add_custom_command(TARGET cxxjij
