@@ -126,7 +126,6 @@ class CMakeBuild(build_ext):
 
 
 setup(
-    cmdclass={"build_ext": build_ext},
     ext_modules=[CMakeExtension("cxxjij")],
     cmdclass={"build_ext": CMakeBuild},
 )
