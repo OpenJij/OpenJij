@@ -100,11 +100,11 @@ class CMakeBuild(build_ext):
             archs = re.findall(r"-arch (\S+)", os.environ.get("ARCHFLAGS", ""))
             if archs:
                 cmake_args += ["-DCMAKE_OSX_ARCHITECTURES={}".format(";".join(archs))]
-           # disable macos openmp since addtional dependency is needed.
-           if not {'True': True, 'False': False}[os.getenv('FORCE_USE_OMP', 'False')]:
+            # disable macos openmp since addtional dependency is needed.
+            if not {'True': True, 'False': False}[os.getenv('FORCE_USE_OMP', 'False')]:
                 print("FORCE_USE_OMP=No")
                 cmake_args += ['-DFORCE_USE_OMP=No']
-           else:
+            else:
                 print("FORCE_USE_OMP=Yes")
                 cmake_args += ['-DFORCE_USE_OMP=Yes']
 
