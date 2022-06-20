@@ -31,7 +31,7 @@
 
 import cxxjij
 import cimod
-import cimod.cxxcimod as cimod
+import cimod.cxxcimod as cxxcimod
 import dimod
 
 
