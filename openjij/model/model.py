@@ -29,7 +29,7 @@
 
 """
 
-import cxxjij
+import openjij.cxxjij as cxxjij
 import cimod
 import cimod.cxxcimod as cxxcimod
 import dimod
