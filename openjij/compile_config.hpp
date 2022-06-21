@@ -81,4 +81,3 @@ namespace openjij {
 
 } // namespace openjij
 
-#endif
