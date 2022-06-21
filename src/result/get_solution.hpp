@@ -12,17 +12,16 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_RESULT_GET_SOLUTION_HPP__
-#define OPENJIJ_RESULT_GET_SOLUTION_HPP__
+#pragma once
 
-#include <graph/all.hpp>
-#include <system/all.hpp>
+#include "graph/all.hpp"
+#include "system/all.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>
 
 #ifdef USE_CUDA
-#include <utility/gpu/memory.hpp>
+#include "utility/gpu/memory.hpp"
 #endif
 
 namespace openjij {
@@ -167,4 +166,3 @@ const graph::Spins get_solution(const system::ChimeraClassicalGPU<FloatType, row
 } // namespace result
 } // namespace openjij
 
-#endif
