@@ -12,8 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UTILITY_INSERT_OR_ASSIGN_HPP__
-#define OPENJIJ_UTILITY_INSERT_OR_ASSIGN_HPP__
+#pragma once
 
 #include <unordered_map>
 
@@ -53,4 +52,3 @@ namespace openjij {
     } // namespace utility
 } // namespace openjij
 
-#endif
