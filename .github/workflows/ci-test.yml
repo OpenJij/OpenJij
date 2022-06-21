@@ -3,9 +3,9 @@ name: build-test
 on: 
   workflow_dispatch:
   push:
-    branches: [master, main]
-  pull_request: 
-    types: [opened, reopened, synchronize]
+    branches: [main]
+  #pull_request: 
+    #types: [opened, reopened, synchronize]
 jobs:
   build:
     strategy:
