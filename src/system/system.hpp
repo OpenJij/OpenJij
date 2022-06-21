@@ -12,10 +12,9 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_SYSTEM_HPP__
-#define OPENJIJ_SYSTEM_SYSTEM_HPP__
+#pragma once
 
-#include <utility/type_traits.hpp>
+#include "utility/type_traits.hpp"
 
 namespace openjij {
     namespace system {
@@ -105,4 +104,3 @@ namespace openjij {
     } // namespace system
 } // namespace openjij
 
-#endif
