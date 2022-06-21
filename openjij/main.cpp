@@ -15,8 +15,8 @@
 //disable Eigen warning
 #include <utility/disable_eigen_warning.hpp>
 
-#include "./compile_config.hpp"
-#include "./declare.hpp"
+#include "compile_config.hpp"
+#include "declare.hpp"
 #include <pybind11/eval.h>
 #include <utility/random.hpp>
 #include <type_traits>
