@@ -1,7 +1,7 @@
 # Prerequisites
 openjij/_version.py
 *.d
-
+msbuild_version.txt
 # Compiled Object files
 *.slo
 *.lo
