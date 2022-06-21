@@ -1,0 +1,68 @@
+codecov:
+  ci:
+    - github.com
+  require_ci_to_pass: false
+  notify:
+    wait_for_ci: false
+   
+comment:
+  behavior: default
+  layout: "reach, diff, flags, files"
+  require_base: no
+  require_changes: false
+  require_head: no
+  
+coverage:
+  status:
+    patch:
+      default:
+        informational: true
+        only_pulls: false
+        target: auto
+        if_ci_failed: error
+    project:
+      default:
+        informational: true
+        only_pulls: false
+        target: auto
+        if_ci_failed: error
+      cxxopenjij:
+        informational: true
+        only_pulls: false
+        target: auto
+        if_ci_failed: error
+        flags:
+          - cxxopenjij
+      openjij:
+        informational: true
+        only_pulls: false
+        target: auto
+        if_ci_failed: error
+        flags:
+          - openjij
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: yes
+      macro: yes
+      
+flag_management:
+  default_rules: 
+    carryforward: true
+flags:
+  cxxopenjij:
+    paths: 
+      - src
+    carryforward: true
+  openjij:
+    paths: 
+      - openjij
+    carryforward: true
+
+ignore:
+  - "test"
+ 
+github_checks:
+  annotations: true
