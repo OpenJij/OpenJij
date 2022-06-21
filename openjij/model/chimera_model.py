@@ -14,7 +14,7 @@
 
 import openjij
 from openjij.model import make_BinaryQuadraticModel, make_BinaryQuadraticModel_from_JSON, BinaryQuadraticModel
-import cxxjij as cj
+import openjij.cxxjij as cj
 
 
 def make_ChimeraModel(linear, quadratic):
