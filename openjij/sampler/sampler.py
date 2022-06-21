@@ -16,7 +16,7 @@ This module defines the abstract sampler (BaseSampler).
 """
 
 import numpy as np
-import cxxjij
+import openjij.cxxjij import cxxjij
 import openjij
 import dimod
 from dimod.core.sampler import samplemixinmethod
