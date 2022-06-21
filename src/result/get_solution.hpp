@@ -21,7 +21,7 @@
 #include <limits>
 
 #ifdef USE_CUDA
-#include "utility/gpu/memory.hpp"
+#include <utility/gpu/memory.hpp>
 #endif
 
 namespace openjij {
