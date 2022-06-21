@@ -12,8 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_DECLARE_HPP__
-#define OPENJIJ_DECLARE_HPP__
+#pragma once
 
 #include <graph/all.hpp>
 #include <system/all.hpp>
