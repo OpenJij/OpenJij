@@ -12,16 +12,15 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_CONTINUOUS_TIME_ISING_HPP__
-#define OPENJIJ_SYSTEM_CONTINUOUS_TIME_ISING_HPP__
+#pragma once
 
-#include <system/system.hpp>
-#include <graph/all.hpp>
+#include "system/system.hpp"
+#include "graph/all.hpp"
 #include <cassert>
 #include <vector>
 #include <utility>
 
-#include <utility/eigen.hpp>
+#include "utility/eigen.hpp"
 
 namespace openjij {
     namespace system {
@@ -264,4 +263,3 @@ namespace openjij {
     } // namespace system
 } // namespace openjij
 
-#endif
