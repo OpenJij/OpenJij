@@ -12,8 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UTILITY_DISABLE_EIGEN_WARNING_HPP__
-#define OPENJIJ_UTILITY_DISABLE_EIGEN_WARNING_HPP__
+#pragma once
 
 #  ifdef __clang__
 //   Eigen generates a bunch of implicit-copy-constructor-is-deprecated warnings with -Wdeprecated
@@ -27,4 +26,4 @@
 #    pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #  endif
 
-#endif
+
