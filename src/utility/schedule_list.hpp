@@ -12,16 +12,14 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UTILITY_SCHEDULE_LIST_HPP__
-#define OPENJIJ_UTILITY_SCHEDULE_LIST_HPP__
-
+#pragma once
 #include <cstddef>
 #include <cmath>
 #include <vector>
 #include <utility>
 #include <tuple>
 
-#include <system/system.hpp>
+#include "system/system.hpp"
 
 namespace openjij {
     namespace utility {
@@ -249,4 +247,3 @@ namespace openjij {
     } // namespace utility
 } // namespace openjij
 
-#endif
