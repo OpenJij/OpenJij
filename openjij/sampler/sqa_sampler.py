@@ -3,7 +3,7 @@ import openjij
 from openjij.sampler import measure_time
 from openjij.sampler import BaseSampler
 from openjij.utils.decorator import deprecated_alias
-import cxxjij
+import openjij.cxxjij import cxxjij
 from cimod.utils import get_state_and_energy
 import dimod
 from typing import Union, Optional
