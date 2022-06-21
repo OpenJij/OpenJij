@@ -12,18 +12,17 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UPDATER_SWENDSEN_WANG_HPP__
-#define OPENJIJ_UPDATER_SWENDSEN_WANG_HPP__
+#pragma once
 
 #include <algorithm>
 #include <cmath>
 #include <random>
 #include <unordered_map>
 
-#include <graph/graph.hpp>
-#include <system/classical_ising.hpp>
-#include <utility/schedule_list.hpp>
-#include <utility/union_find.hpp>
+#include "graph/graph.hpp"
+#include "system/classical_ising.hpp"
+#include "utility/schedule_list.hpp"
+#include "utility/union_find.hpp"
 
 namespace openjij {
     namespace updater {
@@ -102,4 +101,3 @@ namespace openjij {
     } // namespace updater
 } // namespace openjij
 
-#endif
