@@ -574,4 +574,3 @@ inline void declare_get_solution(py::module &m){
 
 
 
-#endif
