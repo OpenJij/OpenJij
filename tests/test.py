@@ -4,11 +4,11 @@ import unittest
 import numpy as np
 
 #import openjij as oj
-import cxxjij.graph as G
-import cxxjij.system as S
-import cxxjij.algorithm as A
-import cxxjij.utility as U
-import cxxjij.result as R
+import openjij.cxxjij.graph as G
+import openjij.cxxjij.system as S
+import openjij.cxxjij.algorithm as A
+import openjij.cxxjij.utility as U
+import openjij.cxxjij.result as R
 
 
 class CXXTest(unittest.TestCase):
