@@ -46,9 +46,12 @@ except SKBuildError:
 setup(
     setup_requires=setup_requires,
     install_requires=[ 
-        "numpy >= 1.21.2",
-        "dimod >= 0.9.1, <0.12.0",
-        "scipy",      
+        'dimod >= 0.9.1, <0.12.0',
+        'numpy >= 1.21.2', 
+        'scipy', 
+        'requests',
+        'jij-cimod >= 1.4.0, < 1.5.0', 
+        'typing-extensions >= 3.10.0; python_version < "3.8.0"'
     ],
     packages=[
         "openjij",
