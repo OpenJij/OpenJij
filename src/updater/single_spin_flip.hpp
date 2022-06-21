@@ -11,14 +11,13 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UPDATER_SINGLE_SPIN_FLIP_HPP__
-#define OPENJIJ_UPDATER_SINGLE_SPIN_FLIP_HPP__
+#pragma once
 
 #include <random>
 
-#include <system/classical_ising.hpp>
-#include <system/transverse_ising.hpp>
-#include <utility/schedule_list.hpp>
+#include "system/classical_ising.hpp"
+#include "system/transverse_ising.hpp"
+#include "utility/schedule_list.hpp"
 #include <type_traits>
 
 #ifdef USE_OMP
@@ -318,4 +317,3 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
 } // namespace updater
 } // namespace openjij
 
-#endif
