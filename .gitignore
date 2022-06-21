@@ -1,4 +1,5 @@
 # Prerequisites
+openjij/_version.py
 *.d
 
 # Compiled Object files
