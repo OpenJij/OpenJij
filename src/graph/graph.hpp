@@ -12,8 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_GRAPH_HPP__
-#define OPENJIJ_GRAPH_HPP__
+#pragma once
 
 #include <vector>
 #include <cstddef>
@@ -104,4 +103,3 @@ public:
 } // namespace graph
 } // namespace openjij
 
-#endif
