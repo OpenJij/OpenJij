@@ -1,47 +1,62 @@
-add_library(cxxjij MODULE main.cpp)
+# Copyright 2022 Jij Inc.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set(python_module_name cxxjij)
+
+add_library(${python_module_name} MODULE main.cpp)
+
+target_include_directories(${python_module_name} PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+pybind11_extension(${python_module_name})
+
+if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
+    # Strip unnecessary sections of the binary on Linux/macOS
+    pybind11_strip(${python_module_name})
+endif()
 
 if(CUDAToolkit_FOUND)
-    set_target_properties(cxxjij PROPERTIES
+    set_target_properties(${python_module_name}  PROPERTIES
         CXX_VISIBILITY_PRESET "hidden"
-        PREFIX "${PYTHON_MODULE_PREFIX}"
-        SUFFIX "${PYTHON_MODULE_EXTENSION}"
         INTERPROCEDURAL_OPTIMIZATION TRUE
         POSITION_INDEPENDENT_CODE ON
         CUDA_VISIBILITY_PRESET "hidden"
         CUDA_SEPARABLE_COMPILATION ON
-        VERSION_INFO "${OPENJIJ_VERSION_INFO}"
     )
 else()
-    set_target_properties(cxxjij PROPERTIES
+    set_target_properties(${python_module_name}  PROPERTIES
         CXX_VISIBILITY_PRESET "hidden"
         VISIBLITY_INLINES_HIDDEN ON
         INTERPROCEDURAL_OPTIMIZATION TRUE
         POSITION_INDEPENDENT_CODE ON
-        PREFIX "${PYTHON_MODULE_PREFIX}"
-        SUFFIX "${PYTHON_MODULE_EXTENSION}"
-        VERSION_INFO "${OPENJIJ_VERSION_INFO}"
     )
 endif()
-target_link_libraries(cxxjij PRIVATE
+
+target_compile_definitions(${python_module_name} PRIVATE 
+    $<$<CONFIG:Debug>:PYBIND11_DETAILED_ERROR_MESSAGES>  
+    PYTHON_VERSION_INFO=${PYTHON_VERSION_STRING}
+)
+
+target_link_libraries(${python_module_name}  PRIVATE
       pybind11::module
       pybind11::thin_lto
+      pybind11::windows_extras
       pybind11_json
       nlohmann_json::nlohmann_json
-      $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,openjij-eigen_lib>
-      $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
-      $<$<TARGET_EXISTS:CUDA::cudart_static>:CUDA::cudart_static>
-      $<$<TARGET_EXISTS:CUDA::cublas_static>:CUDA::cublas_static>
-      $<$<TARGET_EXISTS:CUDA::curand_static>:CUDA::curand_static>
       $<$<TARGET_EXISTS:cxxjij_chimera_gpu_kernel_static>:cxxjij_chimera_gpu_kernel_static>
       cxxjij_header_only
 )
 
-add_custom_target(python
-    DEPENDS cxxjij
-)
-  
-#if(APPLE AND OpenMP_FOUND)
-#   add_custom_command(TARGET cxxjij
-#           POST_BUILD COMMAND
-#           ${CMAKE_INSTALL_NAME_TOOL} -change libomp.dylib @loader_path/libomp.dylib $<TARGET_FILE:cxxjij>)
-#endif()
+install(TARGETS ${python_module_name} LIBRARY DESTINATION .)
