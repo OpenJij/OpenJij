@@ -12,15 +12,14 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_GRAPH_SQUARE_HPP__
-#define OPENJIJ_GRAPH_SQUARE_HPP__
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
 #include <utility>
 
-#include <graph/sparse.hpp>
+#include "graph/sparse.hpp"
 #include <exception>
 
 namespace openjij {
@@ -371,4 +370,3 @@ namespace openjij {
     } // namespace graph
 } // namespace openjij
 
-#endif
