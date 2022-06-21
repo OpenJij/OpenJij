@@ -3,7 +3,7 @@ import openjij
 from openjij.sampler import measure_time
 from openjij.sampler import SQASampler
 from openjij.utils.decorator import deprecated_alias
-import cxxjij
+import openjij.cxxjij as cxxjij
 
 
 class CSQASampler(SQASampler):
