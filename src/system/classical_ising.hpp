@@ -12,19 +12,18 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_CLASSICAL_ISING_HPP__
-#define OPENJIJ_SYSTEM_CLASSICAL_ISING_HPP__
+#pragma once
 
 #include <cassert>
 #include <utility>
-#include <system/system.hpp>
-#include <graph/all.hpp>
-#include <utility/eigen.hpp>
+#include "system/system.hpp"
+#include "graph/all.hpp"
+#include "utility/eigen.hpp"
 #include <type_traits>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#include <graph/cimod/src/utilities.hpp>
+#include <utilities.hpp>
 
 namespace openjij {
     namespace system {
@@ -193,4 +192,3 @@ namespace openjij {
     } // namespace system
 } // namespace openjij
 
-#endif
