@@ -12,14 +12,13 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UTILITY_PAIRHASH_HPP__
-#define OPENJIJ_UTILITY_PAIRHASH_HPP__
+#pragma once
 
 #include <cstddef>
 #include <utility>
 #include <unordered_map>
 
-#include <graph/graph.hpp>
+#include "graph/graph.hpp"
 
 namespace openjij {
     namespace utility {
@@ -46,4 +45,3 @@ namespace openjij {
     } // namespace utility
 } // namespace openjij
 
-#endif
