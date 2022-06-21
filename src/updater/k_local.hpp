@@ -11,11 +11,10 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UPDATER_K_LOCAL_HPP__
-#define OPENJIJ_UPDATER_K_LOCAL_HPP__
+#pragma once
 
-#include <system/k_local_polynomial.hpp>
-#include <utility/schedule_list.hpp>
+#include "system/k_local_polynomial.hpp"
+#include "utility/schedule_list.hpp"
 
 #include <random>
 
@@ -104,4 +103,3 @@ struct KLocal<system::KLocalPolynomial<GraphType>> {
 } // namespace openjij
 
 
-#endif /* OPENJIJ_UPDATER_K_LOCAL_HPP__ */
