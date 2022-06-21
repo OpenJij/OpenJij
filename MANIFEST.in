@@ -5,24 +5,31 @@ include LICENSE
 include README.md
 include pyproject.toml
 
-exclude requirements.txt
-exclude .gitignore 
-exclude .gitmodules
-exclude Doxyfile
-exclude Doxyfile.bak
-exclude build_gcc.sh
-exclude hoge.py
+prune cmake
+
+include cmake/GenerateDocs.cmake
+include cmake/PythonAutoDetectOSX.cmake
+include cmake/FindGcov.cmake 
+include cmake/FindLcov.cmake
+include cmake/Findcodecov.cmake
+include cmake/llvm-cov-wrapper
+
+global-exclude requirements.txt
+global-exclude .gitignore 
+global-exclude Doxyfile
+global-exclude Doxyfile.bak
+global-exclude pybind11_jsonConfig.cmake
+global-exclude pybind11_jsonConfigVersion.cmake
+global-exclude pybind11_jsonTargets.cmake
 
 graft openjij
 graft tests 
 graft src 
 graft external
 
+prune share
+prune include
 prune docs
-prune www
 prune example
-prune examples 
-prune project_template
 prune .github
 prune .git
-
