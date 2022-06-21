@@ -12,18 +12,17 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_GRAPH_JSON_PARSE_HPP__
-#define OPENJIJ_GRAPH_JSON_PARSE_HPP__
+#pragma once
 
 #include <vector>
 #include <tuple>
 #include <nlohmann/json.hpp>
 #include <exception>
-#include <graph/cimod/src/binary_quadratic_model.hpp>
-#include <graph/cimod/src/binary_quadratic_model_dict.hpp>
-#include <graph/cimod/src/binary_polynomial_model.hpp>
+#include <binary_quadratic_model.hpp>
+#include <binary_quadratic_model_dict.hpp>
+#include <binary_polynomial_model.hpp>
 #include <numeric>
-#include <graph/graph.hpp>
+#include "graph/graph.hpp"
 
 namespace openjij {
 namespace graph {
@@ -115,4 +114,3 @@ inline auto json_parse_polynomial(const nlohmann::json& obj, const bool relabel 
 } // namespace graph
 } // namespace openjij
 
-#endif
