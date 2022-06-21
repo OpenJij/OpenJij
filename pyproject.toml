@@ -1,31 +1,149 @@
+# Copyright 2022 Jij Inc.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 [build-system]
 requires = [
-   'setuptools-git-versioning', 
+   'setuptools_scm[toml]', 
    'setuptools',
    'wheel',
    'build',
-   'cmake',
+   'numpy',
+   'pybind11',
+   'scikit-build',
    ]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools_scm]
+write_to = "openjij/_version.py"
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules --color=yes --code-highlight=yes --cov-context=test --cov --cov-append --cov-report term --randomly-seed=last -v --capture=no"
+testpaths = [
+    "tests",
+]
+spec_header_format = "{module_path}:"
+spec_test_format = "{result} {name}"
+log_level = "INFO"
+console_output_style = "count"
+log_auto_indent = true
+junit_logging = "all"
+
+[tool.flake8] 
+show-source = true
+statistics = true
+doctests = true
+max-complexity = 10
+max-line-length = 999 
+
+[tool.isort]
+profile= "black"
+multi_line_output = 3
+force_grid_wrap = 0
+include_trailing_comma = false
+ensure_newline_before_comments = true
+use_parentheses = true 
+balanced_wrapping = false
+lines_between_types = 1
+#order_by_type = true 
+combine_as_imports = true
+combine_star = true
+combine_straight_imports = true
+group_by_package = true
+auto_identify_namespace_packages = true
+src_paths = ["openjij", "tests"]
+
+[tool.black]
+target-version = ['py39', 'py310']
+
+[tool.mypy]
+ignore_missing_imports = true
+#show_traceback = true
+warn_return_any = true
+warn_unused_configs = true
+warn_unreachable = true
+namespace_packages = true
+explicit_package_bases = true
+#show_error_context = true 
+#show_column_numbers = true
+
+[tool.pyright]
+pythonVersion = "3.9"
+typeCheckingMode = "basic"
+include = [
+    "openjij", 
+    "tests",
+  ]
+ignore = [ 
+  "*.c", 
+  "*.so",
+]
+reportImportCycles = 'warning'
+reportUnusedImport = 'warning'
+reportUnusedVariable =  'warning'
+reportDuplicateImport = 'warning'
+
 [tool.cibuildwheel]
-skip = ["pp*"]
+skip = ["cp36*", "*musllinux_x86_64", "*musllinux_aarch64", "pp*"]
 build-verbosity = 1
+dependency-versions = "latest"
 
 [tool.cibuildwheel.linux]
+archs = ["x86_64", "aarch64"]
 build-frontend = "build"
-before-build = [ 
-    "source scl_source enable devtoolset-10",
-    "pip install cmake", 
-    "pip install ninja", 
+#environment = "-CFLAGS='-march=haswell' -CXXFLAGS='-march=haswell' -FFLAGS='-march=haswell'"
+manylinux-x86_64-image ="quay.io/pypa/manylinux_2_28_x86_64:latest"
+manylinux-aarch64-image = "quay.io/pypa/manylinux_2_28_aarch64:latest"
+before-all = [ 
+    "dnf config-manager --set-enabled powertools",
+    "dnf makecache --refresh",
+    "dnf -y --enablerepo=powertools install openblas-static",
+    "dnf -y --enablerepo=powertools install lapack-static",
+    "dnf -y install gcc-toolset-11", 
+    "dnf -y --enablerepo=powertools install eigen3-devel",
 ]
+before-build = [ 
+    "source scl_source enable gcc-toolset-11",
+    "pip install pybind11 cmake ninja", 
+]
+repair-wheel-command = "auditwheel repair --lib-sdir . -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]
 build-frontend = "build"
-before-build = [ 
-    "pip install cmake ninja", 
+before-all = [ 
+    "brew install eigen nlohmann-json",
 ]
+#environment = "CFLAGS='-O3 -pipe' CXXFLAGS='-O3 -pipe'" 
+before-build = [ 
+    "pip install pybind11 cmake ninja", 
+]
+
 [tool.cibuildwheel.windows]
-before-build = [ 
-    "pip install cmake", 
+archs = ["AMD64"]
+#build-frontend = "build"
+#environment = "CMAKE_TOOLCHAIN_FILE='C:/vcpkg/scripts/buildsystems/vcpkg.cmake'" 
+before-all = [ 
+    "vcpkg update",
+    "vcpkg --triplet x64-windows install eigen3 --recurse", 
+    "vcpkg --triplet x64-windows install nlohmann-json --recurse",
+    "vcpkg --triplet x64-windows-static install eigen3 --recurse",
+    "vcpkg --triplet x64-windows-static install nlohmann-json --recurse",  
+    "vcpkg integrate install",
 ]
+#"vcpkg --triplet x64-windows-static install openblas[threads] --recurse", 
+#"vcpkg --triplet x64-windows-static install clapack --recurse", 
+before-build = [ 
+    "pip install cmake pybind11 delvewheel", 
+]
+repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel}"
