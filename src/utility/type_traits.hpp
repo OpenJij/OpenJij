@@ -12,8 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UTILITY_TYPE_TRAITS_HPP__
-#define OPENJIJ_UTILITY_TYPE_TRAITS_HPP__
+#pragma once
 
 #include <type_traits>
 #include <cstddef>
@@ -63,4 +62,3 @@ namespace openjij {
 
     } // namespace utility
 } // namespace openjij
-#endif
