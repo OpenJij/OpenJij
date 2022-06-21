@@ -145,8 +145,8 @@ jobs:
       working-directory: build
       run: >
         gcov 
-        tests/CMakeFiles/cimod_test.dir/test.cpp.gcda 
-        -o tests/CMakeFiles/cimod_test.dir 
+        tests/CMakeFiles/openjij_test.dir/test.cpp.gcda 
+        -o tests/CMakeFiles/openjij_test.dir 
         -p 
         -l 
         -b
@@ -160,8 +160,8 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }} 
         working-directory: build
-        name: cxxcimod
-        flags: cxxcimod
+        name: cxxopenjij
+        flags: cxxopenjij
         fail_ci_if_error: false
         verbose: true
   Python:
@@ -200,13 +200,13 @@ jobs:
       run: |
           python -m pip install pip-tools 
           pip-compile
-          pip-compile dev-requirement.in
+          pip-compile dev-requirements.in
     - uses: actions/cache@v3
       with:
           path: ${{ matrix.path }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('dev-requirement.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('dev-requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('dev-requirement.txt') }}
+            ${{ runner.os }}-pip-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('dev-requirements.txt') }}
             ${{ runner.os }}-pip-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}
             ${{ runner.os }}-pip-${{ hashFiles('python_version.txt') }}
     - name: Update
@@ -218,7 +218,7 @@ jobs:
       shell: bash
       run: |
           set -eux
-          pip-sync requirements.txt dev-requirement.txt
+          pip-sync requirements.txt dev-requirements.txt
     - name: sccache
       if: ${{ matrix.os != 'windows-latest'}}
       uses: hendrikmuhs/ccache-action@v1.2
@@ -309,9 +309,9 @@ jobs:
       with:
           token: ${{ secrets.CODECOV_TOKEN }}
           env_vars: OS,PYTHON
-          name: "Cimod"
+          name: "Openjij"
           files: coverage.xml, coverage.json, coverage.lcov
-          flags: cimod
+          flags: openjij
           fail_ci_if_error: false
           verbose: true
     - name: du
