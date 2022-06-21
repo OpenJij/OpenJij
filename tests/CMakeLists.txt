@@ -16,7 +16,6 @@
 
 add_executable(cxxjij_test
     cxxtest.cpp
-    speed_test_poly_VS_quad.cpp
 )
 
 if(ENABLE_COVERAGE AND (NOT MSVC))
