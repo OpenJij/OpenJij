@@ -25,6 +25,8 @@ target_include_directories(cxxjij_header_only INTERFACE
 )
 
 target_link_libraries(cxxjij_header_only INTERFACE 
+    cxxcimod_header_only
+    nlohmann_json::nlohmann_json
     $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,openjij-eigen_lib>
     $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
     $<$<TARGET_EXISTS:BLAS::BLAS>:BLAS::BLAS>
