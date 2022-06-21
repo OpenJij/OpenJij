@@ -16,7 +16,7 @@ import numpy as np
 import openjij
 from openjij.sampler import BaseSampler
 from openjij.utils.graph_utils import qubo_to_ising
-import cxxjij
+import openjij.cxxjij import cxxjij
 import dimod
 import cimod
 from typing import Union, Optional
