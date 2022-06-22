@@ -144,18 +144,18 @@ jobs:
       shell: bash
       working-directory: build
       run: |
-        gcov  ./tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda -o ./tests/CMakeFiles/openjij_test.dir -p -l -b
+        gcov  --object-directory ./tests/CMakeFiles/openjij_test.dir -p -l -b ./tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda
     - name: Run gcov
       if: ${{ matrix.os != 'windows-latest'}}
       shell: bash
       run: |
-        gcov  ./build/tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda -o ./build/tests/CMakeFiles/openjij_test.dir -p -l -b    
+        gcov   --object-directory ./build/tests/CMakeFiles/openjij_test.dir -p -l -b ./build/tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda
     - name: Run gcov
       if: ${{ matrix.os != 'windows-latest'}}
       shell: bash
       run: |
-        cd build/tests
-        gcov  ./CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda -o ./CMakeFiles/openjij_test.dir -p -l -b        
+        cd build/tests/CMakeFiles/cxxjij_test.dir
+        gcov  --object-directory ./  -p -l -b cxxtest.cpp.gcda
     - name: du -a 
       shell: bash
       if: always()
