@@ -13,8 +13,8 @@
 
 
 import openjij.cxxjij as cxxjij
-from openjij.model import BinaryQuadraticModel
-from openjij.model import ChimeraModel
+from openjij.model.model import BinaryQuadraticModel
+from openjij.model.chimera_model import ChimeraModel
 from openjij.utils.graph_utils import chimera_to_ind
 import dimod
 
