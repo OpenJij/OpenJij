@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import openjij
-from openjij.model import make_BinaryQuadraticModel, make_BinaryQuadraticModel_from_JSON, BinaryQuadraticModel
+from openjij.model.model import make_BinaryQuadraticModel, make_BinaryQuadraticModel_from_JSON, BinaryQuadraticModel
 import openjij.cxxjij as cj
 
 
