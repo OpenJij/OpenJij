@@ -15,14 +15,16 @@
 This module defines the abstract sampler (BaseSampler).
 """
 
-import numpy as np
-import openjij.cxxjij as cxxjij
-import openjij
-import dimod
-from dimod.core.sampler import samplemixinmethod
-from cimod.utils import get_state_and_energy
-
 import time
+
+import dimod
+import numpy as np
+
+from cimod.utils import get_state_and_energy
+from dimod.core.sampler import samplemixinmethod
+
+import openjij
+import openjij.cxxjij as cxxjij
 
 
 def measure_time(func):
@@ -31,6 +33,7 @@ def measure_time(func):
     Args:
         func: decorator function
     """
+
     def wrapper(*args, **kargs):
         start_time = time.perf_counter()
 
@@ -39,13 +42,13 @@ def measure_time(func):
         end_time = time.perf_counter()
         execution_time = end_time - start_time
         return execution_time
+
     return wrapper
 
 
 class BaseSampler(dimod.Sampler):
-    """Base sampler class of python wrapper for cxxjij simulator
+    """Base sampler class of python wrapper for cxxjij simulator"""
 
-    """
     parameters = dict()
     properties = dict()
 
@@ -61,10 +64,16 @@ class BaseSampler(dimod.Sampler):
     def _sampling(self, **kwargs):
         pass
 
-    def _cxxjij_sampling(self, model, init_generator,
-                         algorithm, system,
-                         reinitialize_state=None,
-                         seed=None, offset=None):
+    def _cxxjij_sampling(
+        self,
+        model,
+        init_generator,
+        algorithm,
+        system,
+        reinitialize_state=None,
+        seed=None,
+        offset=None,
+    ):
         """Basic sampling function: for cxxjij sampling
 
         Args:
@@ -77,7 +86,7 @@ class BaseSampler(dimod.Sampler):
             offset (float): an offset which is added to the calculated energy
 
         Returns:
-            :class:`openjij.sampler.response.Response`: results 
+            :class:`openjij.sampler.response.Response`: results
         """
 
         if offset is None:
@@ -85,11 +94,15 @@ class BaseSampler(dimod.Sampler):
 
         # set algorithm function and set random seed ----
         if seed is None:
+
             def sampling_algorithm(system):
-                return algorithm(system, self._params['schedule'])
+                return algorithm(system, self._params["schedule"])
+
         else:
+
             def sampling_algorithm(system):
-                return algorithm(system, seed, self._params['schedule'])
+                return algorithm(system, seed, self._params["schedule"])
+
         # ---- set algorithm function and set random seed
 
         # setting of response class
@@ -97,10 +110,11 @@ class BaseSampler(dimod.Sampler):
 
         # define sampling execution function ---------------
         states, energies = [], []
-        system_info = {'system': []}
+        system_info = {"system": []}
+
         @measure_time
         def exec_sampling():
-            for _ in range(self._params['num_reads']):
+            for _ in range(self._params["num_reads"]):
                 # Re-initialize at each sampling
                 # In reverse annealing,
                 # user can use previous result (if re-initilize is set to False)
@@ -123,7 +137,8 @@ class BaseSampler(dimod.Sampler):
                 energies.append(energy)
 
                 if _sys_info:
-                    system_info['system'].append(_sys_info)
+                    system_info["system"].append(_sys_info)
+
         # --------------- define sampling execution function
 
         # Execute sampling function
@@ -131,16 +146,15 @@ class BaseSampler(dimod.Sampler):
 
         # construct response instance
         response = openjij.Response.from_samples(
-            states, model.vartype, energies,
-            info=system_info
+            states, model.vartype, energies, info=system_info
         )
 
         # save execution time
-        response.info['sampling_time'] = sampling_time * 10**6  # micro sec
-        response.info['execution_time'] = np.mean(
-            execution_time) * 10**6  # micro sec
-        response.info['list_exec_times'] = np.array(
-            execution_time) * 10**6  # micro sec
+        response.info["sampling_time"] = sampling_time * 10**6  # micro sec
+        response.info["execution_time"] = np.mean(execution_time) * 10**6  # micro sec
+        response.info["list_exec_times"] = (
+            np.array(execution_time) * 10**6
+        )  # micro sec
 
         return response
 
@@ -149,7 +163,6 @@ class BaseSampler(dimod.Sampler):
         sys_info = {}
         return result, sys_info
 
-    
     @samplemixinmethod
     def sample(self, bqm, **parameters):
         """Sample from a binary quadratic model.
@@ -160,10 +173,10 @@ class BaseSampler(dimod.Sampler):
                 See the implemented sampling for additional keyword definitions.
 
         Returns:
-            :class:`openjij.sampler.response.Response`: results 
+            :class:`openjij.sampler.response.Response`: results
         """
         if bqm.vartype == openjij.SPIN:
-            if not getattr(self.sample_ising, '__issamplemixin__', False):
+            if not getattr(self.sample_ising, "__issamplemixin__", False):
                 # sample_ising is implemented
                 h, J, offset = bqm.to_ising()
                 sampleset = self.sample_ising(h, J, **parameters)
@@ -175,7 +188,7 @@ class BaseSampler(dimod.Sampler):
                 sampleset.change_vartype(dimod.SPIN, energy_offset=offset)
                 return sampleset
         elif bqm.vartype == openjij.BINARY:
-            if not getattr(self.sample_qubo, '__issamplemixin__', False):
+            if not getattr(self.sample_qubo, "__issamplemixin__", False):
                 # sample_qubo is implemented
                 Q, offset = bqm.to_qubo()
                 sampleset = self.sample_qubo(Q, **parameters)
@@ -189,8 +202,6 @@ class BaseSampler(dimod.Sampler):
         else:
             raise RuntimeError("binary quadratic model has an unknown vartype")
 
-    
-
     @samplemixinmethod
     def sample_ising(self, h, J, **parameters):
         """Sample from an Ising model using the implemented sample method.
@@ -200,11 +211,12 @@ class BaseSampler(dimod.Sampler):
             J (dict): Quadratic biases
 
         Returns:
-            :class:`openjij.sampler.response.Response`: results 
+            :class:`openjij.sampler.response.Response`: results
         """
-        bqm = openjij.BinaryQuadraticModel.from_ising(h, J, sparse=parameters.get('sparse', False))
+        bqm = openjij.BinaryQuadraticModel.from_ising(
+            h, J, sparse=parameters.get("sparse", False)
+        )
         return self.sample(bqm, **parameters)
-
 
     @samplemixinmethod
     def sample_qubo(self, Q, **parameters):
@@ -214,14 +226,15 @@ class BaseSampler(dimod.Sampler):
             Q (dict or numpy.ndarray): Coefficients of a quadratic unconstrained binary optimization
 
         Returns:
-            :class:`openjij.sampler.response.Response`: results 
+            :class:`openjij.sampler.response.Response`: results
         """
         if isinstance(Q, dict):
-            bqm = openjij.BinaryQuadraticModel.from_qubo(Q, sparse=parameters.get('sparse', False))
+            bqm = openjij.BinaryQuadraticModel.from_qubo(
+                Q, sparse=parameters.get("sparse", False)
+            )
             return self.sample(bqm, **parameters)
         elif isinstance(Q, np.ndarray):
-            bqm = openjij.BinaryQuadraticModel.from_numpy_matrix(Q, vartype='BINARY')
+            bqm = openjij.BinaryQuadraticModel.from_numpy_matrix(Q, vartype="BINARY")
             return self.sample(bqm, **parameters)
         else:
-            raise TypeError('Q must be either dict or np.ndarray')
-
+            raise TypeError("Q must be either dict or np.ndarray")

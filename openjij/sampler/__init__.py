@@ -8,10 +8,10 @@ from openjij.sampler.sa_sampler import SASampler
 from openjij.sampler.sampler import measure_time
 from openjij.sampler.sqa_sampler import SQASampler
 
-__all__ = [ 
-  "CSQASampler", 
-  "Response", 
-  "SASampler", 
-  "measure_time", 
-  "SQASampler",
+__all__ = [
+    "CSQASampler",
+    "Response",
+    "SASampler",
+    "measure_time",
+    "SQASampler",
 ]
