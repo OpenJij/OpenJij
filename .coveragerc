@@ -1,0 +1,15 @@
+[run]
+branch = True
+debug = callers
+source = 
+   openjij
+   
+[report]
+show_missing = True
+
+[html]
+show_contexts = True
+
+[json]
+show_contexts = True
+pretty_print = True
