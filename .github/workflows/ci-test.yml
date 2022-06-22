@@ -284,7 +284,7 @@ jobs:
         export CMAKE_C_COMPILER_LAUNCHER=sccache
         export CMAKE_CXX_COMPILER_LAUNCHER=sccache
         export CMAKE_BUILD_TYPE=Debug
-        python setup.py --force-cmake install --build-type Debug -G Ninja
+        python setup.py --force-cmake install --build-type Debug  --verbose
     - name: Build & Install    
       if: ${{ matrix.os == 'macos-latest'}}
       shell: bash
@@ -301,7 +301,7 @@ jobs:
         set -eux
         export CMAKE_BUILD_TYPE=Debug
         export CMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
-        python setup.py --force-cmake install --build-type Debug
+        python setup.py --force-cmake install --build-type Debug --verbose
     - name: Test 
       shell: bash
       run: |
