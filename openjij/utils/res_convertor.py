@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import openjij
+import openjij as oj
 
 
 def convert_response(response):
 
-    if isinstance(response, openjij.Response):
+    if isinstance(response, oj.sampler.response.Response):
         return response
 
     try:
@@ -30,7 +30,7 @@ def convert_response(response):
         from dimod.vartypes import BINARY
 
         vartype = "BINARY" if response.vartype == BINARY else "SPIN"
-        o_res = openjij.Response(vartype=vartype, indices=list(response.variables))
+        o_res = oj.sampler.response.Response(vartype=vartype, indices=list(response.variables))
         states = []
         energies = []
         for rec in response.record:
@@ -48,5 +48,5 @@ def convert_response(response):
         return o_res
     else:
         raise TypeError(
-            "response is dimod.response.Response, SampleSet or openjij.Response"
+            "response is dimod.response.Response, SampleSet or openjij.sampler.response.Response"
         )
