@@ -145,7 +145,7 @@ jobs:
       working-directory: build
       run: >
         gcov 
-        tests/CMakeFiles/openjij_test.dir/test.cpp.gcda 
+        tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda
         -o tests/CMakeFiles/openjij_test.dir 
         -p 
         -l 
