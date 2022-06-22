@@ -284,7 +284,7 @@ jobs:
         export CMAKE_C_COMPILER_LAUNCHER=sccache
         export CMAKE_CXX_COMPILER_LAUNCHER=sccache
         export CMAKE_BUILD_TYPE=Debug
-        python setup.py --force-cmake install --build-type Debug  --verbose
+        python setup.py --force-cmake install --build-type Debug  --verbose -G "Unix Makefiles"
     - name: Build & Install    
       if: ${{ matrix.os == 'macos-latest'}}
       shell: bash
