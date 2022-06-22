@@ -12,19 +12,16 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UPDATER_ALL_HPP__
-#define OPENJIJ_UPDATER_ALL_HPP__
+#pragma once
 
 //disable Eigen warning
-#include <utility/disable_eigen_warning.hpp>
+#include "utility/disable_eigen_warning.hpp"
 
-#include <updater/single_spin_flip.hpp>
-#include <updater/k_local.hpp>
-#include <updater/swendsen_wang.hpp>
-#include <updater/continuous_time_swendsen_wang.hpp>
+#include "updater/single_spin_flip.hpp"
+#include "updater/k_local.hpp"
+#include "updater/swendsen_wang.hpp"
+#include "updater/continuous_time_swendsen_wang.hpp"
 
 #ifdef USE_CUDA
 #include <updater/gpu.hpp>
-#endif
-
 #endif

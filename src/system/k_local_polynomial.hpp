@@ -12,14 +12,13 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_K_LOCAL_POLYNOMIAL_HPP__
-#define OPENJIJ_SYSTEM_K_LOCAL_POLYNOMIAL_HPP__
+#pragma once
 
-#include <graph/all.hpp>
+#include "graph/all.hpp"
 #include <nlohmann/json.hpp>
-#include <graph/json/parse.hpp>
+#include "graph/json/parse.hpp"
 #include <sstream>
-#include <utility/thres_hold.hpp>
+#include "utility/thres_hold.hpp"
 
 namespace openjij {
 namespace system {
@@ -609,4 +608,3 @@ auto make_k_local_polynomial(const graph::Binaries &init_binaries, const nlohman
 } //namespace system
 } //namespace openjij
 
-#endif /* OPENJIJ_SYSTEM_K_LOCAL_POLYNOMIAL_HPP__ */

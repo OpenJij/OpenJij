@@ -1,5 +1,5 @@
 import openjij as oj
-import cxxjij as cj
+import openjij.cxxjij as cj
 import numpy as np
 
 import unittest

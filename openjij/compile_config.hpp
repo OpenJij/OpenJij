@@ -12,8 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_COMPILE_CONFIG_HPP__
-#define OPENJIJ_COMPILE_CONFIG_HPP__
+#pragma once
 
 #include <utility/random.hpp>
 
@@ -82,4 +81,3 @@ namespace openjij {
 
 } // namespace openjij
 
-#endif

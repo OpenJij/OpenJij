@@ -12,17 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
-import time
 import inspect
-from logging import getLogger
-import scipy as sp
 
+from logging import getLogger
+
+import numpy as np
 
 logger = getLogger(__name__)
 
 
-def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_energy=0, measure_with_energy=False, time_name='execution_time'):
+def solver_benchmark(
+    solver,
+    time_list,
+    solutions=[],
+    args={},
+    p_r=0.99,
+    ref_energy=0,
+    measure_with_energy=False,
+    time_name="execution_time",
+):
     """Calculate 'success probability', 'TTS', 'Residual energy','Standard Error' with computation time
     Args:
         solver (callable): returns openjij.Response, and solver has arguments 'time' and '**args'
@@ -44,14 +52,14 @@ def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_ene
         * **se_success_prob**: list of success probability's standard error at each computation time
         * **se_residual_energy**: list of residual_energy's standard error at each computation time
         * **info** (dict): Parameter information for the benchmark
-            
+
     """
 
     if not measure_with_energy:
         if solutions == []:
             raise ValueError("need input 'solutions': (list(list))")
 
-    logger.info('function ' + inspect.currentframe().f_code.co_name + ' start')
+    logger.info("function " + inspect.currentframe().f_code.co_name + " start")
 
     computation_times = []
     success_probabilities = []
@@ -69,8 +77,7 @@ def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_ene
         comp_time = response.info[time_name]
         computation_times.append(comp_time)
 
-        ps = success_probability(
-            response, solutions, ref_energy, measure_with_energy)
+        ps = success_probability(response, solutions, ref_energy, measure_with_energy)
         tts = time_to_solution(ps, comp_time, p_r)
 
         success_probabilities.append(ps)
@@ -78,13 +85,13 @@ def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_ene
         residual_energies.append(residual_energy(response, ref_energy))
 
         se_ps = se_success_probability(
-            response, solutions, ref_energy, measure_with_energy)
+            response, solutions, ref_energy, measure_with_energy
+        )
 
         se_success_prob_list.append(se_ps)
         se_lower_tts_list.append(se_lower_tts(tts, ps, comp_time, p_r, se_ps))
         se_upper_tts_list.append(se_upper_tts(tts, ps, comp_time, p_r, se_ps))
-        se_residual_energy_list.append(
-            se_residual_energy(response, ref_energy))
+        se_residual_energy_list.append(se_residual_energy(response, ref_energy))
 
     return {
         "time": computation_times,
@@ -98,8 +105,8 @@ def solver_benchmark(solver, time_list, solutions=[], args={}, p_r=0.99, ref_ene
         "info": {
             "tts_threshold_prob": p_r,
             "ref_energy": ref_energy,
-            "measure_with_energy": measure_with_energy
-        }
+            "measure_with_energy": measure_with_energy,
+        },
     }
 
 
@@ -140,26 +147,27 @@ def success_probability(response, solutions, ref_energy=0, measure_with_energy=F
     """
 
     if measure_with_energy:
-        suc_prob = np.count_nonzero(
-            np.array(response.energies) <= ref_energy)/len(response.energies)
+        suc_prob = np.count_nonzero(np.array(response.energies) <= ref_energy) / len(
+            response.energies
+        )
     else:
         if isinstance(solutions[0], dict):
             sampled_states = response.samples()
-            suc_prob = np.mean([
-                1 if dict(state) in solutions else 0
-                for state in sampled_states
-            ])
+            suc_prob = np.mean(
+                [1 if dict(state) in solutions else 0 for state in sampled_states]
+            )
         else:
             sampled_states = response.states
-            suc_prob = np.mean([
-                1 if list(state) in solutions else 0
-                for state in sampled_states
-            ])
+            suc_prob = np.mean(
+                [1 if list(state) in solutions else 0 for state in sampled_states]
+            )
 
     return suc_prob
 
 
-def se_success_probability(response, solutions, ref_energy=0, measure_with_energy=False):
+def se_success_probability(
+    response, solutions, ref_energy=0, measure_with_energy=False
+):
     """Calculate success probability's standard error from openjij.response
     Args:
         response (openjij.Response): response from solver (or sampler).
@@ -173,21 +181,21 @@ def se_success_probability(response, solutions, ref_energy=0, measure_with_energ
     """
 
     if measure_with_energy:
-        se_suc_prob = np.sqrt(np.count_nonzero(
-            np.array(response.energies) <= ref_energy)/(len(response.energies)-1))
+        se_suc_prob = np.sqrt(
+            np.count_nonzero(np.array(response.energies) <= ref_energy)
+            / (len(response.energies) - 1)
+        )
     else:
         if isinstance(solutions[0], dict):
             sampled_states = response.samples()
-            se_suc_prob = np.std([
-                1 if dict(state) in solutions else 0
-                for state in sampled_states
-            ])
+            se_suc_prob = np.std(
+                [1 if dict(state) in solutions else 0 for state in sampled_states]
+            )
         else:
             sampled_states = response.states
-            se_suc_prob = np.std([
-                1 if list(state) in solutions else 0
-                for state in sampled_states
-            ])
+            se_suc_prob = np.std(
+                [1 if list(state) in solutions else 0 for state in sampled_states]
+            )
 
     return se_suc_prob
 
@@ -207,7 +215,7 @@ def time_to_solution(success_prob, computation_time, p_r):
     elif success_prob == 0.0:
         tts = np.inf
     else:
-        tts = computation_time * np.log(1 - p_r) / np.log(1-success_prob)
+        tts = computation_time * np.log(1 - p_r) / np.log(1 - success_prob)
 
     return tts
 
@@ -227,8 +235,11 @@ def se_lower_tts(tts, success_prob, computation_time, p_r, se_success_prob):
     elif success_prob == 0.0:
         tts_low_error = 0.0
     else:
-        tts_low_error = computation_time * \
-            np.log(1 - p_r) / np.log(1 - (success_prob + se_success_prob))
+        tts_low_error = (
+            computation_time
+            * np.log(1 - p_r)
+            / np.log(1 - (success_prob + se_success_prob))
+        )
 
     se_lower_tts = abs(tts_low_error - tts)
 
@@ -250,8 +261,11 @@ def se_upper_tts(tts, success_prob, computation_time, p_r, se_success_prob):
     elif success_prob == 0.0:
         tts_up_error = 0.0
     else:
-        tts_up_error = computation_time * \
-            np.log(1 - p_r) / np.log(1 - (success_prob - se_success_prob))
+        tts_up_error = (
+            computation_time
+            * np.log(1 - p_r)
+            / np.log(1 - (success_prob - se_success_prob))
+        )
 
     se_upper_tts = abs(tts_up_error - tts)
 

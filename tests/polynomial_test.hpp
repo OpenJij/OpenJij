@@ -12,8 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef polynomial_test_hpp
-#define polynomial_test_hpp
+#pragma once
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -813,4 +812,3 @@ void TestKLPConstructorGraph(const cimod::Polynomial<IndexType, FloatType> &poly
    }
 }
 
-#endif /* polynomial_test_hpp */

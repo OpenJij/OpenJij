@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 import openjij as oj
-import cxxjij as cj
+import openjij.cxxjij as cj
 
 
 def calculate_ising_energy(h, J, spins):

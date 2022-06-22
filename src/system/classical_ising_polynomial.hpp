@@ -12,15 +12,14 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_CLASSICAL_ISING_POLYNOMIAL_HPP__
-#define OPENJIJ_SYSTEM_CLASSICAL_ISING_POLYNOMIAL_HPP__
+#pragma once
 
 #include <vector>
 #include <algorithm>
-#include <graph/all.hpp>
+#include "graph/all.hpp"
 #include <nlohmann/json.hpp>
-#include <graph/json/parse.hpp>
-#include <utility/thres_hold.hpp>
+#include "graph/json/parse.hpp"
+#include "utility/thres_hold.hpp"
 #include <iostream>
 #include <iomanip>
 #include <limits>
@@ -515,4 +514,3 @@ auto make_classical_ising_polynomial(const graph::Spins &init_variables, const n
 } //namespace system
 } //namespace openjij
 
-#endif /* OPENJIJ_SYSTEM_CLASSICAL_ISING_POLYNOMIAL_HPP__ */

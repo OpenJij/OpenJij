@@ -17,8 +17,7 @@
 //! @date 2021-03-11
 //! @copyright Copyright (c) Jij Inc. 2021
 
-#ifndef OPENJIJ_GRAPH_POLYNOMIAL_HPP__
-#define OPENJIJ_GRAPH_POLYNOMIAL_HPP__
+#pragma once
 
 #include <algorithm>
 #include <cassert>
@@ -26,9 +25,9 @@
 #include <type_traits>
 #include <utility>
 #include <unordered_map>
-#include <graph/json/parse.hpp>
-#include <graph/graph.hpp>
-#include "cimod/src/binary_polynomial_model.hpp"
+#include "graph/json/parse.hpp"
+#include "graph/graph.hpp"
+#include <binary_polynomial_model.hpp>
 
 namespace openjij {
 namespace graph {
@@ -272,4 +271,3 @@ private:
 } //graph
 } //openjij
 
-#endif /* OPENJIJ_GRAPH_POLYNOMIAL_HPP__ */

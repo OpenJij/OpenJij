@@ -12,8 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UTILITY_THRES_HOLD_HPP__
-#define OPENJIJ_UTILITY_THRES_HOLD_HPP__
+#pragma once
 
 namespace openjij {
 namespace utility {
@@ -24,4 +23,3 @@ const FloatType THRESHOLD = 0.00000001;/*10^-8*/
 }
 }
 
-#endif /* OPENJIJ_UTILITY_THRES_HOLD_HPP__ */

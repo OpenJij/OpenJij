@@ -1,0 +1,94 @@
+name: Format 
+
+on:
+  workflow_dispatch:
+jobs:
+  Fomart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        name: Install Python
+        with:
+          python-version: '3.9'
+      - name: Get Python Version
+        id: python-version
+        run: |
+          set -eux
+          python --version > python_version.txt
+          cat python_version.txt
+      - name: Pip-Tools 
+        run: |
+          python -m pip install pip-tools 
+          pip-compile format-requirements.in
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ hashFiles('setup.cfg') }}-pip-${{ github.base_ref }}-${{ hashFiles('python_version.txt') }}-${{ hashFiles('format-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ hashFiles('setup.cfg') }}-pip-${{ github.base_ref }}-${{ hashFiles('python_version.txt') }}-${{ hashFiles('format-requirements.txt') }}
+            ${{ runner.os }}-${{ hashFiles('setup.cfg') }}-pip-${{ github.base_ref }}-${{ hashFiles('python_version.txt') }}
+            ${{ runner.os }}-${{ hashFiles('setup.cfg') }}-pip-${{ github.base_ref }}
+      - name: Update
+        shell: bash
+        run: |
+          set -ux
+          python -m pip install --upgrade pip setuptools wheel build
+      - name: Install Dependencies
+        shell: bash
+        run: |
+          set -eux
+          pip-sync format-requirements.txt
+      - name: Git Config
+        run: |
+          set -eux
+          git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+      - name: Remove Unused
+        run: |
+          set -eux 
+          python -m isort --force-single-line-imports --verbose ./openjij
+          python -m isort --force-single-line-imports --verbose setup.py
+          python -m autoflake --in-place --recursive --remove-all-unused-imports --ignore-init-module-imports --remove-unused-variables ./openjij
+          python -m autoflake --in-place --remove-all-unused-imports --ignore-init-module-imports --remove-unused-variables setup.py
+      - name: Run autopep8 
+        run: |
+          set -eux
+          python -m autopep8 --in-place --aggressive --aggressive --ignore=E501 --recursive ./openjij
+          python -m autopep8 --in-place --aggressive --aggressive --ignore=E501 setup.py
+      - name: Run isort 
+        run: |
+          set -eux 
+          python -m isort ./openjij --show-config
+          python -m isort ./openjij
+          python -m isort setup.py
+      - name: Run Black
+        run: |
+          set -eux
+          python -m black ./openjij
+          python -m black setup.py
+      - name: clang-format
+        run: |
+         find src/ -iname *.hpp | xargs clang-format -i
+      - name: Git ADD 
+        run: |
+          set -eux 
+          git pull origin HEAD:${GITHUB_REF}
+          if (git diff --shortstat | grep '[0-9]'); then \
+            git add --all
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+      - name: Git
+        run: |
+          set -eux
+          git commit -m "FORMAT"
+          git checkout -b ${GITHUB_REF#refs/heads/}-FORMAT
+          git push -u origin ${GITHUB_REF#refs/heads/}-FORMAT
+          gh pr create --base ${GITHUB_REF}   -t "Format" -b "" --reviewer ${GITHUB_ACTOR} --assignee ${GITHUB_ACTOR}
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}  
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

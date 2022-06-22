@@ -12,15 +12,14 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_GRAPH_CHIMERA_HPP__
-#define OPENJIJ_GRAPH_CHIMERA_HPP__
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
 #include <tuple>
 
-#include <graph/sparse.hpp>
+#include "graph/sparse.hpp"
 
 namespace openjij {
     namespace graph {
@@ -478,4 +477,4 @@ namespace openjij {
     } // namespace graph
 } // namespace openjij
 
-#endif
+

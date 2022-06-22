@@ -12,8 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UTILITY_MEMORY_HPP__
-#define OPENJIJ_UTILITY_MEMORY_HPP__
+#pragma once
 
 #include <memory>
 #include <utility>
@@ -38,4 +37,3 @@ namespace openjij {
     } // namespace utility
 } // namespace openjij
 
-#endif

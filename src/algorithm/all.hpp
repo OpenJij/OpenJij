@@ -12,9 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_ALGORITHM_ALL_HPP__
-#define OPENJIJ_ALGORITHM_ALL_HPP__
+#pragma once
 
-#include <algorithm/algorithm.hpp>
+#include "algorithm/algorithm.hpp"
 
-#endif

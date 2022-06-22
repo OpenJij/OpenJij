@@ -12,12 +12,11 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef SYSTEM_ALGORITHM_ALGORITHM_HPP__
-#define SYSTEM_ALGORITHM_ALGORITHM_HPP__
+#pragma once
 
 #include <functional>
-#include <system/system.hpp>
-#include <utility/schedule_list.hpp>
+#include "system/system.hpp"
+#include "utility/schedule_list.hpp"
 
 namespace openjij {
     namespace algorithm {
@@ -56,4 +55,3 @@ namespace openjij {
     } // namespace algorithm
 } // namespace openjij
 
-#endif

@@ -12,8 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_UTILITY_UNION_FIND_HPP__
-#define OPENJIJ_UTILITY_UNION_FIND_HPP__
+#pragma once
 
 #include <algorithm>
 #include <cstddef>
@@ -82,4 +81,3 @@ namespace openjij {
     } // namespace utility
 } // namespace openjij
 
-#endif

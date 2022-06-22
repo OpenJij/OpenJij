@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cxxjij
-import openjij
-from openjij.sampler import SASampler
-from openjij.model import BinaryQuadraticModel, ChimeraModel
-from .base_gpu_chimera import BaseGPUChimeraSampler
-from openjij.utils.graph_utils import chimera_to_ind
-import numpy as np
-import dimod
+
+import openjij as oj
+import openjij.cxxjij as cxxjij
+
+from openjij.sampler.chimera_gpu.base_gpu_chimera.base_gpu_chimera import (
+    BaseGPUChimeraSampler,
+)
+from openjij.sampler.sa_sampler import SASampler
 
 
 class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
@@ -45,30 +45,44 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
 
     """
 
-    def __init__(self,
-                 beta_min=None, beta_max=None,
-                 num_sweeps=1000, schedule=None,
-                 num_reads=1, unit_num_L=None,
-                 ):
+    def __init__(
+        self,
+        beta_min=None,
+        beta_max=None,
+        num_sweeps=1000,
+        schedule=None,
+        num_reads=1,
+        unit_num_L=None,
+    ):
 
-        super().__init__(beta_min=beta_min, beta_max=beta_max, 
-                         num_reads=num_reads, num_sweeps=num_sweeps, 
-                         schedule=schedule)
+        super().__init__(
+            beta_min=beta_min,
+            beta_max=beta_max,
+            num_reads=num_reads,
+            num_sweeps=num_sweeps,
+            schedule=schedule,
+        )
 
         self.unit_num_L = unit_num_L
 
-        self._make_system = {
-            'singlespinflip': cxxjij.system.make_chimera_classical_gpu
-        }
-        self._algorithm = {
-            'singlespinflip': cxxjij.algorithm.Algorithm_GPU_run
-        }
+        self._make_system = {"singlespinflip": cxxjij.system.make_chimera_classical_gpu}
+        self._algorithm = {"singlespinflip": cxxjij.algorithm.Algorithm_GPU_run}
 
-    def sample_ising(self, h, J, beta_min=None, beta_max=None,
-                     num_sweeps=None, num_reads=1, schedule=None,
-                     initial_state=None, updater=None,
-                     reinitialize_state=True, seed=None, unit_num_L=None,
-                     ):
+    def sample_ising(
+        self,
+        h,
+        J,
+        beta_min=None,
+        beta_max=None,
+        num_sweeps=None,
+        num_reads=1,
+        schedule=None,
+        initial_state=None,
+        updater=None,
+        reinitialize_state=True,
+        seed=None,
+        unit_num_L=None,
+    ):
         """sample with Ising model.
 
         Args:
@@ -89,7 +103,7 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
             :class:`openjij.sampler.response.Response`: results
 
         Examples::
-            
+
             >>> sampler = oj.GPUChimeraSASampler(unit_num_L=2)
             >>> h = {0: -1, 1: -1, 2: 1, 3: 1},
             >>> J = {(0, 4): -1, (2, 5): -1}
@@ -98,35 +112,37 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
         """
 
         if updater is None:
-            updater='single spin flip'
-        
+            updater = "single spin flip"
 
         self.unit_num_L = unit_num_L if unit_num_L else self.unit_num_L
 
-        model = openjij.ChimeraModel(linear=h, quadratic=J, vartype='SPIN', 
-                                   unit_num_L=self.unit_num_L, gpu=True)
+        model = oj.model.chimera_model.ChimeraModel(
+            linear=h, quadratic=J, vartype="SPIN", unit_num_L=self.unit_num_L, gpu=True
+        )
 
         # define Chimera structure
         structure = {}
-        structure['size'] = 8 * self.unit_num_L * self.unit_num_L
-        structure['dict'] = {}
+        structure["size"] = 8 * self.unit_num_L * self.unit_num_L
+        structure["dict"] = {}
         if isinstance(model.indices[0], int):
             # identity dict
             for ind in model.indices:
-                structure['dict'][ind] = ind
+                structure["dict"][ind] = ind
         elif isinstance(model.indices[0], tuple):
             # map chimera coordinate to index
             for ind in model.indices:
-                structure['dict'][ind] = model.to_index(*ind, self.unit_num_L)
-            
+                structure["dict"][ind] = model.to_index(*ind, self.unit_num_L)
 
-        return self._sampling(model, beta_min, beta_max,
-                              num_sweeps, num_reads, schedule,
-                              initial_state, updater,
-                              reinitialize_state, seed, structure)
-
-        
-
-
-    
-
+        return self._sampling(
+            model,
+            beta_min,
+            beta_max,
+            num_sweeps,
+            num_reads,
+            schedule,
+            initial_state,
+            updater,
+            reinitialize_state,
+            seed,
+            structure,
+        )

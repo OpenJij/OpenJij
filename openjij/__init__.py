@@ -1,15 +1,32 @@
-try:
-    import typing 
-except ImportError:
-    from typing_extensions import * 
-import cxxjij
-import openjij.model
-import openjij.sampler 
-import openjij.sampler.chimera_gpu
-import openjij.utils
+from pkgutil import extend_path
 
-from openjij.variable_type import SPIN, BINARY, Vartype, cast_vartype
-from openjij.sampler import Response
-from openjij.sampler import SASampler, SQASampler, CSQASampler
-from openjij.model import BinaryQuadraticModel, BinaryPolynomialModel
-from openjij.utils import solver_benchmark, convert_response
+__path__ = extend_path(__path__, __name__)
+
+try:
+    import typing
+except ImportError:
+    from typing_extensions import *
+
+from openjij.model.model import BinaryPolynomialModel, BinaryQuadraticModel
+from openjij.sampler.csqa_sampler import CSQASampler
+from openjij.sampler.response import Response
+from openjij.sampler.sa_sampler import SASampler
+from openjij.sampler.sqa_sampler import SQASampler
+from openjij.utils.benchmark import solver_benchmark
+from openjij.utils.res_convertor import convert_response
+from openjij.variable_type import BINARY, SPIN, Vartype, cast_vartype
+
+__all__ = [
+    "SPIN",
+    "BINARY",
+    "Vartype",
+    "cast_vartype",
+    "Response",
+    "SASampler",
+    "SQASampler",
+    "CSQASampler",
+    "BinaryQuadraticModel",
+    "BinaryPolynomialModel",
+    "solver_benchmark",
+    "convert_response",
+]

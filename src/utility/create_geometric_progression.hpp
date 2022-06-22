@@ -1,5 +1,4 @@
-#ifndef OPENJIJ_UTILITY_CREATE_GEOMETRIC_PROGRESSION_HPP__
-#define OPENJIJ_UTILITY_CREATE_GEOMETRIC_PROGRESSION_HPP__
+#pragma once
 
 namespace openjij {
     namespace utility {
@@ -13,5 +12,4 @@ namespace openjij {
     } // namespace utility
 } // namespace openjij
 
-#endif
 

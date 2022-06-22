@@ -1,26 +1,60 @@
 include(FetchContent)
 
+message(CHECK_START "Fetching Eigen3")
+list(APPEND CMAKE_MESSAGE_INDENT "  ")
+
+set(FETCHCONTENT_QUIET OFF)
+
+set(BUILD_TESTING OFF) 
+set(TEST_LIB OFF)
+
+set(EIGEN_MPL2_ONLY ON CACHE BOOL "" FORCE)
+set(EIGEN_BUILD_PKGCONFIG OFF CACHE BOOL "" FORCE)
+set(EIGEN_BUILD_DOC OFF CACHE BOOL "" FORCE)
+set(EIGEN_DOC_USE_MATHJAX OFF CACHE BOOL "" FORCE)
+set(EIGEN_BUILD_TESTING OFF CACHE BOOL "" FORCE)
+set(EIGEN_TEST_NOQT OFF CACHE BOOL "" FORCE)
+set(EIGEN_LEAVE_TEST_IN_ALL_TARGET OFF CACHE BOOL "" FORCE)
+#set(EIGEN_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+
+if(MSVC)
+  set(EIGEN_Fortran_COMPILER_WORKS OFF CACHE BOOL "" FORCE)
+endif()
+
+if(BLAS_FOUND) 
+  set(EIGEN_USE_BLAS ON) 
+endif()
+
+if(LAPACK_FOUND) 
+  set(EIGEN_USE_LAPACKE ON)
+endif()
+
 #### Eigen ####
 FetchContent_Declare(
-    eigen
+    eigen3
     GIT_REPOSITORY  https://gitlab.com/libeigen/eigen
-    GIT_TAG         3.3.9
-    CMAKE_ARGS -DEIGEN_MPL2_ONLY
+    GIT_TAG         3.4.0
+    GIT_SHALLOW     TRUE
     )
-set(EIGEN_CPP_STANDARD 11)
-set(EIGEN_MPL2_ONLY ON)
-FetchContent_MakeAvailable(eigen)
+
+FetchContent_MakeAvailable(eigen3)
 
 add_library(openjij-eigen_lib INTERFACE)
 target_include_directories(openjij-eigen_lib INTERFACE ${eigen_SOURCE_DIR})
-target_compile_definitions(openjij-eigen_lib INTERFACE EIGEN_MPL2_ONLY)
-if (APPLE)
-    if(BLAS_FOUND AND LAPACK_FOUND) 
-      target_compile_definitions(openjij-eigen_lib INTERFACE EIGEN_USE_BLAS=ON)
-      target_compile_definitions(openjij-eigen_lib INTERFACE EIGEN_USE_LAPACKE=ON)
-    endif()
-endif()
-
-
-
-
+target_compile_definitions(openjij-eigen_lib INTERFACE 
+    EIGEN_MPL2_ONLY
+    BUILD_TESTING=OFF
+    TEST_LIB=OFF
+    EIGEN_BUILD_PKGCONFIG=OFF
+    EIGEN_BUILD_DOC=OFF
+    EIGEN_DOC_USE_MATHJAX=OFF 
+    EIGEN_BUILD_TESTING=OFF 
+    EIGEN_TEST_NOQT=OFF 
+    EIGEN_LEAVE_TEST_IN_ALL_TARGET=OFF 
+    $<$<TARGET_EXISTS:BLAS::BLAS>:EIGEN_USE_BLAS>
+    $<$<TARGET_EXISTS:LAPACK::LAPACK>:EIGEN_USE_LAPACKE>
+    $<$<CXX_COMPILER_ID:MSVC>:EIGEN_Fortran_COMPILER_WORKS=OFF>
+)
+  
+list(POP_BACK CMAKE_MESSAGE_INDENT)
+message(CHECK_PASS "fetched")

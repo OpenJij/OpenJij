@@ -31,7 +31,7 @@
 #include <utility/random.hpp>
 #include <utility/gpu/memory.hpp>
 #include <utility/gpu/cublas.hpp>
-#include "./testcase.hpp"
+#include "testcase.hpp"
 
 static openjij::utility::ClassicalScheduleList generate_schedule_list(double beta, int mc_step) {
    auto list = openjij::utility::ClassicalScheduleList(1);

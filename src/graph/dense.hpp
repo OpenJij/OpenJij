@@ -12,8 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_GRAPH_DENSE_HPP__
-#define OPENJIJ_GRAPH_DENSE_HPP__
+#pragma once
 
 #include <map>
 #include <vector>
@@ -23,11 +22,11 @@
 #include <algorithm>
 #include <exception>
 
-#include <utility/disable_eigen_warning.hpp>
+#include "utility/disable_eigen_warning.hpp"
 #include <Eigen/Dense>
 
-#include <graph/json/parse.hpp>
-#include <graph/graph.hpp>
+#include "graph/json/parse.hpp"
+#include "graph/graph.hpp"
 
 namespace openjij {
     namespace graph {
@@ -282,4 +281,3 @@ namespace openjij {
     } // namespace graph 
 } // namespace openjij
 
-#endif

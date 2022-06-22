@@ -12,13 +12,12 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_SYSTEM_TRANSVERSE_ISING_HPP__
-#define OPENJIJ_SYSTEM_TRANSVERSE_ISING_HPP__
+#pragma once
 
 #include <cassert>
-#include <system/system.hpp>
-#include <graph/all.hpp>
-#include <utility/eigen.hpp>
+#include "system/system.hpp"
+#include "graph/all.hpp"
+#include "utility/eigen.hpp"
 #include <vector>
 #include <exception>
 
@@ -408,4 +407,3 @@ namespace openjij {
     } // namespace system
 } // namespace openjij
 
-#endif

@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cxxjij
-import openjij
-from openjij.sampler import SQASampler
-from .base_gpu_chimera import BaseGPUChimeraSampler
-from openjij.model import BinaryQuadraticModel, ChimeraModel
-import numpy as np
+
+import openjij as oj
+import openjij.cxxjij as cxxjij
+
+from openjij.sampler.chimera_gpu.base_gpu_chimera.base_gpu_chimera import (
+    BaseGPUChimeraSampler,
+)
+from openjij.sampler.sqa_sampler import SQASampler
 
 
 class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
@@ -44,43 +46,61 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
 
     """
 
-    def __init__(self, beta=10.0, gamma=1.0,
-                 trotter=4, num_sweeps=100,
-                 schedule=None, num_reads=1, unit_num_L=None):
+    def __init__(
+        self,
+        beta=10.0,
+        gamma=1.0,
+        trotter=4,
+        num_sweeps=100,
+        schedule=None,
+        num_reads=1,
+        unit_num_L=None,
+    ):
         # GPU Sampler allows only even trotter number
         if trotter % 2 != 0:
-            raise ValueError('GPU Sampler allows only even trotter number')
+            raise ValueError("GPU Sampler allows only even trotter number")
         self.trotter = trotter
         self.unit_num_L = unit_num_L
 
-        super().__init__(beta=beta, gamma=gamma, trotter=trotter, 
-                         num_reads=num_reads,
-                         num_sweeps=num_sweeps, schedule=schedule)
+        super().__init__(
+            beta=beta,
+            gamma=gamma,
+            trotter=trotter,
+            num_reads=num_reads,
+            num_sweeps=num_sweeps,
+            schedule=schedule,
+        )
 
         self._make_system = {
-            'singlespinflip': cxxjij.system.make_chimera_transverse_gpu
+            "singlespinflip": cxxjij.system.make_chimera_transverse_gpu
         }
-        self._algorithm = {
-            'singlespinflip': cxxjij.algorithm.Algorithm_GPU_run
-        }
+        self._algorithm = {"singlespinflip": cxxjij.algorithm.Algorithm_GPU_run}
 
     def _get_result(self, system, model):
         result = cxxjij.result.get_solution(system)
         sys_info = {}
         return result, sys_info
 
-
-    def sample_ising(self, h, J,
-                     beta=None, gamma=None,
-                     num_sweeps=None, schedule=None,num_reads=None,
-                     unit_num_L=None,
-                     initial_state=None, updater=None,
-                     reinitialize_state=True, seed=None):
+    def sample_ising(
+        self,
+        h,
+        J,
+        beta=None,
+        gamma=None,
+        num_sweeps=None,
+        schedule=None,
+        num_reads=None,
+        unit_num_L=None,
+        initial_state=None,
+        updater=None,
+        reinitialize_state=True,
+        seed=None,
+    ):
         """Sampling from the Ising model
 
         Args:
-            h (dict): Linear term of the target Ising model. 
-            J (dict): Quadratic term of the target Ising model. 
+            h (dict): Linear term of the target Ising model.
+            J (dict): Quadratic term of the target Ising model.
             beta (float, optional): inverse tempareture.
             gamma (float, optional): strangth of transverse field. Defaults to None.
             num_sweeps (int, optional): number of sweeps. Defaults to None.
@@ -95,41 +115,49 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
             :class:`openjij.sampler.response.Response`: results
 
         Examples::
-            
+
             >>> sampler = oj.GPUChimeraSQASampler(unit_num_L=2)
             >>> h = {0: -1, 1: -1, 2: 1, 3: 1},
             >>> J = {(0, 4): -1, (2, 5): -1}
             >>> res = sampler.sample_ising(h, J)
         """
 
-        #Set default updater
+        # Set default updater
         if updater is None:
-            updater = 'single spin flip'
+            updater = "single spin flip"
 
         if num_reads is None:
             num_reads = 1
 
         self.unit_num_L = unit_num_L if unit_num_L else self.unit_num_L
 
-        model = openjij.ChimeraModel(linear=h, quadratic=J, vartype='SPIN', 
-                                   unit_num_L=self.unit_num_L, gpu=True)
+        model = oj.model.chimera_model.ChimeraModel(
+            linear=h, quadratic=J, vartype="SPIN", unit_num_L=self.unit_num_L, gpu=True
+        )
 
         # define Chimera structure
         structure = {}
-        structure['size'] = 8 * self.unit_num_L * self.unit_num_L
-        structure['dict'] = {}
+        structure["size"] = 8 * self.unit_num_L * self.unit_num_L
+        structure["dict"] = {}
         if isinstance(model.indices[0], int):
             # identity dict
             for ind in model.indices:
-                structure['dict'][ind] = ind
+                structure["dict"][ind] = ind
         elif isinstance(model.indices[0], tuple):
             # map chimera coordinate to index
             for ind in model.indices:
-                structure['dict'][ind] = model.to_index(*ind, self.unit_num_L)
+                structure["dict"][ind] = model.to_index(*ind, self.unit_num_L)
 
-        return self._sampling(model, beta=beta, gamma=gamma,
-                     num_sweeps=num_sweeps, schedule=schedule,
-                     num_reads=num_reads,
-                     initial_state=initial_state, updater=updater,
-                     reinitialize_state=reinitialize_state, seed=seed, structure=structure)
-
+        return self._sampling(
+            model,
+            beta=beta,
+            gamma=gamma,
+            num_sweeps=num_sweeps,
+            schedule=schedule,
+            num_reads=num_reads,
+            initial_state=initial_state,
+            updater=updater,
+            reinitialize_state=reinitialize_state,
+            seed=seed,
+            structure=structure,
+        )

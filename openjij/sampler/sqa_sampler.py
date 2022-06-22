@@ -1,12 +1,17 @@
-import numpy as np
-import openjij
-from openjij.sampler import measure_time
-from openjij.sampler import BaseSampler
-from openjij.utils.decorator import deprecated_alias
-import cxxjij
-from cimod.utils import get_state_and_energy
+from typing import Optional, Union
+
 import dimod
-from typing import Union, Optional
+from dimod import SPIN, BINARY, Vartype
+import numpy as np
+
+from cimod.utils import get_state_and_energy
+
+import openjij as oj
+import openjij.cxxjij as cxxjij
+
+from openjij.sampler.sampler import BaseSampler
+from openjij.utils.decorator import deprecated_alias
+
 
 class SQASampler(BaseSampler):
     """Sampler with Simulated Quantum Annealing (SQA).
@@ -14,7 +19,7 @@ class SQASampler(BaseSampler):
     Inherits from :class:`openjij.sampler.sampler.BaseSampler`.
     Hamiltonian
 
-    .. math:: 
+    .. math::
 
         H(s) = s H_p + \\Gamma (1-s)\\sum_i \\sigma_i^x
 
@@ -35,22 +40,25 @@ class SQASampler(BaseSampler):
         - schedule range is '0 <= s <= 1'.
 
     """
+
     @property
     def parameters(self):
         return {
-            'beta': ['parameters'],
-            'gamma': ['parameters'],
-            'trotter': ['parameters'],
+            "beta": ["parameters"],
+            "gamma": ["parameters"],
+            "trotter": ["parameters"],
         }
 
-    @deprecated_alias(iteration='num_reads')
-    def __init__(self,
-                 beta: Optional[float] = None,
-                 gamma: Optional[float] = None,
-                 num_sweeps: Optional[int] = None,
-                 num_reads: Optional[int] = None,
-                 schedule: Optional[list] = None,
-                 trotter: Optional[int] = None):
+    @deprecated_alias(iteration="num_reads")
+    def __init__(
+        self,
+        beta: Optional[float] = None,
+        gamma: Optional[float] = None,
+        num_sweeps: Optional[int] = None,
+        num_reads: Optional[int] = None,
+        schedule: Optional[list] = None,
+        trotter: Optional[int] = None,
+    ):
 
         # Set default parameters
         if beta is None:
@@ -65,28 +73,26 @@ class SQASampler(BaseSampler):
             num_reads = 1
 
         self._default_params = {
-            'beta': beta,
-            'gamma': gamma,
-            'num_sweeps': num_sweeps,
-            'schedule': schedule,
-            'trotter': trotter,
-            'num_reads': num_reads
+            "beta": beta,
+            "gamma": gamma,
+            "num_sweeps": num_sweeps,
+            "schedule": schedule,
+            "trotter": trotter,
+            "num_reads": num_reads,
         }
 
         self._params = {
-            'beta': beta,
-            'gamma': gamma,
-            'num_sweeps': num_sweeps,
-            'schedule': schedule,
-            'trotter': trotter,
-            'num_reads': num_reads
+            "beta": beta,
+            "gamma": gamma,
+            "num_sweeps": num_sweeps,
+            "schedule": schedule,
+            "trotter": trotter,
+            "num_reads": num_reads,
         }
 
-        self._make_system = {
-            'singlespinflip': cxxjij.system.make_transverse_ising
-        }
+        self._make_system = {"singlespinflip": cxxjij.system.make_transverse_ising}
         self._algorithm = {
-            'singlespinflip': cxxjij.algorithm.Algorithm_SingleSpinFlip_run
+            "singlespinflip": cxxjij.algorithm.Algorithm_SingleSpinFlip_run
         }
 
     def _convert_validation_schedule(self, schedule, beta):
@@ -128,33 +134,34 @@ class SQASampler(BaseSampler):
                 """schedule is list of tuple or list
                 (annealing parameter s : float, step_length : int) or
                 (annealing parameter s : float, beta: float, step_length : int)
-                """)
+                """
+            )
 
     def _get_result(self, system, model):
         state, info = super()._get_result(system, model)
 
         q_state = system.trotter_spins[:-1].T.astype(int)
         c_energies = [get_state_and_energy(model, state)[1] for state in q_state]
-        info['trotter_state'] = q_state
-        info['trotter_energies'] = c_energies
+        info["trotter_state"] = q_state
+        info["trotter_energies"] = c_energies
 
         return state, info
 
-    def sample(self,
-               bqm: Union['openjij.BinaryQuadraticModel',
-                          dimod.BinaryQuadraticModel],
-               beta: Optional[float] = None,
-               gamma: Optional[float] = None,
-               num_sweeps: Optional[int] = None,
-               schedule: Optional[list] = None,
-               trotter: Optional[int] = None,
-               num_reads: Optional[int] = None,
-               initial_state: Optional[Union[list, dict]] = None,
-               updater: Optional[str] = None,
-               sparse: Optional[bool] = None,
-               reinitialize_state: Optional[bool] = None,
-               seed: Optional[int] = None) -> 'openjij.sampler.response.Response':
-
+    def sample(
+        self,
+        bqm: Union["oj.model.model.BinaryQuadraticModel", dimod.BinaryQuadraticModel],
+        beta: Optional[float] = None,
+        gamma: Optional[float] = None,
+        num_sweeps: Optional[int] = None,
+        schedule: Optional[list] = None,
+        trotter: Optional[int] = None,
+        num_reads: Optional[int] = None,
+        initial_state: Optional[Union[list, dict]] = None,
+        updater: Optional[str] = None,
+        sparse: Optional[bool] = None,
+        reinitialize_state: Optional[bool] = None,
+        seed: Optional[int] = None,
+    ) -> "oj.sampler.response.Response":
         """Sampling from the Ising model
 
         Args:
@@ -171,13 +178,13 @@ class SQASampler(BaseSampler):
             seed (int, optional): Sampling seed. Defaults to None.
 
         Raises:
-            ValueError: 
+            ValueError:
 
         Returns:
             :class:`openjij.sampler.response.Response`: results
 
         Examples:
-            
+
             for Ising case::
 
                 >>> h = {0: -1, 1: -1, 2: 1, 3: 1}
@@ -198,38 +205,57 @@ class SQASampler(BaseSampler):
         if reinitialize_state is None:
             reinitialize_state = True
         if updater is None:
-            updater = 'single spin flip'
+            updater = "single spin flip"
 
-        if type(bqm) == dimod.BinaryQuadraticModel:
-            bqm = openjij.BinaryQuadraticModel(dict(bqm.linear), dict(bqm.quadratic), bqm.offset, bqm.vartype)
+        if isinstance(bqm, dimod.BinaryQuadraticModel):
+            bqm = oj.model.model.BinaryQuadraticModel(
+                dict(bqm.linear), dict(bqm.quadratic), bqm.offset, bqm.vartype
+            )
 
         ising_graph, offset = bqm.get_cxxjij_ising_graph()
 
         self._set_params(
-            beta=beta, gamma=gamma,
-            num_sweeps=num_sweeps, num_reads=num_reads,
-            trotter=trotter, schedule=schedule
+            beta=beta,
+            gamma=gamma,
+            num_sweeps=num_sweeps,
+            num_reads=num_reads,
+            trotter=trotter,
+            schedule=schedule,
         )
 
         # set annealing schedule -------------------------------
         self._annealing_schedule_setting(
-            bqm, self._params['beta'], self._params['gamma'], self._params['num_sweeps'], self._params['schedule'])
+            bqm,
+            self._params["beta"],
+            self._params["gamma"],
+            self._params["num_sweeps"],
+            self._params["schedule"],
+        )
         # ------------------------------- set annealing schedule
 
         # make init state generator --------------------------------
         if initial_state is None:
-            def init_generator(): return [ising_graph.gen_spin(seed) if seed != None else ising_graph.gen_spin()
-                                          for _ in range(self._params['trotter'])]
+
+            def init_generator():
+                return [
+                    ising_graph.gen_spin(seed)
+                    if seed is not None
+                    else ising_graph.gen_spin()
+                    for _ in range(self._params["trotter"])
+                ]
+
         else:
             if isinstance(initial_state, dict):
                 initial_state = [initial_state[k] for k in bqm.variables]
 
             # convert to spin variable
-            if bqm.vartype == openjij.BINARY:
+            if bqm.vartype == BINARY:
                 temp_initial_state = []
                 for v in initial_state:
                     if v != 0 and v != 1:
-                        raise RuntimeError("The initial variables must be 0 or 1 if vartype is BINARY.")
+                        raise RuntimeError(
+                            "The initial variables must be 0 or 1 if vartype is BINARY."
+                        )
                     temp_initial_state.append(2 * v - 1)
 
                 initial_state = temp_initial_state
@@ -239,56 +265,51 @@ class SQASampler(BaseSampler):
             # validate initial_state size
             if len(initial_state) != ising_graph.size():
                 raise ValueError(
-                    "the size of the initial state should be {}"
-                    .format(ising_graph.size()))
+                    "the size of the initial state should be {}".format(
+                        ising_graph.size()
+                    )
+                )
 
-            trotter_init_state = [_init_state
-                                  for _ in range(self._params['trotter'])]
+            trotter_init_state = [_init_state for _ in range(self._params["trotter"])]
 
-            def init_generator(): return trotter_init_state
+            def init_generator():
+                return trotter_init_state
+
         # -------------------------------- make init state generator
 
         # choose updater -------------------------------------------
-        _updater_name = updater.lower().replace('_', '').replace(' ', '')
+        _updater_name = updater.lower().replace("_", "").replace(" ", "")
         if _updater_name not in self._algorithm:
             raise ValueError('updater is one of "single spin flip"')
-        algorithm = self._algorithm[_updater_name] 
+        algorithm = self._algorithm[_updater_name]
         sqa_system = self._make_system[_updater_name](
-            init_generator(), ising_graph, self._params['gamma']
+            init_generator(), ising_graph, self._params["gamma"]
         )
         # ------------------------------------------- choose updater
 
         response = self._cxxjij_sampling(
-            bqm, init_generator,
-            algorithm, sqa_system,
-            reinitialize_state, seed
+            bqm, init_generator, algorithm, sqa_system, reinitialize_state, seed
         )
 
-        response.info['schedule'] = self.schedule_info
+        response.info["schedule"] = self.schedule_info
 
         return response
 
-    def _annealing_schedule_setting(self, model,
-                                    beta=None, gamma=None,
-                                    num_sweeps=None,
-                                    schedule=None):
+    def _annealing_schedule_setting(
+        self, model, beta=None, gamma=None, num_sweeps=None, schedule=None
+    ):
         if schedule:
-            self._params['schedule'] = self._convert_validation_schedule(
-                schedule, beta
-            )
-            self.schedule_info = {'schedule': 'custom schedule'}
+            self._params["schedule"] = self._convert_validation_schedule(schedule, beta)
+            self.schedule_info = {"schedule": "custom schedule"}
         else:
 
-            self._params['schedule'], beta_gamma = quartic_ising_schedule(
-                model=model,
-                beta=beta,
-                gamma=gamma,
-                num_sweeps=num_sweeps
+            self._params["schedule"], beta_gamma = quartic_ising_schedule(
+                model=model, beta=beta, gamma=gamma, num_sweeps=num_sweeps
             )
             self.schedule_info = {
-                'beta': beta_gamma[0],
-                'gamma': beta_gamma[1],
-                'num_sweeps': num_sweeps
+                "beta": beta_gamma[0],
+                "gamma": beta_gamma[1],
+                "num_sweeps": num_sweeps,
             }
 
 
@@ -308,7 +329,10 @@ def linear_ising_schedule(model, beta, gamma, num_sweeps):
     )
     return schedule, [beta, gamma]
 
-#TODO: more optimal schedule?
+
+# TODO: more optimal schedule?
+
+
 def quartic_ising_schedule(model, beta, gamma, num_sweeps):
     """Generate quartic ising schedule based on S. Morita and H. Nishimori, Journal of Mathematical Physics 49, 125210 (2008).
 
@@ -322,7 +346,6 @@ def quartic_ising_schedule(model, beta, gamma, num_sweeps):
     """
 
     s = np.linspace(0, 1, num_sweeps)
-    fs = s**4*(35-84*s+70*s**2-20*s**3)
+    fs = s**4 * (35 - 84 * s + 70 * s**2 - 20 * s**3)
     schedule = [((beta, elem), 1) for elem in fs]
     return schedule, [beta, gamma]
-

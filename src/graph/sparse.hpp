@@ -12,8 +12,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_GRAPH_SPARSE_HPP__
-#define OPENJIJ_GRAPH_SPARSE_HPP__
+#pragma once
 
 #include <algorithm>
 #include <cassert>
@@ -22,9 +21,9 @@
 #include <utility>
 #include <unordered_map>
 
-#include <graph/json/parse.hpp>
-#include <graph/graph.hpp>
-#include <utility/pairhash.hpp>
+#include "graph/json/parse.hpp"
+#include "graph/graph.hpp"
+#include "utility/pairhash.hpp"
 
 namespace openjij {
     namespace graph {
@@ -322,5 +321,3 @@ namespace openjij {
             };
     } // namespace graph
 } // namespace openjij
-
-#endif

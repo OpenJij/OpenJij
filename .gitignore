@@ -1,6 +1,7 @@
 # Prerequisites
+openjij/_version.py
 *.d
-
+msbuild_version.txt
 # Compiled Object files
 *.slo
 *.lo
@@ -41,7 +42,13 @@ Pipfile.lock
 __pycache__/
 *.py[cod]
 *$py.class
-
+.pytest_cache/
+jij_cimod.egg-info/
+_skbuild/
+dist/
+.sccache/
+python_version.txt
+*requirements.txt
 # C extensions
 *.so
 
