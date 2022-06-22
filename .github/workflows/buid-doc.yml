@@ -67,7 +67,10 @@ jobs:
       - name: Copy Doc
         shell: bash
         run: |
+          set -eux
           cp -r ./build/html/* public
+          cd public/docs 
+          rm *.md5
       - name: du -a 
         shell: bash
         if: always()
