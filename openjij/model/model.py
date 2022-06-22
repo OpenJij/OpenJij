@@ -31,7 +31,12 @@
 
 import openjij.cxxjij as cxxjij
 import cimod
-import cimod.cxxcimod as cxxcimod
+
+try:
+    import cimod.cxxcimod as cxxcimod
+except ImportError:
+    import cxxcimod
+
 import dimod
 
 
