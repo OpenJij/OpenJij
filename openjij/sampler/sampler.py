@@ -18,12 +18,13 @@ This module defines the abstract sampler (BaseSampler).
 import time
 
 import dimod
+from dimod import SPIN, BINARY, Vartype
 import numpy as np
 
 from cimod.utils import get_state_and_energy
 from dimod.core.sampler import samplemixinmethod
 
-import openjij
+import openjij as oj
 import openjij.cxxjij as cxxjij
 
 
@@ -175,7 +176,7 @@ class BaseSampler(dimod.Sampler):
         Returns:
             :class:`openjij.sampler.response.Response`: results
         """
-        if bqm.vartype == openjij.SPIN:
+        if bqm.vartype == SPIN:
             if not getattr(self.sample_ising, "__issamplemixin__", False):
                 # sample_ising is implemented
                 h, J, offset = bqm.to_ising()
@@ -187,7 +188,7 @@ class BaseSampler(dimod.Sampler):
                 sampleset = self.sample_qubo(Q, **parameters)
                 sampleset.change_vartype(dimod.SPIN, energy_offset=offset)
                 return sampleset
-        elif bqm.vartype == openjij.BINARY:
+        elif bqm.vartype == BINARY:
             if not getattr(self.sample_qubo, "__issamplemixin__", False):
                 # sample_qubo is implemented
                 Q, offset = bqm.to_qubo()
@@ -213,7 +214,7 @@ class BaseSampler(dimod.Sampler):
         Returns:
             :class:`openjij.sampler.response.Response`: results
         """
-        bqm = openjij.BinaryQuadraticModel.from_ising(
+        bqm = oj.model.model.BinaryQuadraticModel.from_ising(
             h, J, sparse=parameters.get("sparse", False)
         )
         return self.sample(bqm, **parameters)
@@ -229,12 +230,12 @@ class BaseSampler(dimod.Sampler):
             :class:`openjij.sampler.response.Response`: results
         """
         if isinstance(Q, dict):
-            bqm = openjij.BinaryQuadraticModel.from_qubo(
+            bqm = oj.model.model.BinaryQuadraticModel.from_qubo(
                 Q, sparse=parameters.get("sparse", False)
             )
             return self.sample(bqm, **parameters)
         elif isinstance(Q, np.ndarray):
-            bqm = openjij.BinaryQuadraticModel.from_numpy_matrix(Q, vartype="BINARY")
+            bqm = oj.model.model.BinaryQuadraticModel.from_numpy_matrix(Q, vartype="BINARY")
             return self.sample(bqm, **parameters)
         else:
             raise TypeError("Q must be either dict or np.ndarray")
