@@ -232,9 +232,9 @@ jobs:
       shell: bash
       run: |
           set -eux
-          pip install pytest-github-actions-annotate-failures
+          python -m pip install --upgrade pip setuptools wheel build
     - name: sccache
-      if: ${{ matrix.os != 'windows-latest'}}
+      if: ${{ matrix.os == 'ubuntu-latest'}}
       uses: hendrikmuhs/ccache-action@v1.2
       with:
           verbose: 2
