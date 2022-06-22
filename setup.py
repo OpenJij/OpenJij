@@ -47,7 +47,7 @@ setup(
     setup_requires=setup_requires,
     install_requires=[
         "numpy >= 1.21.6, < 1.23.0",
-        "dimod >=0.9.14, < 0.12.0",
+        "dimod >=0.9.14, <=0.10.0",
         "scipy >= 1.7.3, < 1.9.0",
         "requests >= 2.28.0, < 2.29.0",
         "jij-cimod == 1.4.0a2",
