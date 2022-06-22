@@ -146,7 +146,7 @@ class BaseSampler(dimod.Sampler):
         sampling_time = exec_sampling()
 
         # construct response instance
-        response = openjij.Response.from_samples(
+        response = oj.sampler.response.Response.from_samples(
             states, model.vartype, energies, info=system_info
         )
 
