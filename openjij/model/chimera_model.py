@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import openjij
 import openjij.cxxjij as cj
+
+from dimod import SPIN
 
 from openjij.model.model import make_BinaryQuadraticModel
 
@@ -42,7 +43,7 @@ def make_ChimeraModel(linear, quadratic):
             linear=None,
             quadratic=None,
             offset=0.0,
-            vartype=openjij.SPIN,
+            vartype=SPIN,
             unit_num_L=None,
             model=None,
             gpu=False,
@@ -317,7 +318,7 @@ def ChimeraModel(
     linear: dict = None,
     quadratic: dict = None,
     offset: float = 0.0,
-    vartype=openjij.SPIN,
+    vartype=SPIN,
     unit_num_L: int = None,
     model=None,
     gpu: bool = False,
