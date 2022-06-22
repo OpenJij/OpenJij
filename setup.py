@@ -29,9 +29,8 @@ except ImportError:
     raise
 
 setup_requires = [
-    "numpy",
-    "pybind11",
-    "ninja; sys_platform != 'win32'",
+    "numpy >= 1.21.6, < 1.23.0",
+    "pybind11 >= 2.9.2, < 2.10.0",
 ]
 
 if any(arg in sys.argv for arg in ("pytest", "test")):
