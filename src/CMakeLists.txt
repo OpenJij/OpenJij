@@ -17,6 +17,14 @@ list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
 add_library(cxxjij_header_only INTERFACE)
 
+target_precompile_headers(cxxcimod_header_only INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/all.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/graph/all.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/result/all.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/system/all.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/updater/all.hpp
+) 
+
 #for GPU
 if(CUDAToolkit_FOUND)
     add_subdirectory(system)
