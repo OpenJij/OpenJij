@@ -48,7 +48,6 @@ target_compile_definitions(cxxjij_test PRIVATE
 target_link_libraries(cxxjij_test PRIVATE
     nlohmann_json::nlohmann_json
     cxxjij_header_only
-    pthread
     $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,openjij-eigen_lib>
     $<IF:$<TARGET_EXISTS:GTest::gtest>,GTest::gtest,gtest>
     $<IF:$<TARGET_EXISTS:GTest::gtest_main>,GTest::gtest_main,gtest_main>
