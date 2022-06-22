@@ -28,13 +28,14 @@ build-backend = "setuptools.build_meta"
 write_to = "openjij/_version.py"
 
 [tool.pytest.ini_options]
-addopts = "--doctest-modules --color=yes --code-highlight=yes --cov-context=test --cov --cov-append --cov-report term --randomly-seed=last -v --capture=no"
+addopts = "--continue-on-collection-errors --full-trace --color=yes --code-highlight=yes --cov-context=test --cov --cov-append --cov-report term --randomly-seed=last -vv -v --capture=no"
 testpaths = [
     "tests",
 ]
 spec_header_format = "{module_path}:"
 spec_test_format = "{result} {name}"
 log_level = "INFO"
+log_cli_level = "INFO"
 console_output_style = "count"
 log_auto_indent = true
 junit_logging = "all"
