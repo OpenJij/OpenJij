@@ -13,7 +13,7 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
-project(cimod
+project(openjij
     DESCRIPTION "Framework for the Ising model and QUBO."
     HOMEPAGE_URL "https://www.openjij.org"
 )
@@ -61,9 +61,7 @@ message(STATUS "CMAKE_REQUIRE_FIND_PACKAGE_GTest = ${CMAKE_REQUIRE_FIND_PACKAGE_
 message(STATUS "Started CMake for ${PROJECT_NAME} \n")
 
 if (APPLE)
-    set(CMAKE_MACOSX_RPATH TRUE)
-    message(STATUS "CMAKE_OSX_DEPLOYMENT_TARGET = ${CMAKE_OSX_DEPLOYMENT_TARGET}")
-    include(cmake/PythonAutoDetectOSX.cmake)
+    #set(CMAKE_MACOSX_RPATH TRUE)
     message(STATUS "CMAKE_OSX_DEPLOYMENT_TARGET = ${CMAKE_OSX_DEPLOYMENT_TARGET}")
     add_compile_options(-Wno-unused-command-line-argument)
 elseif (MSVC)
