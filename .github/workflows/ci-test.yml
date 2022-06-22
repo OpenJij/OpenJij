@@ -317,10 +317,9 @@ jobs:
       shell: bash
       run: |
         set -eux
-        export OSX_DEPLOYMENT_TARGET='11.0'
         export CIBUILDWHEEL=1
         export CMAKE_BUILD_TYPE=Debug
-        python -m pip install --no-binary :all: -vvv -e . 
+        python -m pip install -vvv -e . 
     - name: Build & Install    
       if: ${{ matrix.os == 'windows-latest'}}
       shell: bash 
