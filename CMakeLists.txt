@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 project(cimod
     DESCRIPTION "Framework for the Ising model and QUBO."
     HOMEPAGE_URL "https://www.openjij.org"
@@ -133,9 +133,12 @@ if(USE_CUDA)
     set(CMAKE_CUDA_STANDARD 11)
     set(CMAKE_CUDA_STANDARD_REQUIRED ON)
     if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-      set(CMAKE_CUDA_ARCHITECTURES all)
-      set(CUDA_ARCHITECTURES all)
-      set_property(GLOBAL PROPERTY CUDA_ARCHITECTURES all)
+      set(CMAKE_CUDA_ARCHITECTURES "35;37;50;52;53;60;61;62;70;72;75;80;86;87")
+      set(CUDA_ARCHITECTURES "35;37;50;52;53;60;61;62;70;72;75;80;86;87")
+      set_property(GLOBAL PROPERTY CUDA_ARCHITECTURES 
+          "35;37;50;52;53;60;61;62;70;72;75;80;86;87"
+       )
+      #set_property(GLOBAL PROPERTY CUDA_ARCHITECTURES all)
     endif()
     message(STATUS "CUDA architectures set to ${CMAKE_CUDA_ARCHITECTURES}")
     add_definitions(-DUSE_CUDA)
@@ -148,8 +151,19 @@ if(NOT APPLE)
   endif()
 endif()
 
-find_package(BLAS)
-find_package(LAPACK)
+if(CUDAToolkit_FOUND)
+  set(BLA_VENDOR NVHPC)
+  find_package(BLAS)
+  find_package(LAPACK)
+  if(NOT (BLAS_FOUND && LAPACK_FOUND))
+     unset(BLA_VENDOR)
+     find_package(BLAS)
+     find_package(LAPACK)
+  endif()
+else()
+  find_package(BLAS)
+  find_package(LAPACK)
+endif()
 
 find_package(Eigen3 CONFIG)
 
