@@ -165,7 +165,7 @@ jobs:
     - uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }} 
-        working-directory: build
+        working-directory: build/tests/CMakeFiles/cxxjij_test.dir/
         name: cxxopenjij
         flags: cxxopenjij
         fail_ci_if_error: false
