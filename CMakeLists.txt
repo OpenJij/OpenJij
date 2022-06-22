@@ -60,6 +60,13 @@ message(STATUS "CMAKE_REQUIRE_FIND_PACKAGE_pybind11_json = ${CMAKE_REQUIRE_FIND_
 message(STATUS "CMAKE_REQUIRE_FIND_PACKAGE_GTest = ${CMAKE_REQUIRE_FIND_PACKAGE_GTest}")
 message(STATUS "Started CMake for ${PROJECT_NAME} \n")
 
+if(NOT ${PYTHON_EXECUTABLE}) 
+    message(STATUS "Find Python")
+    find_program(PYTHON_EXECUTABLE_PATH NAMES python)
+    message(STATUS "PYTHON_EXECUTABLE_PATH = ${PYTHON_EXECUTABLE_PATH}")
+endif()
+
+
 if (APPLE)
     set(CMAKE_MACOSX_RPATH TRUE)
     message(STATUS "CMAKE_OSX_DEPLOYMENT_TARGET = ${CMAKE_OSX_DEPLOYMENT_TARGET}")
@@ -201,11 +208,9 @@ if(SKBUILD AND MAIN_PROJECT)
   # Scikit-Build does not add your site-packages to the search path
   # automatically, so we need to add it _or_ the pybind11 specific directory
   # here.
-  if(NOT ${PYTHON_EXECUTABLE}) 
-    message(STATUS "Find Python")
-    find_program(PYTHON_EXECUTABLE_PATH NAMES python)
-    message(STATUS "PYTHON_EXECUTABLE_PATH = ${PYTHON_EXECUTABLE_PATH}")
-    set_property(GLOBAL PROPERTY PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE_PATH})
+  if(NOT DEFINED PYTHON_EXECUTABLE) 
+    message(STATUS "NOT DEFINED PYTHON_EXECUTABLE")
+    set_property(CACHE PROPERTY PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE_PATH})
   endif()
   message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
   execute_process(
