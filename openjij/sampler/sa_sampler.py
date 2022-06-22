@@ -16,9 +16,11 @@ from typing import Optional, Union
 
 import cimod
 import dimod
+from dimod import SPIN, BINARY, Vartype
+
 import numpy as np
 
-import openjij
+import openjij as oj
 import openjij.cxxjij as cxxjij
 
 from openjij.sampler.sampler import BaseSampler
@@ -132,7 +134,7 @@ class SASampler(BaseSampler):
 
     def sample(
         self,
-        bqm: Union["openjij.BinaryQuadraticModel", dimod.BinaryQuadraticModel],
+        bqm: Union["oj.model.model.BinaryQuadraticModel", dimod.BinaryQuadraticModel],
         beta_min: Optional[float] = None,
         beta_max: Optional[float] = None,
         num_sweeps: Optional[int] = None,
@@ -143,11 +145,11 @@ class SASampler(BaseSampler):
         sparse: Optional[bool] = None,
         reinitialize_state: Optional[bool] = None,
         seed: Optional[int] = None,
-    ) -> "openjij.sampler.response.Response":
+    ) -> "oj.sampler.response.Response":
         """sample Ising model.
 
         Args:
-            bqm (oj.BinaryQuadraticModel) binary quadratic model
+            bqm (openjij.model.model.BinaryQuadraticModel) binary quadratic model
             beta_min (float): minimal value of inverse temperature
             beta_max (float): maximum value of inverse temperature
             num_sweeps (int): number of sweeps
@@ -193,7 +195,7 @@ class SASampler(BaseSampler):
             sparse = False
 
         if isinstance(bqm, dimod.BinaryQuadraticModel):
-            bqm = openjij.model.BinaryQuadraticModel(
+            bqm = oj.model.model.BinaryQuadraticModel(
                 dict(bqm.linear),
                 dict(bqm.quadratic),
                 bqm.offset,
@@ -203,7 +205,7 @@ class SASampler(BaseSampler):
 
         if sparse and bqm.sparse == False:
             # convert to sparse bqm
-            bqm = openjij.model.BinaryQuadraticModel(
+            bqm = oj.model.model.BinaryQuadraticModel(
                 bqm.linear, bqm.quadratic, bqm.offset, bqm.vartype, sparse=True
             )
 
@@ -253,13 +255,13 @@ class SASampler(BaseSampler):
         else:
             temp_initial_state = []
             if isinstance(initial_state, dict):
-                if model.vartype == openjij.BINARY:
+                if model.vartype == BINARY:
                     for k in model.variables:
                         v = initial_state[k]
                         if v != 0 and v != 1:
                             raise RuntimeError("The initial variables must be 0 or 1.")
                         temp_initial_state.append(2 * v - 1)
-                elif model.vartype == openjij.SPIN:
+                elif model.vartype == SPIN:
                     for k in model.variables:
                         v = initial_state[k]
                         if v != -1 and v != 1:
@@ -270,13 +272,13 @@ class SASampler(BaseSampler):
                 else:
                     raise RuntimeError("Unknown vartype detected.")
             elif isinstance(initial_state, (list, tuple)):
-                if model.vartype == openjij.BINARY:
+                if model.vartype == BINARY:
                     for k in range(len(model.variables)):
                         v = initial_state[k]
                         if v != 0 and v != 1:
                             raise RuntimeError("The initial variables must be 0 or 1.")
                         temp_initial_state.append(2 * v - 1)
-                elif model.vartype == openjij.SPIN:
+                elif model.vartype == SPIN:
                     for k in range(len(model.variables)):
                         v = initial_state[k]
                         if v != -1 and v != 1:
@@ -323,7 +325,7 @@ class SASampler(BaseSampler):
 
     def sample_hubo(
         self,
-        J: Union[dict, "openjij.BinaryPolynomialModel", cimod.BinaryPolynomialModel],
+        J: Union[dict, "oj.model.model.BinaryPolynomialModel", cimod.BinaryPolynomialModel],
         vartype: Optional[str] = None,
         beta_min: Optional[float] = None,
         beta_max: Optional[float] = None,
@@ -334,7 +336,7 @@ class SASampler(BaseSampler):
         updater: Optional[str] = None,
         reinitialize_state: Optional[bool] = None,
         seed: Optional[int] = None,
-    ) -> "openjij.sampler.response.Response":
+    ) -> "oj.sampler.response.Response":
         """sampling from higher order unconstrainted binary optimization.
 
         Args:
@@ -369,7 +371,7 @@ class SASampler(BaseSampler):
             reinitialize_state = True
 
         # Set model
-        if str(type(J)) == str(type(openjij.model.BinaryPolynomialModel({}, "SPIN"))):
+        if str(type(J)) == str(type(oj.model.model.BinaryPolynomialModel({}, "SPIN"))):
             if vartype is not None:
                 raise ValueError("vartype must not be specified")
             model = J
@@ -378,11 +380,11 @@ class SASampler(BaseSampler):
                 raise ValueError("vartype must not be specified")
             model = J
         else:
-            model = openjij.model.BinaryPolynomialModel(J, vartype)
+            model = oj.model.model.BinaryPolynomialModel(J, vartype)
 
         # make init state generator --------------------------------
         if initial_state is None:
-            if model.vartype == openjij.SPIN:
+            if model.vartype == SPIN:
 
                 def _generate_init_state():
                     return (
@@ -391,7 +393,7 @@ class SASampler(BaseSampler):
                         else cxxjij.graph.Polynomial(model.num_variables).gen_spin()
                     )
 
-            elif model.vartype == openjij.BINARY:
+            elif model.vartype == BINARY:
 
                 def _generate_init_state():
                     return (
@@ -412,7 +414,7 @@ class SASampler(BaseSampler):
         # -------------------------------- make init state generator
 
         # determine system class and algorithm --------------------------------
-        if model.vartype == openjij.SPIN:
+        if model.vartype == SPIN:
             if updater is None or updater == "single spin flip":
                 sa_system = cxxjij.system.make_classical_ising_polynomial(
                     _generate_init_state(), model.to_serializable()
@@ -424,7 +426,7 @@ class SASampler(BaseSampler):
                 )
             else:
                 raise ValueError("Unknown updater name")
-        elif model.vartype == openjij.BINARY:
+        elif model.vartype == BINARY:
             if updater == "k-local":
                 sa_system = cxxjij.system.make_k_local_polynomial(
                     _generate_init_state(), model.to_serializable()
@@ -476,7 +478,7 @@ class SASampler(BaseSampler):
 
 
 def geometric_ising_beta_schedule(
-    model: openjij.model.BinaryQuadraticModel,
+    model: oj.model.model.BinaryQuadraticModel,
     beta_max=None,
     beta_min=None,
     num_sweeps=1000,
@@ -498,7 +500,7 @@ def geometric_ising_beta_schedule(
         mat_size = ising_interaction.shape[0]
         ising_interaction[mat_size - 1, mat_size - 1] = 0
 
-        if model.vartype == openjij.BINARY:
+        if model.vartype == BINARY:
             # convert to ising matrix
             qubo_to_ising(ising_interaction)
 
