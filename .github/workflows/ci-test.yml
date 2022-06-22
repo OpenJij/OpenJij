@@ -317,10 +317,7 @@ jobs:
       shell: bash
       run: |
         set -eux
-        export CMAKE_C_COMPILER_LAUNCHER=sccache
-        export CMAKE_CXX_COMPILER_LAUNCHER=sccache
-        export CMAKE_OSX_DEPLOYMENT_TARGET=11 
-        export CMAKE_OSX_ARCHITECTURES=x86_64
+        export OSX_DEPLOYMENT_TARGET='11.0'
         export CMAKE_BUILD_TYPE=Debug
         python -m pip install -vvv -e .
     - name: Build & Install    
