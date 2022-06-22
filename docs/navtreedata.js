@@ -22,7 +22,7 @@ for the JavaScript code in this file
 */
 var NAVTREE =
 [
-  [ "cimod", "index.html", [
+  [ "openjij", "index.html", [
     [ "OpenJij : Framework for the Ising model and QUBO.", "index.html", [
       [ "Coverage Graph", "index.html#autotoc_md3", null ],
       [ "install", "index.html#autotoc_md4", [
