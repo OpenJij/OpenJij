@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import openjij
+import openjij as oj
+
+from dimod import SPIN
 
 from openjij.model.model import make_BinaryQuadraticModel
 
@@ -57,7 +59,7 @@ def make_KingGraph(linear=None, quadratic=None, king_graph=None):
             quadratic: dict = None,
             offset: float = 0.0,
             king_graph=None,
-            vartype=openjij.SPIN,
+            vartype=SPIN,
             machine_type: str = "",
         ):
             """__init__.
@@ -73,7 +75,7 @@ def make_KingGraph(linear=None, quadratic=None, king_graph=None):
                 vartype: 'SPIN' or 'BINARY'
                 machine_type (str): choose 'ASIC' or 'FPGA'
             """
-            vartype = openjij.cast_vartype(vartype)
+            vartype = oj.variable_type.cast_vartype(vartype)
 
             # set parameter ranges
             self.machine_type = machine_type
@@ -94,7 +96,7 @@ def make_KingGraph(linear=None, quadratic=None, king_graph=None):
             super().__init__(linear, quadratic, offset=offset, vartype=vartype)
 
             # reformat to ising king graph (which is Web API format)
-            if king_graph is not None and vartype == openjij.SPIN:
+            if king_graph is not None and vartype == SPIN:
                 self._ising_king_graph = king_graph
 
             else:
@@ -193,7 +195,7 @@ def KingGraph(
     quadratic=None,
     offset=0.0,
     king_graph=None,
-    vartype=openjij.SPIN,
+    vartype=SPIN,
     machine_type="",
 ):
     """generate KingGraph model.
