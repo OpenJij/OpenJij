@@ -203,7 +203,9 @@ if(SKBUILD AND MAIN_PROJECT)
   # here.
   if(NOT ${PYTHON_EXECUTABLE}) 
     message(STATUS "Find Python")
-    find_program(PYTHON_EXECUTABLE NAMES python)
+    find_program(PYTHON_EXECUTABLE_PATH NAMES python)
+    message(STATUS "PYTHON_EXECUTABLE_PATH = ${PYTHON_EXECUTABLE_PATH}")
+    set_property(GLOBAL PROPERTY PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE_PATH})
   endif()
   message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
   execute_process(
