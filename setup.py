@@ -47,7 +47,7 @@ except SKBuildError:
 setup(
     setup_requires=setup_requires,
     install_requires=[
-        "numpy >= 1.22.4, < 1.23.0",
+        "numpy >= 1.21.6, < 1.23.0",
         "dimod >= 0.11.2, < 0.12.0",
         "scipy >= 1.8.1, < 1.9.0",
         "requests >= 2.28.0, < 2.29.0",
