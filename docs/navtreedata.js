@@ -24,25 +24,26 @@ var NAVTREE =
 [
   [ "cimod", "index.html", [
     [ "OpenJij : Framework for the Ising model and QUBO.", "index.html", [
-      [ "install", "index.html#autotoc_md3", [
-        [ "install via pip", "index.html#autotoc_md4", null ],
-        [ "install via pip from source codes", "index.html#autotoc_md5", [
-          [ "cmake setup", "index.html#autotoc_md6", null ],
-          [ "install OpenJij", "index.html#autotoc_md7", null ]
+      [ "Coverage Graph", "index.html#autotoc_md3", null ],
+      [ "install", "index.html#autotoc_md4", [
+        [ "install via pip", "index.html#autotoc_md5", null ],
+        [ "install via pip from source codes", "index.html#autotoc_md6", [
+          [ "cmake setup", "index.html#autotoc_md7", null ],
+          [ "install OpenJij", "index.html#autotoc_md8", null ]
         ] ],
-        [ "install from github repository", "index.html#autotoc_md8", null ]
+        [ "install from github repository", "index.html#autotoc_md9", null ]
       ] ],
-      [ "For Contributor", "index.html#autotoc_md9", null ],
-      [ "Test", "index.html#autotoc_md10", [
-        [ "Python", "index.html#autotoc_md11", null ],
-        [ "C++", "index.html#autotoc_md12", null ]
+      [ "For Contributor", "index.html#autotoc_md10", null ],
+      [ "Test", "index.html#autotoc_md11", [
+        [ "Python", "index.html#autotoc_md12", null ],
+        [ "C++", "index.html#autotoc_md13", null ]
       ] ],
-      [ "How to use", "index.html#autotoc_md13", [
-        [ "Python example", "index.html#autotoc_md14", null ],
-        [ "C++ example", "index.html#autotoc_md15", null ]
+      [ "How to use", "index.html#autotoc_md14", [
+        [ "Python example", "index.html#autotoc_md15", null ],
+        [ "C++ example", "index.html#autotoc_md16", null ]
       ] ],
-      [ "Community", "index.html#autotoc_md16", null ],
-      [ "About us", "index.html#autotoc_md17", null ]
+      [ "Community", "index.html#autotoc_md17", null ],
+      [ "About us", "index.html#autotoc_md18", null ]
     ] ],
     [ "Deprecated List", "deprecated.html", null ],
     [ "Namespaces", "namespaces.html", [
@@ -83,7 +84,7 @@ var NAVTREEINDEX =
 "____init_____8py.html",
 "classopenjij_1_1system_1_1ClassicalIsingPolynomial_3_01graph_1_1Polynomial_3_01FloatType_01_4_01_4.html#a5ba9c5f06154394d7ae37b6d673abe27",
 "graph_8hpp.html#a8278a76e143fb61abb6ade277ae8ca7e",
-"structopenjij_1_1system_1_1ClassicalIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4.html#a7a321e60a0fc8e95ee30f1334c27a9a6"
+"structopenjij_1_1system_1_1ClassicalIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4.html#a6c072bde34673596a4e8052e10e4a4df"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
