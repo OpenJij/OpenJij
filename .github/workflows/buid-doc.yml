@@ -69,7 +69,7 @@ jobs:
         run: |
           set -eux
           cp -r ./build/html/* public
-          cd public/docs 
+          cd public
           rm *.md5
       - name: du -a 
         shell: bash
