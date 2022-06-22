@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import openjij
-from .model import make_BinaryQuadraticModel, make_BinaryQuadraticModel_from_JSON, BinaryQuadraticModel
+from openjij.model.model import make_BinaryQuadraticModel, make_BinaryQuadraticModel_from_JSON, BinaryQuadraticModel
 
 
 def make_KingGraph(linear=None, quadratic=None, king_graph=None):
