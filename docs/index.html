@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>cimod: Main Page</title>
+<title>cimod: OpenJij : Framework for the Ising model and QUBO.</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -88,17 +88,106 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 </iframe>
 </div>
 
-<div class="header">
+<div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">cimod Documentation</div>  </div>
+<div class="title">OpenJij : Framework for the Ising model and QUBO. </div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><p><a href="https://pypi.python.org/pypi/openjij/"><object type="image/svg+xml" data="https://img.shields.io/pypi/v/openjij.svg" style="pointer-events: none;">PyPI version shields.io</object></a> <a href="https://pypi.python.org/pypi/openjij/"><object type="image/svg+xml" data="https://img.shields.io/pypi/pyversions/openjij.svg" style="pointer-events: none;">PyPI pyversions</object></a> <a href="https://pypi.python.org/pypi/openjij/"><object type="image/svg+xml" data="https://img.shields.io/pypi/implementation/openjij.svg" style="pointer-events: none;">PyPI implementation</object></a> <a href="https://pypi.python.org/pypi/openjij/"><object type="image/svg+xml" data="https://img.shields.io/pypi/format/openjij.svg" style="pointer-events: none;">PyPI format</object></a> <a href="https://pypi.python.org/pypi/openjij/"><object type="image/svg+xml" data="https://img.shields.io/pypi/l/openjij.svg" style="pointer-events: none;">PyPI license</object></a> <a href="https://pypi.python.org/pypi/openjij/"><object type="image/svg+xml" data="https://img.shields.io/pypi/dm/openjij.svg" style="pointer-events: none;">PyPI download month</object></a></p>
+<p><object type="image/svg+xml" data="https://github.com/OpenJij/OpenJij/workflows/build-test/badge.svg" style="pointer-events: none;">build-test</object> <a href="https://codecov.io/gh/OpenJij/OpenJij"><object type="image/svg+xml" data="https://codecov.io/gh/OpenJij/OpenJij/branch/master/graph/badge.svg?token=WMSK3GS8E5" style="pointer-events: none;">codecov</object></a></p><ul>
+<li>python &gt;= 3.7</li>
+<li>(optional) gcc &gt;= 7.0.0</li>
+<li>(optional) cmake &gt;= 3.17</li>
+<li>(optional) Ninja</li>
+<li><a href="https://openjij.github.io/OpenJij_Documentation/build/html/">Documents</a></li>
+<li><a href="https://openjij.github.io/OpenJijTutorial/build/html/index.html">Tutorials</a></li>
+<li><a href="https://openjij.github.io/OpenJij/index.html">C++ Docs</a></li>
+</ul>
+<h1><a class="anchor" id="autotoc_md3"></a>
+install</h1>
+<h2><a class="anchor" id="autotoc_md4"></a>
+install via pip</h2>
+<blockquote class="doxtable">
+<p>Note: To use GPGPU algorithms, please follow the section <a href="#install-via-pip-from-source-codes"><code>install via pip from source codes</code></a> below. GPGPU algorithms are automatically enabled once CMake finds CUDA frameworks during installation. </p>
+</blockquote>
+<div class="fragment"><div class="line">$ pip install openjij</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md5"></a>
+install via pip from source codes</h2>
+<p>To install OpenJij from source codes, please install CMake first then install OpenJij.</p>
+<h3><a class="anchor" id="autotoc_md6"></a>
+cmake setup</h3>
+<p>If you want to use setup.py instead of PIP, You will need to install CMake&gt;=3.17. <br  />
+ We are Highly recommended install CMake via PYPI. </p><div class="fragment"><div class="line">$ pip install -U cmake</div>
+</div><!-- fragment --><ul>
+<li>macOS <div class="fragment"><div class="line">$ brew install cmake</div>
+</div><!-- fragment --></li>
+<li>Linux <div class="fragment"><div class="line"># if you installed old version by apt-get</div>
+<div class="line">$ apt-get purge cmake</div>
+<div class="line"> </div>
+<div class="line"># install cmake </div>
+<div class="line">$ wget https://cmake.org/files/v3.17/cmake-3.17.5.tar.gz</div>
+<div class="line">$ tar xvf cmake-3.17.5.tar.gz</div>
+<div class="line">$ cd cmake-3.17.5</div>
+<div class="line">$ ./bootstrap &amp;&amp; make &amp;&amp; sudo make install </div>
+</div><!-- fragment --></li>
+<li>Windows</li>
+</ul>
+<p>Please install cmake from <a href="https://cmake.org/download/">here</a>.</p>
+<p>Make sure the enviroment path for CMake is set correctly.</p>
+<h3><a class="anchor" id="autotoc_md7"></a>
+install OpenJij</h3>
+<div class="fragment"><div class="line">$ pip install openjij --no-binary :all:</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md8"></a>
+install from github repository</h2>
+<div class="fragment"><div class="line">$ git clone git@github.com:OpenJij/OpenJij.git</div>
+<div class="line">$ cd openjij</div>
+<div class="line">$ python -m pip install .</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md9"></a>
+Test</h1>
+<h2><a class="anchor" id="autotoc_md10"></a>
+Test only Python code</h2>
+<div class="fragment"><div class="line">$ python setup.py test</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md11"></a>
+Test Python and C++ code</h2>
+<div class="fragment"><div class="line">$ export USE_TEST=1</div>
+<div class="line">$ python setup.py test</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md12"></a>
+How to use</h1>
+<h2><a class="anchor" id="autotoc_md13"></a>
+Python example</h2>
+<div class="fragment"><div class="line">import openjij as oj</div>
+<div class="line">sampler = oj.SASampler()</div>
+<div class="line">response = sampler.sample_ising(h={0: -1}, J={(0,1): -1})</div>
+<div class="line">response.states</div>
+<div class="line"># [[1,1]]</div>
+<div class="line"> </div>
+<div class="line"># with indices</div>
+<div class="line">response = sampler.sample_ising(h={&#39;a&#39;: -1}, J={(&#39;a&#39;,&#39;b&#39;): 1})</div>
+<div class="line">[{index: s for index, s in zip(response.indices, state)} for state in response.states]</div>
+<div class="line"># [{&#39;b&#39;: -1, &#39;a&#39;: 1}]</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md14"></a>
+C++ example</h2>
+<div class="fragment"><div class="line">$ source ./build_gcc.sh</div>
+<div class="line">$ cd ./project_template</div>
+<div class="line">$ make</div>
+<div class="line">$ ./tutorial</div>
+<div class="line">The result spins are [1 1 1 1 1 ]</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md15"></a>
+Community</h1>
+<ul>
+<li><a href="https://join.slack.com/t/openjij/shared_invite/enQtNjQyMjIwMzMwNzA4LTQ5MWRjOWYxYmY1Nzk4YzdiYzlmZjIxYjhhMmMxZjAyMzE3MDc1ZWRkYmI1YjhkNjRlOTM1ODE0NTc5Yzk3ZDA">OpenJij Slack</a></li>
+</ul>
+<h1><a class="anchor" id="autotoc_md16"></a>
+About us</h1>
+<p>This product is maintained by Jij Inc.</p>
+<p><b>Please visit our website for more information!</b> <a href="https://www.j-ij.com/">https://www.j-ij.com/</a> </p>
+</div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Jun 22 2022 07:12:13 for cimod by
+    <li class="footer">Generated on Wed Jun 22 2022 07:17:58 for cimod by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
   </ul>

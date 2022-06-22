@@ -23,25 +23,25 @@ for the JavaScript code in this file
 var NAVTREE =
 [
   [ "cimod", "index.html", [
-    [ "OpenJij : Framework for the Ising model and QUBO.", "md_README.html", [
-      [ "install", "md_README.html#autotoc_md3", [
-        [ "install via pip", "md_README.html#autotoc_md4", null ],
-        [ "install via pip from source codes", "md_README.html#autotoc_md5", [
-          [ "cmake setup", "md_README.html#autotoc_md6", null ],
-          [ "install OpenJij", "md_README.html#autotoc_md7", null ]
+    [ "OpenJij : Framework for the Ising model and QUBO.", "index.html", [
+      [ "install", "index.html#autotoc_md3", [
+        [ "install via pip", "index.html#autotoc_md4", null ],
+        [ "install via pip from source codes", "index.html#autotoc_md5", [
+          [ "cmake setup", "index.html#autotoc_md6", null ],
+          [ "install OpenJij", "index.html#autotoc_md7", null ]
         ] ],
-        [ "install from github repository", "md_README.html#autotoc_md8", null ]
+        [ "install from github repository", "index.html#autotoc_md8", null ]
       ] ],
-      [ "Test", "md_README.html#autotoc_md9", [
-        [ "Test only Python code", "md_README.html#autotoc_md10", null ],
-        [ "Test Python and C++ code", "md_README.html#autotoc_md11", null ]
+      [ "Test", "index.html#autotoc_md9", [
+        [ "Test only Python code", "index.html#autotoc_md10", null ],
+        [ "Test Python and C++ code", "index.html#autotoc_md11", null ]
       ] ],
-      [ "How to use", "md_README.html#autotoc_md12", [
-        [ "Python example", "md_README.html#autotoc_md13", null ],
-        [ "C++ example", "md_README.html#autotoc_md14", null ]
+      [ "How to use", "index.html#autotoc_md12", [
+        [ "Python example", "index.html#autotoc_md13", null ],
+        [ "C++ example", "index.html#autotoc_md14", null ]
       ] ],
-      [ "Community", "md_README.html#autotoc_md15", null ],
-      [ "About us", "md_README.html#autotoc_md16", null ]
+      [ "Community", "index.html#autotoc_md15", null ],
+      [ "About us", "index.html#autotoc_md16", null ]
     ] ],
     [ "Deprecated List", "deprecated.html", null ],
     [ "Namespaces", "namespaces.html", [
