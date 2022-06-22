@@ -12,34 +12,30 @@
 # limitations under the License
 
 
-import openjij.cxxjij as cxxjij
-from openjij.model.model import BinaryQuadraticModel
-from openjij.model.chimera_model import ChimeraModel
-from openjij.utils.graph_utils import chimera_to_ind
 import dimod
+
+from openjij.utils.graph_utils import chimera_to_ind
 
 
 class BaseGPUChimeraSampler(dimod.Structured):
-    """Abstract GPUChimera Sampler
-    """
-
+    """Abstract GPUChimera Sampler"""
 
     @property
     def parameters(self):
         param = super().parameters
-        param['unit_num_L'] = ['system parameter']
+        param["unit_num_L"] = ["system parameter"]
         return param
 
     @property
     def nodelist(self):
-        if 'unit_num_L' not in dir(self) or self.unit_num_L is None:
+        if "unit_num_L" not in dir(self) or self.unit_num_L is None:
             raise ValueError("this object is not set unit_num_L yet.")
 
-        return list(range(0, 8*8*self.unit_num_L*self.unit_num_L))
+        return list(range(0, 8 * 8 * self.unit_num_L * self.unit_num_L))
 
     @property
     def edgelist(self):
-        if 'unit_num_L' not in dir(self) or self.unit_num_L is None:
+        if "unit_num_L" not in dir(self) or self.unit_num_L is None:
             raise ValueError("this object is not set unit_num_L yet.")
 
         edges = []
@@ -53,12 +49,14 @@ class BaseGPUChimeraSampler(dimod.Structured):
                             (i, chimera_to_ind(r, c, _z, self.unit_num_L))
                             for _z in [4, 5, 6, 7]
                         ]
-                        if r < self.unit_num_L-1:
+                        if r < self.unit_num_L - 1:
                             edges.append(
-                                (i, chimera_to_ind(r+1, c, z, self.unit_num_L)))
+                                (i, chimera_to_ind(r + 1, c, z, self.unit_num_L))
+                            )
 
                     elif z in [4, 5, 6, 7]:
-                        if c < self.unit_num_L-1:
+                        if c < self.unit_num_L - 1:
                             edges.append(
-                                (i, chimera_to_ind(r, c+1, z, self.unit_num_L)))
+                                (i, chimera_to_ind(r, c + 1, z, self.unit_num_L))
+                            )
         return edges

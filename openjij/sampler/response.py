@@ -16,9 +16,7 @@
 | The usage is almost the same as :class:`dimod.SampleSet`.
 """
 
-import numpy as np
 import dimod
-import openjij
 
 
 class Response(dimod.SampleSet):
@@ -37,4 +35,3 @@ class Response(dimod.SampleSet):
     @property
     def min_samples(self):
         return self.first.sample
-

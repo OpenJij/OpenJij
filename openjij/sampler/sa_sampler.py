@@ -12,14 +12,17 @@
 # limitations under the License
 
 
+from typing import Optional, Union
+
+import cimod
+import dimod
 import numpy as np
+
 import openjij
+import openjij.cxxjij as cxxjij
+
 from openjij.sampler.sampler import BaseSampler
 from openjij.utils.graph_utils import qubo_to_ising
-import openjij.cxxjij as cxxjij
-import dimod
-import cimod
-from typing import Union, Optional
 
 """
 This module contains Simulated Annealing sampler.
@@ -59,16 +62,18 @@ class SASampler(BaseSampler):
     @property
     def parameters(self):
         return {
-            'beta_min': ['parameters'],
-            'beta_max': ['parameters'],
+            "beta_min": ["parameters"],
+            "beta_max": ["parameters"],
         }
 
-    def __init__(self,
-                 beta_min: Optional[float] = None,
-                 beta_max: Optional[float] = None,
-                 num_sweeps: Optional[int] = None,
-                 num_reads: Optional[int] = None,
-                 schedule: Optional[list] = None):
+    def __init__(
+        self,
+        beta_min: Optional[float] = None,
+        beta_max: Optional[float] = None,
+        num_sweeps: Optional[int] = None,
+        num_reads: Optional[int] = None,
+        schedule: Optional[list] = None,
+    ):
 
         # Set default parameters
         if num_sweeps is None:
@@ -77,29 +82,28 @@ class SASampler(BaseSampler):
             num_reads = 1
 
         self._default_params = {
-            'beta_min': beta_min,
-            'beta_max': beta_max,
-            'num_sweeps': num_sweeps,
-            'schedule': schedule,
-            'num_reads': num_reads
+            "beta_min": beta_min,
+            "beta_max": beta_max,
+            "num_sweeps": num_sweeps,
+            "schedule": schedule,
+            "num_reads": num_reads,
         }
 
         self._params = self._default_params.copy()
 
         self._make_system = {
-            'singlespinflip': cxxjij.system.make_classical_ising,
-            'singlespinflippolynomial': cxxjij.system.make_classical_ising_polynomial,
-            'swendsenwang': cxxjij.system.make_classical_ising
+            "singlespinflip": cxxjij.system.make_classical_ising,
+            "singlespinflippolynomial": cxxjij.system.make_classical_ising_polynomial,
+            "swendsenwang": cxxjij.system.make_classical_ising,
         }
         self._algorithm = {
-            'singlespinflip': cxxjij.algorithm.Algorithm_SingleSpinFlip_run,
-            'singlespinflippolynomial': cxxjij.algorithm.Algorithm_SingleSpinFlip_run,
-            'swendsenwang': cxxjij.algorithm.Algorithm_SwendsenWang_run
+            "singlespinflip": cxxjij.algorithm.Algorithm_SingleSpinFlip_run,
+            "singlespinflippolynomial": cxxjij.algorithm.Algorithm_SingleSpinFlip_run,
+            "swendsenwang": cxxjij.algorithm.Algorithm_SwendsenWang_run,
         }
 
     def _convert_validation_schedule(self, schedule):
-        """Checks if the schedule is valid and returns cxxjij schedule
-        """
+        """Checks if the schedule is valid and returns cxxjij schedule"""
         if not isinstance(schedule, (list, np.array)):
             raise ValueError("schedule should be list or numpy.array")
 
@@ -108,7 +112,8 @@ class SASampler(BaseSampler):
 
         if len(schedule[0]) != 2:
             raise ValueError(
-                "schedule is list of tuple or list (beta : float, step_length : int)")
+                "schedule is list of tuple or list (beta : float, step_length : int)"
+            )
 
         # schedule validation  0 <= beta
         beta = np.array(schedule).T[0]
@@ -125,20 +130,20 @@ class SASampler(BaseSampler):
 
         return cxxjij_schedule
 
-    def sample(self,
-               bqm: Union['openjij.BinaryQuadraticModel',
-                          dimod.BinaryQuadraticModel],
-               beta_min: Optional[float] = None,
-               beta_max: Optional[float] = None,
-               num_sweeps: Optional[int] = None,
-               num_reads: Optional[int] = None,
-               schedule: Optional[list] = None,
-               initial_state: Optional[Union[list, dict]] = None,
-               updater: Optional[str] = None,
-               sparse: Optional[bool] = None,
-               reinitialize_state: Optional[bool] = None,
-               seed: Optional[int] = None) -> 'openjij.sampler.response.Response':
-
+    def sample(
+        self,
+        bqm: Union["openjij.BinaryQuadraticModel", dimod.BinaryQuadraticModel],
+        beta_min: Optional[float] = None,
+        beta_max: Optional[float] = None,
+        num_sweeps: Optional[int] = None,
+        num_reads: Optional[int] = None,
+        schedule: Optional[list] = None,
+        initial_state: Optional[Union[list, dict]] = None,
+        updater: Optional[str] = None,
+        sparse: Optional[bool] = None,
+        reinitialize_state: Optional[bool] = None,
+        seed: Optional[int] = None,
+    ) -> "openjij.sampler.response.Response":
         """sample Ising model.
 
         Args:
@@ -154,9 +159,9 @@ class SASampler(BaseSampler):
             seed (int): seed for Monte Carlo algorithm
         Returns:
             :class:`openjij.sampler.response.Response`: results
-            
+
         Examples:
-            
+
             for Ising case::
 
                 >>> h = {0: -1, 1: -1, 2: 1, 3: 1}
@@ -169,63 +174,82 @@ class SASampler(BaseSampler):
                 >>> Q = {(0, 0): -1, (1, 1): -1, (2, 2): 1, (3, 3): 1, (4, 4): 1, (0, 1): -1, (3, 4): 1}
                 >>> sampler = oj.SASampler()
                 >>> res = sampler.sample_qubo(Q)
-            
+
         """
 
         # Set default parameters
         if updater is None:
-            updater = 'single spin flip'
+            updater = "single spin flip"
         if sparse is None:
             sparse = False
         if reinitialize_state is None:
             reinitialize_state = True
 
-        _updater_name = updater.lower().replace('_', '').replace(' ', '')
+        _updater_name = updater.lower().replace("_", "").replace(" ", "")
         # swendsen wang algorithm runs only on sparse ising graphs.
-        if _updater_name == 'swendsenwang' or sparse:
+        if _updater_name == "swendsenwang" or sparse:
             sparse = True
         else:
             sparse = False
 
-        if type(bqm) == dimod.BinaryQuadraticModel:
-            bqm = openjij.model.BinaryQuadraticModel(dict(bqm.linear), dict(bqm.quadratic), bqm.offset, bqm.vartype, sparse=sparse)
+        if isinstance(bqm, dimod.BinaryQuadraticModel):
+            bqm = openjij.model.BinaryQuadraticModel(
+                dict(bqm.linear),
+                dict(bqm.quadratic),
+                bqm.offset,
+                bqm.vartype,
+                sparse=sparse,
+            )
 
         if sparse and bqm.sparse == False:
             # convert to sparse bqm
-            bqm = openjij.model.BinaryQuadraticModel(bqm.linear, bqm.quadratic, bqm.offset, bqm.vartype, sparse=True)
+            bqm = openjij.model.BinaryQuadraticModel(
+                bqm.linear, bqm.quadratic, bqm.offset, bqm.vartype, sparse=True
+            )
 
-        # alias 
+        # alias
         model = bqm
 
         ising_graph, offset = model.get_cxxjij_ising_graph()
 
         self._set_params(
-            beta_min=beta_min, beta_max=beta_max,
-            num_sweeps=num_sweeps, num_reads=num_reads,
-            schedule=schedule
-            )
+            beta_min=beta_min,
+            beta_max=beta_max,
+            num_sweeps=num_sweeps,
+            num_reads=num_reads,
+            schedule=schedule,
+        )
 
         # set annealing schedule -------------------------------
-        if self._params['schedule'] is None:
-            self._params['schedule'], beta_range = geometric_ising_beta_schedule(
+        if self._params["schedule"] is None:
+            self._params["schedule"], beta_range = geometric_ising_beta_schedule(
                 model=model,
-                beta_max=self._params['beta_max'],
-                beta_min=self._params['beta_min'],
-                num_sweeps=self._params['num_sweeps']
+                beta_max=self._params["beta_max"],
+                beta_min=self._params["beta_min"],
+                num_sweeps=self._params["num_sweeps"],
             )
             self.schedule_info = {
-                'beta_max': beta_range[0],
-                'beta_min': beta_range[1],
-                'num_sweeps': self._params['num_sweeps']
+                "beta_max": beta_range[0],
+                "beta_min": beta_range[1],
+                "num_sweeps": self._params["num_sweeps"],
             }
         else:
-            self._params['schedule'] = self._convert_validation_schedule(self._params['schedule'])
-            self.schedule_info = {'schedule': 'custom schedule'}
+            self._params["schedule"] = self._convert_validation_schedule(
+                self._params["schedule"]
+            )
+            self.schedule_info = {"schedule": "custom schedule"}
         # ------------------------------- set annealing schedule
 
         # make init state generator --------------------------------
         if initial_state is None:
-            def _generate_init_state(): return ising_graph.gen_spin(seed) if seed != None else ising_graph.gen_spin()
+
+            def _generate_init_state():
+                return (
+                    ising_graph.gen_spin(seed)
+                    if seed is not None
+                    else ising_graph.gen_spin()
+                )
+
         else:
             temp_initial_state = []
             if isinstance(initial_state, dict):
@@ -234,12 +258,14 @@ class SASampler(BaseSampler):
                         v = initial_state[k]
                         if v != 0 and v != 1:
                             raise RuntimeError("The initial variables must be 0 or 1.")
-                        temp_initial_state.append(2*v - 1)
+                        temp_initial_state.append(2 * v - 1)
                 elif model.vartype == openjij.SPIN:
                     for k in model.variables:
                         v = initial_state[k]
                         if v != -1 and v != 1:
-                            raise RuntimeError("The initial variables must be -1 or +1.")
+                            raise RuntimeError(
+                                "The initial variables must be -1 or +1."
+                            )
                         temp_initial_state.append(v)
                 else:
                     raise RuntimeError("Unknown vartype detected.")
@@ -249,12 +275,14 @@ class SASampler(BaseSampler):
                         v = initial_state[k]
                         if v != 0 and v != 1:
                             raise RuntimeError("The initial variables must be 0 or 1.")
-                        temp_initial_state.append(2*v - 1)
+                        temp_initial_state.append(2 * v - 1)
                 elif model.vartype == openjij.SPIN:
                     for k in range(len(model.variables)):
                         v = initial_state[k]
                         if v != -1 and v != 1:
-                            raise RuntimeError("The initial variables must be -1 or +1.")
+                            raise RuntimeError(
+                                "The initial variables must be -1 or +1."
+                            )
                         temp_initial_state.append(v)
                 else:
                     raise RuntimeError("Unknown vartype detected.")
@@ -266,44 +294,47 @@ class SASampler(BaseSampler):
             # validate initial_state size
             if len(initial_state) != ising_graph.size():
                 raise ValueError(
-                    "the size of the initial state should be {}"
-                    .format(ising_graph.size()))
+                    "the size of the initial state should be {}".format(
+                        ising_graph.size()
+                    )
+                )
 
-            def _generate_init_state(): return np.array(_init_state)
+            def _generate_init_state():
+                return np.array(_init_state)
+
         # -------------------------------- make init state generator
 
         # choose updater -------------------------------------------
-        _updater_name = updater.lower().replace('_', '').replace(' ', '')
+        _updater_name = updater.lower().replace("_", "").replace(" ", "")
         if _updater_name not in self._make_system:
             raise ValueError('updater is one of "single spin flip or swendsen wang"')
         algorithm = self._algorithm[_updater_name]
-        sa_system = self._make_system[_updater_name](_generate_init_state(), ising_graph)
+        sa_system = self._make_system[_updater_name](
+            _generate_init_state(), ising_graph
+        )
         # ------------------------------------------- choose updater
         response = self._cxxjij_sampling(
-            model, _generate_init_state,
-            algorithm, sa_system,
-            reinitialize_state, seed
+            model, _generate_init_state, algorithm, sa_system, reinitialize_state, seed
         )
 
-        response.info['schedule'] = self.schedule_info
+        response.info["schedule"] = self.schedule_info
 
         return response
 
-    def sample_hubo(self,
-                    J: Union[dict,
-                             'openjij.BinaryPolynomialModel',
-                             cimod.BinaryPolynomialModel],
-                    vartype: Optional[str] = None,
-                    beta_min: Optional[float] = None,
-                    beta_max: Optional[float] = None,
-                    num_sweeps: Optional[int] = None,
-                    num_reads: Optional[int] = None,
-                    schedule: Optional[list] = None,
-                    initial_state: Optional[Union[list, dict]] = None,
-                    updater: Optional[str] = None,
-                    reinitialize_state: Optional[bool] = None,
-                    seed: Optional[int] = None) -> 'openjij.sampler.response.Response':
-
+    def sample_hubo(
+        self,
+        J: Union[dict, "openjij.BinaryPolynomialModel", cimod.BinaryPolynomialModel],
+        vartype: Optional[str] = None,
+        beta_min: Optional[float] = None,
+        beta_max: Optional[float] = None,
+        num_sweeps: Optional[int] = None,
+        num_reads: Optional[int] = None,
+        schedule: Optional[list] = None,
+        initial_state: Optional[Union[list, dict]] = None,
+        updater: Optional[str] = None,
+        reinitialize_state: Optional[bool] = None,
+        seed: Optional[int] = None,
+    ) -> "openjij.sampler.response.Response":
         """sampling from higher order unconstrainted binary optimization.
 
         Args:
@@ -348,36 +379,61 @@ class SASampler(BaseSampler):
             model = J
         else:
             model = openjij.model.BinaryPolynomialModel(J, vartype)
-  
+
         # make init state generator --------------------------------
         if initial_state is None:
             if model.vartype == openjij.SPIN:
-                def _generate_init_state(): return cxxjij.graph.Polynomial(model.num_variables).gen_spin(seed) if seed != None else cxxjij.graph.Polynomial(model.num_variables).gen_spin()
+
+                def _generate_init_state():
+                    return (
+                        cxxjij.graph.Polynomial(model.num_variables).gen_spin(seed)
+                        if seed is not None
+                        else cxxjij.graph.Polynomial(model.num_variables).gen_spin()
+                    )
+
             elif model.vartype == openjij.BINARY:
-                def _generate_init_state(): return cxxjij.graph.Polynomial(model.num_variables).gen_binary(seed) if seed != None else cxxjij.graph.Polynomial(model.num_variables).gen_binary()
+
+                def _generate_init_state():
+                    return (
+                        cxxjij.graph.Polynomial(model.num_variables).gen_binary(seed)
+                        if seed is not None
+                        else cxxjij.graph.Polynomial(model.num_variables).gen_binary()
+                    )
+
             else:
                 raise ValueError("Unknown vartype detected")
         else:
             if isinstance(initial_state, dict):
                 initial_state = [initial_state[k] for k in model.indices]
-            def _generate_init_state(): return np.array(initial_state)
+
+            def _generate_init_state():
+                return np.array(initial_state)
+
         # -------------------------------- make init state generator
 
         # determine system class and algorithm --------------------------------
         if model.vartype == openjij.SPIN:
             if updater is None or updater == "single spin flip":
-                sa_system = cxxjij.system.make_classical_ising_polynomial(_generate_init_state(), model.to_serializable())
+                sa_system = cxxjij.system.make_classical_ising_polynomial(
+                    _generate_init_state(), model.to_serializable()
+                )
                 algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
             elif updater == "k-local":
-                raise ValueError("k-local update is only supported for binary variables")
+                raise ValueError(
+                    "k-local update is only supported for binary variables"
+                )
             else:
                 raise ValueError("Unknown updater name")
         elif model.vartype == openjij.BINARY:
             if updater == "k-local":
-                sa_system = cxxjij.system.make_k_local_polynomial(_generate_init_state(), model.to_serializable())
+                sa_system = cxxjij.system.make_k_local_polynomial(
+                    _generate_init_state(), model.to_serializable()
+                )
                 algorithm = cxxjij.algorithm.Algorithm_KLocal_run
             elif updater is None or updater == "single spin flip":
-                sa_system = cxxjij.system.make_classical_ising_polynomial(_generate_init_state(), model.to_serializable())
+                sa_system = cxxjij.system.make_classical_ising_polynomial(
+                    _generate_init_state(), model.to_serializable()
+                )
                 algorithm = cxxjij.algorithm.Algorithm_SingleSpinFlip_run
             else:
                 raise ValueError("Unknown updater name")
@@ -386,39 +442,45 @@ class SASampler(BaseSampler):
         # -------------------------------- determine system class and algorithm
 
         self._set_params(
-            beta_min=beta_min, beta_max=beta_max,
-            num_sweeps=num_sweeps, num_reads=num_reads,
-            schedule=schedule
-            )
+            beta_min=beta_min,
+            beta_max=beta_max,
+            num_sweeps=num_sweeps,
+            num_reads=num_reads,
+            schedule=schedule,
+        )
 
         # set annealing schedule -------------------------------
-        if self._params['schedule'] is None:
-            self._params['schedule'], beta_range = geometric_hubo_beta_schedule(
-                sa_system, self._params['beta_max'],
-                self._params['beta_min'], self._params['num_sweeps']
+        if self._params["schedule"] is None:
+            self._params["schedule"], beta_range = geometric_hubo_beta_schedule(
+                sa_system,
+                self._params["beta_max"],
+                self._params["beta_min"],
+                self._params["num_sweeps"],
             )
             self.schedule_info = {
-                'beta_max': beta_range[0],
-                'beta_min': beta_range[1],
-                'num_sweeps': self._params['num_sweeps']
+                "beta_max": beta_range[0],
+                "beta_min": beta_range[1],
+                "num_sweeps": self._params["num_sweeps"],
             }
         else:
-            self.schedule_info = {'schedule': 'custom schedule'}
+            self.schedule_info = {"schedule": "custom schedule"}
         # ------------------------------- set annealing schedule
 
         response = self._cxxjij_sampling(
-            model, _generate_init_state,
-            algorithm, sa_system,
-            reinitialize_state, seed
+            model, _generate_init_state, algorithm, sa_system, reinitialize_state, seed
         )
 
-        response.info['schedule'] = self.schedule_info
+        response.info["schedule"] = self.schedule_info
 
         return response
 
-def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
-                                  beta_max=None, beta_min=None,
-                                  num_sweeps=1000):
+
+def geometric_ising_beta_schedule(
+    model: openjij.model.BinaryQuadraticModel,
+    beta_max=None,
+    beta_min=None,
+    num_sweeps=1000,
+):
     """make geometric cooling beta schedule
 
     Args:
@@ -434,24 +496,29 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
         ising_interaction = model.interaction_matrix()
         # set the right-bottom element zero (see issue #209)
         mat_size = ising_interaction.shape[0]
-        ising_interaction[mat_size-1, mat_size-1] = 0
+        ising_interaction[mat_size - 1, mat_size - 1] = 0
 
-
-        if (model.vartype == openjij.BINARY):
+        if model.vartype == openjij.BINARY:
             # convert to ising matrix
             qubo_to_ising(ising_interaction)
 
         abs_ising_interaction = np.abs(ising_interaction)
         max_abs_ising_interaction = np.max(abs_ising_interaction)
 
-        #automatical setting of min, max delta energy
+        # automatical setting of min, max delta energy
         abs_bias = np.sum(abs_ising_interaction, axis=1)
 
-        #apply threshold to avoid extremely large beta_max
+        # apply threshold to avoid extremely large beta_max
         THRESHOLD = 1e-8
 
-        min_delta_energy = np.min(abs_ising_interaction[abs_ising_interaction > max_abs_ising_interaction*THRESHOLD])
-        max_delta_energy = np.max(abs_bias[abs_bias > max_abs_ising_interaction*THRESHOLD])
+        min_delta_energy = np.min(
+            abs_ising_interaction[
+                abs_ising_interaction > max_abs_ising_interaction * THRESHOLD
+            ]
+        )
+        max_delta_energy = np.max(
+            abs_bias[abs_bias > max_abs_ising_interaction * THRESHOLD]
+        )
 
     # TODO: More optimal schedule ?
 
@@ -462,12 +529,14 @@ def geometric_ising_beta_schedule(model: openjij.model.BinaryQuadraticModel,
 
     # set schedule to cxxjij
     schedule = cxxjij.utility.make_classical_schedule_list(
-        beta_min=beta_min, beta_max=beta_max,
+        beta_min=beta_min,
+        beta_max=beta_max,
         one_mc_step=num_sweeps_per_beta,
-        num_call_updater=num_sweeps//num_sweeps_per_beta
+        num_call_updater=num_sweeps // num_sweeps_per_beta,
     )
 
     return schedule, [beta_max, beta_min]
+
 
 def geometric_hubo_beta_schedule(sa_system, beta_max, beta_min, num_sweeps):
 
@@ -483,12 +552,10 @@ def geometric_hubo_beta_schedule(sa_system, beta_max, beta_min, num_sweeps):
     num_sweeps_per_beta = max(1, num_sweeps // 1000)
 
     schedule = cxxjij.utility.make_classical_schedule_list(
-        beta_min=beta_min, beta_max=beta_max,
+        beta_min=beta_min,
+        beta_max=beta_max,
         one_mc_step=num_sweeps_per_beta,
-        num_call_updater=num_sweeps//num_sweeps_per_beta
+        num_call_updater=num_sweeps // num_sweeps_per_beta,
     )
 
     return schedule, [beta_max, beta_min]
-
-
-
