@@ -15,7 +15,7 @@
 
 - [Documents](https://openjij.github.io/OpenJij_Documentation/build/html/)
 - [Tutorials](https://openjij.github.io/OpenJijTutorial/build/html/index.html)
-- [C++ Docs](https://openjij.github.io/OpenJij/html/index.html)
+- [C++ Docs](https://openjij.github.io/OpenJij/index.html)
 
 ## install
 
