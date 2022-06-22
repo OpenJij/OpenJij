@@ -170,7 +170,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         #os: [windows-latest]
-        python-version: ['3.7', '3.8', '3.9', '3.10.4']
+        python-version: ['3.7', '3.8', '3.9', '3.10']
         #python-version: ['3.10']
         include:
         - os: ubuntu-latest
@@ -277,7 +277,7 @@ jobs:
         python setup.py --help-commands
         pip install --help
     - name: Build & Install    
-      if: ${{ matrix.os != 'windows-latest'}}
+      if: ${{ matrix.os == 'ubuntu-latest'}}
       shell: bash
       run: |
         set -eux
@@ -285,6 +285,15 @@ jobs:
         export CMAKE_CXX_COMPILER_LAUNCHER=sccache
         export CMAKE_BUILD_TYPE=Debug
         python setup.py --force-cmake install --build-type Debug -G Ninja
+    - name: Build & Install    
+      if: ${{ matrix.os == 'macos-latest'}}
+      shell: bash
+      run: |
+        set -eux
+        export CMAKE_C_COMPILER_LAUNCHER=sccache
+        export CMAKE_CXX_COMPILER_LAUNCHER=sccache
+        export CMAKE_BUILD_TYPE=Debug
+        python -m pip install -e .
     - name: Build & Install    
       if: ${{ matrix.os == 'windows-latest'}}
       shell: bash 
