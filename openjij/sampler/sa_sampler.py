@@ -14,7 +14,7 @@
 
 import numpy as np
 import openjij
-from openjij.sampler import BaseSampler
+from openjij.sampler.sampler import BaseSampler
 from openjij.utils.graph_utils import qubo_to_ising
 import openjij.cxxjij as cxxjij
 import dimod
