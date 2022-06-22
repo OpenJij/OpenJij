@@ -70,6 +70,9 @@ jobs:
           set -eux
           python -m black ./openjij
           python -m black setup.py
+      - name: clang-format
+        run: |
+         find src/ -iname *.hpp | xargs clang-format -i
       - name: Git ADD 
         run: |
           set -eux 
