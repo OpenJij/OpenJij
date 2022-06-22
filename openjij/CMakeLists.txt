@@ -33,18 +33,19 @@ if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
 endif()
 
 if(CUDAToolkit_FOUND)
-    set_target_properties(${python_module_name}  PROPERTIES
+    set_target_properties(${python_module_name} PROPERTIES
+        INTERPROCEDURAL_OPTIMIZATION ON
         CXX_VISIBILITY_PRESET "hidden"
-        INTERPROCEDURAL_OPTIMIZATION TRUE
+        VISIBILITY_INLINES_HIDDEN ON
         POSITION_INDEPENDENT_CODE ON
         CUDA_VISIBILITY_PRESET "hidden"
         CUDA_SEPARABLE_COMPILATION ON
     )
 else()
-    set_target_properties(${python_module_name}  PROPERTIES
+    set_target_properties(${python_module_name} PROPERTIES
+        INTERPROCEDURAL_OPTIMIZATION ON
         CXX_VISIBILITY_PRESET "hidden"
-        VISIBLITY_INLINES_HIDDEN ON
-        INTERPROCEDURAL_OPTIMIZATION TRUE
+        VISIBILITY_INLINES_HIDDEN ON
         POSITION_INDEPENDENT_CODE ON
     )
 endif()
