@@ -227,6 +227,12 @@ jobs:
       run: |
           set -eux
           pip-sync requirements.txt dev-requirements.txt
+    - name: Install pytest-github-actions-annotate-failures
+      continue-on-error: true
+      shell: bash
+      run: |
+          set -eux
+          pip install pytest-github-actions-annotate-failures
     - name: sccache
       if: ${{ matrix.os != 'windows-latest'}}
       uses: hendrikmuhs/ccache-action@v1.2
