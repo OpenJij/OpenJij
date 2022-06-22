@@ -51,7 +51,6 @@ else()
 endif()
 
 target_compile_definitions(${python_module_name} PRIVATE 
-    $<$<CONFIG:Debug>:PYBIND11_DETAILED_ERROR_MESSAGES>  
     PYTHON_VERSION_INFO=${PYTHON_VERSION_STRING}
 )
 
