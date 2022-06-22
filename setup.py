@@ -38,7 +38,7 @@ if any(arg in sys.argv for arg in ("pytest", "test")):
 
 # Add CMake as a build requirement if cmake is not installed or is too low a version.
 try:
-    if LegacyVersion(get_cmake_version()) < LegacyVersion("3.20"):
+    if LegacyVersion(get_cmake_version()) < LegacyVersion("3.22"):
         setup_requires.append("cmake")
 except SKBuildError:
     setup_requires.append("cmake")
