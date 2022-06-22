@@ -1,11 +1,12 @@
 from typing import Optional, Union
 
 import dimod
+from dimod import SPIN, BINARY, Vartype
 import numpy as np
 
 from cimod.utils import get_state_and_energy
 
-import openjij
+import openjij as oj
 import openjij.cxxjij as cxxjij
 
 from openjij.sampler.sampler import BaseSampler
@@ -148,7 +149,7 @@ class SQASampler(BaseSampler):
 
     def sample(
         self,
-        bqm: Union["openjij.BinaryQuadraticModel", dimod.BinaryQuadraticModel],
+        bqm: Union["oj.model.model.BinaryQuadraticModel", dimod.BinaryQuadraticModel],
         beta: Optional[float] = None,
         gamma: Optional[float] = None,
         num_sweeps: Optional[int] = None,
@@ -160,7 +161,7 @@ class SQASampler(BaseSampler):
         sparse: Optional[bool] = None,
         reinitialize_state: Optional[bool] = None,
         seed: Optional[int] = None,
-    ) -> "openjij.sampler.response.Response":
+    ) -> "oj.sampler.response.Response":
         """Sampling from the Ising model
 
         Args:
@@ -207,7 +208,7 @@ class SQASampler(BaseSampler):
             updater = "single spin flip"
 
         if isinstance(bqm, dimod.BinaryQuadraticModel):
-            bqm = openjij.BinaryQuadraticModel(
+            bqm = oj.model.model.BinaryQuadraticModel(
                 dict(bqm.linear), dict(bqm.quadratic), bqm.offset, bqm.vartype
             )
 
@@ -248,7 +249,7 @@ class SQASampler(BaseSampler):
                 initial_state = [initial_state[k] for k in bqm.variables]
 
             # convert to spin variable
-            if bqm.vartype == openjij.BINARY:
+            if bqm.vartype == BINARY:
                 temp_initial_state = []
                 for v in initial_state:
                     if v != 0 and v != 1:
