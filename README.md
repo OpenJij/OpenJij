@@ -10,7 +10,7 @@
 [![codecov](https://codecov.io/gh/OpenJij/OpenJij/branch/master/graph/badge.svg?token=WMSK3GS8E5)](https://codecov.io/gh/OpenJij/OpenJij)
 * python >= 3.7
 * (optional) gcc >= 7.0.0
-* (optional) cmake >= 3.17
+* (optional) cmake >= 3.22
 * (optional) Ninja 
 
 - [Documents](https://openjij.github.io/OpenJij_Documentation/build/html/)
@@ -23,45 +23,28 @@
 > Note: To use GPGPU algorithms, please follow the section [`install via pip from source codes`](#install-via-pip-from-source-codes) below.
 > GPGPU algorithms are automatically enabled once CMake finds CUDA frameworks during installation.
 ```
-$ pip install openjij
+# Binary
+$ pip install openjij 
+# From Source 
+$ pip install openjij --no-binary openjij
 ```
 
 ### install via pip from source codes
 To install OpenJij from source codes, please install CMake first then install OpenJij.
 
 #### cmake setup
-If you want to use setup.py instead of PIP, You will need to install CMake\>\=3.17.  
+If you want to use setup.py instead of PIP, You will need to install CMake\>\=3.22.  
 We are Highly recommended install CMake via PYPI.
 ```
 $ pip install -U cmake
 ```
-* macOS
-```
-$ brew install cmake
-```
-
-* Linux
-```
-# if you installed old version by apt-get
-$ apt-get purge cmake
-
-# install cmake 
-$ wget https://cmake.org/files/v3.17/cmake-3.17.5.tar.gz
-$ tar xvf cmake-3.17.5.tar.gz
-$ cd cmake-3.17.5
-$ ./bootstrap && make && sudo make install 
-```
-
-* Windows
-
-Please install cmake from [here](https://cmake.org/download/).
-
 
 Make sure the enviroment path for CMake is set correctly.
 
 #### install OpenJij
+
 ```
-$ pip install openjij --no-binary :all:
+$ pip install openjij --no-binary openjij
 ```
 
 ### install from github repository
@@ -70,19 +53,64 @@ $ git clone git@github.com:OpenJij/OpenJij.git
 $ cd openjij
 $ python -m pip install .
 ```
-
-## Test
-
-### Test only Python code
-```sh
-$ python setup.py test
+## For Contributor 
+Use `pre-commit` for auto chech before git commit.
+`.pre-commit-config.yaml`
+``` 
+# pipx install pre-commit 
+# or 
+# pip install pre-commit
+pre-commit install
 ```
 
-### Test Python and C++ code
+## Test 
+
+### Python 
 ```sh
-$ export USE_TEST=1
-$ python setup.py test
+$ python -m venv .venv
+$ pip install pip-tools 
+$ pip-compile
+$ pip-compile dev-requirements.in
+$ pip-sync requirements.txt dev-requirements.txt
+$ source .venv/bin/activate
+$ export CMAKE_BUILD_TYPE=Debug
+$ python setup.py --force-cmake install --build-type Debug -G Ninja
+$ python setup.py --build-type Debug test 
+$ python -m coverage html
 ```
+
+### C++ 
+```sh
+$ mkdir build 
+$ cd build
+$ cmake -DCMAKE_BUILD_TYPE=Debug -S . -B build
+$ ./tests/cxxjij_tes
+```
+
+Needs: CMake > 3.22, C++17
+
+- Format 
+``` sh
+$ python -m isort 
+$ python -m black 
+```
+
+- Aggressive Format
+```sh 
+$ python -m isort --force-single-line-imports --verbose ./openjij
+$ python -m autoflake --in-place --recursive --remove-all-unused-imports --ignore-init-module-imports --remove-unused-variables ./openjij
+$ python -m autopep8 --in-place --aggressive --aggressive  --recursive ./openjij
+$ python -m isort ./openjij
+$ python -m black ./openjij
+```
+
+- Lint
+``` sh 
+$ python -m flake8
+$ python -m mypy
+$ python -m pyright
+```
+
 
 ## How to use
 
