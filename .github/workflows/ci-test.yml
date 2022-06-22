@@ -34,7 +34,7 @@ jobs:
       shell: bash
       run: |
         pip install ninja
-        brew install eigen nlohmann-json lcov libomp
+        brew install eigen nlohmann-json lcov 
     - name: Add msbuild to PATH
       if: ${{ matrix.os == 'windows-latest'}}
       uses: microsoft/setup-msbuild@v1.0.2
