@@ -76,7 +76,7 @@ jobs:
       - name: Git ADD 
         run: |
           set -eux 
-          git pull origin HEAD:${GITHUB_REF}
+          git pull origin ${GITHUB_REF}
           if (git diff --shortstat | grep '[0-9]'); then \
             git add --all
           fi
