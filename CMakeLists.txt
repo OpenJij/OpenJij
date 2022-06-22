@@ -202,7 +202,8 @@ if(SKBUILD AND MAIN_PROJECT)
   # automatically, so we need to add it _or_ the pybind11 specific directory
   # here.
   if(NOT ${PYTHON_EXECUTABLE}) 
-    find_program(PYTHON_EXECUTABLE} NAMES python)
+    message(STATUS "Find Python")
+    find_program(PYTHON_EXECUTABLE NAMES python)
   endif()
   message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
   execute_process(
