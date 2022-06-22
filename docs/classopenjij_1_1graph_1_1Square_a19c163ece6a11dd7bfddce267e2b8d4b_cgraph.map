@@ -1,0 +1,5 @@
+<map id="openjij::graph::Square::_checkpair" name="openjij::graph::Square::_checkpair">
+<area shape="rect" id="node1" title="check if the pair has a valid connection" alt="" coords="5,5,169,47"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Square.html#aa5fd733d248cb0e71c234926b8854015" title="convert from global index to (row x column) index" alt="" coords="217,5,381,47"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Graph.html#a965df938bd88f3ebd33ecd98418b9375" title="get number of spins" alt="" coords="429,5,588,47"/>
+</map>

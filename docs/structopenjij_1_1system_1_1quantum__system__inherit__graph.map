@@ -1,0 +1,7 @@
+<map id="openjij::system::quantum_system" name="openjij::system::quantum_system">
+<area shape="rect" id="node1" title="quantum monte carlo system" alt="" coords="204,71,392,112"/>
+<area shape="rect" id="node3" href="$structopenjij_1_1system_1_1inhomogeneous__transverse__field__system.html" title="inhomogeneous transverse field system" alt="" coords="440,5,675,47"/>
+<area shape="rect" id="node4" href="$structopenjij_1_1system_1_1nonstoquastic__system.html" title="nonstoquastic quantum system" alt="" coords="447,71,668,112"/>
+<area shape="rect" id="node5" href="$structopenjij_1_1system_1_1transverse__field__system.html" title="ordinary homogeneous transverse field system (using beta and annealing schedule (s) for annealing par..." alt="" coords="458,136,657,177"/>
+<area shape="rect" id="node2" href="$structopenjij_1_1system_1_1mc__system.html" title="monte carlo system tag" alt="" coords="5,71,156,112"/>
+</map>

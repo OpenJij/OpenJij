@@ -1,0 +1,27 @@
+var namespaceopenjij_1_1system =
+[
+    [ "classical_constraint_system", "structopenjij_1_1system_1_1classical__constraint__system.html", null ],
+    [ "classical_system", "structopenjij_1_1system_1_1classical__system.html", null ],
+    [ "ClassicalIsing", "structopenjij_1_1system_1_1ClassicalIsing.html", null ],
+    [ "ClassicalIsing< graph::Dense< FloatType > >", "structopenjij_1_1system_1_1ClassicalIsing_3_01graph_1_1Dense_3_01FloatType_01_4_01_4.html", "structopenjij_1_1system_1_1ClassicalIsing_3_01graph_1_1Dense_3_01FloatType_01_4_01_4" ],
+    [ "ClassicalIsing< graph::Sparse< FloatType > >", "structopenjij_1_1system_1_1ClassicalIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4.html", "structopenjij_1_1system_1_1ClassicalIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4" ],
+    [ "ClassicalIsingPolynomial", "classopenjij_1_1system_1_1ClassicalIsingPolynomial.html", null ],
+    [ "ClassicalIsingPolynomial< graph::Polynomial< FloatType > >", "classopenjij_1_1system_1_1ClassicalIsingPolynomial_3_01graph_1_1Polynomial_3_01FloatType_01_4_01_4.html", "classopenjij_1_1system_1_1ClassicalIsingPolynomial_3_01graph_1_1Polynomial_3_01FloatType_01_4_01_4" ],
+    [ "ContinuousTimeIsing", "structopenjij_1_1system_1_1ContinuousTimeIsing.html", null ],
+    [ "ContinuousTimeIsing< graph::Sparse< FloatType > >", "structopenjij_1_1system_1_1ContinuousTimeIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4.html", "structopenjij_1_1system_1_1ContinuousTimeIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4" ],
+    [ "get_base_system_type", "structopenjij_1_1system_1_1get__base__system__type.html", "structopenjij_1_1system_1_1get__base__system__type" ],
+    [ "get_classical_or_quantum_system_type", "structopenjij_1_1system_1_1get__classical__or__quantum__system__type.html", "structopenjij_1_1system_1_1get__classical__or__quantum__system__type" ],
+    [ "get_system_type", "structopenjij_1_1system_1_1get__system__type.html", "structopenjij_1_1system_1_1get__system__type" ],
+    [ "inhomogeneous_transverse_field_system", "structopenjij_1_1system_1_1inhomogeneous__transverse__field__system.html", null ],
+    [ "KLocalPolynomial", "classopenjij_1_1system_1_1KLocalPolynomial.html", null ],
+    [ "KLocalPolynomial< graph::Polynomial< FloatType > >", "classopenjij_1_1system_1_1KLocalPolynomial_3_01graph_1_1Polynomial_3_01FloatType_01_4_01_4.html", "classopenjij_1_1system_1_1KLocalPolynomial_3_01graph_1_1Polynomial_3_01FloatType_01_4_01_4" ],
+    [ "mc_system", "structopenjij_1_1system_1_1mc__system.html", null ],
+    [ "nonstoquastic_system", "structopenjij_1_1system_1_1nonstoquastic__system.html", null ],
+    [ "quantum_system", "structopenjij_1_1system_1_1quantum__system.html", null ],
+    [ "realtime_dynamics_system", "structopenjij_1_1system_1_1realtime__dynamics__system.html", null ],
+    [ "single_command_system", "structopenjij_1_1system_1_1single__command__system.html", null ],
+    [ "transverse_field_system", "structopenjij_1_1system_1_1transverse__field__system.html", null ],
+    [ "TransverseIsing", "structopenjij_1_1system_1_1TransverseIsing.html", null ],
+    [ "TransverseIsing< graph::Dense< FloatType > >", "structopenjij_1_1system_1_1TransverseIsing_3_01graph_1_1Dense_3_01FloatType_01_4_01_4.html", "structopenjij_1_1system_1_1TransverseIsing_3_01graph_1_1Dense_3_01FloatType_01_4_01_4" ],
+    [ "TransverseIsing< graph::Sparse< FloatType > >", "structopenjij_1_1system_1_1TransverseIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4.html", "structopenjij_1_1system_1_1TransverseIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4" ]
+];

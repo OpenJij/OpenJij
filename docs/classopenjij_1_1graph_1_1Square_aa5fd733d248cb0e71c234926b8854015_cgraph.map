@@ -1,0 +1,4 @@
+<map id="openjij::graph::Square::to_rc" name="openjij::graph::Square::to_rc">
+<area shape="rect" id="node1" title="convert from global index to (row x column) index" alt="" coords="5,5,169,47"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Graph.html#a965df938bd88f3ebd33ecd98418b9375" title="get number of spins" alt="" coords="217,5,376,47"/>
+</map>

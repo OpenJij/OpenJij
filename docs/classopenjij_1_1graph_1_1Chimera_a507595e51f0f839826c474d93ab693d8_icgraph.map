@@ -1,0 +1,8 @@
+<map id="openjij::graph::Chimera::mod_c" name="openjij::graph::Chimera::mod_c">
+<area shape="rect" id="node1" title="mod function (a mod num_column)" alt="" coords="467,89,641,131"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Chimera.html#ae4aa11fec389a2318e7fe75494a96e8b" title="convert from (row x column x in&#45;chimera) index to global index" alt="" coords="244,89,419,131"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Chimera.html#a1dee3534007ce7056a13741b59f911de" title="chimera lattice graph constructor" alt="" coords="13,5,188,47"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1graph_1_1Chimera.html#ac27953e3fb8c593ace65f543a06e9385" title="access h(row, colum, in&#45;chimera) (local field)" alt="" coords="5,71,196,98"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1graph_1_1Chimera.html#af97370a2f0b2264668c929674f46e4fe" title="access J(row, colum, in&#45;chimera, direction)" alt="" coords="7,122,194,149"/>
+<area shape="rect" id="node6" href="$classopenjij_1_1graph_1_1Chimera.html#a67df1bf50b97b74e6f70aeba3c26517d" title="derive spin value at the index (row x column)" alt="" coords="13,173,188,215"/>
+</map>

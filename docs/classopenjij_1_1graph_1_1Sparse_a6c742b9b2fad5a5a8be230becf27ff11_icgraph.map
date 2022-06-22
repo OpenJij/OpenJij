@@ -1,0 +1,10 @@
+<map id="openjij::graph::Sparse::h" name="openjij::graph::Sparse::h">
+<area shape="rect" id="node1" title="access h_{i} (local field)" alt="" coords="244,202,423,229"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Chimera.html#a27fb8ff6e7e62287f191a72cda452d59" title="Square constructor (from nlohmann::json)" alt="" coords="13,5,188,47"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Sparse.html#afe3a672a14df1b57e52e69a4d895f3b1" title="calculate total energy" alt="" coords="19,71,182,112"/>
+<area shape="rect" id="node4" href="$namespaceopenjij_1_1utility.html#a8d77a93e4b2826fcebb30a52c33896e0" title="generate Eigen Sparse Matrix from Sparse graph" alt="" coords="23,136,178,177"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1graph_1_1Square.html#aed586eee9ca88f5ed9b6e5fffbc86e4e" title="access h(row, colum) (local field)" alt="" coords="11,202,191,229"/>
+<area shape="rect" id="node6" href="$classopenjij_1_1graph_1_1Chimera.html#ac27953e3fb8c593ace65f543a06e9385" title="access h(row, colum, in&#45;chimera) (local field)" alt="" coords="5,253,196,279"/>
+<area shape="rect" id="node7" href="$classopenjij_1_1graph_1_1Sparse.html#a421a5211edffe0fc81007913c5a1b5ae" title="Sparse constructor (from nlohmann::json)" alt="" coords="19,304,182,345"/>
+<area shape="rect" id="node8" href="$classopenjij_1_1graph_1_1Square.html#adae56563403f5a039359304a0f573fff" title="Square constructor (from nlohmann::json)" alt="" coords="19,369,183,411"/>
+</map>

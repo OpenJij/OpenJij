@@ -1,0 +1,23 @@
+<map id="fmath::local::mask" name="fmath::local::mask">
+<area shape="rect" id="node1" title=" " alt="" coords="792,741,936,768"/>
+<area shape="rect" id="node2" href="$namespacefmath.html#affa4ce71de9b2037b529ee4465f34d5f" title=" " alt="" coords="591,348,684,375"/>
+<area shape="rect" id="node11" href="$namespacefmath.html#aafa779b8749cfc17d0adf38d7da65225" title=" " alt="" coords="269,661,385,688"/>
+<area shape="rect" id="node13" href="$namespacefmath.html#a7219b7939e337daebb32955ad7a31c36" title=" " alt="" coords="587,661,688,688"/>
+<area shape="rect" id="node14" href="$namespacefmath.html#aca7b2a26214601204474ba7d5c546934" title=" " alt="" coords="269,712,385,739"/>
+<area shape="rect" id="node15" href="$structfmath_1_1local_1_1ExpVar.html#a0aa33b1704c2a8638b30670fc8fc4202" title=" " alt="" coords="531,763,744,805"/>
+<area shape="rect" id="node16" href="$classfmath_1_1PowGenerator.html#a89465e0f2637227b9b55947a7ac1b931" title=" " alt="" coords="542,829,733,856"/>
+<area shape="rect" id="node17" href="$namespacefmath.html#a8d7e069e304bd8d5dcde3f4927ac41a3" title=" " alt="" coords="593,880,682,907"/>
+<area shape="rect" id="node20" href="$structfmath_1_1local_1_1LogVar.html#a7a0f2824ba8a62727c51769e5dea1f4d" title=" " alt="" coords="220,945,435,986"/>
+<area shape="rect" id="node3" href="$structopenjij_1_1updater_1_1SingleSpinFlip_3_01system_1_1TransverseIsing_3_01GraphType_01_4_01_4.html#a35d400477f54de0e27ec9be4c6ef05d5" title=" " alt="" coords="215,5,439,61"/>
+<area shape="rect" id="node4" href="$namespacefmath.html#a9d0d842f984501fb4a1739bd62b3aeba" title=" " alt="" coords="277,85,378,112"/>
+<area shape="rect" id="node5" href="$structopenjij_1_1updater_1_1ContinuousTimeSwendsenWang_3_01system_1_1ContinuousTimeIsing_3_01gra8e0a36304a7a08edfd6f7bc1c47e64ba.html#a12060f98c43e8c7ece68320bdb2898bb" title="generates Poisson points with density lambda in the range of [0:beta)" alt="" coords="196,136,459,221"/>
+<area shape="rect" id="node6" href="$structopenjij_1_1updater_1_1KLocal_3_01system_1_1KLocalPolynomial_3_01GraphType_01_4_01_4.html#a50ddf2020a2834db4d94a00d4282027b" title="Operate k&#45;local update for HUBO." alt="" coords="223,245,432,301"/>
+<area shape="rect" id="node7" href="$structopenjij_1_1updater_1_1SwendsenWang_3_01system_1_1ClassicalIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4_01_4.html#a2793d1638385767da160bcd54832cc2c" title=" " alt="" coords="218,326,437,397"/>
+<area shape="rect" id="node8" href="$structopenjij_1_1updater_1_1SingleSpinFlip_3_01system_1_1ClassicalIsing_3_01GraphType_01_4_01_4.html#accac653c668ac5674afe53fa4008f57d" title="operate single spin flip in a classical ising system" alt="" coords="210,421,445,477"/>
+<area shape="rect" id="node9" href="$structopenjij_1_1updater_1_1SingleSpinFlip_3_01system_1_1ClassicalIsingPolynomial_3_01GraphType_01_4_01_4.html#a7cc1990444f9ded6b3d92a35ca341205" title="Operate single spin flip when the system is composed of binary variables." alt="" coords="172,501,483,557"/>
+<area shape="rect" id="node10" href="$structopenjij_1_1updater_1_1SingleSpinFlip_3_01system_1_1ClassicalIsingPolynomial_3_01GraphType_01_4_01_4.html#af0a2a1a4793f0f8f5ffe0c90eebeec12" title="Operate single spin flip when the system is composed of spin variables." alt="" coords="179,581,475,637"/>
+<area shape="rect" id="node12" href="$namespacefmath.html#adf6ad6d23d69da95e121469bbf18c545" title=" " alt="" coords="5,737,124,764"/>
+<area shape="rect" id="node18" href="$namespacefmath.html#a6d88d47d1bf9930b30d2b20d447b4fd5" title=" " alt="" coords="279,763,376,789"/>
+<area shape="rect" id="node19" href="$namespacefmath.html#a6477db3793426f1a9416439a69381384" title=" " alt="" coords="271,813,383,840"/>
+<area shape="rect" id="node21" href="$structopenjij_1_1updater_1_1SingleSpinFlip_3_01system_1_1TransverseIsing_3_01GraphType_01_4_01_4.html#a8c4e94b51349eb24f280b2f36a984c8e" title="operate single spin flip in a transverse ising system" alt="" coords="217,864,437,920"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="openjij::system::transverse_field_system" name="openjij::system::transverse_field_system">
+<area shape="rect" id="node1" title="ordinary homogeneous transverse field system (using beta and annealing schedule (s) for annealing par..." alt="" coords="5,184,204,225"/>
+<area shape="rect" id="node2" href="$structopenjij_1_1system_1_1quantum__system.html" title="quantum monte carlo system" alt="" coords="11,95,199,136"/>
+<area shape="rect" id="node3" href="$structopenjij_1_1system_1_1mc__system.html" title="monte carlo system tag" alt="" coords="29,5,180,47"/>
+</map>

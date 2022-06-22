@@ -1,0 +1,4 @@
+<map id="openjij::graph::Sparse::adj_nodes" name="openjij::graph::Sparse::adj_nodes">
+<area shape="rect" id="node1" title="list of adjacent nodes" alt="" coords="208,5,371,47"/>
+<area shape="rect" id="node2" href="$namespaceopenjij_1_1utility.html#a8d77a93e4b2826fcebb30a52c33896e0" title="generate Eigen Sparse Matrix from Sparse graph" alt="" coords="5,5,160,47"/>
+</map>

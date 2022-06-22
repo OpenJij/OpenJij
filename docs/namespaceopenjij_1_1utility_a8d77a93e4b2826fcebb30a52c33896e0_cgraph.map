@@ -1,0 +1,7 @@
+<map id="openjij::utility::gen_matrix_from_graph" name="openjij::utility::gen_matrix_from_graph">
+<area shape="rect" id="node1" title="generate Eigen Sparse Matrix from Sparse graph" alt="" coords="5,100,160,141"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Sparse.html#ac59fe2e6a920dbb898925ad1044abd50" title="list of adjacent nodes" alt="" coords="216,5,379,47"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Graph.html#a965df938bd88f3ebd33ecd98418b9375" title="get number of spins" alt="" coords="218,71,377,112"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1graph_1_1Sparse.html#a6c742b9b2fad5a5a8be230becf27ff11" title="access h_{i} (local field)" alt="" coords="208,137,387,163"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1graph_1_1Sparse.html#a337f18d08a33bdffcfb033e4f3781faf" title="access J_{ij}" alt="" coords="210,187,385,214"/>
+</map>

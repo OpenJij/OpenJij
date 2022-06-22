@@ -1,0 +1,5 @@
+<map id="openjij::system::nonstoquastic_system" name="openjij::system::nonstoquastic_system">
+<area shape="rect" id="node1" title="nonstoquastic quantum system" alt="" coords="5,184,227,225"/>
+<area shape="rect" id="node2" href="$structopenjij_1_1system_1_1quantum__system.html" title="quantum monte carlo system" alt="" coords="22,95,210,136"/>
+<area shape="rect" id="node3" href="$structopenjij_1_1system_1_1mc__system.html" title="monte carlo system tag" alt="" coords="41,5,191,47"/>
+</map>

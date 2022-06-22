@@ -1,0 +1,7 @@
+<map id="openjij::graph::Chimera::Chimera" name="openjij::graph::Chimera::Chimera">
+<area shape="rect" id="node1" title="chimera lattice graph constructor" alt="" coords="5,27,180,69"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Sparse.html#a337f18d08a33bdffcfb033e4f3781faf" title="access J_{ij}" alt="" coords="228,5,403,32"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Chimera.html#ae4aa11fec389a2318e7fe75494a96e8b" title="convert from (row x column x in&#45;chimera) index to global index" alt="" coords="228,57,403,98"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1graph_1_1Chimera.html#a507595e51f0f839826c474d93ab693d8" title="mod function (a mod num_column)" alt="" coords="451,23,625,65"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1graph_1_1Chimera.html#a0145a75817091e8ce1ad47f33d6527b5" title="mod function (a mod num_row)" alt="" coords="451,89,625,130"/>
+</map>

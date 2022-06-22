@@ -1,0 +1,8 @@
+<map id="openjij::graph::Graph::size" name="openjij::graph::Graph::size">
+<area shape="rect" id="node1" title="get number of spins" alt="" coords="749,39,908,80"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Polynomial.html#ab51c8997853d877d7779500f3458ebf9" title="Check if the input keys are valid." alt="" coords="509,5,701,47"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1graph_1_1Polynomial.html#a00bd0f6d60163a66bcb8d19ec70f6b32" title="Return the total energy corresponding to the input variables, Spins or Binaries." alt="" coords="509,71,701,112"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Polynomial.html#a0b7c839025b8f1f35b766233965c26b5" title="Access the interaction corresponding to the input argument to set an interaction." alt="" coords="257,13,461,39"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1graph_1_1Polynomial.html#af77b5bcfe44d7b3763fc7319eb81bd9c" title="Access the interaction corresponding to the input argument to set an interaction." alt="" coords="5,13,209,39"/>
+<area shape="rect" id="node6" href="$classopenjij_1_1graph_1_1Polynomial.html#a01ce435e9005c8036fb8add2545e7ffa" title="Return the total energy corresponding to the input variables, Spins or Binaries." alt="" coords="263,71,455,112"/>
+</map>

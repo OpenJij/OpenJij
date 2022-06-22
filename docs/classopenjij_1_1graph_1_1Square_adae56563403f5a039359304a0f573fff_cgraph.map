@@ -1,0 +1,8 @@
+<map id="openjij::graph::Square::Square" name="openjij::graph::Square::Square">
+<area shape="rect" id="node1" title="Square constructor (from nlohmann::json)" alt="" coords="5,64,169,105"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Square.html#a19c163ece6a11dd7bfddce267e2b8d4b" title="check if the pair has a valid connection" alt="" coords="225,5,389,47"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1graph_1_1Sparse.html#a6c742b9b2fad5a5a8be230becf27ff11" title="access h_{i} (local field)" alt="" coords="217,71,396,98"/>
+<area shape="rect" id="node6" href="$classopenjij_1_1graph_1_1Sparse.html#a337f18d08a33bdffcfb033e4f3781faf" title="access J_{ij}" alt="" coords="219,122,394,149"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Square.html#aa5fd733d248cb0e71c234926b8854015" title="convert from global index to (row x column) index" alt="" coords="444,5,608,47"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1graph_1_1Graph.html#a965df938bd88f3ebd33ecd98418b9375" title="get number of spins" alt="" coords="656,5,815,47"/>
+</map>

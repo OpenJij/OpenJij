@@ -1,0 +1,4 @@
+<map id="openjij::graph::Polynomial::energy" name="openjij::graph::Polynomial::energy">
+<area shape="rect" id="node1" title="Return the total energy corresponding to the input variables, Spins or Binaries." alt="" coords="5,5,197,47"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Graph.html#ac97da6970bf1ff93a0bc1f1b3db14ea1" title="get number of spins" alt="" coords="245,5,404,47"/>
+</map>

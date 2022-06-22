@@ -1,0 +1,5 @@
+<map id="openjij::graph::Chimera::to_rci" name="openjij::graph::Chimera::to_rci">
+<area shape="rect" id="node1" title="convert from global index to (row x column x in&#45;chimera) index" alt="" coords="451,5,625,47"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Chimera.html#a7ca02297cb84a6dd646fca8e318fe3cd" title="check if the pair has a valid connection" alt="" coords="228,5,403,47"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Chimera.html#a27fb8ff6e7e62287f191a72cda452d59" title="Square constructor (from nlohmann::json)" alt="" coords="5,5,180,47"/>
+</map>

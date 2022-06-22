@@ -1,0 +1,4 @@
+var structopenjij_1_1utility_1_1get__eigen__matrix__type_3_01graph_1_1Dense_3_01FloatType_01_4_00_01Options_01_4 =
+[
+    [ "type", "structopenjij_1_1utility_1_1get__eigen__matrix__type_3_01graph_1_1Dense_3_01FloatType_01_4_00_01Options_01_4.html#ae4ee4735074ec6f0371aa61c15959559", null ]
+];

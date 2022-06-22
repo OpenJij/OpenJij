@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$structopenjij_1_1system_1_1mc__system.html" title="monte carlo system tag" alt="" coords="5,71,156,112"/>
+<area shape="rect" id="node2" href="$structopenjij_1_1system_1_1classical__constraint__system.html" title="classical monte carlo system with a constraint (using beta (inverse temperature) for annealing parame..." alt="" coords="205,5,391,47"/>
+<area shape="rect" id="node3" href="$structopenjij_1_1system_1_1classical__system.html" title="classical monte carlo system (using beta (inverse temperature) for annealing parameter)" alt="" coords="205,71,391,112"/>
+<area shape="rect" id="node4" href="$structopenjij_1_1system_1_1quantum__system.html" title="quantum monte carlo system" alt="" coords="204,136,392,177"/>
+<area shape="rect" id="node5" href="$structopenjij_1_1system_1_1inhomogeneous__transverse__field__system.html" title="inhomogeneous transverse field system" alt="" coords="440,71,675,112"/>
+<area shape="rect" id="node6" href="$structopenjij_1_1system_1_1nonstoquastic__system.html" title="nonstoquastic quantum system" alt="" coords="447,136,668,177"/>
+<area shape="rect" id="node7" href="$structopenjij_1_1system_1_1transverse__field__system.html" title="ordinary homogeneous transverse field system (using beta and annealing schedule (s) for annealing par..." alt="" coords="458,201,657,243"/>
+</map>

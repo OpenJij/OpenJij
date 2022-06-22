@@ -1,0 +1,5 @@
+<map id="openjij::graph::Square::to_rc" name="openjij::graph::Square::to_rc">
+<area shape="rect" id="node1" title="convert from global index to (row x column) index" alt="" coords="429,5,593,47"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Square.html#a19c163ece6a11dd7bfddce267e2b8d4b" title="check if the pair has a valid connection" alt="" coords="217,5,381,47"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Square.html#adae56563403f5a039359304a0f573fff" title="Square constructor (from nlohmann::json)" alt="" coords="5,5,169,47"/>
+</map>

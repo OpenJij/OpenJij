@@ -1,0 +1,7 @@
+<map id="openjij::graph::Square::J" name="openjij::graph::Square::J">
+<area shape="rect" id="node1" title="access J(row, colum, direction)" alt="" coords="5,35,181,61"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Sparse.html#a337f18d08a33bdffcfb033e4f3781faf" title="access J_{ij}" alt="" coords="229,5,404,32"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Square.html#af2a2bdbb0fe60b2c17ae106c2d0d9630" title="convert from (row x column) index to global index" alt="" coords="235,57,399,98"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1graph_1_1Square.html#aa77842091b3cc86d56f3d8e141561770" title="mod function (a mod num_column)" alt="" coords="452,23,616,65"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1graph_1_1Square.html#a11e705f0de4f6377bf4cdf531ba146bf" title="mod function (a mod num_row)" alt="" coords="452,89,616,130"/>
+</map>

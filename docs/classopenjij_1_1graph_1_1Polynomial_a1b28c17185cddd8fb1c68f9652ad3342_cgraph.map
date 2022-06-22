@@ -1,0 +1,6 @@
+<map id="openjij::graph::Polynomial::J" name="openjij::graph::Polynomial::J">
+<area shape="rect" id="node1" title="Access the interaction corresponding to the input argument to set an interaction." alt="" coords="5,13,209,39"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Polynomial.html#a0b7c839025b8f1f35b766233965c26b5" title="Access the interaction corresponding to the input argument to set an interaction." alt="" coords="257,13,461,39"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Polynomial.html#ab51c8997853d877d7779500f3458ebf9" title="Check if the input keys are valid." alt="" coords="509,5,701,47"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1graph_1_1Graph.html#ac97da6970bf1ff93a0bc1f1b3db14ea1" title="get number of spins" alt="" coords="749,5,908,47"/>
+</map>

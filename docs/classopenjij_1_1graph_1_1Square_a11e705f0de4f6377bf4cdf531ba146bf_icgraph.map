@@ -1,0 +1,8 @@
+<map id="openjij::graph::Square::mod_r" name="openjij::graph::Square::mod_r">
+<area shape="rect" id="node1" title="mod function (a mod num_row)" alt="" coords="445,78,609,119"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Square.html#af2a2bdbb0fe60b2c17ae106c2d0d9630" title="convert from (row x column) index to global index" alt="" coords="233,78,397,119"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Square.html#aed586eee9ca88f5ed9b6e5fffbc86e4e" title="access h(row, colum) (local field)" alt="" coords="5,5,185,32"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1graph_1_1Square.html#aa930c3e2a3a1747fca637dfd95628d3c" title="access J(row, colum, direction)" alt="" coords="7,56,183,83"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1graph_1_1Square.html#a444b29ab156c2c355fd9fdc0349c88c3" title="derive spin value at the index (row x column)" alt="" coords="13,107,177,149"/>
+<area shape="rect" id="node6" href="$classopenjij_1_1graph_1_1Square.html#aaf7ca71bd8b53cca759b3f831017c27b" title="square lattice graph constructor" alt="" coords="13,173,177,214"/>
+</map>

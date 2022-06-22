@@ -1,0 +1,5 @@
+var structopenjij_1_1updater_1_1SwendsenWang_3_01system_1_1ClassicalIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4_01_4 =
+[
+    [ "ClIsing", "structopenjij_1_1updater_1_1SwendsenWang_3_01system_1_1ClassicalIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4_01_4.html#addbcc7c6228c118916ae6accbc81ed3e", null ],
+    [ "update", "structopenjij_1_1updater_1_1SwendsenWang_3_01system_1_1ClassicalIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4_01_4.html#a2793d1638385767da160bcd54832cc2c", null ]
+];

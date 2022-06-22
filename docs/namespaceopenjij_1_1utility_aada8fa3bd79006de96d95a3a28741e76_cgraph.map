@@ -1,0 +1,6 @@
+<map id="openjij::utility::gen_matrix_from_graph" name="openjij::utility::gen_matrix_from_graph">
+<area shape="rect" id="node1" title="generate Eigen Dense Matrix from Dense graph" alt="" coords="5,20,160,61"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Graph.html#a965df938bd88f3ebd33ecd98418b9375" title="get number of spins" alt="" coords="652,20,811,61"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Dense.html#a61cecf6e86b3d06d6ce9f0e6789d409d" title="access h_{i} (local field)" alt="" coords="208,27,384,54"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1graph_1_1Dense.html#aaec085e0666f41ce6c82fa2164043231" title="access J_{ij}" alt="" coords="432,78,604,105"/>
+</map>

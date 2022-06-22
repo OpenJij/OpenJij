@@ -1,0 +1,7 @@
+<map id="openjij::graph::Square::Square" name="openjij::graph::Square::Square">
+<area shape="rect" id="node1" title="square lattice graph constructor" alt="" coords="5,27,169,69"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Sparse.html#a337f18d08a33bdffcfb033e4f3781faf" title="access J_{ij}" alt="" coords="217,5,392,32"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Square.html#af2a2bdbb0fe60b2c17ae106c2d0d9630" title="convert from (row x column) index to global index" alt="" coords="223,57,387,98"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1graph_1_1Square.html#aa77842091b3cc86d56f3d8e141561770" title="mod function (a mod num_column)" alt="" coords="440,23,604,65"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1graph_1_1Square.html#a11e705f0de4f6377bf4cdf531ba146bf" title="mod function (a mod num_row)" alt="" coords="440,89,604,130"/>
+</map>

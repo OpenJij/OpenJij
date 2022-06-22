@@ -1,0 +1,5 @@
+<map id="openjij::graph::Chimera::to_ind" name="openjij::graph::Chimera::to_ind">
+<area shape="rect" id="node1" title="convert from (row x column x in&#45;chimera) index to global index" alt="" coords="5,39,180,80"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Chimera.html#a507595e51f0f839826c474d93ab693d8" title="mod function (a mod num_column)" alt="" coords="228,5,403,47"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Chimera.html#a0145a75817091e8ce1ad47f33d6527b5" title="mod function (a mod num_row)" alt="" coords="228,71,403,112"/>
+</map>

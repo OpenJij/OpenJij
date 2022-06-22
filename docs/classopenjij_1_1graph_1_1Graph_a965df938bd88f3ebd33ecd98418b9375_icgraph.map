@@ -1,0 +1,23 @@
+<map id="openjij::graph::Graph::get_num_spins" name="openjij::graph::Graph::get_num_spins">
+<area shape="rect" id="node1" title="get number of spins" alt="" coords="775,450,933,491"/>
+<area shape="rect" id="node2" href="$structopenjij_1_1system_1_1ClassicalIsing_3_01graph_1_1Dense_3_01FloatType_01_4_01_4.html#a9e422412f3b0af11f32966bf80bf64c5" title="Constructor to initialize spin and interaction." alt="" coords="473,5,705,61"/>
+<area shape="rect" id="node3" href="$structopenjij_1_1system_1_1ClassicalIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4.html#a64ee85799c58be098194feb80c6b3652" title="Constructor to initialize spin and interaction." alt="" coords="472,85,707,141"/>
+<area shape="rect" id="node4" href="$structopenjij_1_1system_1_1ContinuousTimeIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4.html#a148f43d6d2405a80ad4cf70e30119ebf" title="ContinuousTimeIsing constructor." alt="" coords="452,165,727,221"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1graph_1_1Dense.html#a5e44f0e517894774e11b46c4fec4a2c3" title="calculate total energy" alt="" coords="509,246,669,287"/>
+<area shape="rect" id="node8" href="$classopenjij_1_1graph_1_1Sparse.html#afe3a672a14df1b57e52e69a4d895f3b1" title="calculate total energy" alt="" coords="508,311,671,353"/>
+<area shape="rect" id="node9" href="$namespaceopenjij_1_1utility.html#aada8fa3bd79006de96d95a3a28741e76" title="generate Eigen Dense Matrix from Dense graph" alt="" coords="15,438,170,479"/>
+<area shape="rect" id="node10" href="$classopenjij_1_1graph_1_1Dense.html#a61cecf6e86b3d06d6ce9f0e6789d409d" title="access h_{i} (local field)" alt="" coords="228,445,404,472"/>
+<area shape="rect" id="node11" href="$classopenjij_1_1graph_1_1Sparse.html#a6c742b9b2fad5a5a8be230becf27ff11" title="access h_{i} (local field)" alt="" coords="508,479,671,521"/>
+<area shape="rect" id="node12" href="$classopenjij_1_1graph_1_1Dense.html#aaec085e0666f41ce6c82fa2164043231" title="access J_{ij}" alt="" coords="503,545,675,572"/>
+<area shape="rect" id="node13" href="$classopenjij_1_1graph_1_1Sparse.html#a337f18d08a33bdffcfb033e4f3781faf" title="access J_{ij}" alt="" coords="508,597,671,638"/>
+<area shape="rect" id="node14" href="$classopenjij_1_1graph_1_1Sparse.html#a8ff84bec819c064a26f5a54e8ea7a093" title="add adjacent node from &quot;from&quot; Index to &quot;to&quot; Index" alt="" coords="494,662,685,703"/>
+<area shape="rect" id="node15" href="$classopenjij_1_1graph_1_1Dense.html#a86d50cf33cf572d32e01ae691a5cc92a" title="set interaction matrix from Eigen Matrix." alt="" coords="501,727,678,769"/>
+<area shape="rect" id="node16" href="$classopenjij_1_1graph_1_1Square.html#aa5fd733d248cb0e71c234926b8854015" title="convert from global index to (row x column) index" alt="" coords="507,793,671,834"/>
+<area shape="rect" id="node19" href="$classopenjij_1_1graph_1_1Chimera.html#a4dc8b823443468d036e6b12123a896e7" title="convert from global index to (row x column x in&#45;chimera) index" alt="" coords="502,858,677,899"/>
+<area shape="rect" id="node6" href="$classopenjij_1_1graph_1_1Dense.html#a8c0d5e22b44fa0c0f9cc78eb7035abf6" title="calculate total energy" alt="" coords="236,214,396,255"/>
+<area shape="rect" id="node7" href="$classopenjij_1_1graph_1_1Dense.html#a76b5bd5d350228f43d19d077cd4df4a3" title=" " alt="" coords="236,279,396,321"/>
+<area shape="rect" id="node17" href="$classopenjij_1_1graph_1_1Square.html#a19c163ece6a11dd7bfddce267e2b8d4b" title="check if the pair has a valid connection" alt="" coords="234,793,398,834"/>
+<area shape="rect" id="node18" href="$classopenjij_1_1graph_1_1Square.html#adae56563403f5a039359304a0f573fff" title="Square constructor (from nlohmann::json)" alt="" coords="11,793,175,834"/>
+<area shape="rect" id="node20" href="$classopenjij_1_1graph_1_1Chimera.html#a7ca02297cb84a6dd646fca8e318fe3cd" title="check if the pair has a valid connection" alt="" coords="229,858,403,899"/>
+<area shape="rect" id="node21" href="$classopenjij_1_1graph_1_1Chimera.html#a27fb8ff6e7e62287f191a72cda452d59" title="Square constructor (from nlohmann::json)" alt="" coords="5,858,180,899"/>
+</map>

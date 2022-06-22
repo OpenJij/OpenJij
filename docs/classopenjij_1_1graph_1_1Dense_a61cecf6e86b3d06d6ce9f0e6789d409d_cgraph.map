@@ -1,0 +1,5 @@
+<map id="openjij::graph::Dense::h" name="openjij::graph::Dense::h">
+<area shape="rect" id="node1" title="access h_{i} (local field)" alt="" coords="5,13,181,39"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Graph.html#a965df938bd88f3ebd33ecd98418b9375" title="get number of spins" alt="" coords="449,5,608,47"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Dense.html#aaec085e0666f41ce6c82fa2164043231" title="access J_{ij}" alt="" coords="229,38,401,65"/>
+</map>

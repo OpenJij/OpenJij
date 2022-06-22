@@ -1,0 +1,4 @@
+<map id="openjij::system::classical_system" name="openjij::system::classical_system">
+<area shape="rect" id="node1" title="classical monte carlo system (using beta (inverse temperature) for annealing parameter)" alt="" coords="5,95,192,136"/>
+<area shape="rect" id="node2" href="$structopenjij_1_1system_1_1mc__system.html" title="monte carlo system tag" alt="" coords="23,5,174,47"/>
+</map>

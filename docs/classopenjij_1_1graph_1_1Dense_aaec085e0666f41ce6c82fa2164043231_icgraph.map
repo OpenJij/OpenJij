@@ -1,0 +1,5 @@
+<map id="openjij::graph::Dense::J" name="openjij::graph::Dense::J">
+<area shape="rect" id="node1" title="access J_{ij}" alt="" coords="432,13,604,39"/>
+<area shape="rect" id="node2" href="$namespaceopenjij_1_1utility.html#aada8fa3bd79006de96d95a3a28741e76" title="generate Eigen Dense Matrix from Dense graph" alt="" coords="5,5,160,47"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Dense.html#a61cecf6e86b3d06d6ce9f0e6789d409d" title="access h_{i} (local field)" alt="" coords="208,38,384,65"/>
+</map>

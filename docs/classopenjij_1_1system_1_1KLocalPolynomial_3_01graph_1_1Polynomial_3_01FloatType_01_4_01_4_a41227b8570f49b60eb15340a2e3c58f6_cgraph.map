@@ -1,0 +1,5 @@
+<map id="openjij::system::KLocalPolynomial&lt; graph::Polynomial&lt; FloatType &gt; &gt;::KLocalPolynomial" name="openjij::system::KLocalPolynomial&lt; graph::Polynomial&lt; FloatType &gt; &gt;::KLocalPolynomial">
+<area shape="rect" id="node1" title="Constructor of KLocalPolynomial system class." alt="" coords="5,31,252,87"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Polynomial.html#afb0ced491842e00c43c7822d5b69d6f7" title="Get the PolynomialKeyList object (all the keys of polynomial interactions)." alt="" coords="300,5,492,47"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Polynomial.html#a1cc48e60eec6c38ddc83fcf8366d23a5" title="Get the PolynomialValueList object (all the values of polynomial interactions)." alt="" coords="300,71,492,112"/>
+</map>

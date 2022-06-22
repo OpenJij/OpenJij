@@ -1,0 +1,8 @@
+<map id="openjij::graph::Chimera::Chimera" name="openjij::graph::Chimera::Chimera">
+<area shape="rect" id="node1" title="Square constructor (from nlohmann::json)" alt="" coords="5,64,180,105"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Chimera.html#a7ca02297cb84a6dd646fca8e318fe3cd" title="check if the pair has a valid connection" alt="" coords="230,5,405,47"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1graph_1_1Sparse.html#a6c742b9b2fad5a5a8be230becf27ff11" title="access h_{i} (local field)" alt="" coords="228,71,407,98"/>
+<area shape="rect" id="node6" href="$classopenjij_1_1graph_1_1Sparse.html#a337f18d08a33bdffcfb033e4f3781faf" title="access J_{ij}" alt="" coords="230,122,405,149"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Chimera.html#a4dc8b823443468d036e6b12123a896e7" title="convert from global index to (row x column x in&#45;chimera) index" alt="" coords="455,5,629,47"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1graph_1_1Graph.html#a965df938bd88f3ebd33ecd98418b9375" title="get number of spins" alt="" coords="677,5,836,47"/>
+</map>
