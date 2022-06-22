@@ -319,8 +319,10 @@ jobs:
         set -eux
         export CMAKE_C_COMPILER_LAUNCHER=sccache
         export CMAKE_CXX_COMPILER_LAUNCHER=sccache
+        export CMAKE_OSX_DEPLOYMENT_TARGET=11 
+        export CMAKE_OSX_ARCHITECTURES=x86_64
         export CMAKE_BUILD_TYPE=Debug
-        python -m pip install -e .
+        python -m pip install -vvv -e .
     - name: Build & Install    
       if: ${{ matrix.os == 'windows-latest'}}
       shell: bash 
@@ -333,7 +335,7 @@ jobs:
       shell: bash
       run: |
         set -eux
-        python setup.py --build-type Debug test 
+        python setup.py test
     - name: Generate
       shell: bash
       run: |
