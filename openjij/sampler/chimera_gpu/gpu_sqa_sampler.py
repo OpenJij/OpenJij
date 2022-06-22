@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-import openjij
+import openjij as oj
 import openjij.cxxjij as cxxjij
 
 from openjij.sampler.chimera_gpu.base_gpu_chimera.base_gpu_chimera import (
@@ -131,7 +131,7 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
 
         self.unit_num_L = unit_num_L if unit_num_L else self.unit_num_L
 
-        model = openjij.ChimeraModel(
+        model = oj.model.chimera_model.ChimeraModel(
             linear=h, quadratic=J, vartype="SPIN", unit_num_L=self.unit_num_L, gpu=True
         )
 
