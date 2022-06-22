@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+message(CHECK_START "cxxjij_header_only")
+list(APPEND CMAKE_MESSAGE_INDENT "  ")
+
 add_library(cxxjij_header_only INTERFACE)
 
 #for GPU
@@ -47,3 +50,6 @@ target_compile_definitions(cxxjij_header_only INTERFACE
     $<$<TARGET_EXISTS:LAPACK::LAPACK>:EIGEN_USE_LAPACKE>
     $<$<CXX_COMPILER_ID:MSVC>:EIGEN_Fortran_COMPILER_WORKS=OFF>   
 )
+
+list(POP_BACK CMAKE_MESSAGE_INDENT)
+message(CHECK_PASS "Finished")
