@@ -31,6 +31,7 @@ except ImportError:
 setup_requires = [
     "numpy",
     "pybind11",
+    "ninja; sys_platform != 'win32'",
 ]
 
 if any(arg in sys.argv for arg in ("pytest", "test")):
