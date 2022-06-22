@@ -68,9 +68,7 @@ jobs:
         shell: bash
         run: |
           set -eux
-          cp -r ./build/html/* public
-          cd public
-          rm *.md5
+          cp -r ./build/html/* ./public/
       - name: du -a 
         shell: bash
         if: always()
