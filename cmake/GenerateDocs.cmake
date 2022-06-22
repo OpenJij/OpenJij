@@ -107,7 +107,7 @@ if (DOXYGEN_FOUND)
         
         #set(DOXYGEN_UML_LIMIT_NUM_FIELDS 100)
         
-        set(USE_MDFILE_AS_MAINPAGE "README.md")
+        set(USE_MDFILE_AS_MAINPAGE "${PROJECT_SOURCE_DIR}/README.md")
         
         doxygen_add_docs(cxxjij_header_only_docs
                          ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/openjij ${PROJECT_SOURCE_DIR}/README.md
