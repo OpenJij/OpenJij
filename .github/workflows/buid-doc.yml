@@ -63,7 +63,7 @@ jobs:
           --build build
           --parallel
           --verbose
-          --target cxxopenjij_header_only_docs
+          --target cxxjij_header_only_docs
       - name: CMake Install
         shell: bash
         run: >
