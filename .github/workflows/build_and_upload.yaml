@@ -22,10 +22,9 @@ jobs:
       - name: Install dependencies 
         run: |
            pip install --upgrade pip wheel setuptools build 
-           pip install setuptools-git-versioning scikit-build 
       - name: Build sdist
         run: |
-          python setup.py sdist
+          python -m build --sdist --outdir ./dist
       - uses: actions/upload-artifact@v3
         with:
           name: WHEEL
