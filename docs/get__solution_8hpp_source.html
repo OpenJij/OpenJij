@@ -186,7 +186,7 @@ $(document).ready(function(){initNavTree('get__solution_8hpp_source.html',''); i
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor">#ifdef USE_CUDA</span></div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> FloatType,</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>,</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;std::size_t rows_per_block,</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;std::size_t cols_per_block,</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;std::size_t trotters_per_block&gt;</div>
@@ -202,7 +202,7 @@ $(document).ready(function(){initNavTree('get__solution_8hpp_source.html',''); i
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;   <span class="keywordflow">return</span> ret_spins;</div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;}</div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160; </div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> FloatType,</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>,</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;std::size_t rows_per_block,</div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;std::size_t cols_per_block&gt;</div>
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="keyword">const</span> <a class="code" href="namespaceopenjij_1_1graph.html#ace188933d1719b22664ab431b0c1c85c">graph::Spins</a> <a class="code" href="namespaceopenjij_1_1result.html#a31c0f99d40526c635a4451fa78558a84">get_solution</a>(<span class="keyword">const</span> system::ChimeraClassicalGPU&lt;FloatType, rows_per_block, cols_per_block&gt;&amp; system){</div>
@@ -227,6 +227,7 @@ $(document).ready(function(){initNavTree('get__solution_8hpp_source.html',''); i
 <div class="ttc" id="astructopenjij_1_1system_1_1ClassicalIsing_html"><div class="ttname"><a href="structopenjij_1_1system_1_1ClassicalIsing.html">openjij::system::ClassicalIsing</a></div><div class="ttdoc">ClassicalIsing structure (system for classical Ising model)</div><div class="ttdef"><b>Definition:</b> classical_ising.hpp:37</div></div>
 <div class="ttc" id="astructopenjij_1_1system_1_1ContinuousTimeIsing_html"><div class="ttname"><a href="structopenjij_1_1system_1_1ContinuousTimeIsing.html">openjij::system::ContinuousTimeIsing</a></div><div class="ttdoc">Continuous Time Quantum Ising system.</div><div class="ttdef"><b>Definition:</b> continuous_time_ising.hpp:35</div></div>
 <div class="ttc" id="anamespaceopenjij_1_1graph_html_add554f3f2563f793ad662ae7965265b9"><div class="ttname"><a href="namespaceopenjij_1_1graph.html#add554f3f2563f793ad662ae7965265b9">openjij::graph::Spin</a></div><div class="ttdeci">int Spin</div><div class="ttdef"><b>Definition:</b> graph.hpp:25</div></div>
+<div class="ttc" id="anamespaceopenjij_html_ad061cddacc7c745568a77e12b8fc4ff3"><div class="ttname"><a href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">openjij::FloatType</a></div><div class="ttdeci">double FloatType</div><div class="ttdoc">Note:</div><div class="ttdef"><b>Definition:</b> compile_config.hpp:38</div></div>
 <div class="ttc" id="agpu_2memory_8hpp_html"><div class="ttname"><a href="gpu_2memory_8hpp.html">memory.hpp</a></div></div>
 <div class="ttc" id="astructopenjij_1_1system_1_1TransverseIsing_html"><div class="ttname"><a href="structopenjij_1_1system_1_1TransverseIsing.html">openjij::system::TransverseIsing</a></div><div class="ttdoc">TransverseIsing structure with discrete-time trotter spins.</div><div class="ttdef"><b>Definition:</b> transverse_ising.hpp:39</div></div>
 <div class="ttc" id="anamespaceopenjij_html"><div class="ttname"><a href="namespaceopenjij.html">openjij</a></div><div class="ttdef"><b>Definition:</b> algorithm.hpp:21</div></div>
@@ -234,7 +235,7 @@ $(document).ready(function(){initNavTree('get__solution_8hpp_source.html',''); i
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_706b41b61886d6d8286a62bf7a99ca75.html">result</a></li><li class="navelem"><a class="el" href="get__solution_8hpp.html">get_solution.hpp</a></li>
-    <li class="footer">Generated on Wed Jun 22 2022 07:01:41 for cimod by
+    <li class="footer">Generated on Wed Jun 22 2022 07:07:43 for cimod by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
   </ul>

@@ -1,0 +1,4 @@
+var namespaceopenjij_1_1sampler_1_1chimera__gpu_1_1gpu__sa__sampler =
+[
+    [ "GPUChimeraSASampler", "classopenjij_1_1sampler_1_1chimera__gpu_1_1gpu__sa__sampler_1_1GPUChimeraSASampler.html", "classopenjij_1_1sampler_1_1chimera__gpu_1_1gpu__sa__sampler_1_1GPUChimeraSASampler" ]
+];

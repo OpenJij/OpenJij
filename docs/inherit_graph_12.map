@@ -1,3 +1,10 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structopenjij_1_1system_1_1ClassicalIsing_3_01graph_1_1Dense_3_01FloatType_01_4_01_4.html" title="ClassicalIsing structure for Dense graph (Eigen&#45;based)" alt="" coords="5,5,268,47"/>
+<area shape="rect" id="node1" title=" " alt="" coords="360,79,551,105"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1sampler_1_1chimera__gpu_1_1gpu__sa__sampler_1_1GPUChimeraSASampler.html" title=" " alt="" coords="603,5,852,61"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1sampler_1_1chimera__gpu_1_1gpu__sqa__sampler_1_1GPUChimeraSQASampler.html" title=" " alt="" coords="599,85,856,141"/>
+<area shape="rect" id="node4" title=" " alt="" coords="5,79,81,105"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1sampler_1_1sampler_1_1BaseSampler.html" title=" " alt="" coords="129,71,312,113"/>
+<area shape="rect" id="node6" href="$classopenjij_1_1sampler_1_1sa__sampler_1_1SASampler.html" title=" " alt="" coords="377,13,534,54"/>
+<area shape="rect" id="node7" href="$classopenjij_1_1sampler_1_1sqa__sampler_1_1SQASampler.html" title=" " alt="" coords="372,130,539,171"/>
+<area shape="rect" id="node8" href="$classopenjij_1_1sampler_1_1csqa__sampler_1_1CSQASampler.html" title=" " alt="" coords="640,166,815,207"/>
 </map>

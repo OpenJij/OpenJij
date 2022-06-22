@@ -159,7 +159,7 @@ $(document).ready(function(){initNavTree('random_8hpp_source.html',''); initResi
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="preprocessor">#ifdef USE_CUDA</span></div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;        <span class="keyword">namespace </span>cuda {</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> FloatType&gt;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                <span class="keyword">inline</span> curandStatus_t curand_generate_uniform_impl(curandGenerator_t generator, FloatType *outputPtr, <span class="keywordtype">size_t</span> num){</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                <span class="keyword">inline</span> curandStatus_t curand_generate_uniform_impl(curandGenerator_t generator, <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> *outputPtr, <span class="keywordtype">size_t</span> num){</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                    static_assert(std::is_floating_point&lt;FloatType&gt;::value, <span class="stringliteral">&quot;FloatType must be float or double.&quot;</span>);</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                    static_assert(!std::is_same&lt;FloatType, long double&gt;::value, <span class="stringliteral">&quot;long double is not supported&quot;</span>);</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                    <span class="keywordflow">return</span> CURAND_STATUS_SUCCESS;</div>
@@ -199,7 +199,7 @@ $(document).ready(function(){initNavTree('random_8hpp_source.html',''); initResi
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                               HANDLE_ERROR_CURAND(curandDestroyGenerator(_rng));</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;                       }</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160; </div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                       <span class="keyword">inline</span> <span class="keywordtype">void</span> generate_uniform(std::size_t n, cuda::unique_dev_ptr&lt;FloatType[]&gt;&amp; dev_random){</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                       <span class="keyword">inline</span> <span class="keywordtype">void</span> generate_uniform(std::size_t n, cuda::unique_dev_ptr&lt;<a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>[]&gt;&amp; dev_random){</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;                           HANDLE_ERROR_CURAND(curand_generate_uniform_impl(_rng, dev_random.get(), n));</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;                       }</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160; </div>
@@ -222,6 +222,7 @@ $(document).ready(function(){initNavTree('random_8hpp_source.html',''); initResi
 <div class="ttc" id="aclassopenjij_1_1utility_1_1Xorshift_html_af9ae17b886b8a70559b34088259ecb1a"><div class="ttname"><a href="classopenjij_1_1utility_1_1Xorshift.html#af9ae17b886b8a70559b34088259ecb1a">openjij::utility::Xorshift::z</a></div><div class="ttdeci">unsigned z</div><div class="ttdef"><b>Definition:</b> random.hpp:87</div></div>
 <div class="ttc" id="aclassopenjij_1_1utility_1_1Xorshift_html_a9b227f8d3bb8247ed73c2ccc2e7b01e4"><div class="ttname"><a href="classopenjij_1_1utility_1_1Xorshift.html#a9b227f8d3bb8247ed73c2ccc2e7b01e4">openjij::utility::Xorshift::result_type</a></div><div class="ttdeci">uint_fast32_t result_type</div><div class="ttdef"><b>Definition:</b> random.hpp:37</div></div>
 <div class="ttc" id="aclassopenjij_1_1utility_1_1Xorshift_html_add3177d2cd773b8ba1c3e191f3671919"><div class="ttname"><a href="classopenjij_1_1utility_1_1Xorshift.html#add3177d2cd773b8ba1c3e191f3671919">openjij::utility::Xorshift::Xorshift</a></div><div class="ttdeci">Xorshift()</div><div class="ttdoc">Xorshift constructor.</div><div class="ttdef"><b>Definition:</b> random.hpp:73</div></div>
+<div class="ttc" id="anamespaceopenjij_html_ad061cddacc7c745568a77e12b8fc4ff3"><div class="ttname"><a href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">openjij::FloatType</a></div><div class="ttdeci">double FloatType</div><div class="ttdoc">Note:</div><div class="ttdef"><b>Definition:</b> compile_config.hpp:38</div></div>
 <div class="ttc" id="aclassopenjij_1_1utility_1_1Xorshift_html_ae02940d28365afd579a33a3309c8e796"><div class="ttname"><a href="classopenjij_1_1utility_1_1Xorshift.html#ae02940d28365afd579a33a3309c8e796">openjij::utility::Xorshift::y</a></div><div class="ttdeci">unsigned y</div><div class="ttdef"><b>Definition:</b> random.hpp:87</div></div>
 <div class="ttc" id="aclassopenjij_1_1utility_1_1Xorshift_html_a72bd6a22c39672af21fdaa5b0698246c"><div class="ttname"><a href="classopenjij_1_1utility_1_1Xorshift.html#a72bd6a22c39672af21fdaa5b0698246c">openjij::utility::Xorshift::w</a></div><div class="ttdeci">unsigned w</div><div class="ttdef"><b>Definition:</b> random.hpp:87</div></div>
 <div class="ttc" id="agpu_2memory_8hpp_html"><div class="ttname"><a href="gpu_2memory_8hpp.html">memory.hpp</a></div></div>
@@ -231,7 +232,7 @@ $(document).ready(function(){initNavTree('random_8hpp_source.html',''); initResi
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_0619a8f54b4fad7043a6de45be8fde0b.html">utility</a></li><li class="navelem"><a class="el" href="random_8hpp.html">random.hpp</a></li>
-    <li class="footer">Generated on Wed Jun 22 2022 07:01:41 for cimod by
+    <li class="footer">Generated on Wed Jun 22 2022 07:07:43 for cimod by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
   </ul>

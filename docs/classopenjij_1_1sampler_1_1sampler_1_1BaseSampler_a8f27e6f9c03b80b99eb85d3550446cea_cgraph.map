@@ -1,0 +1,13 @@
+<map id="openjij.sampler.sampler.BaseSampler.sample_qubo" name="openjij.sampler.sampler.BaseSampler.sample_qubo">
+<area shape="rect" id="node1" title=" " alt="" coords="5,96,204,137"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1sampler_1_1sa__sampler_1_1SASampler.html#a404f0c69231f56a1021dc3b2362d46c8" title=" " alt="" coords="801,5,1009,47"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1sampler_1_1sampler_1_1BaseSampler.html#a7426548e28e86bddfd3fa5e42d9d9330" title=" " alt="" coords="252,96,435,137"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1sampler_1_1sampler_1_1BaseSampler.html#a0527d4089b08c32d3c8e8028fabb6c1e" title=" " alt="" coords="1063,35,1257,76"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1sampler_1_1csqa__sampler_1_1CSQASampler.html#aad6149e8fc6dc08656cdeda77dbdcfe5" title=" " alt="" coords="483,129,747,171"/>
+<area shape="rect" id="node8" href="$classopenjij_1_1sampler_1_1chimera__gpu_1_1gpu__sa__sampler_1_1GPUChimeraSASampler.html#a26e90bfc8a04f6f0c616ee23fb697acf" title=" " alt="" coords="490,195,739,251"/>
+<area shape="rect" id="node10" href="$classopenjij_1_1sampler_1_1chimera__gpu_1_1gpu__sqa__sampler_1_1GPUChimeraSQASampler.html#a4ff712fcfd9539ce7c1843c7c28fb3ea" title=" " alt="" coords="486,275,743,331"/>
+<area shape="rect" id="node11" href="$classopenjij_1_1sampler_1_1sampler_1_1BaseSampler.html#ae26e9e76ac578367325d3745e0787cb4" title=" " alt="" coords="516,64,713,105"/>
+<area shape="rect" id="node6" href="$classopenjij_1_1sampler_1_1sqa__sampler_1_1SQASampler.html#ac98882a044b0000920f8e6c4f2ab217a" title=" " alt="" coords="799,122,1010,178"/>
+<area shape="rect" id="node7" href="$classopenjij_1_1sampler_1_1sampler_1_1BaseSampler.html#a9eb664780b6acb5e0cac75f8b1a9d3d0" title=" " alt="" coords="795,203,1015,244"/>
+<area shape="rect" id="node9" href="$classopenjij_1_1sampler_1_1sampler_1_1BaseSampler.html#a7ee22198e2a31f68f39e334da485ea17" title=" " alt="" coords="813,275,996,316"/>
+</map>

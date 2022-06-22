@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['unionfind_438',['UnionFind',['../structopenjij_1_1utility_1_1UnionFind.html',1,'openjij::utility']]],
-  ['updaterparameter_439',['UpdaterParameter',['../structopenjij_1_1utility_1_1UpdaterParameter.html',1,'openjij::utility']]],
-  ['updaterparameter_3c_20system_3a_3aclassical_5fconstraint_5fsystem_20_3e_440',['UpdaterParameter&lt; system::classical_constraint_system &gt;',['../structopenjij_1_1utility_1_1UpdaterParameter_3_01system_1_1classical__constraint__system_01_4.html',1,'openjij::utility']]],
-  ['updaterparameter_3c_20system_3a_3aclassical_5fsystem_20_3e_441',['UpdaterParameter&lt; system::classical_system &gt;',['../structopenjij_1_1utility_1_1UpdaterParameter_3_01system_1_1classical__system_01_4.html',1,'openjij::utility']]],
-  ['updaterparameter_3c_20system_3a_3atransverse_5ffield_5fsystem_20_3e_442',['UpdaterParameter&lt; system::transverse_field_system &gt;',['../structopenjij_1_1utility_1_1UpdaterParameter_3_01system_1_1transverse__field__system_01_4.html',1,'openjij::utility']]]
+  ['transverse_5ffield_5fsystem_603',['transverse_field_system',['../structopenjij_1_1system_1_1transverse__field__system.html',1,'openjij::system']]],
+  ['transverseising_604',['TransverseIsing',['../structopenjij_1_1system_1_1TransverseIsing.html',1,'openjij::system']]],
+  ['transverseising_3c_20graph_3a_3adense_3c_20floattype_20_3e_20_3e_605',['TransverseIsing&lt; graph::Dense&lt; FloatType &gt; &gt;',['../structopenjij_1_1system_1_1TransverseIsing_3_01graph_1_1Dense_3_01FloatType_01_4_01_4.html',1,'openjij::system']]],
+  ['transverseising_3c_20graph_3a_3asparse_3c_20floattype_20_3e_20_3e_606',['TransverseIsing&lt; graph::Sparse&lt; FloatType &gt; &gt;',['../structopenjij_1_1system_1_1TransverseIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4.html',1,'openjij::system']]]
 ];

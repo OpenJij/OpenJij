@@ -90,7 +90,10 @@ $(document).ready(function(){initNavTree('namespaceopenjij.html',''); initResiza
 
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">openjij Namespace Reference</div>  </div>
 </div><!--header-->
@@ -102,7 +105,11 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceopenjij_1_1graph"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1graph.html">graph</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceopenjij_1_1model"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1model.html">model</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceopenjij_1_1result"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1result.html">result</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceopenjij_1_1sampler"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1sampler.html">sampler</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceopenjij_1_1system"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1system.html">system</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -110,14 +117,1176 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceopenjij_1_1utility"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1utility.html">utility</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceopenjij_1_1utils"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1utils.html">utils</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceopenjij_1_1variable__type"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij_1_1variable__type.html">variable_type</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ad061cddacc7c745568a77e12b8fc4ff3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> = double</td></tr>
+<tr class="memdesc:ad061cddacc7c745568a77e12b8fc4ff3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Note:  <a href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">More...</a><br /></td></tr>
+<tr class="separator:ad061cddacc7c745568a77e12b8fc4ff3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b84c8344541d98d61d0a932634d4267"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a9b84c8344541d98d61d0a932634d4267">RandomEngine</a> = <a class="el" href="classopenjij_1_1utility_1_1Xorshift.html">utility::Xorshift</a></td></tr>
+<tr class="separator:a9b84c8344541d98d61d0a932634d4267"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61b9db4439fa857184b39cf908d90d98"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a61b9db4439fa857184b39cf908d90d98">GPUFloatType</a> = float</td></tr>
+<tr class="separator:a61b9db4439fa857184b39cf908d90d98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ab32b60ed03b9d5607fe0cdfe1641e5e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#ab32b60ed03b9d5607fe0cdfe1641e5e6">declare_Graph</a> (py::module &amp;m)</td></tr>
+<tr class="separator:ab32b60ed03b9d5607fe0cdfe1641e5e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40295df4719a63a4544e69a4a51de429"><td class="memTemplParams" colspan="2">template&lt;typename FloatType &gt; </td></tr>
+<tr class="memitem:a40295df4719a63a4544e69a4a51de429"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a40295df4719a63a4544e69a4a51de429">declare_Dense</a> (py::module &amp;m, const std::string &amp;suffix)</td></tr>
+<tr class="separator:a40295df4719a63a4544e69a4a51de429"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adea101a331926559ea3600d501c6943a"><td class="memTemplParams" colspan="2">template&lt;typename FloatType &gt; </td></tr>
+<tr class="memitem:adea101a331926559ea3600d501c6943a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#adea101a331926559ea3600d501c6943a">declare_Sparse</a> (py::module &amp;m, const std::string &amp;suffix)</td></tr>
+<tr class="separator:adea101a331926559ea3600d501c6943a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7b5ad531cb2dd1cd8756df4cd2a1954"><td class="memTemplParams" colspan="2">template&lt;typename FloatType &gt; </td></tr>
+<tr class="memitem:ad7b5ad531cb2dd1cd8756df4cd2a1954"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#ad7b5ad531cb2dd1cd8756df4cd2a1954">declare_Polynomial</a> (py::module &amp;m, const std::string &amp;suffix)</td></tr>
+<tr class="separator:ad7b5ad531cb2dd1cd8756df4cd2a1954"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01fed2ff595b4d69d004145352375eba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a01fed2ff595b4d69d004145352375eba">declare_Dir</a> (py::module &amp;m)</td></tr>
+<tr class="separator:a01fed2ff595b4d69d004145352375eba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab055a9c4170926b5ac72fd6449a29b04"><td class="memTemplParams" colspan="2">template&lt;typename FloatType &gt; </td></tr>
+<tr class="memitem:ab055a9c4170926b5ac72fd6449a29b04"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#ab055a9c4170926b5ac72fd6449a29b04">declare_Square</a> (py::module &amp;m, const std::string &amp;suffix)</td></tr>
+<tr class="separator:ab055a9c4170926b5ac72fd6449a29b04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9f55dd713a196b5b966c06b31431eca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#aa9f55dd713a196b5b966c06b31431eca">declare_ChimeraDir</a> (py::module &amp;m)</td></tr>
+<tr class="separator:aa9f55dd713a196b5b966c06b31431eca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a066af23b2c3cfd9fc71a1c9570e4767f"><td class="memTemplParams" colspan="2">template&lt;typename FloatType &gt; </td></tr>
+<tr class="memitem:a066af23b2c3cfd9fc71a1c9570e4767f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a066af23b2c3cfd9fc71a1c9570e4767f">declare_Chimera</a> (py::module &amp;m, const std::string &amp;suffix)</td></tr>
+<tr class="separator:a066af23b2c3cfd9fc71a1c9570e4767f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64c9be77268b4b71f8cf429a104e9305"><td class="memTemplParams" colspan="2">template&lt;typename GraphType &gt; </td></tr>
+<tr class="memitem:a64c9be77268b4b71f8cf429a104e9305"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a64c9be77268b4b71f8cf429a104e9305">declare_ClassicalIsing</a> (py::module &amp;m, const std::string &amp;gtype_str)</td></tr>
+<tr class="separator:a64c9be77268b4b71f8cf429a104e9305"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e65968a00113912a7b8d8130eccc63e"><td class="memTemplParams" colspan="2">template&lt;typename GraphType &gt; </td></tr>
+<tr class="memitem:a0e65968a00113912a7b8d8130eccc63e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a0e65968a00113912a7b8d8130eccc63e">declare_ClassicalIsingPolynomial</a> (py::module &amp;m, const std::string &amp;gtype_str)</td></tr>
+<tr class="separator:a0e65968a00113912a7b8d8130eccc63e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ca8ea315efc86f59f6bb4a8e54c280c"><td class="memTemplParams" colspan="2">template&lt;typename GraphType &gt; </td></tr>
+<tr class="memitem:a1ca8ea315efc86f59f6bb4a8e54c280c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a1ca8ea315efc86f59f6bb4a8e54c280c">declare_KLocalPolynomial</a> (py::module &amp;m, const std::string &amp;gtype_str)</td></tr>
+<tr class="separator:a1ca8ea315efc86f59f6bb4a8e54c280c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ab7079ea4f37fe6e0aa476f4956ba84"><td class="memTemplParams" colspan="2">template&lt;typename GraphType &gt; </td></tr>
+<tr class="memitem:a7ab7079ea4f37fe6e0aa476f4956ba84"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a7ab7079ea4f37fe6e0aa476f4956ba84">declare_TransverseIsing</a> (py::module &amp;m, const std::string &amp;gtype_str)</td></tr>
+<tr class="separator:a7ab7079ea4f37fe6e0aa476f4956ba84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a57502db0bc86471cc676c43d8bc74e"><td class="memTemplParams" colspan="2">template&lt;typename GraphType &gt; </td></tr>
+<tr class="memitem:a5a57502db0bc86471cc676c43d8bc74e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a5a57502db0bc86471cc676c43d8bc74e">declare_ContinuousTimeIsing</a> (py::module &amp;m, const std::string &amp;gtype_str)</td></tr>
+<tr class="separator:a5a57502db0bc86471cc676c43d8bc74e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4666aedd08c4bfc4e9796e7d73415cbc"><td class="memTemplParams" colspan="2">template&lt;template&lt; typename &gt; class Updater, typename System , typename RandomNumberEngine &gt; </td></tr>
+<tr class="memitem:a4666aedd08c4bfc4e9796e7d73415cbc"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a4666aedd08c4bfc4e9796e7d73415cbc">declare_Algorithm_run</a> (py::module &amp;m, const std::string &amp;updater_str)</td></tr>
+<tr class="separator:a4666aedd08c4bfc4e9796e7d73415cbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0fa314e3fbb4dc1dabe07a43b5881e9"><td class="memTemplParams" colspan="2">template&lt;typename SystemType &gt; </td></tr>
+<tr class="memitem:ae0fa314e3fbb4dc1dabe07a43b5881e9"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#ae0fa314e3fbb4dc1dabe07a43b5881e9">repr_impl</a> (const <a class="el" href="structopenjij_1_1utility_1_1UpdaterParameter.html">utility::UpdaterParameter</a>&lt; SystemType &gt; &amp;)</td></tr>
+<tr class="separator:ae0fa314e3fbb4dc1dabe07a43b5881e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5887c310e065daa60d78b1ace9f50e56"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:a5887c310e065daa60d78b1ace9f50e56"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a5887c310e065daa60d78b1ace9f50e56">repr_impl</a> (const <a class="el" href="structopenjij_1_1utility_1_1UpdaterParameter.html">utility::UpdaterParameter</a>&lt; <a class="el" href="structopenjij_1_1system_1_1classical__system.html">system::classical_system</a> &gt; &amp;obj)</td></tr>
+<tr class="separator:a5887c310e065daa60d78b1ace9f50e56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add15fb46504fc8e8ee03542775710448"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:add15fb46504fc8e8ee03542775710448"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#add15fb46504fc8e8ee03542775710448">repr_impl</a> (const <a class="el" href="structopenjij_1_1utility_1_1UpdaterParameter.html">utility::UpdaterParameter</a>&lt; <a class="el" href="structopenjij_1_1system_1_1classical__constraint__system.html">system::classical_constraint_system</a> &gt; &amp;obj)</td></tr>
+<tr class="separator:add15fb46504fc8e8ee03542775710448"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae430c106f42c4a4912f24e5e3644bb5d"><td class="memItemLeft" align="right" valign="top">template&lt;&gt; </td></tr>
+<tr class="memitem:ae430c106f42c4a4912f24e5e3644bb5d"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#ae430c106f42c4a4912f24e5e3644bb5d">repr_impl</a> (const <a class="el" href="structopenjij_1_1utility_1_1UpdaterParameter.html">utility::UpdaterParameter</a>&lt; <a class="el" href="structopenjij_1_1system_1_1transverse__field__system.html">system::transverse_field_system</a> &gt; &amp;obj)</td></tr>
+<tr class="separator:ae430c106f42c4a4912f24e5e3644bb5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d2f1670307c9dc900aeb72ffdd7cd45"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a9d2f1670307c9dc900aeb72ffdd7cd45">declare_ClassicalUpdaterParameter</a> (py::module &amp;m)</td></tr>
+<tr class="separator:a9d2f1670307c9dc900aeb72ffdd7cd45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e6500f25dbfcfae1084282e8a0da567"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a0e6500f25dbfcfae1084282e8a0da567">declare_ClassicalConstraintUpdaterParameter</a> (py::module &amp;m)</td></tr>
+<tr class="separator:a0e6500f25dbfcfae1084282e8a0da567"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b054be06a99e5475d248dfa02c5a7b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a1b054be06a99e5475d248dfa02c5a7b7">declare_TransverseFieldUpdaterParameter</a> (py::module &amp;m)</td></tr>
+<tr class="separator:a1b054be06a99e5475d248dfa02c5a7b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bc05ab10972efff0e9a12c481cdb8b6"><td class="memTemplParams" colspan="2">template&lt;typename SystemType &gt; </td></tr>
+<tr class="memitem:a3bc05ab10972efff0e9a12c481cdb8b6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a3bc05ab10972efff0e9a12c481cdb8b6">declare_Schedule</a> (py::module &amp;m, const std::string &amp;systemtype_str)</td></tr>
+<tr class="separator:a3bc05ab10972efff0e9a12c481cdb8b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9426be96d5a84f7b1ec4fa5269d306ab"><td class="memTemplParams" colspan="2">template&lt;typename System &gt; </td></tr>
+<tr class="memitem:a9426be96d5a84f7b1ec4fa5269d306ab"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a9426be96d5a84f7b1ec4fa5269d306ab">declare_get_solution</a> (py::module &amp;m)</td></tr>
+<tr class="separator:a9426be96d5a84f7b1ec4fa5269d306ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a369b1cb423f80c7a36aba109a6877a34"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a369b1cb423f80c7a36aba109a6877a34">__path__</a> = extend_path(__path__, __name__)</td></tr>
+<tr class="separator:a369b1cb423f80c7a36aba109a6877a34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0ec6fc32b9760eeabc53c3d3a3bf6c0"><td class="memItemLeft" align="right" valign="top">list&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#ad0ec6fc32b9760eeabc53c3d3a3bf6c0">__all__</a></td></tr>
+<tr class="separator:ad0ec6fc32b9760eeabc53c3d3a3bf6c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a455fa7deb47fc2f1718efe0d3a0d9970"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#a455fa7deb47fc2f1718efe0d3a0d9970">BLOCK_ROW</a> = 2</td></tr>
+<tr class="separator:a455fa7deb47fc2f1718efe0d3a0d9970"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9cf6ca61d7f59134c3dd5411c294b69"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#ac9cf6ca61d7f59134c3dd5411c294b69">BLOCK_COL</a> = 2</td></tr>
+<tr class="separator:ac9cf6ca61d7f59134c3dd5411c294b69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac440735c29c7b13aefb1afe63c4ade5d"><td class="memItemLeft" align="right" valign="top">constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceopenjij.html#ac440735c29c7b13aefb1afe63c4ade5d">BLOCK_TROT</a> = 1</td></tr>
+<tr class="separator:ac440735c29c7b13aefb1afe63c4ade5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="ad061cddacc7c745568a77e12b8fc4ff3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad061cddacc7c745568a77e12b8fc4ff3">&#9670;&nbsp;</a></span>FloatType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">openjij::FloatType</a> = typedef double</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Note: </p>
+<p>By default, cxxjij (python implementation of openjij) is installed following the configuration listed below. If you want to use cxxjij with non-default settings (e.g. using mersenne twister, calculating with long double precision, etc), please change the following configuration and recompile with the command:</p>
+<p>$ python setup.py clean &amp;&amp; python setup.py install </p>
+
+</div>
+</div>
+<a id="a61b9db4439fa857184b39cf908d90d98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61b9db4439fa857184b39cf908d90d98">&#9670;&nbsp;</a></span>GPUFloatType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceopenjij.html#a61b9db4439fa857184b39cf908d90d98">openjij::GPUFloatType</a> = typedef float</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9b84c8344541d98d61d0a932634d4267"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b84c8344541d98d61d0a932634d4267">&#9670;&nbsp;</a></span>RandomEngine</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceopenjij.html#a9b84c8344541d98d61d0a932634d4267">openjij::RandomEngine</a> = typedef <a class="el" href="classopenjij_1_1utility_1_1Xorshift.html">utility::Xorshift</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a4666aedd08c4bfc4e9796e7d73415cbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4666aedd08c4bfc4e9796e7d73415cbc">&#9670;&nbsp;</a></span>declare_Algorithm_run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;template&lt; typename &gt; class Updater, typename System , typename RandomNumberEngine &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_Algorithm_run </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>updater_str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a066af23b2c3cfd9fc71a1c9570e4767f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a066af23b2c3cfd9fc71a1c9570e4767f">&#9670;&nbsp;</a></span>declare_Chimera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FloatType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_Chimera </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>suffix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa9f55dd713a196b5b966c06b31431eca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9f55dd713a196b5b966c06b31431eca">&#9670;&nbsp;</a></span>declare_ChimeraDir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_ChimeraDir </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">Referenced by <a class="el" href="main_8cpp.html#aa9253edd16ada578e635b5a4e1279d8c">PYBIND11_MODULE()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceopenjij_aa9f55dd713a196b5b966c06b31431eca_icgraph.png" border="0" usemap="#namespaceopenjij_aa9f55dd713a196b5b966c06b31431eca_icgraph" alt=""/></div>
+<map name="namespaceopenjij_aa9f55dd713a196b5b966c06b31431eca_icgraph" id="namespaceopenjij_aa9f55dd713a196b5b966c06b31431eca_icgraph">
+<area shape="rect" title=" " alt="" coords="204,5,407,32"/>
+<area shape="rect" href="main_8cpp.html#aa9253edd16ada578e635b5a4e1279d8c" title=" " alt="" coords="5,5,156,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a0e6500f25dbfcfae1084282e8a0da567"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e6500f25dbfcfae1084282e8a0da567">&#9670;&nbsp;</a></span>declare_ClassicalConstraintUpdaterParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_ClassicalConstraintUpdaterParameter </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">References <a class="el" href="namespaceopenjij.html#ae430c106f42c4a4912f24e5e3644bb5d">repr_impl()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="main_8cpp.html#aa9253edd16ada578e635b5a4e1279d8c">PYBIND11_MODULE()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceopenjij_a0e6500f25dbfcfae1084282e8a0da567_cgraph.png" border="0" usemap="#namespaceopenjij_a0e6500f25dbfcfae1084282e8a0da567_cgraph" alt=""/></div>
+<map name="namespaceopenjij_a0e6500f25dbfcfae1084282e8a0da567_cgraph" id="namespaceopenjij_a0e6500f25dbfcfae1084282e8a0da567_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,213,47"/>
+<area shape="rect" href="namespaceopenjij.html#ae430c106f42c4a4912f24e5e3644bb5d" title=" " alt="" coords="261,13,397,39"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceopenjij_a0e6500f25dbfcfae1084282e8a0da567_icgraph.png" border="0" usemap="#namespaceopenjij_a0e6500f25dbfcfae1084282e8a0da567_icgraph" alt=""/></div>
+<map name="namespaceopenjij_a0e6500f25dbfcfae1084282e8a0da567_icgraph" id="namespaceopenjij_a0e6500f25dbfcfae1084282e8a0da567_icgraph">
+<area shape="rect" title=" " alt="" coords="204,5,412,47"/>
+<area shape="rect" href="main_8cpp.html#aa9253edd16ada578e635b5a4e1279d8c" title=" " alt="" coords="5,13,156,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a64c9be77268b4b71f8cf429a104e9305"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64c9be77268b4b71f8cf429a104e9305">&#9670;&nbsp;</a></span>declare_ClassicalIsing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename GraphType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_ClassicalIsing </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>gtype_str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0e65968a00113912a7b8d8130eccc63e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e65968a00113912a7b8d8130eccc63e">&#9670;&nbsp;</a></span>declare_ClassicalIsingPolynomial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename GraphType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_ClassicalIsingPolynomial </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>gtype_str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">References <a class="el" href="namespaceopenjij_1_1variable__type.html#a5e58469bb414a5792a074d3e211a1a24">openjij.variable_type::Vartype</a>.</p>
+
+</div>
+</div>
+<a id="a9d2f1670307c9dc900aeb72ffdd7cd45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d2f1670307c9dc900aeb72ffdd7cd45">&#9670;&nbsp;</a></span>declare_ClassicalUpdaterParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_ClassicalUpdaterParameter </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">References <a class="el" href="namespaceopenjij.html#ae430c106f42c4a4912f24e5e3644bb5d">repr_impl()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="main_8cpp.html#aa9253edd16ada578e635b5a4e1279d8c">PYBIND11_MODULE()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceopenjij_a9d2f1670307c9dc900aeb72ffdd7cd45_cgraph.png" border="0" usemap="#namespaceopenjij_a9d2f1670307c9dc900aeb72ffdd7cd45_cgraph" alt=""/></div>
+<map name="namespaceopenjij_a9d2f1670307c9dc900aeb72ffdd7cd45_cgraph" id="namespaceopenjij_a9d2f1670307c9dc900aeb72ffdd7cd45_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,192,47"/>
+<area shape="rect" href="namespaceopenjij.html#ae430c106f42c4a4912f24e5e3644bb5d" title=" " alt="" coords="240,13,376,39"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceopenjij_a9d2f1670307c9dc900aeb72ffdd7cd45_icgraph.png" border="0" usemap="#namespaceopenjij_a9d2f1670307c9dc900aeb72ffdd7cd45_icgraph" alt=""/></div>
+<map name="namespaceopenjij_a9d2f1670307c9dc900aeb72ffdd7cd45_icgraph" id="namespaceopenjij_a9d2f1670307c9dc900aeb72ffdd7cd45_icgraph">
+<area shape="rect" title=" " alt="" coords="204,5,391,47"/>
+<area shape="rect" href="main_8cpp.html#aa9253edd16ada578e635b5a4e1279d8c" title=" " alt="" coords="5,13,156,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a5a57502db0bc86471cc676c43d8bc74e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a57502db0bc86471cc676c43d8bc74e">&#9670;&nbsp;</a></span>declare_ContinuousTimeIsing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename GraphType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_ContinuousTimeIsing </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>gtype_str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a40295df4719a63a4544e69a4a51de429"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40295df4719a63a4544e69a4a51de429">&#9670;&nbsp;</a></span>declare_Dense()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FloatType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_Dense </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>suffix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a01fed2ff595b4d69d004145352375eba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01fed2ff595b4d69d004145352375eba">&#9670;&nbsp;</a></span>declare_Dir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_Dir </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">Referenced by <a class="el" href="main_8cpp.html#aa9253edd16ada578e635b5a4e1279d8c">PYBIND11_MODULE()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceopenjij_a01fed2ff595b4d69d004145352375eba_icgraph.png" border="0" usemap="#namespaceopenjij_a01fed2ff595b4d69d004145352375eba_icgraph" alt=""/></div>
+<map name="namespaceopenjij_a01fed2ff595b4d69d004145352375eba_icgraph" id="namespaceopenjij_a01fed2ff595b4d69d004145352375eba_icgraph">
+<area shape="rect" title=" " alt="" coords="204,5,352,32"/>
+<area shape="rect" href="main_8cpp.html#aa9253edd16ada578e635b5a4e1279d8c" title=" " alt="" coords="5,5,156,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a9426be96d5a84f7b1ec4fa5269d306ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9426be96d5a84f7b1ec4fa5269d306ab">&#9670;&nbsp;</a></span>declare_get_solution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename System &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_get_solution </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">References <a class="el" href="namespaceopenjij_1_1result.html#a31c0f99d40526c635a4451fa78558a84">openjij::result::get_solution()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceopenjij_a9426be96d5a84f7b1ec4fa5269d306ab_cgraph.png" border="0" usemap="#namespaceopenjij_a9426be96d5a84f7b1ec4fa5269d306ab_cgraph" alt=""/></div>
+<map name="namespaceopenjij_a9426be96d5a84f7b1ec4fa5269d306ab_cgraph" id="namespaceopenjij_a9426be96d5a84f7b1ec4fa5269d306ab_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,156,47"/>
+<area shape="rect" href="namespaceopenjij_1_1result.html#a31c0f99d40526c635a4451fa78558a84" title="get solution of classical ising system" alt="" coords="204,5,344,47"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ab32b60ed03b9d5607fe0cdfe1641e5e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab32b60ed03b9d5607fe0cdfe1641e5e6">&#9670;&nbsp;</a></span>declare_Graph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_Graph </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">Referenced by <a class="el" href="main_8cpp.html#aa9253edd16ada578e635b5a4e1279d8c">PYBIND11_MODULE()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceopenjij_ab32b60ed03b9d5607fe0cdfe1641e5e6_icgraph.png" border="0" usemap="#namespaceopenjij_ab32b60ed03b9d5607fe0cdfe1641e5e6_icgraph" alt=""/></div>
+<map name="namespaceopenjij_ab32b60ed03b9d5607fe0cdfe1641e5e6_icgraph" id="namespaceopenjij_ab32b60ed03b9d5607fe0cdfe1641e5e6_icgraph">
+<area shape="rect" title=" " alt="" coords="204,5,372,32"/>
+<area shape="rect" href="main_8cpp.html#aa9253edd16ada578e635b5a4e1279d8c" title=" " alt="" coords="5,5,156,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a1ca8ea315efc86f59f6bb4a8e54c280c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ca8ea315efc86f59f6bb4a8e54c280c">&#9670;&nbsp;</a></span>declare_KLocalPolynomial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename GraphType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_KLocalPolynomial </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>gtype_str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad7b5ad531cb2dd1cd8756df4cd2a1954"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7b5ad531cb2dd1cd8756df4cd2a1954">&#9670;&nbsp;</a></span>declare_Polynomial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FloatType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_Polynomial </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>suffix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3bc05ab10972efff0e9a12c481cdb8b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bc05ab10972efff0e9a12c481cdb8b6">&#9670;&nbsp;</a></span>declare_Schedule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename SystemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_Schedule </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>systemtype_str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">References <a class="el" href="namespaceopenjij.html#ae430c106f42c4a4912f24e5e3644bb5d">repr_impl()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceopenjij_a3bc05ab10972efff0e9a12c481cdb8b6_cgraph.png" border="0" usemap="#namespaceopenjij_a3bc05ab10972efff0e9a12c481cdb8b6_cgraph" alt=""/></div>
+<map name="namespaceopenjij_a3bc05ab10972efff0e9a12c481cdb8b6_cgraph" id="namespaceopenjij_a3bc05ab10972efff0e9a12c481cdb8b6_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,193,32"/>
+<area shape="rect" href="namespaceopenjij.html#ae430c106f42c4a4912f24e5e3644bb5d" title=" " alt="" coords="241,5,377,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="adea101a331926559ea3600d501c6943a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adea101a331926559ea3600d501c6943a">&#9670;&nbsp;</a></span>declare_Sparse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FloatType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_Sparse </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>suffix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab055a9c4170926b5ac72fd6449a29b04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab055a9c4170926b5ac72fd6449a29b04">&#9670;&nbsp;</a></span>declare_Square()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FloatType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_Square </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>suffix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1b054be06a99e5475d248dfa02c5a7b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b054be06a99e5475d248dfa02c5a7b7">&#9670;&nbsp;</a></span>declare_TransverseFieldUpdaterParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_TransverseFieldUpdaterParameter </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">References <a class="el" href="namespaceopenjij.html#ae430c106f42c4a4912f24e5e3644bb5d">repr_impl()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="main_8cpp.html#aa9253edd16ada578e635b5a4e1279d8c">PYBIND11_MODULE()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceopenjij_a1b054be06a99e5475d248dfa02c5a7b7_cgraph.png" border="0" usemap="#namespaceopenjij_a1b054be06a99e5475d248dfa02c5a7b7_cgraph" alt=""/></div>
+<map name="namespaceopenjij_a1b054be06a99e5475d248dfa02c5a7b7_cgraph" id="namespaceopenjij_a1b054be06a99e5475d248dfa02c5a7b7_cgraph">
+<area shape="rect" title=" " alt="" coords="5,5,204,47"/>
+<area shape="rect" href="namespaceopenjij.html#ae430c106f42c4a4912f24e5e3644bb5d" title=" " alt="" coords="252,13,388,39"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceopenjij_a1b054be06a99e5475d248dfa02c5a7b7_icgraph.png" border="0" usemap="#namespaceopenjij_a1b054be06a99e5475d248dfa02c5a7b7_icgraph" alt=""/></div>
+<map name="namespaceopenjij_a1b054be06a99e5475d248dfa02c5a7b7_icgraph" id="namespaceopenjij_a1b054be06a99e5475d248dfa02c5a7b7_icgraph">
+<area shape="rect" title=" " alt="" coords="204,5,403,47"/>
+<area shape="rect" href="main_8cpp.html#aa9253edd16ada578e635b5a4e1279d8c" title=" " alt="" coords="5,13,156,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a7ab7079ea4f37fe6e0aa476f4956ba84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ab7079ea4f37fe6e0aa476f4956ba84">&#9670;&nbsp;</a></span>declare_TransverseIsing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename GraphType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void openjij::declare_TransverseIsing </td>
+          <td>(</td>
+          <td class="paramtype">py::module &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>gtype_str</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="add15fb46504fc8e8ee03542775710448"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add15fb46504fc8e8ee03542775710448">&#9670;&nbsp;</a></span>repr_impl() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string openjij::repr_impl </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structopenjij_1_1utility_1_1UpdaterParameter.html">utility::UpdaterParameter</a>&lt; <a class="el" href="structopenjij_1_1system_1_1classical__constraint__system.html">system::classical_constraint_system</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">References <a class="el" href="structopenjij_1_1utility_1_1UpdaterParameter_3_01system_1_1classical__constraint__system_01_4.html#ae9f89b327b7dce1732e1b107fe8727d8">openjij::utility::UpdaterParameter&lt; system::classical_constraint_system &gt;::beta</a>, and <a class="el" href="structopenjij_1_1utility_1_1UpdaterParameter_3_01system_1_1classical__constraint__system_01_4.html#abaa48dba7b59ff42b49e8d24d6411a74">openjij::utility::UpdaterParameter&lt; system::classical_constraint_system &gt;::lambda</a>.</p>
+
+</div>
+</div>
+<a id="a5887c310e065daa60d78b1ace9f50e56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5887c310e065daa60d78b1ace9f50e56">&#9670;&nbsp;</a></span>repr_impl() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string openjij::repr_impl </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structopenjij_1_1utility_1_1UpdaterParameter.html">utility::UpdaterParameter</a>&lt; <a class="el" href="structopenjij_1_1system_1_1classical__system.html">system::classical_system</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">References <a class="el" href="structopenjij_1_1utility_1_1UpdaterParameter_3_01system_1_1classical__system_01_4.html#a2e399005d67273a59d975a499b3a549f">openjij::utility::UpdaterParameter&lt; system::classical_system &gt;::beta</a>.</p>
+
+</div>
+</div>
+<a id="ae430c106f42c4a4912f24e5e3644bb5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae430c106f42c4a4912f24e5e3644bb5d">&#9670;&nbsp;</a></span>repr_impl() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string openjij::repr_impl </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structopenjij_1_1utility_1_1UpdaterParameter.html">utility::UpdaterParameter</a>&lt; <a class="el" href="structopenjij_1_1system_1_1transverse__field__system.html">system::transverse_field_system</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>obj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">References <a class="el" href="structopenjij_1_1utility_1_1UpdaterParameter_3_01system_1_1transverse__field__system_01_4.html#a0abd3355d56c986d882dee9363860ae5">openjij::utility::UpdaterParameter&lt; system::transverse_field_system &gt;::beta</a>, and <a class="el" href="structopenjij_1_1utility_1_1UpdaterParameter_3_01system_1_1transverse__field__system_01_4.html#aae3bb58fe15b530d8fb0202458c3fc06">openjij::utility::UpdaterParameter&lt; system::transverse_field_system &gt;::s</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="namespaceopenjij.html#a0e6500f25dbfcfae1084282e8a0da567">declare_ClassicalConstraintUpdaterParameter()</a>, <a class="el" href="namespaceopenjij.html#a9d2f1670307c9dc900aeb72ffdd7cd45">declare_ClassicalUpdaterParameter()</a>, <a class="el" href="namespaceopenjij.html#a3bc05ab10972efff0e9a12c481cdb8b6">declare_Schedule()</a>, and <a class="el" href="namespaceopenjij.html#a1b054be06a99e5475d248dfa02c5a7b7">declare_TransverseFieldUpdaterParameter()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespaceopenjij_ae430c106f42c4a4912f24e5e3644bb5d_icgraph.png" border="0" usemap="#namespaceopenjij_ae430c106f42c4a4912f24e5e3644bb5d_icgraph" alt=""/></div>
+<map name="namespaceopenjij_ae430c106f42c4a4912f24e5e3644bb5d_icgraph" id="namespaceopenjij_ae430c106f42c4a4912f24e5e3644bb5d_icgraph">
+<area shape="rect" title=" " alt="" coords="460,107,596,134"/>
+<area shape="rect" href="namespaceopenjij.html#a0e6500f25dbfcfae1084282e8a0da567" title=" " alt="" coords="204,5,412,47"/>
+<area shape="rect" href="namespaceopenjij.html#a9d2f1670307c9dc900aeb72ffdd7cd45" title=" " alt="" coords="215,71,401,112"/>
+<area shape="rect" href="namespaceopenjij.html#a3bc05ab10972efff0e9a12c481cdb8b6" title=" " alt="" coords="214,137,402,163"/>
+<area shape="rect" href="namespaceopenjij.html#a1b054be06a99e5475d248dfa02c5a7b7" title=" " alt="" coords="209,188,407,229"/>
+<area shape="rect" href="main_8cpp.html#aa9253edd16ada578e635b5a4e1279d8c" title=" " alt="" coords="5,78,156,105"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ae0fa314e3fbb4dc1dabe07a43b5881e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0fa314e3fbb4dc1dabe07a43b5881e9">&#9670;&nbsp;</a></span>repr_impl() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename SystemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string openjij::repr_impl </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structopenjij_1_1utility_1_1UpdaterParameter.html">utility::UpdaterParameter</a>&lt; SystemType &gt; &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="ad0ec6fc32b9760eeabc53c3d3a3bf6c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0ec6fc32b9760eeabc53c3d3a3bf6c0">&#9670;&nbsp;</a></span>__all__</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">list openjij.__all__</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;=  [</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;    <span class="stringliteral">&quot;SPIN&quot;</span>,</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;    <span class="stringliteral">&quot;BINARY&quot;</span>,</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;    <span class="stringliteral">&quot;Vartype&quot;</span>,</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    <span class="stringliteral">&quot;cast_vartype&quot;</span>,</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    <span class="stringliteral">&quot;Response&quot;</span>,</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    <span class="stringliteral">&quot;SASampler&quot;</span>,</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    <span class="stringliteral">&quot;SQASampler&quot;</span>,</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    <span class="stringliteral">&quot;CSQASampler&quot;</span>,</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    <span class="stringliteral">&quot;BinaryQuadraticModel&quot;</span>,</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="stringliteral">&quot;BinaryPolynomialModel&quot;</span>,</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <span class="stringliteral">&quot;solver_benchmark&quot;</span>,</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="stringliteral">&quot;convert_response&quot;</span>,</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;]</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a369b1cb423f80c7a36aba109a6877a34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a369b1cb423f80c7a36aba109a6877a34">&#9670;&nbsp;</a></span>__path__</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">openjij.__path__ = extend_path(__path__, __name__)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac9cf6ca61d7f59134c3dd5411c294b69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9cf6ca61d7f59134c3dd5411c294b69">&#9670;&nbsp;</a></span>BLOCK_COL</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::size_t openjij::BLOCK_COL = 2</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a455fa7deb47fc2f1718efe0d3a0d9970"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a455fa7deb47fc2f1718efe0d3a0d9970">&#9670;&nbsp;</a></span>BLOCK_ROW</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::size_t openjij::BLOCK_ROW = 2</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac440735c29c7b13aefb1afe63c4ade5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac440735c29c7b13aefb1afe63c4ade5d">&#9670;&nbsp;</a></span>BLOCK_TROT</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::size_t openjij::BLOCK_TROT = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceopenjij.html">openjij</a></li>
-    <li class="footer">Generated on Wed Jun 22 2022 07:01:41 for cimod by
+    <li class="footer">Generated on Wed Jun 22 2022 07:07:44 for cimod by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
   </ul>

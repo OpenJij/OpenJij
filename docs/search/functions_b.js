@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['log_567',['log',['../namespacefmath.html#a8d7e069e304bd8d5dcde3f4927ac41a3',1,'fmath']]],
-  ['log2_568',['log2',['../namespacefmath.html#a6d88d47d1bf9930b30d2b20d447b4fd5',1,'fmath']]],
-  ['log_5fpd_569',['log_pd',['../namespacefmath.html#a6477db3793426f1a9416439a69381384',1,'fmath']]],
-  ['log_5fps_570',['log_ps',['../namespacefmath.html#aa231e7a9fff68eb495ba898f74b71504',1,'fmath']]],
-  ['logvar_571',['LogVar',['../structfmath_1_1local_1_1LogVar.html#a7a0f2824ba8a62727c51769e5dea1f4d',1,'fmath::local::LogVar']]]
+  ['kinggraph_826',['KingGraph',['../namespaceopenjij_1_1model_1_1king__graph.html#adbc0543b10d09b1a09b8b7396ad02325',1,'openjij::model::king_graph']]],
+  ['klocalpolynomial_827',['KLocalPolynomial',['../classopenjij_1_1system_1_1KLocalPolynomial_3_01graph_1_1Polynomial_3_01FloatType_01_4_01_4.html#a41227b8570f49b60eb15340a2e3c58f6',1,'openjij::system::KLocalPolynomial&lt; graph::Polynomial&lt; FloatType &gt; &gt;::KLocalPolynomial(const graph::Binaries &amp;init_binaries, const graph::Polynomial&lt; FloatType &gt; &amp;poly_graph)'],['../classopenjij_1_1system_1_1KLocalPolynomial_3_01graph_1_1Polynomial_3_01FloatType_01_4_01_4.html#a3c8d5395b86dcf8024755520bec2f6fb',1,'openjij::system::KLocalPolynomial&lt; graph::Polynomial&lt; FloatType &gt; &gt;::KLocalPolynomial(const graph::Binaries &amp;init_binaries, const nlohmann::json &amp;j)']]]
 ];

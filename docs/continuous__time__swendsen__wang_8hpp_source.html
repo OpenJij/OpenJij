@@ -165,7 +165,7 @@ $(document).ready(function(){initNavTree('continuous__time__swendsen__wang_8hpp_
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                <span class="keywordflow">for</span>(<a class="code" href="namespaceopenjij_1_1graph.html#afa7c9a5b1b2f2ba4b79da795eceae690">graph::Index</a> i = 0;i &lt; num_spin;i++) {</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                    <span class="keywordflow">for</span>(<span class="keyword">typename</span> CTIsing::SparseMatrixXx::InnerIterator it(system.interaction, i); it; ++it) {</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                        std::size_t j = it.index();</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                        <span class="keyword">const</span> FloatType&amp; J = it.value();</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                        <span class="keyword">const</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>&amp; J = it.value();</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                        <span class="keywordflow">if</span> (i &lt; j) {</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                            <span class="keywordflow">continue</span>; <span class="comment">// ignore duplicated interaction</span></div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                                      <span class="comment">// if adj_nodes are sorted, this &quot;continue&quot; can be replaced by &quot;break&quot;</span></div>
@@ -206,7 +206,7 @@ $(document).ready(function(){initNavTree('continuous__time__swendsen__wang_8hpp_
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;                <span class="keyword">auto</span> urd = std::uniform_real_distribution&lt;&gt;(0, 1.0);</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;                <span class="keywordflow">for</span>(<span class="keyword">const</span> <span class="keyword">auto</span>&amp; cluster : cluster_map) {</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;                    <span class="comment">// 4.1. decide spin state (flip with the probability 1/2)</span></div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;                    <span class="keyword">const</span> FloatType probability = 1.0 / 2.0;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;                    <span class="keyword">const</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> probability = 1.0 / 2.0;</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;                    <span class="keywordflow">if</span>(urd(random_number_engine) &lt; probability){</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                        <span class="comment">// 4.2. update spin states</span></div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;                        <span class="keywordflow">for</span>(<span class="keyword">auto</span> node : cluster.second) {</div>
@@ -361,6 +361,7 @@ $(document).ready(function(){initNavTree('continuous__time__swendsen__wang_8hpp_
 <div class="ttc" id="astructopenjij_1_1system_1_1ContinuousTimeIsing_html"><div class="ttname"><a href="structopenjij_1_1system_1_1ContinuousTimeIsing.html">openjij::system::ContinuousTimeIsing</a></div><div class="ttdoc">Continuous Time Quantum Ising system.</div><div class="ttdef"><b>Definition:</b> continuous_time_ising.hpp:35</div></div>
 <div class="ttc" id="aunion__find_8hpp_html"><div class="ttname"><a href="union__find_8hpp.html">union_find.hpp</a></div></div>
 <div class="ttc" id="astructopenjij_1_1updater_1_1ContinuousTimeSwendsenWang_3_01system_1_1ContinuousTimeIsing_3_01gra8e0a36304a7a08edfd6f7bc1c47e64ba_html_aef704f27098bc1001f32c56a3df3c02d"><div class="ttname"><a href="structopenjij_1_1updater_1_1ContinuousTimeSwendsenWang_3_01system_1_1ContinuousTimeIsing_3_01gra8e0a36304a7a08edfd6f7bc1c47e64ba.html#aef704f27098bc1001f32c56a3df3c02d">openjij::updater::ContinuousTimeSwendsenWang&lt; system::ContinuousTimeIsing&lt; graph::Sparse&lt; FloatType &gt; &gt; &gt;::TimeType</a></div><div class="ttdeci">typename system::ContinuousTimeIsing&lt; GraphType &gt;::TimeType TimeType</div><div class="ttdef"><b>Definition:</b> continuous_time_swendsen_wang.hpp:51</div></div>
+<div class="ttc" id="anamespaceopenjij_html_ad061cddacc7c745568a77e12b8fc4ff3"><div class="ttname"><a href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">openjij::FloatType</a></div><div class="ttdeci">double FloatType</div><div class="ttdoc">Note:</div><div class="ttdef"><b>Definition:</b> compile_config.hpp:38</div></div>
 <div class="ttc" id="astructopenjij_1_1utility_1_1UpdaterParameter_3_01system_1_1transverse__field__system_01_4_html_a0abd3355d56c986d882dee9363860ae5"><div class="ttname"><a href="structopenjij_1_1utility_1_1UpdaterParameter_3_01system_1_1transverse__field__system_01_4.html#a0abd3355d56c986d882dee9363860ae5">openjij::utility::UpdaterParameter&lt; system::transverse_field_system &gt;::beta</a></div><div class="ttdeci">double beta</div><div class="ttdoc">inverse temperature</div><div class="ttdef"><b>Definition:</b> schedule_list.hpp:93</div></div>
 <div class="ttc" id="astructopenjij_1_1utility_1_1UnionFind_html"><div class="ttname"><a href="structopenjij_1_1utility_1_1UnionFind.html">openjij::utility::UnionFind</a></div><div class="ttdef"><b>Definition:</b> union_find.hpp:24</div></div>
 <div class="ttc" id="acontinuous__time__ising_8hpp_html"><div class="ttname"><a href="continuous__time__ising_8hpp.html">continuous_time_ising.hpp</a></div></div>
@@ -378,7 +379,7 @@ $(document).ready(function(){initNavTree('continuous__time__swendsen__wang_8hpp_
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_f356faf232716eaaa298279b6f90416b.html">updater</a></li><li class="navelem"><a class="el" href="continuous__time__swendsen__wang_8hpp.html">continuous_time_swendsen_wang.hpp</a></li>
-    <li class="footer">Generated on Wed Jun 22 2022 07:01:40 for cimod by
+    <li class="footer">Generated on Wed Jun 22 2022 07:07:43 for cimod by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
   </ul>

@@ -119,7 +119,7 @@ $(document).ready(function(){initNavTree('chimera__gpu__classical_8hpp_source.ht
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceopenjij.html">openjij</a> {</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keyword">namespace </span>system {</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> FloatType,</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>,</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            std::size_t rows_per_block=2,</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            std::size_t cols_per_block=2&gt;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                <span class="keyword">struct </span>ChimeraClassicalGPU : <span class="keyword">public</span> ChimeraTransverseGPU&lt;FloatType, rows_per_block, cols_per_block, 1&gt;{</div>
@@ -136,7 +136,7 @@ $(document).ready(function(){initNavTree('chimera__gpu__classical_8hpp_source.ht
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keyword">template</span>&lt;std::size_t rows_per_block=2,</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;            std::size_t cols_per_block=2,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            <span class="keyword">typename</span> FloatType&gt;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            <span class="keyword">typename</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>&gt;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                ChimeraClassicalGPU&lt;FloatType, rows_per_block, cols_per_block&gt; make_chimera_classical_gpu(</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                        <span class="keyword">const</span> <a class="code" href="namespaceopenjij_1_1graph.html#ace188933d1719b22664ab431b0c1c85c">graph::Spins</a>&amp; init_spin, <span class="keyword">const</span> graph::Chimera&lt;FloatType&gt;&amp; init_interaction, <span class="keywordtype">int</span> device_num=0){</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                    <span class="keywordflow">return</span> ChimeraClassicalGPU&lt;FloatType, rows_per_block, cols_per_block&gt;(init_spin, init_interaction, device_num);</div>
@@ -150,6 +150,7 @@ $(document).ready(function(){initNavTree('chimera__gpu__classical_8hpp_source.ht
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="anamespaceopenjij_1_1graph_html_ace188933d1719b22664ab431b0c1c85c"><div class="ttname"><a href="namespaceopenjij_1_1graph.html#ace188933d1719b22664ab431b0c1c85c">openjij::graph::Spins</a></div><div class="ttdeci">std::vector&lt; Spin &gt; Spins</div><div class="ttdef"><b>Definition:</b> graph.hpp:26</div></div>
+<div class="ttc" id="anamespaceopenjij_html_ad061cddacc7c745568a77e12b8fc4ff3"><div class="ttname"><a href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">openjij::FloatType</a></div><div class="ttdeci">double FloatType</div><div class="ttdoc">Note:</div><div class="ttdef"><b>Definition:</b> compile_config.hpp:38</div></div>
 <div class="ttc" id="achimera__gpu__transverse_8hpp_html"><div class="ttname"><a href="chimera__gpu__transverse_8hpp.html">chimera_gpu_transverse.hpp</a></div></div>
 <div class="ttc" id="asystem_8hpp_html"><div class="ttname"><a href="system_8hpp.html">system.hpp</a></div></div>
 <div class="ttc" id="anamespaceopenjij_html"><div class="ttname"><a href="namespaceopenjij.html">openjij</a></div><div class="ttdef"><b>Definition:</b> algorithm.hpp:21</div></div>
@@ -157,7 +158,7 @@ $(document).ready(function(){initNavTree('chimera__gpu__classical_8hpp_source.ht
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_a726d978a7a89da11c56c26e4955721d.html">gpu</a></li><li class="navelem"><a class="el" href="chimera__gpu__classical_8hpp.html">chimera_gpu_classical.hpp</a></li>
-    <li class="footer">Generated on Wed Jun 22 2022 07:01:40 for cimod by
+    <li class="footer">Generated on Wed Jun 22 2022 07:07:43 for cimod by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
   </ul>

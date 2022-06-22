@@ -56,12 +56,29 @@ var hierarchy =
     [ "openjij::utility::PairHash", "structopenjij_1_1utility_1_1PairHash.html", null ],
     [ "fmath::PowGenerator", "classfmath_1_1PowGenerator.html", null ],
     [ "openjij::system::realtime_dynamics_system", "structopenjij_1_1system_1_1realtime__dynamics__system.html", null ],
+    [ "Sampler", null, [
+      [ "openjij.sampler.sampler.BaseSampler", "classopenjij_1_1sampler_1_1sampler_1_1BaseSampler.html", [
+        [ "openjij.sampler.sa_sampler.SASampler", "classopenjij_1_1sampler_1_1sa__sampler_1_1SASampler.html", [
+          [ "openjij.sampler.chimera_gpu.gpu_sa_sampler.GPUChimeraSASampler", "classopenjij_1_1sampler_1_1chimera__gpu_1_1gpu__sa__sampler_1_1GPUChimeraSASampler.html", null ]
+        ] ],
+        [ "openjij.sampler.sqa_sampler.SQASampler", "classopenjij_1_1sampler_1_1sqa__sampler_1_1SQASampler.html", [
+          [ "openjij.sampler.chimera_gpu.gpu_sqa_sampler.GPUChimeraSQASampler", "classopenjij_1_1sampler_1_1chimera__gpu_1_1gpu__sqa__sampler_1_1GPUChimeraSQASampler.html", null ],
+          [ "openjij.sampler.csqa_sampler.CSQASampler", "classopenjij_1_1sampler_1_1csqa__sampler_1_1CSQASampler.html", null ]
+        ] ]
+      ] ]
+    ] ],
+    [ "SampleSet", null, [
+      [ "openjij.sampler.response.Response", "classopenjij_1_1sampler_1_1response_1_1Response.html", null ]
+    ] ],
     [ "openjij::utility::Schedule< SystemType >", "structopenjij_1_1utility_1_1Schedule.html", null ],
     [ "openjij::system::single_command_system", "structopenjij_1_1system_1_1single__command__system.html", null ],
     [ "openjij::updater::SingleSpinFlip< System >", "structopenjij_1_1updater_1_1SingleSpinFlip.html", null ],
     [ "openjij::updater::SingleSpinFlip< system::ClassicalIsing< GraphType > >", "structopenjij_1_1updater_1_1SingleSpinFlip_3_01system_1_1ClassicalIsing_3_01GraphType_01_4_01_4.html", null ],
     [ "openjij::updater::SingleSpinFlip< system::ClassicalIsingPolynomial< GraphType > >", "structopenjij_1_1updater_1_1SingleSpinFlip_3_01system_1_1ClassicalIsingPolynomial_3_01GraphType_01_4_01_4.html", null ],
     [ "openjij::updater::SingleSpinFlip< system::TransverseIsing< GraphType > >", "structopenjij_1_1updater_1_1SingleSpinFlip_3_01system_1_1TransverseIsing_3_01GraphType_01_4_01_4.html", null ],
+    [ "Structured", null, [
+      [ "openjij.sampler.chimera_gpu.base_gpu_chimera.BaseGPUChimeraSampler", "classopenjij_1_1sampler_1_1chimera__gpu_1_1base__gpu__chimera_1_1BaseGPUChimeraSampler.html", null ]
+    ] ],
     [ "openjij::updater::SwendsenWang< System >", "structopenjij_1_1updater_1_1SwendsenWang.html", null ],
     [ "openjij::updater::SwendsenWang< system::ClassicalIsing< graph::Sparse< FloatType > > >", "structopenjij_1_1updater_1_1SwendsenWang_3_01system_1_1ClassicalIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4_01_4.html", null ],
     [ "openjij::system::TransverseIsing< GraphType >", "structopenjij_1_1system_1_1TransverseIsing.html", null ],
@@ -75,5 +92,9 @@ var hierarchy =
     [ "openjij::utility::UpdaterParameter< system::classical_constraint_system >", "structopenjij_1_1utility_1_1UpdaterParameter_3_01system_1_1classical__constraint__system_01_4.html", null ],
     [ "openjij::utility::UpdaterParameter< system::classical_system >", "structopenjij_1_1utility_1_1UpdaterParameter_3_01system_1_1classical__system_01_4.html", null ],
     [ "openjij::utility::UpdaterParameter< system::transverse_field_system >", "structopenjij_1_1utility_1_1UpdaterParameter_3_01system_1_1transverse__field__system_01_4.html", null ],
-    [ "openjij::utility::Xorshift", "classopenjij_1_1utility_1_1Xorshift.html", null ]
+    [ "openjij::utility::Xorshift", "classopenjij_1_1utility_1_1Xorshift.html", null ],
+    [ "BaseGPUChimeraSampler", null, [
+      [ "openjij.sampler.chimera_gpu.gpu_sa_sampler.GPUChimeraSASampler", "classopenjij_1_1sampler_1_1chimera__gpu_1_1gpu__sa__sampler_1_1GPUChimeraSASampler.html", null ],
+      [ "openjij.sampler.chimera_gpu.gpu_sqa_sampler.GPUChimeraSQASampler", "classopenjij_1_1sampler_1_1chimera__gpu_1_1gpu__sqa__sampler_1_1GPUChimeraSQASampler.html", null ]
+    ] ]
 ];

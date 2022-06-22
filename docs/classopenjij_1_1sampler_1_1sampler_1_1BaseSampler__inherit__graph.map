@@ -1,0 +1,9 @@
+<map id="openjij.sampler.sampler.BaseSampler" name="openjij.sampler.sampler.BaseSampler">
+<area shape="rect" id="node1" title=" " alt="" coords="179,61,361,102"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1sampler_1_1sa__sampler_1_1SASampler.html" title=" " alt="" coords="414,21,571,62"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1sampler_1_1sqa__sampler_1_1SQASampler.html" title=" " alt="" coords="409,93,576,134"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,68,131,95"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1sampler_1_1chimera__gpu_1_1gpu__sa__sampler_1_1GPUChimeraSASampler.html" title=" " alt="" coords="628,5,877,61"/>
+<area shape="rect" id="node6" href="$classopenjij_1_1sampler_1_1chimera__gpu_1_1gpu__sqa__sampler_1_1GPUChimeraSQASampler.html" title=" " alt="" coords="624,85,881,141"/>
+<area shape="rect" id="node7" href="$classopenjij_1_1sampler_1_1csqa__sampler_1_1CSQASampler.html" title=" " alt="" coords="665,166,840,207"/>
+</map>

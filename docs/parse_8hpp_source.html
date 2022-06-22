@@ -141,7 +141,7 @@ $(document).ready(function(){initNavTree('parse_8hpp_source.html',''); initResiz
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;   }</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;   <span class="comment">//make cimod object and apply to_serializable function</span></div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;   <span class="keyword">auto</span> bqm = BinaryQuadraticModel&lt;size_t, FloatType, CimodDataType&gt;::from_serializable(temp);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;   <span class="keywordflow">return</span> bqm.change_vartype(Vartype::SPIN, <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;   <span class="keywordflow">return</span> bqm.change_vartype(<a class="code" href="namespaceopenjij_1_1variable__type.html#a2bcb33ad34dc62ad4120323085d6c966">Vartype::SPIN</a>, <span class="keyword">false</span>);</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> FloatType&gt;</div>
@@ -201,6 +201,7 @@ $(document).ready(function(){initNavTree('parse_8hpp_source.html',''); initResiz
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="anamespaceopenjij_1_1graph_html_af1963a03c363f1505a1da604d15b8961"><div class="ttname"><a href="namespaceopenjij_1_1graph.html#af1963a03c363f1505a1da604d15b8961">openjij::graph::json_parse_polynomial</a></div><div class="ttdeci">auto json_parse_polynomial(const nlohmann::json &amp;obj, const bool relabel=true)</div><div class="ttdef"><b>Definition:</b> parse.hpp:64</div></div>
+<div class="ttc" id="anamespaceopenjij_1_1variable__type_html_a2bcb33ad34dc62ad4120323085d6c966"><div class="ttname"><a href="namespaceopenjij_1_1variable__type.html#a2bcb33ad34dc62ad4120323085d6c966">openjij.variable_type.SPIN</a></div><div class="ttdeci">SPIN</div><div class="ttdef"><b>Definition:</b> variable_type.py:17</div></div>
 <div class="ttc" id="anamespaceopenjij_1_1graph_html_ae65b9b4c14411a68425cf1f5bdb18186"><div class="ttname"><a href="namespaceopenjij_1_1graph.html#ae65b9b4c14411a68425cf1f5bdb18186">openjij::graph::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition:</b> parse.hpp:30</div></div>
 <div class="ttc" id="agraph_8hpp_html"><div class="ttname"><a href="graph_8hpp.html">graph.hpp</a></div></div>
 <div class="ttc" id="anamespaceopenjij_1_1graph_html_a6e1b93d476a89ec6c66a6c0f79d7ba02"><div class="ttname"><a href="namespaceopenjij_1_1graph.html#a6e1b93d476a89ec6c66a6c0f79d7ba02">openjij::graph::json_parse</a></div><div class="ttdeci">auto json_parse(const json &amp;obj, bool relabel=true)</div><div class="ttdoc">parse json object from bqm.to_serializable</div><div class="ttdef"><b>Definition:</b> parse.hpp:44</div></div>
@@ -209,7 +210,7 @@ $(document).ready(function(){initNavTree('parse_8hpp_source.html',''); initResiz
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d182250f0c231765fc862e69db210731.html">graph</a></li><li class="navelem"><a class="el" href="dir_34894056ec97e0bf86f5775af49ea575.html">json</a></li><li class="navelem"><a class="el" href="parse_8hpp.html">parse.hpp</a></li>
-    <li class="footer">Generated on Wed Jun 22 2022 07:01:41 for cimod by
+    <li class="footer">Generated on Wed Jun 22 2022 07:07:43 for cimod by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
   </ul>

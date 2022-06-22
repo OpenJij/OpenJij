@@ -23,6 +23,26 @@ for the JavaScript code in this file
 var NAVTREE =
 [
   [ "cimod", "index.html", [
+    [ "OpenJij : Framework for the Ising model and QUBO.", "md_README.html", [
+      [ "install", "md_README.html#autotoc_md3", [
+        [ "install via pip", "md_README.html#autotoc_md4", null ],
+        [ "install via pip from source codes", "md_README.html#autotoc_md5", [
+          [ "cmake setup", "md_README.html#autotoc_md6", null ],
+          [ "install OpenJij", "md_README.html#autotoc_md7", null ]
+        ] ],
+        [ "install from github repository", "md_README.html#autotoc_md8", null ]
+      ] ],
+      [ "Test", "md_README.html#autotoc_md9", [
+        [ "Test only Python code", "md_README.html#autotoc_md10", null ],
+        [ "Test Python and C++ code", "md_README.html#autotoc_md11", null ]
+      ] ],
+      [ "How to use", "md_README.html#autotoc_md12", [
+        [ "Python example", "md_README.html#autotoc_md13", null ],
+        [ "C++ example", "md_README.html#autotoc_md14", null ]
+      ] ],
+      [ "Community", "md_README.html#autotoc_md15", null ],
+      [ "About us", "md_README.html#autotoc_md16", null ]
+    ] ],
     [ "Deprecated List", "deprecated.html", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -50,6 +70,7 @@ var NAVTREE =
       [ "File List", "files.html", "files_dup" ],
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
+        [ "Functions", "globals_func.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
@@ -58,9 +79,10 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"algorithm_2all_8hpp.html",
-"continuous__time__ising_8hpp.html",
-"structopenjij_1_1algorithm_1_1Algorithm.html#a9bdc85aa8d794ca6318a5de76ed445f3"
+"____init_____8py.html",
+"classopenjij_1_1system_1_1ClassicalIsingPolynomial_3_01graph_1_1Polynomial_3_01FloatType_01_4_01_4.html#a5ba9c5f06154394d7ae37b6d673abe27",
+"graph_8hpp.html#a8278a76e143fb61abb6ade277ae8ca7e",
+"structopenjij_1_1system_1_1ClassicalIsing_3_01graph_1_1Sparse_3_01FloatType_01_4_01_4.html#a9122dffb69303e7aa9a987f526255548"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

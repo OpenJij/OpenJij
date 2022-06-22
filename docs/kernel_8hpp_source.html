@@ -122,22 +122,22 @@ $(document).ready(function(){initNavTree('kernel_8hpp_source.html',''); initResi
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            <span class="comment">//updater interface</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;            <span class="keyword">template</span>&lt;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                <span class="keyword">typename</span> FloatType,</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                <span class="keyword">typename</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>,</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                std::size_t block_row,</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                std::size_t block_col,</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                std::size_t block_trot&gt;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            <span class="keywordtype">void</span> metropolis_interface(</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                    int32_t sw,</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                    int32_t* spin, <span class="keyword">const</span> FloatType* rand,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                    <span class="keyword">const</span> FloatType* J_out_p,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                    <span class="keyword">const</span> FloatType* J_out_n,</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                    <span class="keyword">const</span> FloatType* J_in_04,</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                    <span class="keyword">const</span> FloatType* J_in_15,</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                    <span class="keyword">const</span> FloatType* J_in_26,</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                    <span class="keyword">const</span> FloatType* J_in_37,</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                    <span class="keyword">const</span> FloatType* h,</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                    int32_t* spin, <span class="keyword">const</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>* rand,</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                    <span class="keyword">const</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>* J_out_p,</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                    <span class="keyword">const</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>* J_out_n,</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                    <span class="keyword">const</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>* J_in_04,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                    <span class="keyword">const</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>* J_in_15,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                    <span class="keyword">const</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>* J_in_26,</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                    <span class="keyword">const</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>* J_in_37,</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                    <span class="keyword">const</span> <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a>* h,</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                    <span class="keyword">const</span> ChimeraInfo&amp; info, <span class="keyword">const</span> dim3&amp; grid, <span class="keyword">const</span> dim3&amp; block,</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                    <span class="keywordtype">double</span> beta, FloatType gamma, <span class="keywordtype">double</span> s);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                    <span class="keywordtype">double</span> beta, <a class="code" href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">FloatType</a> gamma, <span class="keywordtype">double</span> s);</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        } <span class="comment">// namespace chimera_cuda</span></div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    } <span class="comment">// namespace system</span></div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;} <span class="comment">// namespace openjij</span></div>
@@ -147,12 +147,13 @@ $(document).ready(function(){initNavTree('kernel_8hpp_source.html',''); initResi
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="aindex_8hpp_html"><div class="ttname"><a href="index_8hpp.html">index.hpp</a></div></div>
+<div class="ttc" id="anamespaceopenjij_html_ad061cddacc7c745568a77e12b8fc4ff3"><div class="ttname"><a href="namespaceopenjij.html#ad061cddacc7c745568a77e12b8fc4ff3">openjij::FloatType</a></div><div class="ttdeci">double FloatType</div><div class="ttdoc">Note:</div><div class="ttdef"><b>Definition:</b> compile_config.hpp:38</div></div>
 <div class="ttc" id="anamespaceopenjij_html"><div class="ttname"><a href="namespaceopenjij.html">openjij</a></div><div class="ttdef"><b>Definition:</b> algorithm.hpp:21</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d501334aeb1b78ad67cd3c72c37b1e87.html">system</a></li><li class="navelem"><a class="el" href="dir_a726d978a7a89da11c56c26e4955721d.html">gpu</a></li><li class="navelem"><a class="el" href="dir_2b57961e1914c9082b2ee274f513193f.html">chimera_cuda</a></li><li class="navelem"><a class="el" href="kernel_8hpp.html">kernel.hpp</a></li>
-    <li class="footer">Generated on Wed Jun 22 2022 07:01:41 for cimod by
+    <li class="footer">Generated on Wed Jun 22 2022 07:07:43 for cimod by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
   </ul>

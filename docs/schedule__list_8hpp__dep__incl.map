@@ -1,10 +1,12 @@
 <map id="schedule_list.hpp" name="schedule_list.hpp">
 <area shape="rect" id="node1" title=" " alt="" coords="351,5,485,32"/>
 <area shape="rect" id="node2" href="$algorithm_8hpp.html" title=" " alt="" coords="5,87,119,114"/>
-<area shape="rect" id="node4" href="$continuous__time__swendsen__wang_8hpp.html" title=" " alt="" coords="143,80,346,121"/>
-<area shape="rect" id="node6" href="$k__local_8hpp.html" title=" " alt="" coords="370,87,466,114"/>
-<area shape="rect" id="node7" href="$single__spin__flip_8hpp.html" title=" " alt="" coords="491,87,641,114"/>
-<area shape="rect" id="node8" href="$swendsen__wang_8hpp.html" title=" " alt="" coords="666,87,823,114"/>
-<area shape="rect" id="node3" href="$algorithm_2all_8hpp.html" title=" " alt="" coords="29,169,95,196"/>
-<area shape="rect" id="node5" href="$updater_2all_8hpp.html" title=" " alt="" coords="458,169,525,196"/>
+<area shape="rect" id="node6" href="$continuous__time__swendsen__wang_8hpp.html" title=" " alt="" coords="143,80,346,121"/>
+<area shape="rect" id="node8" href="$k__local_8hpp.html" title=" " alt="" coords="370,87,466,114"/>
+<area shape="rect" id="node9" href="$single__spin__flip_8hpp.html" title=" " alt="" coords="491,87,641,114"/>
+<area shape="rect" id="node10" href="$swendsen__wang_8hpp.html" title=" " alt="" coords="666,87,823,114"/>
+<area shape="rect" id="node3" href="$algorithm_2all_8hpp.html" title=" " alt="" coords="162,169,229,196"/>
+<area shape="rect" id="node4" href="$declare_8hpp.html" title=" " alt="" coords="191,244,290,271"/>
+<area shape="rect" id="node5" href="$main_8cpp.html" title=" " alt="" coords="199,319,282,345"/>
+<area shape="rect" id="node7" href="$updater_2all_8hpp.html" title=" " alt="" coords="385,169,451,196"/>
 </map>

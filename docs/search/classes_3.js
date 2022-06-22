@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['expdvar_393',['ExpdVar',['../structfmath_1_1local_1_1ExpdVar.html',1,'fmath::local']]],
-  ['expdvar_3c_20expd_5ftable_5fsize_20_3e_394',['ExpdVar&lt; EXPD_TABLE_SIZE &gt;',['../structfmath_1_1local_1_1ExpdVar.html',1,'fmath::local']]],
-  ['expvar_395',['ExpVar',['../structfmath_1_1local_1_1ExpVar.html',1,'fmath::local']]],
-  ['expvar_3c_20exp_5ftable_5fsize_20_3e_396',['ExpVar&lt; EXP_TABLE_SIZE &gt;',['../structfmath_1_1local_1_1ExpVar.html',1,'fmath::local']]]
+  ['dense_555',['Dense',['../classopenjij_1_1graph_1_1Dense.html',1,'openjij::graph']]],
+  ['di_556',['di',['../unionfmath_1_1local_1_1di.html',1,'fmath::local']]]
 ];

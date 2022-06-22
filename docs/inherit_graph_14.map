@@ -1,3 +1,9 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structopenjij_1_1system_1_1ClassicalIsing.html" title="ClassicalIsing structure (system for classical Ising model)" alt="" coords="5,5,193,47"/>
+<area shape="rect" id="node1" href="$classopenjij_1_1graph_1_1Graph.html" title="Abstract graph class." alt="" coords="5,111,164,138"/>
+<area shape="rect" id="node2" href="$classopenjij_1_1graph_1_1Dense.html" title="two&#45;body all&#45;to&#45;all interactions The Hamiltonian is like" alt="" coords="228,5,388,47"/>
+<area shape="rect" id="node3" href="$classopenjij_1_1graph_1_1Polynomial.html" title="Polynomial graph class, which can treat many&#45;body interactions." alt="" coords="212,71,404,112"/>
+<area shape="rect" id="node4" href="$classopenjij_1_1graph_1_1Sparse.html" title="Sparse graph: two&#45;body intereactions with O(1) connectivity The Hamiltonian is like." alt="" coords="227,136,389,177"/>
+<area shape="rect" id="node6" href="$classopenjij_1_1graph_1_1Sparse.html" title=" " alt="" coords="227,201,389,243"/>
+<area shape="rect" id="node5" href="$classopenjij_1_1graph_1_1Square.html" title="square lattice graph" alt="" coords="457,136,621,177"/>
+<area shape="rect" id="node7" href="$classopenjij_1_1graph_1_1Chimera.html" title="chimera lattice graph" alt="" coords="452,201,627,243"/>
 </map>

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['algorithm_2ehpp_453',['algorithm.hpp',['../algorithm_8hpp.html',1,'']]],
-  ['all_2ehpp_454',['all.hpp',['../algorithm_2all_8hpp.html',1,'']]]
+  ['_5f_5finit_5f_5f_2epy_641',['__init__.py',['../____init_____8py.html',1,'']]]
 ];

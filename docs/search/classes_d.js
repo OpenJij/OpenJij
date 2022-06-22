@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['realtime_5fdynamics_5fsystem_422',['realtime_dynamics_system',['../structopenjij_1_1system_1_1realtime__dynamics__system.html',1,'openjij::system']]]
+  ['quantum_5fsystem_587',['quantum_system',['../structopenjij_1_1system_1_1quantum__system.html',1,'openjij::system']]]
 ];
