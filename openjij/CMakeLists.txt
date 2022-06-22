@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+message(CHECK_START "cxxjij")
+list(APPEND CMAKE_MESSAGE_INDENT "  ")
+
+message(STATUS "Build cxxjij")
+
 set(python_module_name cxxjij)
 
 add_library(${python_module_name} MODULE main.cpp)
@@ -60,3 +65,6 @@ target_link_libraries(${python_module_name}  PRIVATE
 )
 
 install(TARGETS ${python_module_name} LIBRARY DESTINATION .)
+
+list(POP_BACK CMAKE_MESSAGE_INDENT)
+message(CHECK_PASS "Finished")
