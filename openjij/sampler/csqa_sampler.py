@@ -1,6 +1,6 @@
 import numpy as np
 
-import openjij
+import openjij as oj
 import openjij.cxxjij as cxxjij
 
 from openjij.sampler.sqa_sampler import SQASampler
@@ -108,7 +108,7 @@ class CSQASampler(SQASampler):
         if updater is None:
             updater = "swendsenwang"
 
-        bqm = openjij.BinaryQuadraticModel(
+        bqm = oj.model.model.BinaryQuadraticModel(
             linear=h, quadratic=J, vartype="SPIN", sparse=True
         )
 
