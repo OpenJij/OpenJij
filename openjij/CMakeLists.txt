@@ -27,10 +27,10 @@ target_include_directories(${python_module_name} PRIVATE
 
 pybind11_extension(${python_module_name})
 
-if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
+#if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
     # Strip unnecessary sections of the binary on Linux/macOS
-    pybind11_strip(${python_module_name})
-endif()
+#    pybind11_strip(${python_module_name})
+#endif()
 
 if(CUDAToolkit_FOUND)
     set_target_properties(${python_module_name} PROPERTIES
@@ -51,6 +51,7 @@ else()
 endif()
 
 target_compile_definitions(${python_module_name} PRIVATE 
+    $<$<CONFIG:Debug>:PYBIND11_DETAILED_ERROR_MESSAGES>
     PYTHON_VERSION_INFO=${PYTHON_VERSION_STRING}
 )
 
@@ -63,8 +64,6 @@ target_link_libraries(${python_module_name}  PRIVATE
       nlohmann_json::nlohmann_json
       $<$<TARGET_EXISTS:cxxjij_chimera_gpu_kernel_static>:cxxjij_chimera_gpu_kernel_static>
 )
-
-add_custom_target(python DEPENDS cxxjij)
 
 install(TARGETS ${python_module_name} LIBRARY DESTINATION .)
 
