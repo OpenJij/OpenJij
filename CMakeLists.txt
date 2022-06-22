@@ -132,6 +132,13 @@ else()
   include(external/json.cmake)
 endif()
 
+find_package(cxxcimod_header_only CONFIG)
+if(TARGET cxxcimod_header_only)
+  message(STATUS "Skip Download cimod")
+else()
+  message(STATUS "Fetch cimod")
+  include(external/cimod.cmake)
+endif()
 
 add_subdirectory(src)
 
