@@ -1,7 +1,8 @@
 import numpy as np
 import openjij
-from openjij.sampler import measure_time
-from openjij.sampler import SQASampler
+
+from openjij.sampler.sampler import measure_time
+from openjij.sampler.sqa_sampler import SQASampler
 from openjij.utils.decorator import deprecated_alias
 import openjij.cxxjij as cxxjij
 
