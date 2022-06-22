@@ -143,13 +143,8 @@ jobs:
       if: ${{ matrix.os != 'windows-latest'}}
       shell: bash
       working-directory: build
-      run: >
-        gcov 
-        tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda
-        -o tests/CMakeFiles/openjij_test.dir 
-        -p 
-        -l 
-        -b
+      run: |
+        gcov  ./tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda -o ./tests/CMakeFiles/openjij_test.dir -p -l -b
     - name: du -a 
       shell: bash
       if: always()
