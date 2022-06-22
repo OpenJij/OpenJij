@@ -55,13 +55,13 @@ target_compile_definitions(${python_module_name} PRIVATE
 )
 
 target_link_libraries(${python_module_name}  PRIVATE
+      cxxjij_header_only
       pybind11::module
       pybind11::thin_lto
       pybind11::windows_extras
       pybind11_json
       nlohmann_json::nlohmann_json
       $<$<TARGET_EXISTS:cxxjij_chimera_gpu_kernel_static>:cxxjij_chimera_gpu_kernel_static>
-      cxxjij_header_only
 )
 
 install(TARGETS ${python_module_name} LIBRARY DESTINATION .)
