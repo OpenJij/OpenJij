@@ -170,8 +170,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         #os: [windows-latest]
-        python-version: ['3.7', '3.8', '3.9', '3.10']
-        #python-version: ['3.10']
+        #python-version: ['3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7']
         include:
         - os: ubuntu-latest
           path: ~/.cache/pip
@@ -276,6 +276,17 @@ jobs:
         set -eux
         python setup.py --help-commands
         pip install --help
+    - name: Build Debug
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.7'}}
+      shell: bash
+      run: |
+        set -eux
+        export CMAKE_BUILD_TYPE=Debug
+        export Python_EXECUTABLE=/opt/hostedtoolcache/Python/3.7.13/x64/bin/python
+        export SKBUILD=TRUE
+        mkdir build
+        cmake -DCMAKE_BUILD_TYPE=Debug -DSKBUILD=TRUE -DPython_EXECUTABLE=/opt/hostedtoolcache/Python/3.7.13/x64/bin/python -S . -B build
+        cmake --build build
     - name: Build & Install    
       if: ${{ matrix.os == 'ubuntu-latest'}}
       shell: bash
@@ -284,7 +295,7 @@ jobs:
         export CMAKE_C_COMPILER_LAUNCHER=sccache
         export CMAKE_CXX_COMPILER_LAUNCHER=sccache
         export CMAKE_BUILD_TYPE=Debug
-        python setup.py --force-cmake install --build-type Debug  --verbose -G "Unix Makefiles"
+        python setup.py --force-cmake install --build-type Debug  --verbose 
     - name: Build & Install    
       if: ${{ matrix.os == 'macos-latest'}}
       shell: bash
