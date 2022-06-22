@@ -30,11 +30,6 @@ if(CUDAToolkit_FOUND)
         CUDA_VISIBILITY_PRESET "hidden"
         CUDA_SEPARABLE_COMPILATION ON
     )
-else()
-    set_target_properties(cxxjij_test PROPERTIES
-        CXX_VISIBILITY_PRESET "hidden"
-        INTERPROCEDURAL_OPTIMIZATION TRUE
-    )
 endif()
 
 target_include_directories(cxxjij_test PRIVATE
