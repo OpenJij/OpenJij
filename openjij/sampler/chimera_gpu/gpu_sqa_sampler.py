@@ -15,7 +15,7 @@
 import openjij.cxxjij as cxxjij
 import openjij
 from openjij.sampler import SQASampler
-from .base_gpu_chimera import BaseGPUChimeraSampler
+from openjij.sampler.chimera_gpu.base_gpu_chimera.base_gpu_chimera import BaseGPUChimeraSampler
 from openjij.model import BinaryQuadraticModel, ChimeraModel
 import numpy as np
 
