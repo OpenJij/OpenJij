@@ -64,6 +64,8 @@ target_link_libraries(${python_module_name}  PRIVATE
       $<$<TARGET_EXISTS:cxxjij_chimera_gpu_kernel_static>:cxxjij_chimera_gpu_kernel_static>
 )
 
+add_custom_target(python DEPENDS cxxjij)
+
 install(TARGETS ${python_module_name} LIBRARY DESTINATION .)
 
 list(POP_BACK CMAKE_MESSAGE_INDENT)
