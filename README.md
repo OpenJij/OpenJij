@@ -7,7 +7,15 @@
 [![PyPI download month](https://img.shields.io/pypi/dm/openjij.svg)](https://pypi.python.org/pypi/openjij/)
 
 ![build-test](https://github.com/OpenJij/OpenJij/workflows/build-test/badge.svg)
-[![codecov](https://codecov.io/gh/OpenJij/OpenJij/branch/master/graph/badge.svg?token=WMSK3GS8E5)](https://codecov.io/gh/OpenJij/OpenJij)
+[![codecov](https://codecov.io/gh/OpenJij/OpenJij/branch/main/graph/badge.svg?token=WMSK3GS8E5)](https://codecov.io/gh/OpenJij/OpenJij)
+
+## Coverage Graph 
+|**Sunburst**|**Grid**|**Icicle**|
+| ---- | ---- | ---- |
+|<a href="https://codecov.io/gh/OpenJij/OpenJij"><img src="https://codecov.io/gh/OpenJij/OpenJij/branch/main/graphs/sunburst.svg?token=WMSK3GS8E5" width="100%"/></a>|<a href="https://codecov.io/gh/OpenJij/OpenJij"><img src="https://codecov.io/gh/OpenJij/OpenJij/branch/main/graphs/tree.svg?token=WMSK3GS8E5" width="100%"/></a>|<a href="https://codecov.io/gh/OpenJij/OpenJij"><img src="https://codecov.io/gh/OpenJij/OpenJij/branch/main/graphs/icicle.svg?token=WMSK3GS8E5" width="100%"/></a>|
+
+
+
 * python >= 3.7
 * (optional) gcc >= 7.0.0
 * (optional) cmake >= 3.22
