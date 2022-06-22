@@ -167,10 +167,11 @@ jobs:
   Python:
     strategy:
       max-parallel: 3
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        #os: [windows-latest]
         python-version: ['3.7', '3.8', '3.9', '3.10']
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        #os: [windows-latest]     
         #python-version: ['3.10']
         include:
         - os: ubuntu-latest
@@ -202,6 +203,7 @@ jobs:
           pip-compile
           pip-compile dev-requirements.in
     - uses: actions/cache@v3
+      if: always()
       with:
           path: ${{ matrix.path }}
           key: ${{ runner.os }}-pip-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('dev-requirements.txt') }}
@@ -276,13 +278,18 @@ jobs:
         set -eux
         python setup.py --help-commands
         pip install --help
-    - name: Build Debug
+    - name: Build Debug Configure
       if: ${{ matrix.os == 'ubuntu-latest' }}
       shell: bash
       run: |
         set -eux
         mkdir build
         cmake -DCMAKE_BUILD_TYPE=Debug -DSKBUILD=TRUE  -S . -B build
+    - name: Build Debug Build
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      shell: bash
+      run: |    
+        set -eux
         cmake --build build
     - name: Build & Install    
       if: ${{ matrix.os == 'ubuntu-latest'}}
