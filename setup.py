@@ -50,7 +50,7 @@ setup(
         'numpy >= 1.21.2', 
         'scipy', 
         'requests',
-        'jij-cimod >= 1.4.0, < 1.5.0', 
+        'jij-cimod >= 1.3.5, < 1.5.0', 
         'typing-extensions >= 3.10.0; python_version < "3.8.0"'
     ],
     packages=[
