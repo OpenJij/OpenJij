@@ -204,7 +204,7 @@ add_subdirectory(src)
 if(SKBUILD AND MAIN_PROJECT)
   message(STATUS "Build Python Extension.")
   option(WITH_THREAD "Compile in rudimentary thread support" ON)
-  find_package(Python COMPONENTS Interpreter Development)
+  find_package(Python3 COMPONENTS Interpreter Development NumPy)
   # Scikit-Build does not add your site-packages to the search path
   # automatically, so we need to add it _or_ the pybind11 specific directory
   # here.
