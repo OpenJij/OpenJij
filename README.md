@@ -1,7 +1,13 @@
 # OpenJij : Framework for the Ising model and QUBO.
+[![PyPI version shields.io](https://img.shields.io/pypi/v/openjij.svg)](https://pypi.python.org/pypi/openjij/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/openjij.svg)](https://pypi.python.org/pypi/openjij/)
+[![PyPI implementation](https://img.shields.io/pypi/implementation/openjij.svg)](https://pypi.python.org/pypi/openjij/)
+[![PyPI format](https://img.shields.io/pypi/format/openjij.svg)](https://pypi.python.org/pypi/openjij/)
+[![PyPI license](https://img.shields.io/pypi/l/openjij.svg)](https://pypi.python.org/pypi/openjij/)
+[![PyPI download month](https://img.shields.io/pypi/dm/openjij.svg)](https://pypi.python.org/pypi/openjij/)
 
 ![build-test](https://github.com/OpenJij/OpenJij/workflows/build-test/badge.svg)
-
+[![codecov](https://codecov.io/gh/OpenJij/OpenJij/branch/master/graph/badge.svg?token=WMSK3GS8E5)](https://codecov.io/gh/OpenJij/OpenJij)
 * python >= 3.7
 * (optional) gcc >= 7.0.0
 * (optional) cmake >= 3.17
