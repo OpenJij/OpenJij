@@ -201,6 +201,9 @@ if(SKBUILD AND MAIN_PROJECT)
   # Scikit-Build does not add your site-packages to the search path
   # automatically, so we need to add it _or_ the pybind11 specific directory
   # here.
+  if(NOT ${PYTHON_EXECUTABLE}) 
+    find_program(PYTHON_EXECUTABLE} NAMES python)
+  endif()
   message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
   execute_process(
       COMMAND "${PYTHON_EXECUTABLE}" -c
