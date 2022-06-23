@@ -29,7 +29,7 @@ except ImportError:
     raise
 
 setup_requires = [
-    "oldest-supported-numpy",
+    "numpy < 1.23.0",
     "pybind11 >= 2.9.2, < 2.10.0",
 ]
 
@@ -51,7 +51,7 @@ setup(
         'dimod < 0.12.0; python_version >= "3.10"',
         "scipy >= 1.7.3, < 1.9.0",
         "requests >= 2.28.0, < 2.29.0",
-        "jij-cimod == 1.4.0a4",
+        "jij-cimod == 1.4.0a3",
         'typing-extensions >= 4.2.0, < 4.3.0; python_version < "3.8.0"',
     ],
     packages=[
