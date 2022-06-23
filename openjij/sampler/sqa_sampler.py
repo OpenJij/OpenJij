@@ -1,4 +1,7 @@
-from typing import Optional, Union
+try:
+    from typing import Optional, Union
+except ImportError:
+    from typing_extensions import Optional, Union
 
 import dimod
 from dimod import SPIN, BINARY, Vartype
