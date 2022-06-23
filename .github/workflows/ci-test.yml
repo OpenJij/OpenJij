@@ -3,9 +3,13 @@ name: build-test
 on: 
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: 
+      - main
   pull_request: 
-    types: [opened, reopened, synchronize]
+    types: 
+     - opened
+     - reopened
+     - synchronize
 
 jobs:
   CPP:
@@ -15,6 +19,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         #os: [windows-latest]
     runs-on: ${{ matrix.os }}
+    if: ${{ github.actor != 'dependabot[bot]' || !contains(github.head_ref, 'dependabot')}}
     #if: ${{github.event_name == 'workflow_dispatch'}}
     steps:
     - uses: actions/checkout@v3
@@ -188,6 +193,7 @@ jobs:
           path: ~\AppData\Local\pip\Cache
 
     runs-on: ${{ matrix.os }}
+    if: ${{ !contains(github.head_ref, 'dependabot/github_actions')}}
     #if: ${{github.event_name == 'workflow_dispatch'}}
     steps:
     - uses: actions/checkout@v3
