@@ -2,11 +2,6 @@ from pkgutil import extend_path
 
 __path__ = extend_path(__path__, __name__)
 
-try:
-    import typing
-except ImportError:
-    from typing_extensions import *
-
 from openjij.model.model import BinaryPolynomialModel, BinaryQuadraticModel
 from openjij.sampler.csqa_sampler import CSQASampler
 from openjij.sampler.response import Response
