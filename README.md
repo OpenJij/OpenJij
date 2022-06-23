@@ -31,8 +31,8 @@
 ```
 # Binary
 $ pip install openjij 
-# From Source 
-$ pip install openjij --no-binary openjij
+# From Source (CUDA)
+$ pip install --no-binary=openjij,jij-cimod  openjij
 ```
 
 ### install via pip from source codes
@@ -50,14 +50,14 @@ Make sure the enviroment path for CMake is set correctly.
 #### install OpenJij
 
 ```
-$ pip install openjij --no-binary openjij
+$ pip install --no-binary=openjij,jij-cimod openjij
 ```
 
 ### install from github repository
 ```
 $ git clone git@github.com:OpenJij/OpenJij.git
 $ cd openjij
-$ python -m pip install .
+$ python -m pip install -vvv .
 ```
 ## For Contributor 
 Use `pre-commit` for auto chech before git commit.
@@ -88,9 +88,12 @@ $ python -m coverage html
 ### C++ 
 ```sh
 $ mkdir build 
-$ cd build
 $ cmake -DCMAKE_BUILD_TYPE=Debug -S . -B build
-$ ./tests/cxxjij_tes
+$ cmake --build build --parallel
+$ cd build
+$ ./tests/cxxjij_test
+# Alternatively  Use CTest 
+$ ctest --extra-verbose --parallel --schedule-random
 ```
 
 Needs: CMake > 3.22, C++17
