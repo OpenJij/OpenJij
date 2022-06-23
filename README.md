@@ -148,16 +148,6 @@ response = sampler.sample_ising(h={'a': -1}, J={('a','b'): 1})
 # [{'b': -1, 'a': 1}]
 ```
 
-### C++ example
-
-```
-$ source ./build_gcc.sh
-$ cd ./project_template
-$ make
-$ ./tutorial
-The result spins are [1 1 1 1 1 ]
-```
-
 ## Community
 
 - [OpenJij Slack](https://join.slack.com/t/openjij/shared_invite/enQtNjQyMjIwMzMwNzA4LTQ5MWRjOWYxYmY1Nzk4YzdiYzlmZjIxYjhhMmMxZjAyMzE3MDc1ZWRkYmI1YjhkNjRlOTM1ODE0NTc5Yzk3ZDA)
