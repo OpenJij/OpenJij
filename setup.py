@@ -29,7 +29,7 @@ except ImportError:
     raise
 
 setup_requires = [
-    "numpy >= 1.21.6, < 1.23.0",
+    "oldest-supported-numpy",
     "pybind11 >= 2.9.2, < 2.10.0",
 ]
 
@@ -46,7 +46,7 @@ except SKBuildError:
 setup(
     setup_requires=setup_requires,
     install_requires=[
-        "numpy >= 1.21.6, < 1.23.0",
+        "numpy < 1.23.0",
         'dimod <= 0.10.17; python_version < "3.10"',
         'dimod < 0.12.0; python_version >= "3.10"',
         "scipy >= 1.7.3, < 1.9.0",
