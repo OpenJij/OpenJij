@@ -19,6 +19,16 @@
 * (optional) cmake >= 3.22
 * (optional) Ninja 
 
+### Change **IMPORT**
+- OpenJij >= v0.5.0
+  ``` python
+  import openjij.cxxjij
+  ```
+- OpenJij <= v0.4.9
+  ``` python
+  import cxxjij
+  ```
+
 - [Documents](https://openjij.github.io/OpenJij_Documentation/build/html/)
 - [Tutorials](https://openjij.github.io/OpenJijTutorial/build/html/index.html)
 - [C++ Docs](https://openjij.github.io/OpenJij/index.html)
