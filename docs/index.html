@@ -121,8 +121,8 @@ install via pip</h2>
 </blockquote>
 <div class="fragment"><div class="line"># Binary</div>
 <div class="line">$ pip install openjij </div>
-<div class="line"># From Source </div>
-<div class="line">$ pip install openjij --no-binary openjij</div>
+<div class="line"># From Source (CUDA)</div>
+<div class="line">$ pip install --no-binary=openjij,jij-cimod  openjij</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md6"></a>
 install via pip from source codes</h2>
 <p>To install OpenJij from source codes, please install CMake first then install OpenJij.</p>
@@ -133,12 +133,12 @@ cmake setup</h3>
 </div><!-- fragment --><p>Make sure the enviroment path for CMake is set correctly.</p>
 <h3><a class="anchor" id="autotoc_md8"></a>
 install OpenJij</h3>
-<div class="fragment"><div class="line">$ pip install openjij --no-binary openjij</div>
+<div class="fragment"><div class="line">$ pip install --no-binary=openjij,jij-cimod openjij</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md9"></a>
 install from github repository</h2>
 <div class="fragment"><div class="line">$ git clone git@github.com:OpenJij/OpenJij.git</div>
 <div class="line">$ cd openjij</div>
-<div class="line">$ python -m pip install .</div>
+<div class="line">$ python -m pip install -vvv .</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md10"></a>
 For Contributor</h1>
 <p>Use <code>pre-commit</code> for auto chech before git commit. <code>.pre-commit-config.yaml</code> </p><div class="fragment"><div class="line"># pipx install pre-commit </div>
@@ -162,9 +162,12 @@ Python</h2>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md13"></a>
 C++</h2>
 <div class="fragment"><div class="line">$ mkdir build </div>
-<div class="line">$ cd build</div>
 <div class="line">$ cmake -DCMAKE_BUILD_TYPE=Debug -S . -B build</div>
-<div class="line">$ ./tests/cxxjij_tes</div>
+<div class="line">$ cmake --build build --parallel</div>
+<div class="line">$ cd build</div>
+<div class="line">$ ./tests/cxxjij_test</div>
+<div class="line"># Alternatively  Use CTest </div>
+<div class="line">$ ctest --extra-verbose --parallel --schedule-random</div>
 </div><!-- fragment --><p>Needs: CMake &gt; 3.22, C++17</p>
 <ul>
 <li>Format <div class="fragment"><div class="line">$ python -m isort </div>
@@ -217,7 +220,7 @@ About us</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Jun 22 2022 23:42:24 for openjij by
+    <li class="footer">Generated on Thu Jun 23 2022 03:43:50 for openjij by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
   </ul>
