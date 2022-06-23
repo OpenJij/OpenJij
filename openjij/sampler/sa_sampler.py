@@ -11,8 +11,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License
 
-
-from typing import Optional, Union
+try:
+    from typing import Optional, Union
+except ImportError:
+    from typing_extensions import Optional, Union
 
 import cimod
 import dimod
