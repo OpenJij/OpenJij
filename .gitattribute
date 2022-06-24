@@ -1,22 +1,28 @@
-* text=auto eol=lf linguist-vendored
-*.py text eol=lf linguist-vendored=false linguist-language=Python
-*.c text eol=lf linguist-vendored=false linguist-language=C
-*.cpp text eol=lf linguist-vendored=false linguist-language=C++
-*.h text eol=lf linguist-vendored=false linguist-language=C
-*.hpp text eol=lf linguist-vendored=false linguist-language=C++
-*.cu text eol=lf linguist-vendored=false linguist-language=Cuda
-*.cmake text eol=lf linguist-vendored=false linguist-language=CMake
-CMakeLists.txt text eol=lf linguist-vendored=false linguist-language=CMake
-./**/CMakeLists.txt text eol=lf linguist-vendored=false linguist-language=CMake
+* text=auto eol=lf
+*.py text eol=lf linguist-vendored=false linguist-detectable=true linguist-language=Python
+*.c text eol=lf linguist-vendored=false linguist-detectable=true linguist-language=C
+*.cpp text eol=lf linguist-vendored=false linguist-detectable=true linguist-language=C++
+*.h text eol=lf linguist-vendored=false linguist-detectable=true linguist-language=C
+*.hpp text eol=lf linguist-vendored=false linguist-detectable=true linguist-language=C++
+*.cu text eol=lf linguist-vendored=false linguist-detectable=true linguist-language=Cuda
+*.txt text eol=lf linguist-vendored=false
+*.cfg text eol=lf linguist-vendored=false
+*.in text eol=lf linguist-vendored=false
+*.yml text eol=lf linguist-vendored=false
+*.toml text eol=lf linguist-vendored=false
+*.sh text eol=lf linguist-vendored=false
+*.cmake text eol=lf linguist-vendored=false linguist-detectable=true linguist-language=CMake
+CMakeLists.txt text eol=lf linguist-vendored=false linguist-detectable=true linguist-language=CMake
+./**/CMakeLists.txt text eol=lf linguist-vendored=false linguist-detectable=true linguist-language=CMake
 
-*requirements.txt linguist-generated export-ignore
-python_version.txt linguist-generated export-ignore
+*requirements.txt linguist-generated export-ignore linguist-detectable=false
+python_version.txt linguist-generated export-ignore linguist-detectable=false
 
-.gitignore export-ignore
-*.pyc linguist-generated export-ignore
+.gitignore export-ignore linguist-detectable=false
+*.pyc linguist-generated export-ignore linguist-detectable=false
 
-docs/* linguist-documentation export-ignore
-www/* linguist-vendored export-ignore
-benchmark/* linguist-vendored export-ignore
-project_template/* linguist-vendored export-ignore
-public/* linguist-generated export-ignore
+docs/* linguist-documentation export-ignore linguist-detectable=false
+www/* linguist-vendored export-ignore linguist-detectable=false
+benchmark/* linguist-vendored export-ignore linguist-detectable=false
+project_template/* linguist-vendored export-ignore linguist-detectable=false
+public/* linguist-generated export-ignore linguist-detectable=false
