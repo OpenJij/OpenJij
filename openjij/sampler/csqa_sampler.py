@@ -93,7 +93,7 @@ class CSQASampler(SQASampler):
 
                 >>> h = {0: -1, 1: -1, 2: 1, 3: 1}
                 >>> J = {(0, 1): -1, (3, 4): -1}
-                >>> sampler = oj.CSQASampler()
+                >>> sampler = openjij.CSQASampler()
                 >>> res = sampler.sample_ising(h, J)
 
             for QUBO case::
