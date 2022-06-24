@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dimod import SPIN
-
 import openjij.cxxjij as cj
+
+from dimod import SPIN
 
 from openjij.model.model import make_BinaryQuadraticModel
 

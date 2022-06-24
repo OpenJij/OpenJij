@@ -14,14 +14,16 @@
 
 #pragma once
 
-#ifdef __clang__
-  //   Eigen generates a bunch of implicit-copy-constructor-is-deprecated warnings with -Wdeprecated
-  //   under Clang, so disable that warning here:
-  #pragma GCC diagnostic ignored "-Wdeprecated"
-#endif
-#if __GNUC__ >= 7
-  #pragma GCC diagnostic ignored "-Wint-in-bool-context"
-  //   Eigen generates a bunch of implicit-copy-constructor-is-deprecated warnings with -Wdeprecated
-  //   under GCC, so disable that warning here:
-  #pragma GCC diagnostic ignored "-Wdeprecated-copy"
-#endif
+#  ifdef __clang__
+//   Eigen generates a bunch of implicit-copy-constructor-is-deprecated warnings with -Wdeprecated
+//   under Clang, so disable that warning here:
+#    pragma GCC diagnostic ignored "-Wdeprecated"
+#  endif
+#  if __GNUC__ >= 7
+#    pragma GCC diagnostic ignored "-Wint-in-bool-context"
+//   Eigen generates a bunch of implicit-copy-constructor-is-deprecated warnings with -Wdeprecated
+//   under GCC, so disable that warning here:
+#    pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#  endif
+
+
