@@ -3,8 +3,7 @@ name: Build Documentation
 on:
   workflow_dispatch:
   release:
-    types:
-      - released
+    types: [published]
 
 env:
   Python_Version: '3.10'
