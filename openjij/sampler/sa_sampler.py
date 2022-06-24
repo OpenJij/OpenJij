@@ -18,9 +18,9 @@ except ImportError:
 
 import cimod
 import dimod
-from dimod import SPIN, BINARY, Vartype
-
 import numpy as np
+
+from dimod import BINARY, SPIN
 
 import openjij as oj
 import openjij.cxxjij as cxxjij
@@ -327,7 +327,9 @@ class SASampler(BaseSampler):
 
     def sample_hubo(
         self,
-        J: Union[dict, "oj.model.model.BinaryPolynomialModel", cimod.BinaryPolynomialModel],
+        J: Union[
+            dict, "oj.model.model.BinaryPolynomialModel", cimod.BinaryPolynomialModel
+        ],
         vartype: Optional[str] = None,
         beta_min: Optional[float] = None,
         beta_max: Optional[float] = None,
