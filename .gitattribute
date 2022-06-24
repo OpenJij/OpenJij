@@ -19,7 +19,7 @@
 
 python_version.txt linguist-vendored
 
-docs/* linguist-documentation
+docs/* linguist-documentation export-ignore
 
 .gitignore export-ignore
 
@@ -30,4 +30,4 @@ jij_cimod.egg-info/* linguist-generated export-ignore
 _skbuild/* linguist-generated export-ignore
 dist/* linguist-generated export-ignore
 .sccache/* linguist-generated export-ignore
-www/* text=auto eol=lf linguist-vendored
+www/* text=auto eol=lf linguist-vendored export-ignore
