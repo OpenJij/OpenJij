@@ -109,6 +109,10 @@ $ ctest --extra-verbose --parallel --schedule-random
 Needs: CMake > 3.22, C++17
 
 - Format 
+```sh
+$ pip-compile format-requirements.in
+$ pip-sync format-requirements.txt
+```
 ``` sh
 $ python -m isort 
 $ python -m black 
@@ -124,6 +128,12 @@ $ python -m black ./openjij
 ```
 
 - Lint
+```sh 
+$ pip-compile
+$ pip-compile dev-requirements.in
+$ pip-compile lint-requirements.in
+$ pip-sync requirements.txt dev-requirements.txt lint-requirements.txt
+```
 ``` sh 
 $ python -m flake8
 $ python -m mypy
