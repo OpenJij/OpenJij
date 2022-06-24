@@ -116,7 +116,7 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
 
         Examples::
 
-            >>> sampler = openjij.GPUChimeraSQASampler(unit_num_L=2)
+            >>> sampler = openjij.sampler.chimera_gpu.gpu_sqa_sampler.GPUChimeraSQASampler(unit_num_L=2)
             >>> h = {0: -1, 1: -1, 2: 1, 3: 1},
             >>> J = {(0, 4): -1, (2, 5): -1}
             >>> res = sampler.sample_ising(h, J)
