@@ -1,42 +1,23 @@
-* text=auto eol=lf
+* text=auto eol=lf linguist-vendored
 *.py text eol=lf linguist-detectable
 *.c text eol=lf linguist-detectable
 *.cpp text eol=lf linguist-detectable
 *.h text eol=lf linguist-detectable
 *.hpp text eol=lf linguist-detectable
-*.cfg text eol=lf linguist-detectable
-*.txt text eol=lf -linguist-detectable
-*.sh text eol=lf -linguist-detectable
-*.md text eol=lf -linguist-detectable
-*.in text eol=lf -linguist-detectable
-*.toml text eol=lf -linguist-detectable
-*.yml text eol=lf -linguist-detectable
-*.html text eol=lf -linguist-detectable 
-*.css text eol=lf -linguist-detectable 
-*.rst text eol=lf -linguist-detectable
-*CMakeLists.txt linguist-language=CMake
+*.cu text eol=lf linguist-detectable
+*.cmake text eol=lf linguist-detectable linguist-language=CMake
+CMakeLists.txt text eol=lf linguist-detectable linguist-language=CMake
+./**/CMakeLists.txt text eol=lf linguist-detectable linguist-language=CMake
 
-*requirements.txt linguist-generated
-
-python_version.txt linguist-vendored
-
-docs/* linguist-vendored linguist-documentation export-ignore -linguist-detectable
+*requirements.txt linguist-generated export-ignore
+python_version.txt linguist-generated export-ignore
 
 .gitignore export-ignore
-
 *.pyc linguist-generated export-ignore
 
-.pytest_cache/* linguist-generated export-ignore
-jij_cimod.egg-info/* linguist-generated export-ignore
-_skbuild/* linguist-generated export-ignore
-dist/* linguist-generated export-ignore
-.sccache/* linguist-generated export-ignore
-
-www/* linguist-vendored
-www/icon/* linguist-vendored
-www/webp/* linguist-vendored
-www/index.html linguist-vendored 
-www/style.css linguist-vendored 
-benchmark/* linguist-vendored 
-project_template/* linguist-vendored 
-public/* linguist-vendored 
+.github/* linguist-vendored
+docs/* linguist-documentation export-ignore
+www/* linguist-vendored export-ignore
+benchmark/* linguist-vendored export-ignore
+project_template/* linguist-vendored export-ignore
+public/* linguist-generated export-ignore
