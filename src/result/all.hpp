@@ -15,4 +15,3 @@
 #pragma once
 
 #include "result/get_solution.hpp"
-

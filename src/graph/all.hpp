@@ -13,10 +13,9 @@
 //    limitations under the License.
 #pragma once
 
-#include "graph/graph.hpp"
+#include "graph/chimera.hpp"
 #include "graph/dense.hpp"
+#include "graph/graph.hpp"
+#include "graph/polynomial.hpp"
 #include "graph/sparse.hpp"
 #include "graph/square.hpp"
-#include "graph/chimera.hpp"
-#include "graph/polynomial.hpp"
-
