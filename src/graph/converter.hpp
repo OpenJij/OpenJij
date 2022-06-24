@@ -18,7 +18,7 @@
 #include "sparse.hpp"
 
 namespace openjij {
-  namespace graph {
-    // TODO: convert function
-  } // namespace graph
+    namespace graph {
+        //TODO: convert function
+    } // namespace graph
 } // namespace openjij

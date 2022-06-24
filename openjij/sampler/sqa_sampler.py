@@ -4,10 +4,10 @@ except ImportError:
     from typing_extensions import Optional, Union
 
 import dimod
+from dimod import SPIN, BINARY, Vartype
 import numpy as np
 
 from cimod.utils import get_state_and_energy
-from dimod import BINARY
 
 import openjij as oj
 import openjij.cxxjij as cxxjij
