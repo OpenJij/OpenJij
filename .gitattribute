@@ -11,12 +11,12 @@
 *.in text eol=lf -linguist-detectable
 *.toml text eol=lf -linguist-detectable
 *.yml text eol=lf -linguist-detectable
-*.html text eol=lf -linguist-detectable linguist-vendored
-*.css text eol=lf -linguist-detectable linguist-vendored
+*.html text eol=lf -linguist-detectable 
+*.css text eol=lf -linguist-detectable 
 *.rst text eol=lf -linguist-detectable
 *CMakeLists.txt linguist-language=CMake
 
-*requirement.txt linguist-generated
+*requirements.txt linguist-generated
 
 python_version.txt linguist-vendored
 
@@ -31,4 +31,12 @@ jij_cimod.egg-info/* linguist-generated export-ignore
 _skbuild/* linguist-generated export-ignore
 dist/* linguist-generated export-ignore
 .sccache/* linguist-generated export-ignore
-www/* text=auto eol=lf linguist-vendored export-ignore -linguist-detectable
+
+www/* linguist-vendored
+www/icon/* linguist-vendored
+www/webp/* linguist-vendored
+www/index.html linguist-vendored 
+www/style.css linguist-vendored 
+benchmark/* linguist-vendored 
+project_template/* linguist-vendored 
+public/* linguist-vendored 
