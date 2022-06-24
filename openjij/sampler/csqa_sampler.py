@@ -99,7 +99,7 @@ class CSQASampler(SQASampler):
             for QUBO case::
 
                 >>> Q = {(0, 0): -1, (1, 1): -1, (2, 2): 1, (3, 3): 1, (4, 4): 1, (0, 1): -1, (3, 4): 1}
-                >>> sampler = oj.CSQASampler()
+                >>> sampler = openjijj.CSQASampler()
                 >>> res = sampler.sample_qubo(Q)
 
         """
