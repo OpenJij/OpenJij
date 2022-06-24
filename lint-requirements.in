@@ -1,0 +1,37 @@
+-c requirements.txt
+-c dev-requirements.txt
+
+flake8 
+flake8-annotations
+flake8-annotations-coverage
+flake8-comprehensions
+flake8-noqa
+flake8-bugbear
+flake8-builtins
+pep8-naming
+flake8-expression-complexity
+flake8-cognitive-complexity
+flake8-pytest-style
+flake8-secure-coding-standard
+flake8-warnings
+flake8-class-attributes-order
+flake8-return
+flake8-scream
+flake8-strict
+flake8-no-types
+flake8-functions-names
+flake8-test-name
+flake8-variables-names
+flake8-annotations-complexity
+flake8-functions
+flake8-length
+flake8-docstrings
+flake8-rst-docstrings
+flake8-absolute-import
+flake8-type-checking
+flake8-future-annotations
+flake8-pep585
+flake8-typing-imports
+mypy
+pyright
+lizard
