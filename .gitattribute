@@ -1,13 +1,13 @@
 * text=auto eol=lf linguist-vendored
-*.py text eol=lf linguist-detectable
-*.c text eol=lf linguist-detectable
-*.cpp text eol=lf linguist-detectable
-*.h text eol=lf linguist-detectable
-*.hpp text eol=lf linguist-detectable
-*.cu text eol=lf linguist-detectable
-*.cmake text eol=lf linguist-detectable linguist-language=CMake
-CMakeLists.txt text eol=lf linguist-detectable linguist-language=CMake
-./**/CMakeLists.txt text eol=lf linguist-detectable linguist-language=CMake
+*.py text eol=lf linguist-vendored=false linguist-language=Python
+*.c text eol=lf linguist-vendored=false linguist-language=C
+*.cpp text eol=lf linguist-vendored=false linguist-language=C++
+*.h text eol=lf linguist-vendored=false linguist-language=C
+*.hpp text eol=lf linguist-vendored=false linguist-language=C++
+*.cu text eol=lf linguist-vendored=false linguist-language=Cuda
+*.cmake text eol=lf linguist-vendored=false linguist-language=CMake
+CMakeLists.txt text eol=lf linguist-vendored=false linguist-language=CMake
+./**/CMakeLists.txt text eol=lf linguist-vendored=false linguist-language=CMake
 
 *requirements.txt linguist-generated export-ignore
 python_version.txt linguist-generated export-ignore
@@ -15,7 +15,6 @@ python_version.txt linguist-generated export-ignore
 .gitignore export-ignore
 *.pyc linguist-generated export-ignore
 
-.github/* linguist-vendored
 docs/* linguist-documentation export-ignore
 www/* linguist-vendored export-ignore
 benchmark/* linguist-vendored export-ignore
