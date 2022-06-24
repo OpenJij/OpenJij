@@ -5,6 +5,11 @@ include LICENSE
 include README.md
 include pyproject.toml
 
+graft openjij
+graft tests 
+graft src 
+graft external
+
 prune cmake
 
 include cmake/GenerateDocs.cmake
@@ -14,19 +19,22 @@ include cmake/FindLcov.cmake
 include cmake/Findcodecov.cmake
 include cmake/llvm-cov-wrapper
 
+global-exclude .clang-format
+global-exclude .pre-commit-config.yaml
+global-exclude codecov.yml
 global-exclude requirements.txt
+global-exclude dev-requirements.in
+global-exclude format-requirements.in
+global-exclude dev-requirements.txt
+global-exclude format-requirements.txt
 global-exclude .gitignore 
 global-exclude Doxyfile
 global-exclude Doxyfile.bak
-global-exclude pybind11_jsonConfig.cmake
-global-exclude pybind11_jsonConfigVersion.cmake
-global-exclude pybind11_jsonTargets.cmake
 
-graft openjij
-graft tests 
-graft src 
-graft external
-
+plune benchmark
+plune project_template
+plune public
+plune www
 prune share
 prune include
 prune docs
