@@ -136,7 +136,7 @@ class SASampler(BaseSampler):
 
     def sample(
         self,
-        bqm: Union["oj.model.model.BinaryQuadraticModel", dimod.BinaryQuadraticModel],
+        bqm: Union["openj.model.model.BinaryQuadraticModel", dimod.BinaryQuadraticModel],
         beta_min: Optional[float] = None,
         beta_max: Optional[float] = None,
         num_sweeps: Optional[int] = None,
@@ -170,13 +170,13 @@ class SASampler(BaseSampler):
 
                 >>> h = {0: -1, 1: -1, 2: 1, 3: 1}
                 >>> J = {(0, 1): -1, (3, 4): -1}
-                >>> sampler = oj.SASampler()
+                >>> sampler = openj.SASampler()
                 >>> res = sampler.sample_ising(h, J)
 
             for QUBO case::
 
                 >>> Q = {(0, 0): -1, (1, 1): -1, (2, 2): 1, (3, 3): 1, (4, 4): 1, (0, 1): -1, (3, 4): 1}
-                >>> sampler = oj.SASampler()
+                >>> sampler = openj.SASampler()
                 >>> res = sampler.sample_qubo(Q)
 
         """
@@ -327,7 +327,7 @@ class SASampler(BaseSampler):
 
     def sample_hubo(
         self,
-        J: Union[dict, "oj.model.model.BinaryPolynomialModel", cimod.BinaryPolynomialModel],
+        J: Union[dict, "openj.model.model.BinaryPolynomialModel", cimod.BinaryPolynomialModel],
         vartype: Optional[str] = None,
         beta_min: Optional[float] = None,
         beta_max: Optional[float] = None,
@@ -338,7 +338,7 @@ class SASampler(BaseSampler):
         updater: Optional[str] = None,
         reinitialize_state: Optional[bool] = None,
         seed: Optional[int] = None,
-    ) -> "oj.sampler.response.Response":
+    ) -> "openjij.sampler.response.Response":
         """sampling from higher order unconstrainted binary optimization.
 
         Args:
@@ -358,12 +358,12 @@ class SASampler(BaseSampler):
 
         Examples::
             for Ising case::
-                >>> sampler = oj.SASampler()
+                >>> sampler = openjij.SASampler()
                 >>> J = {(0,): -1, (0, 1): -1, (0, 1, 2): 1}
                 >>> response = sampler.sample_hubo(J, "SPIN")
 
             for Binary case::
-                >>> sampler = oj.SASampler()
+                >>> sampler = ooenjij.SASampler()
                 >>> J = {(0,): -1, (0, 1): -1, (0, 1, 2): 1}
                 >>> response = sampler.sample_hubo(J, "BINARY")
         """
@@ -480,7 +480,7 @@ class SASampler(BaseSampler):
 
 
 def geometric_ising_beta_schedule(
-    model: oj.model.model.BinaryQuadraticModel,
+    model: openjij.model.model.BinaryQuadraticModel,
     beta_max=None,
     beta_min=None,
     num_sweeps=1000,
