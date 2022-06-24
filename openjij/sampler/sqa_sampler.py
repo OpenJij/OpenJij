@@ -152,7 +152,7 @@ class SQASampler(BaseSampler):
 
     def sample(
         self,
-        bqm: Union["oj.model.model.BinaryQuadraticModel", dimod.BinaryQuadraticModel],
+        bqm: Union["openjij.model.model.BinaryQuadraticModel", dimod.BinaryQuadraticModel],
         beta: Optional[float] = None,
         gamma: Optional[float] = None,
         num_sweeps: Optional[int] = None,
@@ -164,11 +164,11 @@ class SQASampler(BaseSampler):
         sparse: Optional[bool] = None,
         reinitialize_state: Optional[bool] = None,
         seed: Optional[int] = None,
-    ) -> "oj.sampler.response.Response":
+    ) -> "openjij.sampler.response.Response":
         """Sampling from the Ising model
 
         Args:
-            bqm (oj.BinaryQuadraticModel) binary quadratic model
+            bqm (openjij.BinaryQuadraticModel) binary quadratic model
             beta (float, optional): inverse tempareture.
             gamma (float, optional): strangth of transverse field. Defaults to None.
             num_sweeps (int, optional): number of sweeps. Defaults to None.
@@ -192,13 +192,13 @@ class SQASampler(BaseSampler):
 
                 >>> h = {0: -1, 1: -1, 2: 1, 3: 1}
                 >>> J = {(0, 1): -1, (3, 4): -1}
-                >>> sampler = oj.SQASampler()
+                >>> sampler = openjij.SQASampler()
                 >>> res = sampler.sample_ising(h, J)
 
             for QUBO case::
 
                 >>> Q = {(0, 0): -1, (1, 1): -1, (2, 2): 1, (3, 3): 1, (4, 4): 1, (0, 1): -1, (3, 4): 1}
-                >>> sampler = oj.SQASampler()
+                >>> sampler = openjij.SQASampler()
                 >>> res = sampler.sample_qubo(Q)
         """
 
