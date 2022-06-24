@@ -11,7 +11,8 @@
 *.in text eol=lf -linguist-detectable
 *.toml text eol=lf -linguist-detectable
 *.yml text eol=lf -linguist-detectable
-*.html text eol=lf -linguist-detectable
+*.html text eol=lf -linguist-detectable linguist-vendored
+*.css text eol=lf -linguist-detectable linguist-vendored
 *.rst text eol=lf -linguist-detectable
 *CMakeLists.txt linguist-language=CMake
 
@@ -19,7 +20,7 @@
 
 python_version.txt linguist-vendored
 
-docs/* linguist-documentation export-ignore
+docs/* linguist-vendored linguist-documentation export-ignore -linguist-detectable
 
 .gitignore export-ignore
 
@@ -30,4 +31,4 @@ jij_cimod.egg-info/* linguist-generated export-ignore
 _skbuild/* linguist-generated export-ignore
 dist/* linguist-generated export-ignore
 .sccache/* linguist-generated export-ignore
-www/* text=auto eol=lf linguist-vendored export-ignore
+www/* text=auto eol=lf linguist-vendored export-ignore -linguist-detectable
