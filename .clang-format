@@ -36,5 +36,5 @@ SpacesInCStyleCastParentheses: 'true'
 SpacesInConditionalStatement: 'true'
 SpacesInParentheses: 'true'
 SpacesInSquareBrackets: 'true'
-Standard: 'auto'
+Standard: 'Auto'
 ...
