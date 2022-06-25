@@ -23,6 +23,7 @@ from dimod import SPIN, BINARY, Vartype
 import numpy as np
 
 import openjij as oj
+import openjij
 import openjij.cxxjij as cxxjij
 
 from openjij.sampler.sampler import BaseSampler
