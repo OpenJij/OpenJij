@@ -25,6 +25,7 @@ from cimod.utils import get_state_and_energy
 from dimod.core.sampler import samplemixinmethod
 
 import openjij as oj
+import openjij 
 import openjij.cxxjij as cxxjij
 
 
