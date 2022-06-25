@@ -10,6 +10,7 @@ import numpy as np
 from cimod.utils import get_state_and_energy
 
 import openjij as oj
+import openjij
 import openjij.cxxjij as cxxjij
 
 from openjij.sampler.sampler import BaseSampler
