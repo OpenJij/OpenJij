@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import openjij as oj
+import openjij
 
 from dimod import SPIN
 
