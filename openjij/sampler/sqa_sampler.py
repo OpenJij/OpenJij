@@ -4,13 +4,13 @@ except ImportError:
     from typing_extensions import Optional, Union
 
 import dimod
-from dimod import SPIN, BINARY, Vartype
 import numpy as np
 
 from cimod.utils import get_state_and_energy
+from dimod import BINARY
 
-import openjij as oj
 import openjij
+import openjij as oj
 import openjij.cxxjij as cxxjij
 
 from openjij.sampler.sampler import BaseSampler
@@ -153,7 +153,9 @@ class SQASampler(BaseSampler):
 
     def sample(
         self,
-        bqm: Union["openjij.model.model.BinaryQuadraticModel", dimod.BinaryQuadraticModel],
+        bqm: Union[
+            "openjij.model.model.BinaryQuadraticModel", dimod.BinaryQuadraticModel
+        ],
         beta: Optional[float] = None,
         gamma: Optional[float] = None,
         num_sweeps: Optional[int] = None,

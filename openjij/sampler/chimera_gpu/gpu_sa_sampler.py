@@ -13,8 +13,8 @@
 # limitations under the License.
 
 
+import openjij
 import openjij as oj
-import openjij 
 import openjij.cxxjij as cxxjij
 
 from openjij.sampler.chimera_gpu.base_gpu_chimera.base_gpu_chimera import (

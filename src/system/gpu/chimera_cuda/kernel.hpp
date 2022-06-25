@@ -21,30 +21,22 @@
 #include <system/gpu/chimera_cuda/index.hpp>
 
 namespace openjij {
-    namespace system {
-        namespace chimera_cuda {
+namespace system {
+namespace chimera_cuda {
 
-            //updater interface
+// updater interface
 
-            template<
-                typename FloatType,
-                std::size_t block_row,
-                std::size_t block_col,
-                std::size_t block_trot>
-            void metropolis_interface(
-                    int32_t sw,
-                    int32_t* spin, const FloatType* rand,
-                    const FloatType* J_out_p,
-                    const FloatType* J_out_n,
-                    const FloatType* J_in_04,
-                    const FloatType* J_in_15,
-                    const FloatType* J_in_26,
-                    const FloatType* J_in_37,
-                    const FloatType* h,
-                    const ChimeraInfo& info, const dim3& grid, const dim3& block,
-                    double beta, FloatType gamma, double s);
-        } // namespace chimera_cuda
-    } // namespace system
+template <typename FloatType, std::size_t block_row, std::size_t block_col,
+          std::size_t block_trot>
+void metropolis_interface(int32_t sw, int32_t *spin, const FloatType *rand,
+                          const FloatType *J_out_p, const FloatType *J_out_n,
+                          const FloatType *J_in_04, const FloatType *J_in_15,
+                          const FloatType *J_in_26, const FloatType *J_in_37,
+                          const FloatType *h, const ChimeraInfo &info,
+                          const dim3 &grid, const dim3 &block, double beta,
+                          FloatType gamma, double s);
+} // namespace chimera_cuda
+} // namespace system
 } // namespace openjij
 
 #endif
