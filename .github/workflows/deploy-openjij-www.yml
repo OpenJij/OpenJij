@@ -41,10 +41,10 @@ jobs:
           personal_token: ${{ secrets.OPENJIJ_WEB }}
           keep_files: true
           allow_empty_commit: true
-          publish_dir: ./web
+          publish_dir: ./www
           publish_branch: main
           external_repository: OpenJij/OpenJij-Top-Page
-          destination_dir: web
+          destination_dir: www
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: ${{ github.event.head_commit.message }}
