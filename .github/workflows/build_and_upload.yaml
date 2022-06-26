@@ -5,10 +5,6 @@ on:
   release:
     types: [published]
 
-env:
-  Python_Version: '3.10'
-
-
 jobs:
   build_sdist:
     runs-on: ubuntu-latest
@@ -17,7 +13,7 @@ jobs:
       - uses: actions/setup-python@v4
         name: Install Python
         with:
-          python-version: ${{env.Python_Version}}
+          python-version: '3.10'
       - name: Install dependencies 
         run: |
            pip install --upgrade pip wheel setuptools build 
@@ -29,40 +25,207 @@ jobs:
           name: WHEEL
           path: dist/*.tar.gz
           retention-days: 30
-  build_wheels:
-    name: Build wheels ${{ matrix.os }} ${{ matrix.arch }} 
+          
+  build_wheels_linux_x86_64:
+    name: Build wheels linux x86_64
+    runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux_2_28_x86_64:latest
+    strategy:
+      fail-fast: false 
+      matrix:  
+        include:
+         - python: /opt/python/cp37-cp37m/bin/python
+         - python: /opt/python/cp38-cp38/bin/python
+         - python: /opt/python/cp39-cp39/bin/python
+         - python: /opt/python/cp310-cp310/bin/python
+               
+    steps:
+      - uses: actions/checkout@v3       
+      - name: Get Python Version
+        shell: bash
+        run: |
+          set -eux
+          ls /opt/python
+          ${{matrix.python}} --version > python_version.txt
+          cat python_version.txt
+      - name: Pip-Tools 
+        shell: bash
+        run: |
+          set -eux
+          ${{matrix.python}} -m pip install pip-tools 
+          ${{matrix.python}} -m piptools compile
+          ${{matrix.python}} -m piptools compile build-requirements.in
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            /var/cache/dnf/
+          key: ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}
+            ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}
+            ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}
+            ${{ runner.os }}-intel-
+      - name: Install Dependencies
+        shell: bash
+        run: |
+          set -eux
+          ${{matrix.python}} -m piptools sync requirements.txt build-requirements.txt 
+      - name: Setup Intel oneAPI
+        run: |
+          set -eux
+          mv oneAPI.repo /etc/yum.repos.d/
+          #dnf -y install git make gcc findutils
+      - name: Instal Intel oneAPI    
+        run: |
+          set -eux
+          dnf -y install intel-basekit intel-hpckit
+      - name: Install Dependency 
+        run: |
+          set -eux
+          dnf config-manager --set-enabled powertools
+          dnf -y --enablerepo=powertools install eigen3-devel
+      - name: Build 
+        run: |
+          set -x
+          echo "::group::Set Intel oneAPI"
+          touch config.txt
+          echo "" >> config.txt
+          source /opt/intel/oneapi/compiler/latest/env/vars.sh 
+          source /opt/intel/oneapi/mkl/latest/env/vars.sh
+          source /opt/intel/oneapi/setvars.sh --force  --config="config.txt"
+          du -a /opt/intel/oneapi/compiler/latest/linux/bin
+          echo "::endgroup::"
+          echo "::group::BUILD"
+          export CIBUILDWHEEL=1
+          export CC=icx
+          export CXX=icpx
+          export FC=ifx
+          export CFLAGS='-march=haswell' 
+          export CXXFLAGS='-march=haswell' 
+          export FFLAGS='-march=haswell'
+          ${{matrix.python}} -m build --wheel --outdir ./dist
+          echo "::endgroup::"
+          #. /opt/intel/oneapi/setvars.sh --force  --config="config.txt"
+          # export FC=ifx
+      - name: Show Files 
+        id: wheel
+        shell: bash
+        run: |
+          set -x 
+          source /opt/intel/oneapi/setvars.sh --force  --config="config.txt"
+          ${{matrix.python}} -m auditwheel -h
+          ${{matrix.python}} -m auditwheel show -h
+          ${{matrix.python}} -m auditwheel repair -h
+          du -ah ./dist
+          cd dist
+          for f in *.whl; do ${{matrix.python}} -m auditwheel show $f; done 
+          for f in *.whl; do ${{matrix.python}} -m auditwheel repair --lib-sdir . -w ../wheelhouse $f; done    
+          cd ../wheelhouse
+          du -ah ./
+      - uses: actions/upload-artifact@v3
+        with:
+          name: WHEEL
+          path: ./wheelhouse/*.whl
+          retention-days: 30 
+          
+  build_wheels_linux_aarch64:
+    name: Build wheels linux aarch64
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false 
       matrix:  
         include:
           - os: ubuntu-latest
-            arch: x86_64
-            CIBW_PLATFORM: linux
-            CIBW_ENVIRONMENT: "CFLAGS='-march=haswell' CXXFLAGS='-march=haswell' FFLAGS='-march=haswell'"
-          - os: ubuntu-latest
             arch: aarch64
             CIBW_PLATFORM: linux 
             CIBW_ENVIRONMENT: ""
-            
+            CIBW_BEFORE_ALL_LINUX: >
+               dnf config-manager --set-enabled powertools &&
+               dnf makecache --refresh &&
+               dnf -y --enablerepo=powertools install openblas-static &&
+               dnf -y --enablerepo=powertools install lapack-static &&
+               dnf -y install gcc-toolset-11 &&
+               dnf -y --enablerepo=powertools install eigen3-devel
+            CIBW_BEFORE_BUILD_LINUX: >
+               source scl_source enable gcc-toolset-11 &&
+               pip install pybind11 cmake ninja
+    steps:
+      - uses: actions/checkout@v3       
+      - name: Set up QEME
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: all
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+            install: true
+      - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
+        uses: pypa/cibuildwheel@2.7.0
+        env:
+          CIBW_ENVIRONMENT: ${{ matrix.CIBW_ENVIRONMENT }}
+          CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
+          CIBW_ARCHS: ${{matrix.arch}}
+          CIBW_BEFORE_ALL_LINUX: ${{ matrix.CIBW_BEFORE_ALL_LINUX }}
+          CIBW_BEFORE_BUILD_LINUX: ${{ matrix.CIBW_BEFORE_BUILD_LINUX }}
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: WHEEL
+          path: ./wheelhouse/*.whl
+          retention-days: 30 
+          
+  build_wheels_macos:
+    name: Build wheels macos ${{ matrix.arch }} 
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false 
+      matrix:  
+        include:
           - os: macos-latest
             arch: x86_64
             CIBW_PLATFORM: macos  
-            CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET='11.0'"
+            CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET='11.0' CFLAGS='-march=skylake' CXXFLAGS='-march=skylake'"
           - os: macos-latest
             arch: x86_64
             CIBW_PLATFORM: macos  
-            CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET='10.16'"
+            CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET='10.16' CFLAGS='-march=haswell' CXXFLAGS='-march=haswell'"
           - os: macos-latest
             arch: arm64
             CIBW_PLATFORM: macos
             CIBW_ENVIRONMENT: ""
-            
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Dependency 
+        shell: bash 
+        run: |
+          set -eux 
+          brew install eigen nlohmann-json
+      - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
+        uses: pypa/cibuildwheel@2.7.0
+        env:
+          CIBW_ENVIRONMENT: ${{ matrix.CIBW_ENVIRONMENT }}
+          CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
+          CIBW_ARCHS: ${{matrix.arch}}
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: WHEEL
+          path: ./wheelhouse/*.whl
+          retention-days: 30 
+          
+  build_wheels_windows:
+    name: Build wheels windows ${{ matrix.arch }} 
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false 
+      matrix:  
+        include:
           - os: windows-latest
             arch: AMD64
             CIBW_PLATFORM: windows 
             CIBW_ENVIRONMENT: "CFLAGS='-march=haswell' CXXFLAGS='-march=haswell' CMAKE_TOOLCHAIN_FILE='C:/vcpkg/scripts/buildsystems/vcpkg.cmake'"
-            
     steps:
       - uses: actions/checkout@v3       
       - name: Add msbuild to PATH
@@ -86,23 +249,21 @@ jobs:
            restore-keys: |
              ${{ matrix.os }}-vcpkg-${{ hashFiles('msbuild_version.txt') }}
              ${{ matrix.os }}-vcpkg
-      - name: Set up QEMU
-        if: ${{ matrix.CIBW_PLATFORM == 'linux' && matrix.arch == 'aarch64' }}
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: all
-      - name: Set up Docker Buildx
-        if: ${{ matrix.os  == 'ubuntu-latest' }}
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-        with:
-            install: true
+      - name: Install Dependency 
+        shell: bash 
+        run: |
+          set -eux 
+          vcpkg update
+          vcpkg --triplet x64-windows-static install eigen3
+          vcpkg --triplet x64-windows install eigen3
+          vcpkg --triplet x64-windows-static install nlohmann-json
+          vcpkg --triplet x64-windows install nlohmann-json
+          vcpkg integrate install
       - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
         uses: pypa/cibuildwheel@2.7.0
         env:
           CIBW_ENVIRONMENT: ${{ matrix.CIBW_ENVIRONMENT }}
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
-          CIBW_BUILD: ${{matrix.CIBW_BUILD}}
           CIBW_ARCHS: ${{matrix.arch}}
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7"
           
@@ -110,11 +271,10 @@ jobs:
         with:
           name: WHEEL
           path: ./wheelhouse/*.whl
-          retention-days: 30 
-
+          retention-days: 30         
           
   upload_pypi:
-    needs: [build_wheels, build_sdist]
+    needs: [build_wheels_linux_x86_64, build_wheels_linux_aarch64, build_wheels_macos, build_wheels_windows, build_sdist]
     runs-on: ubuntu-latest
     if: ${{github.event_name == 'release'}}
     steps:
