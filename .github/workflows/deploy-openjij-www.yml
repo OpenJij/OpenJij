@@ -1,0 +1,54 @@
+name: OpenJij Top Page
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+  schedule:
+    - cron: '00 20 * * 1'
+    - cron: '30 22 * * 2'
+    - cron: '00 24 * * 3'
+    - cron: '30 02 * * 4'
+    - cron: '00 04 * * 5'
+    - cron: '30 06 * * 6'
+    - cron: '00 08 * * 7'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+      - name: Prepare tag
+        id: prepare_tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG_NAME="${GITHUB_REF##refs/tags/}"
+          echo "::set-output name=tag_name::${TAG_NAME}"
+          echo "::set-output name=deploy_tag_name::deploy-${TAG_NAME}"
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        # If you're changing the branch from main, 
+        # also change the `main` in `refs/heads/main` 
+        # below accordingly.
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          github_token: ${{ secrets.OPENJIJ_WEB }}
+          keep_files: true
+          allow_empty_commit: true
+          publish_dir: ./web
+          publish_branch: main
+          external_repository: OpenJij/OpenJij-Top-Page
+          destination_dir: . 
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: ${{ github.event.head_commit.message }}
+          full_commit_message: ${{ github.event.head_commit.message }}
+          tag_name: ${{ steps.prepare_tag.outputs.deploy_tag_name }}
+          tag_message: 'Deployment ${{ steps.prepare_tag.outputs.tag_name }}'
+          #cname: www.openjij.org
