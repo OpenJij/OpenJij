@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
   release:
     types: [published]
-  schedule:
-    - cron: '00 20 * * 1'
-    - cron: '30 22 * * 2'
-    - cron: '00 00 * * 3'
-    - cron: '30 02 * * 4'
-    - cron: '00 04 * * 5'
-    - cron: '30 06 * * 6'
-    - cron: '00 08 * * 0'
+#  schedule:
+#    - cron: '00 20 * * 1'
+#    - cron: '30 22 * * 2'
+#    - cron: '00 00 * * 3'
+#    - cron: '30 02 * * 4'
+#    - cron: '00 04 * * 5'
+#    - cron: '30 06 * * 6'
+#    - cron: '00 08 * * 0'
 
 jobs:
   deploy:
@@ -38,13 +38,13 @@ jobs:
         # below accordingly.
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
-          github_token: ${{ secrets.OPENJIJ_WEB }}
+          personal_token: ${{ secrets.OPENJIJ_WEB }}
           keep_files: true
           allow_empty_commit: true
           publish_dir: ./web
           publish_branch: main
           external_repository: OpenJij/OpenJij-Top-Page
-          destination_dir: . 
+          destination_dir: web
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: ${{ github.event.head_commit.message }}
