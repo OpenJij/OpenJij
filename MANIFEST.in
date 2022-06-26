@@ -22,6 +22,7 @@ include cmake/llvm-cov-wrapper
 global-exclude .clang-format
 global-exclude .pre-commit-config.yaml
 global-exclude codecov.yml
+global-exclude oneAPI.repo
 global-exclude requirements.txt
 global-exclude dev-requirements.in
 global-exclude format-requirements.in
@@ -33,10 +34,10 @@ global-exclude .gitignore
 global-exclude Doxyfile
 global-exclude Doxyfile.bak
 
-plune benchmark
-plune project_template
-plune public
-plune www
+prune benchmark
+prune project_template
+prune public
+prune www
 prune share
 prune include
 prune docs
