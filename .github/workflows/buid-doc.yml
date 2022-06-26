@@ -97,11 +97,17 @@ jobs:
         #if: ${{github.event_name == 'release'}}
         uses: peaceiris/actions-gh-pages@v3
         with:
-         github_token: ${{ secrets.GITHUB_TOKEN }}
-         publish_dir: public
-         destination_dir: docs
+         personal_token: ${{ secrets.OPENJIJ_WEB }}
+         keep_files: true
          allow_empty_commit: true
+         publish_dir: ./public
+         publish_branch: main
+         external_repository: OpenJij/OpenJij-Reference-Page
+         destination_dir: www
          user_name: 'github-actions[bot]'
          user_email: 'github-actions[bot]@users.noreply.github.com'
+         commit_message: ${{ github.event.head_commit.message }}
+         full_commit_message: ${{ github.event.head_commit.message }}
          tag_name: ${{ steps.prepare_tag.outputs.deploy_tag_name }}
          tag_message: 'Deployment ${{ steps.prepare_tag.outputs.tag_name }}'
+         
