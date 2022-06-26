@@ -30,6 +30,8 @@ global-exclude dev-requirements.txt
 global-exclude format-requirements.txt
 global-exclude lint-requirements.in
 global-exclude lint-requirements.txt
+global-exclude build-requirements.in
+global-exclude build-requirements.txt
 global-exclude .gitignore 
 global-exclude Doxyfile
 global-exclude Doxyfile.bak
