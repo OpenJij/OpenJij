@@ -89,11 +89,11 @@ jobs:
         run: |
           set -x
           echo "::group::Set Intel oneAPI"
-          touch config.txt
-          echo "" >> config.txt
+          touch /tmp/tmp/config.txt
+          echo "" >> /tmp/tmp/config.txt
           source /opt/intel/oneapi/compiler/latest/env/vars.sh 
           source /opt/intel/oneapi/mkl/latest/env/vars.sh
-          source /opt/intel/oneapi/setvars.sh --force  --config="config.txt"
+          source /opt/intel/oneapi/setvars.sh --force  --config="/tmp/tmp/config.txt"
           du -a /opt/intel/oneapi/compiler/latest/linux/bin
           echo "::endgroup::"
           echo "::group::BUILD"
