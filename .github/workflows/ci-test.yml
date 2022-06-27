@@ -212,7 +212,7 @@ jobs:
       shell: bash
       run: |
           python -m pip install pip-tools 
-          pip-compile --pre
+          pip-compile 
           pip-compile dev-requirements.in
     - uses: actions/cache@v3
       if: always()
