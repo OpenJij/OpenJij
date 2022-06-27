@@ -12,24 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include(FetchContent)
+-c requirements.txt
 
-message(CHECK_START "cimod")
-list(APPEND CMAKE_MESSAGE_INDENT "  ")
-
-set(FETCHCONTENT_QUIET OFF)
-
-
-#### Cimod ####
-FetchContent_Declare(
-    cimod
-    GIT_REPOSITORY  https://github.com/OpenJij/cimod
-    GIT_TAG         v1.4.4
-    GIT_SHALLOW     TRUE
-    )
-
-FetchContent_MakeAvailable(cimod)
-
-
-list(POP_BACK CMAKE_MESSAGE_INDENT)
-message(CHECK_PASS "fetched")
+pip 
+cmake 
+ninja;sys_platform != 'win32'
+wheel 
+setuptools 
+setuptools_scm[toml]
+build 
+pybind11
+scikit-build 
+auditwheel
