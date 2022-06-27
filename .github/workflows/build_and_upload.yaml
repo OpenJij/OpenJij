@@ -114,7 +114,7 @@ jobs:
         shell: bash
         run: |
           set -x 
-          source /opt/intel/oneapi/setvars.sh --force  --config="config.txt"
+          source /opt/intel/oneapi/setvars.sh --force  --config="/tmp/tmp/config.txt"
           ${{matrix.python}} -m auditwheel -h
           ${{matrix.python}} -m auditwheel show -h
           ${{matrix.python}} -m auditwheel repair -h
