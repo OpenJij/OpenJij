@@ -89,6 +89,7 @@ jobs:
         run: |
           set -x
           echo "::group::Set Intel oneAPI"
+          mkdir -p /tmp/tmp
           touch /tmp/tmp/config.txt
           echo "" >> /tmp/tmp/config.txt
           source /opt/intel/oneapi/compiler/latest/env/vars.sh 
