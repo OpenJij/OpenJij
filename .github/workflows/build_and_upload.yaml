@@ -74,7 +74,7 @@ jobs:
       - name: Setup Intel oneAPI
         run: |
           set -eux
-          mv oneAPI.repo /etc/yum.repos.d/
+          cp oneAPI.repo /etc/yum.repos.d/
           #dnf -y install git make gcc findutils
       - name: Instal Intel oneAPI    
         run: |
