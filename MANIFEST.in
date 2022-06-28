@@ -42,6 +42,7 @@ prune public
 prune www
 prune share
 prune include
+prune **/include
 prune docs
 prune example
 prune .github
