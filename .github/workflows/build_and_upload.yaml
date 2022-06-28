@@ -76,6 +76,11 @@ jobs:
             ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}
             ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}
             ${{ runner.os }}-intel-
+      - name: Install Dependency 
+        run: |
+          set -eux
+          dnf config-manager --set-enabled powertools
+          dnf -y --enablerepo=powertools install eigen3-devel
       - name: Install Dependencies
         shell: bash
         run: |
@@ -90,11 +95,6 @@ jobs:
         run: |
           set -eux
           dnf -y install intel-basekit intel-hpckit
-      - name: Install Dependency 
-        run: |
-          set -eux
-          dnf config-manager --set-enabled powertools
-          dnf -y --enablerepo=powertools install eigen3-devel
       - name: Build 
         run: |
           set -x
