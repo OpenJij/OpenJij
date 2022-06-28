@@ -102,9 +102,9 @@ jobs:
           export CC=icx
           export CXX=icpx
           export FC=ifx
-          export CFLAGS='-march=haswell -mtune=skylake' 
-          export CXXFLAGS='-march=haswell -mtune=skylake' 
-          export FFLAGS='-march=haswell -mtune=skylake'
+          export CFLAGS='-march=haswell -mtune=skylake-avx512' 
+          export CXXFLAGS='-march=haswell -mtune=skylake-avx512' 
+          export FFLAGS='-march=haswell -mtune=skylake-avx512'
           ${{matrix.python}} -m build --wheel --outdir ./dist
           echo "::endgroup::"
           #. /opt/intel/oneapi/setvars.sh --force  --config="config.txt"
