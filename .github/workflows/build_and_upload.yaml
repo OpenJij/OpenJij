@@ -29,15 +29,25 @@ jobs:
   build_wheels_linux_x86_64:
     name: Build wheels linux x86_64
     runs-on: ubuntu-latest
-    container: quay.io/pypa/manylinux_2_28_x86_64:latest
+    container: ${{matrix.container}}
     strategy:
       fail-fast: false 
       matrix:  
         include:
          - python: /opt/python/cp37-cp37m/bin/python
+           container: quay.io/pypa/manylinux_2_28_x86_64:latest
          - python: /opt/python/cp38-cp38/bin/python
+           container: quay.io/pypa/manylinux_2_28_x86_64:latest
          - python: /opt/python/cp39-cp39/bin/python
+           container: quay.io/pypa/manylinux_2_28_x86_64:latest
          - python: /opt/python/cp310-cp310/bin/python
+           container: quay.io/pypa/manylinux_2_28_x86_64:latest
+         - python: /opt/python/cp37-cp37m/bin/python
+           container: quay.io/pypa/manylinux2014_x86_64:latest
+         - python: /opt/python/cp38-cp38/bin/python
+           container: quay.io/pypa/manylinux2014_x86_64:latest
+         - python: /opt/python/cp39-cp39/bin/python
+           container: quay.io/pypa/manylinux2014_x86_64:latest
                
     steps:
       - uses: actions/checkout@v3       
