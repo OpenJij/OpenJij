@@ -1,4 +1,5 @@
 # OpenJij : Framework for the Ising model and QUBO.
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3777cd71ce4a43a48096361076ba2e3b)](https://app.codacy.com/gh/OpenJij/OpenJij?utm_source=github.com&utm_medium=referral&utm_content=OpenJij/OpenJij&utm_campaign=Badge_Grade_Settings)
 [![PyPI version shields.io](https://img.shields.io/pypi/v/openjij.svg)](https://pypi.python.org/pypi/openjij/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/openjij.svg)](https://pypi.python.org/pypi/openjij/)
 [![PyPI implementation](https://img.shields.io/pypi/implementation/openjij.svg)](https://pypi.python.org/pypi/openjij/)
