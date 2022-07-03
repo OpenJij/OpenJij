@@ -18,12 +18,12 @@ except ImportError:
 
 import cimod
 import dimod
-from dimod import SPIN, BINARY, Vartype
-
 import numpy as np
 
-import openjij as oj
+from dimod import BINARY, SPIN
+
 import openjij
+import openjij as oj
 import openjij.cxxjij as cxxjij
 
 from openjij.sampler.sampler import BaseSampler
@@ -137,7 +137,9 @@ class SASampler(BaseSampler):
 
     def sample(
         self,
-        bqm: Union["openj.model.model.BinaryQuadraticModel", dimod.BinaryQuadraticModel],
+        bqm: Union[
+            "openj.model.model.BinaryQuadraticModel", dimod.BinaryQuadraticModel
+        ],
         beta_min: Optional[float] = None,
         beta_max: Optional[float] = None,
         num_sweeps: Optional[int] = None,
@@ -328,7 +330,9 @@ class SASampler(BaseSampler):
 
     def sample_hubo(
         self,
-        J: Union[dict, "openj.model.model.BinaryPolynomialModel", cimod.BinaryPolynomialModel],
+        J: Union[
+            dict, "openj.model.model.BinaryPolynomialModel", cimod.BinaryPolynomialModel
+        ],
         vartype: Optional[str] = None,
         beta_min: Optional[float] = None,
         beta_max: Optional[float] = None,

@@ -18,14 +18,14 @@ This module defines the abstract sampler (BaseSampler).
 import time
 
 import dimod
-from dimod import SPIN, BINARY, Vartype
 import numpy as np
 
 from cimod.utils import get_state_and_energy
+from dimod import BINARY, SPIN
 from dimod.core.sampler import samplemixinmethod
 
+import openjij
 import openjij as oj
-import openjij 
 import openjij.cxxjij as cxxjij
 
 
@@ -236,7 +236,9 @@ class BaseSampler(dimod.Sampler):
             )
             return self.sample(bqm, **parameters)
         elif isinstance(Q, np.ndarray):
-            bqm = oj.model.model.BinaryQuadraticModel.from_numpy_matrix(Q, vartype="BINARY")
+            bqm = oj.model.model.BinaryQuadraticModel.from_numpy_matrix(
+                Q, vartype="BINARY"
+            )
             return self.sample(bqm, **parameters)
         else:
             raise TypeError("Q must be either dict or np.ndarray")
