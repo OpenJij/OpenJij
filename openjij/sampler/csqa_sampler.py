@@ -1,7 +1,7 @@
 import numpy as np
 
-import openjij as oj
 import openjij
+import openjij as oj
 import openjij.cxxjij as cxxjij
 
 from openjij.sampler.sqa_sampler import SQASampler

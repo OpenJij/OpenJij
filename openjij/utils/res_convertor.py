@@ -30,7 +30,9 @@ def convert_response(response):
         from dimod.vartypes import BINARY
 
         vartype = "BINARY" if response.vartype == BINARY else "SPIN"
-        o_res = oj.sampler.response.Response(vartype=vartype, indices=list(response.variables))
+        o_res = oj.sampler.response.Response(
+            vartype=vartype, indices=list(response.variables)
+        )
         states = []
         energies = []
         for rec in response.record:
