@@ -10,7 +10,7 @@ jobs:
       - uses: actions/setup-python@v4
         name: Install Python
         with:
-          python-version: '3.9'
+          python-version: '3.10'
       - name: Get Python Version
         id: python-version
         run: |
