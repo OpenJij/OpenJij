@@ -169,6 +169,7 @@ jobs:
         du -a
     - uses: codecov/codecov-action@v3
       if: ${{ matrix.os != 'windows-latest'}}
+      continue-on-error: true
       with:
         token: ${{ secrets.CODECOV_TOKEN }} 
         working-directory: build/tests/CMakeFiles/cxxjij_test.dir/
@@ -348,6 +349,7 @@ jobs:
           python -m coverage json
           python -m coverage lcov
     - uses: codecov/codecov-action@v3
+      continue-on-error: true
       with:
           token: ${{ secrets.CODECOV_TOKEN }}
           env_vars: OS,PYTHON
@@ -358,6 +360,7 @@ jobs:
           verbose: true
     - name: Run codacy-coverage-reporter
       uses: codacy/codacy-coverage-reporter-action@v1
+      continue-on-error: true
       if: ${{ matrix.os != 'windows-latest'}}
       with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
