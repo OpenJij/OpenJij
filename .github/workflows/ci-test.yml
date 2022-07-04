@@ -365,6 +365,12 @@ jobs:
       with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: coverage.xml
+    - name: Publish code coverage
+      uses: paambaati/codeclimate-action@v3.0.0
+      continue-on-error: true
+      if: ${{ matrix.os != 'windows-latest'}}
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
     - name: du
       if: always()
       shell: bash
