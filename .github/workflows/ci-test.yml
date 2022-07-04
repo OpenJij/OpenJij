@@ -168,6 +168,7 @@ jobs:
         cd build 
         du -a
     - uses: codecov/codecov-action@v3
+      if: ${{ matrix.os != 'windows-latest'}}
       with:
         token: ${{ secrets.CODECOV_TOKEN }} 
         working-directory: build/tests/CMakeFiles/cxxjij_test.dir/
@@ -355,6 +356,12 @@ jobs:
           flags: openjij
           fail_ci_if_error: false
           verbose: true
+    - name: Run codacy-coverage-reporter
+      uses: codacy/codacy-coverage-reporter-action@v1
+      if: ${{ matrix.os != 'windows-latest'}}
+      with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage.xml
     - name: du
       if: always()
       shell: bash
