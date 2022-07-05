@@ -17,6 +17,19 @@ updates:
       - dependency-type: "all"
       
 - package-ecosystem: pip 
+  directory: "/setup.py" 
+  insecure-external-code-execution: allow
+  versioning-strategy: auto
+  schedule:
+    interval: "daily"
+  allow:
+      # Allow both direct and indirect updates for all packages
+      - dependency-type: "all"
+  labels:
+      - "python"
+      - "dependencies"      
+      
+- package-ecosystem: pip 
   directory: "/" 
   insecure-external-code-execution: allow
   versioning-strategy: auto
