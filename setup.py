@@ -62,6 +62,6 @@ setup(
         "openjij.utils",
     ],
     cmake_install_dir="openjij",
-    include_package_data=True,
+    include_package_data=False,
     zip_safe=False,
 )
