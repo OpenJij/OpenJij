@@ -88,6 +88,7 @@ pre-commit install
 ### Python 
 ```sh
 $ python -m venv .venv
+$ . .venv/bin/activate
 $ pip install pip-tools 
 $ pip-compile
 $ pip-compile dev-requirements.in
