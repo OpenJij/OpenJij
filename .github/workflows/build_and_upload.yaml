@@ -92,9 +92,9 @@ jobs:
           export CC=icx
           export CXX=icpx
           export FC=ifx
-          export CFLAGS='-march=haswell -mtune=skylake -fast' 
-          export CXXFLAGS='-march=haswell -mtune=skylake -fast' 
-          export FFLAGS='-march=haswell -mtune=skylake -fast'
+          export CFLAGS='-march=haswell -mtune=skylake -fast -march=haswell' 
+          export CXXFLAGS='-march=haswell -mtune=skylake -fast -march=haswell' 
+          export FFLAGS='-march=haswell -mtune=skylake -fast -march=haswell'
           ${{matrix.python}} -m build --wheel --outdir ./dist
           echo "::endgroup::"
           #. /opt/intel/oneapi/setvars.sh --force  --config="config.txt"
@@ -184,9 +184,9 @@ jobs:
           export CC=icx
           export CXX=icpx
           export FC=ifx
-          export CFLAGS='-march=haswell -mtune=skylake -fast' 
-          export CXXFLAGS='-march=haswell -mtune=skylake -fast' 
-          export FFLAGS='-march=haswell -mtune=skylake -fast'
+          export CFLAGS='-march=haswell -mtune=skylake -fast -march=haswell' 
+          export CXXFLAGS='-march=haswell -mtune=skylake -fast -march=haswell' 
+          export FFLAGS='-march=haswell -mtune=skylake -fast -march=haswell'
           ${{matrix.python}} -m build --wheel --outdir ./dist
           echo "::endgroup::"
           #. /opt/intel/oneapi/setvars.sh --force  --config="config.txt"
