@@ -35,13 +35,13 @@ jobs:
       matrix:  
         include:
          - python: /opt/python/cp37-cp37m/bin/python
-           container: ghcr.io/openjij/openjij-builder-manylinux_2_28_x86_64:latest
+           container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
          - python: /opt/python/cp38-cp38/bin/python
-           container: ghcr.io/openjij/openjij-builder-manylinux_2_28_x86_64:latest
+           container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
          - python: /opt/python/cp39-cp39/bin/python
-           container: ghcr.io/openjij/openjij-builder-manylinux_2_28_x86_64:latest
+           container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
          - python: /opt/python/cp310-cp310/bin/python
-           container: ghcr.io/openjij/openjij-builder-manylinux_2_28_x86_64:latest
+           container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
                
     steps:
       - uses: actions/checkout@v3       
@@ -92,9 +92,9 @@ jobs:
           export CC=icx
           export CXX=icpx
           export FC=ifx
-          export CFLAGS='-march=haswell -mtune=skylake' 
-          export CXXFLAGS='-march=haswell -mtune=skylake' 
-          export FFLAGS='-march=haswell -mtune=skylake'
+          export CFLAGS='-march=haswell -mtune=skylake -static' 
+          export CXXFLAGS='-march=haswell -mtune=skylake -static' 
+          export FFLAGS='-march=haswell -mtune=skylake -static'
           ${{matrix.python}} -m build --wheel --outdir ./dist
           echo "::endgroup::"
           #. /opt/intel/oneapi/setvars.sh --force  --config="config.txt"
@@ -111,7 +111,7 @@ jobs:
           du -ah ./dist
           cd dist
           for f in *.whl; do ${{matrix.python}} -m auditwheel show $f; done 
-          for f in *.whl; do ${{matrix.python}} -m auditwheel repair --lib-sdir . -w ../wheelhouse $f; done    
+          for f in *.whl; do ${{matrix.python}} -m auditwheel repair --lib-sdir /lib -w ../wheelhouse $f; done    
           cd ../wheelhouse
           du -ah ./
       - uses: actions/upload-artifact@v3
@@ -184,9 +184,9 @@ jobs:
           export CC=icx
           export CXX=icpx
           export FC=ifx
-          export CFLAGS='-march=haswell -mtune=skylake' 
-          export CXXFLAGS='-march=haswell -mtune=skylake' 
-          export FFLAGS='-march=haswell -mtune=skylake'
+          export CFLAGS='-march=haswell -mtune=skylake -static' 
+          export CXXFLAGS='-march=haswell -mtune=skylake -static' 
+          export FFLAGS='-march=haswell -mtune=skylake -static'
           ${{matrix.python}} -m build --wheel --outdir ./dist
           echo "::endgroup::"
           #. /opt/intel/oneapi/setvars.sh --force  --config="config.txt"
@@ -203,7 +203,7 @@ jobs:
           du -ah ./dist
           cd dist
           for f in *.whl; do ${{matrix.python}} -m auditwheel show $f; done 
-          for f in *.whl; do ${{matrix.python}} -m auditwheel repair --lib-sdir . -w ../wheelhouse $f; done    
+          for f in *.whl; do ${{matrix.python}} -m auditwheel repair --lib-sdir /lib -w ../wheelhouse $f; done    
           cd ../wheelhouse
           du -ah ./
       - uses: actions/upload-artifact@v3
