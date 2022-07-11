@@ -57,7 +57,7 @@ jobs:
         run: |
           set -eux
           ${{matrix.python}} -m pip install pip-tools 
-          ${{matrix.python}} -m piptools compile
+          ${{matrix.python}} -m piptools compile setup.cfg
           ${{matrix.python}} -m piptools compile build-requirements.in
       - uses: actions/cache@v3
         with:
@@ -149,7 +149,7 @@ jobs:
         run: |
           set -eux
           ${{matrix.python}} -m pip install pip-tools 
-          ${{matrix.python}} -m piptools compile
+          ${{matrix.python}} -m piptools compile setup.cfg
           ${{matrix.python}} -m piptools compile build-requirements.in
       - uses: actions/cache@v3
         with:
