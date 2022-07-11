@@ -35,13 +35,13 @@ jobs:
       matrix:  
         include:
          - python: /opt/python/cp37-cp37m/bin/python
-           container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
+           container: ghcr.io/openjij/openjij-builder-manylinux_2_28_x86_64:latest
          - python: /opt/python/cp38-cp38/bin/python
-           container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
+           container: ghcr.io/openjij/openjij-builder-manylinux_2_28_x86_64:latest
          - python: /opt/python/cp39-cp39/bin/python
-           container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
+           container: ghcr.io/openjij/openjij-builder-manylinux_2_28_x86_64:latest
          - python: /opt/python/cp310-cp310/bin/python
-           container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
+           container: ghcr.io/openjij/openjij-builder-manylinux_2_28_x86_64:latest
                
     steps:
       - uses: actions/checkout@v3       
