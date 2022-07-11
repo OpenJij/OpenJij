@@ -90,7 +90,7 @@ pre-commit install
 $ python -m venv .venv
 $ . .venv/bin/activate
 $ pip install pip-tools 
-$ pip-compile
+$ pip-compile setup.cfg
 $ pip-compile dev-requirements.in
 $ pip-sync requirements.txt dev-requirements.txt
 $ source .venv/bin/activate
@@ -134,7 +134,7 @@ $ python -m black ./openjij
 
 - Lint
 ```sh 
-$ pip-compile
+$ pip-compile setup.cfg
 $ pip-compile dev-requirements.in
 $ pip-compile lint-requirements.in
 $ pip-sync requirements.txt dev-requirements.txt lint-requirements.txt
