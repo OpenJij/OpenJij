@@ -30,7 +30,7 @@ except ImportError:
 
 setup_requires = [
     "numpy",
-    "pybind11 >= 2.9.2, < 2.10.0",
+    "pybind11 >= 2.10.0, < 2.11.0",
 ]
 
 if any(arg in sys.argv for arg in ("pytest", "test")):
