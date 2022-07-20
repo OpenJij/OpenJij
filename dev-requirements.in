@@ -16,8 +16,6 @@
 
 pre-commit
 
-pyqubo<1.1.0; python_version < "3.10"
-
 pytest-runner
 setuptools_scm[toml]
 cmake 
