@@ -15,8 +15,8 @@
 #pragma once
 
 #include <functional>
-#include "system/system.hpp"
-#include "utility/schedule_list.hpp"
+#include "openjij/system/system.hpp"
+#include "openjij/utility/schedule_list.hpp"
 
 namespace openjij {
     namespace algorithm {
