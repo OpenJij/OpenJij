@@ -18,7 +18,7 @@
 #include "openjij/system/gpu/chimera_gpu_transverse.hpp"
 #include "openjij/system/gpu/chimera_gpu_classical.hpp"
 #include "openjij/utility/schedule_list.hpp"
-#include "openjij/utility/random.hpp'
+#include "openjij/utility/random.hpp"
 #include "openjij/system/gpu/chimera_cuda/kernel.hpp"
 
 namespace openjij {
