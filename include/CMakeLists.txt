@@ -31,7 +31,7 @@ if(CUDAToolkit_FOUND)
 endif()
 
 target_include_directories(cxxjij_header_only INTERFACE 
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${OPENJIJ_INCLUDE_DIR}>
   $<INSTALL_INTERFACE:include>
 )
 
