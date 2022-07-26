@@ -17,11 +17,11 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <graph/all.hpp>
-#include <system/all.hpp>
-#include <updater/all.hpp>
-#include <algorithm/all.hpp>
-#include <result/all.hpp>
+#include <openjij/graph/all.hpp>
+#include <openjij/system/all.hpp>
+#include <openjij/updater/all.hpp>
+#include <openjij/algorithm/all.hpp>
+#include <openjij/result/all.hpp>
 
 std::vector<openjij::graph::Spin> PolynomialGetSpinState(std::size_t basis, const std::size_t system_size, const cimod::Vartype &vartype) {
    std::vector<openjij::graph::Spin> spins(system_size);
