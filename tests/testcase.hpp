@@ -12,10 +12,9 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef OPENJIJ_TEST_TESTCASE_HPP__
-#define OPENJIJ_TEST_TESTCASE_HPP__
+#pragma once
 
-#include <graph/all.hpp>
+#include "openjij/graph/all.hpp"
 #include <iostream>
 #include <bitset>
 
@@ -381,4 +380,3 @@ openjij::graph::Spins get_true_chimera_groundstate(const openjij::graph::Chimera
     return ret_spin;
 }
 
-#endif
