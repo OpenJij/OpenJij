@@ -222,7 +222,7 @@ else()
   include(external/cimod.cmake)
 endif()
 
-add_subdirectory(src)
+add_subdirectory(include)
 
 # Build Python Extension 
 if(SKBUILD AND OPENJIJ_MAIN_PROJECT)
