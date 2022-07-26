@@ -50,7 +50,7 @@ flag_management:
 flags:
   cxxopenjij:
     paths: 
-      - src
+      - include
     carryforward: true
   openjij:
     paths: 
