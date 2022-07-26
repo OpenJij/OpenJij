@@ -20,8 +20,8 @@
 #include "declare.hpp"
 
 //disable Eigen warning
-#include <utility/disable_eigen_warning.hpp>
-#include <utility/random.hpp>
+#include <openjij/utility/disable_eigen_warning.hpp>
+#include <openjij/utility/random.hpp>
 
 #include <type_traits>
 

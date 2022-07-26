@@ -12,16 +12,16 @@
 #include <algorithm>
 
 // include OpenJij
-#include <graph/all.hpp>
-#include <system/all.hpp>
-#include <updater/all.hpp>
-#include <algorithm/all.hpp>
-#include <result/all.hpp>
-#include <utility/schedule_list.hpp>
-#include <utility/union_find.hpp>
-#include <utility/random.hpp>
-#include <utility/gpu/memory.hpp>
-#include <utility/gpu/cublas.hpp>
+#include <openjij/graph/all.hpp>
+#include <openjij/system/all.hpp>
+#include <openjij/updater/all.hpp>
+#include <openjij/algorithm/all.hpp>
+#include <openjij/result/all.hpp>
+#include <openjij/utility/schedule_list.hpp>
+#include <openjij/utility/union_find.hpp>
+#include <openjij/utility/random.hpp>
+#include <openjij/utility/gpu/memory.hpp>
+#include <openjij/utility/gpu/cublas.hpp>
 
 #include "polynomial_test.hpp"
 
@@ -38,7 +38,7 @@ static constexpr std::size_t num_system_size = 8;
 
 #define TEST_CASE_INDEX 1
 
-#include "./testcase.hpp"
+#include "testcase.hpp"
 
 
 static openjij::utility::ClassicalScheduleList generate_schedule_list(){

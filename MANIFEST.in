@@ -7,7 +7,7 @@ include pyproject.toml
 
 graft openjij
 graft tests 
-graft src 
+graft include
 graft external
 
 prune cmake

@@ -1,4 +1,4 @@
-//    Copyright 2021 Jij Inc.
+//    Copyright 2022 Jij Inc.
 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@
 #include <pybind11_json/pybind11_json.hpp>
 #include <nlohmann/json.hpp>
 
-#include <graph/all.hpp>
-#include <system/all.hpp>
-#include <updater/all.hpp>
-#include <algorithm/all.hpp>
-#include <result/all.hpp>
+#include <openjij/graph/all.hpp>
+#include <openjij/system/all.hpp>
+#include <openjij/updater/all.hpp>
+#include <openjij/algorithm/all.hpp>
+#include <openjij/result/all.hpp>
 
 namespace py = pybind11;
 

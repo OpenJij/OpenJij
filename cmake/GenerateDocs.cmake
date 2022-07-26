@@ -110,7 +110,7 @@ if (DOXYGEN_FOUND)
         set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${PROJECT_SOURCE_DIR}/README.md")
         
         doxygen_add_docs(cxxjij_header_only_docs
-                         ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/openjij ${PROJECT_SOURCE_DIR}/README.md
+                         ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/openjij ${PROJECT_SOURCE_DIR}/README.md
                          ALL
                          COMMENT "Generate documentation with Doxygen")
         install(DIRECTORY ${PROJECT_BINARY_DIR}/html
