@@ -18,18 +18,35 @@ project(openjij
     HOMEPAGE_URL "https://www.openjij.org"
 )
 
-set(MAIN_PROJECT OFF)
+# Standard includes
+include(CheckLanguage)
+
+set(OPENJIJ_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    set(MAIN_PROJECT ON)
+    if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
+        set(lines "You are building in-place.") 
+        message(AUTHOR_WARNING ${lines})
+    endif()
+    set(CIMOD_MAIN_PROJECT ON)
+    message(STATUS "CMake ${CMAKE_VERSION}")
+    if(CMAKE_CXX_STANDARD)
+        set(CMAKE_CXX_EXTENSIONS OFF)
+        set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    endif()
+else()
+  set(OPENJIJ_MAIN_PROJECT OFF)
 endif()
 
-option(BUILD_TESTING "Enable CTest support." OFF)
+# Options
+option(OPENJIJ_INSTALL "Install cimod header files?" ${OPENJIJ_MAIN_PROJECT})
+option(OPENJIJ_TEST "Build cimod test suite?" ${OPENJIJ_MAIN_PROJECT})
+option(OPENJIJ_DOCS "Build cimod docs?" ${OPENJIJ_MAIN_PROJECT})
 option(BUILD_DOCS "Enable Doxygen support." OFF)
+option(CMAKE_REQUIRE_FAILE "If CMake could not find dependencies, build will faile." OFF)
 
 list(APPEND CMAKE_MODULE_PATH external)
 list(APPEND CMAKE_MODULE_PATH cmake)
-
-include(CheckLanguage)
 
 check_language(C)
 check_language(CXX)
@@ -46,6 +63,14 @@ if(UNIX AND NOT APPLE)
   if(CMAKE_Fortran_COMPILER)
       enable_language(Fortran)
   endif()
+endif()
+
+if(CMAKE_REQUIRE_FAILE) 
+   set(CMAKE_REQUIRE_FIND_PACKAGE_Eigen3 ON) 
+   set(CMAKE_REQUIRE_FIND_PACKAGE_nlohmann_json ON) 
+   set(CMAKE_REQUIRE_FIND_PACKAGE_pybind11 ON) 
+   set(CMAKE_REQUIRE_FIND_PACKAGE_pybind11_json ON) 
+   set(CMAKE_REQUIRE_FIND_PACKAGE_GTest ON)
 endif()
 
 # detect operating system and host processor
@@ -200,9 +225,10 @@ endif()
 add_subdirectory(src)
 
 # Build Python Extension 
-if(SKBUILD AND MAIN_PROJECT)
+if(SKBUILD AND OPENJIJ_MAIN_PROJECT)
   message(STATUS "Build Python Extension.")
   option(WITH_THREAD "Compile in rudimentary thread support" ON)
+  option(BUILD_TESTING "Enable CTest support." OFF)
   find_package(Python3 COMPONENTS Interpreter Development NumPy)
   # Scikit-Build does not add your site-packages to the search path
   # automatically, so we need to add it _or_ the pybind11 specific directory
@@ -229,7 +255,7 @@ if(SKBUILD AND MAIN_PROJECT)
   endif()
   
   add_subdirectory(openjij)
-elseif(MAIN_PROJECT AND ((${CMAKE_BUILD_TYPE} MATCHES Debug) OR BUILD_TESTING))
+elseif(OPENJIJ_MAIN_PROJECT AND ((${CMAKE_BUILD_TYPE} MATCHES Debug) OR OPENJIJ_TEST))
   include(CTest)
   if(ENABLE_COVERAGE AND (NOT MSVC))
     message(STATUS "Use Codecov")
@@ -249,6 +275,6 @@ elseif(MAIN_PROJECT AND ((${CMAKE_BUILD_TYPE} MATCHES Debug) OR BUILD_TESTING))
   endif()
 endif()
 
-if (MAIN_PROJECT AND BUILD_DOCS)
+if (OPENJIJ_MAIN_PROJECT AND BUILD_DOCS AND OPENJIJ_DOCS)
     include(cmake/GenerateDocs.cmake)
 endif ()
