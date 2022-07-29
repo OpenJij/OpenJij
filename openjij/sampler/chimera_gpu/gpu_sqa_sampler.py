@@ -17,7 +17,7 @@ import openjij
 import openjij as oj
 import openjij.cxxjij as cxxjij
 
-from openjij.sampler.chimera_gpu.base_gpu_chimera.base_gpu_chimera import (
+from openjij.sampler.chimera_gpu.base_gpu_chimera import (
     BaseGPUChimeraSampler,
 )
 from openjij.sampler.sqa_sampler import SQASampler
