@@ -20,15 +20,17 @@
 
 #pragma once
 
-#include "openjij/graph/graph.hpp"
-#include "openjij/graph/json/parse.hpp"
 #include <algorithm>
 #include <cassert>
-#include <cimod/binary_polynomial_model.hpp>
 #include <cstddef>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
+
+#include <cimod/binary_polynomial_model.hpp>
+
+#include "openjij/graph/graph.hpp"
+#include "openjij/graph/json/parse.hpp"
 
 namespace openjij {
 namespace graph {
