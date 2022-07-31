@@ -14,12 +14,12 @@
 
 #pragma once
 
-#include "openjij/graph/all.hpp"
-#include "openjij/system/system.hpp"
 #include <cassert>
 #include <utility>
 #include <vector>
 
+#include "openjij/graph/all.hpp"
+#include "openjij/system/system.hpp'
 #include "openjij/utility/eigen.hpp"
 
 namespace openjij {
