@@ -13,9 +13,9 @@
 //    limitations under the License.
 #pragma once
 
-#include "openjij/graph/graph.hpp"
+#include "openjij/graph/chimera.hpp"
 #include "openjij/graph/dense.hpp"
+#include "openjij/graph/graph.hpp"
+#include "openjij/graph/polynomial.hpp"
 #include "openjij/graph/sparse.hpp"
 #include "openjij/graph/square.hpp"
-#include "openjij/graph/chimera.hpp"
-#include "openjij/graph/polynomial.hpp"

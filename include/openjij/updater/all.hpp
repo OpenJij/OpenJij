@@ -14,13 +14,13 @@
 
 #pragma once
 
-//disable Eigen warning
+// disable Eigen warning
 #include "openjij/utility/disable_eigen_warning.hpp"
 
-#include "openjij/updater/single_spin_flip.hpp"
-#include "openjij/updater/k_local.hpp"
-#include "openjij/updater/swendsen_wang.hpp"
 #include "openjij/updater/continuous_time_swendsen_wang.hpp"
+#include "openjij/updater/k_local.hpp"
+#include "openjij/updater/single_spin_flip.hpp"
+#include "openjij/updater/swendsen_wang.hpp"
 
 #ifdef USE_CUDA
 #include "openjij/updater/gpu.hpp"
