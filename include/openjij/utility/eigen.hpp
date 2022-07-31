@@ -14,9 +14,10 @@
 
 #pragma once
 
-#include "openjij/graph/all.hpp"
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+
+#include "openjij/graph/all.hpp"
 
 namespace openjij {
 namespace utility {
