@@ -17,13 +17,14 @@
 
 #ifdef USE_CUDA
 
+#include <cstddef>
+#include <vector>
+
 #include "openjij/graph/all.hpp"
 #include "openjij/system/gpu/chimera_cuda/index.hpp"
 #include "openjij/system/system.hpp"
 #include "openjij/system/transverse_ising.hpp"
 #include "openjij/utility/gpu/memory.hpp"
-#include <cstddef>
-#include <vector>
 
 namespace openjij {
 namespace system {
