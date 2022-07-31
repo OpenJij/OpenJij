@@ -17,10 +17,11 @@
 
 #ifdef USE_CUDA
 
-#include "openjij/utility/gpu/handle_error.hpp"
-#include "openjij/utility/gpu/memory.hpp"
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
+
+#include "openjij/utility/gpu/handle_error.hpp"
+#include "openjij/utility/gpu/memory.hpp"
 
 namespace openjij {
 namespace utility {
