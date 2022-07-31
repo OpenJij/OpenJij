@@ -14,16 +14,18 @@
 
 #pragma once
 
-#include "openjij/graph/all.hpp"
-#include "openjij/system/system.hpp"
-#include "openjij/utility/eigen.hpp"
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
 #include <cassert>
 #include <type_traits>
 #include <utility>
 
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+
 #include <cimod/utilities.hpp>
+
+#include "openjij/graph/all.hpp"
+#include "openjij/system/system.hpp"
+#include "openjij/utility/eigen.hpp"
 
 namespace openjij {
 namespace system {
