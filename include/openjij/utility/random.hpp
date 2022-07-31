@@ -18,12 +18,16 @@
 #include <random>
 
 #ifdef USE_CUDA
-#include "openjij/utility/gpu/handle_error.hpp"
-#include "openjij/utility/gpu/memory.hpp"
+
+#include <utility>
 #include <cassert>
+
 #include <cuda_runtime.h>
 #include <curand.h>
-#include <utility>
+
+#include "openjij/utility/gpu/handle_error.hpp"
+#include "openjij/utility/gpu/memory.hpp"
+
 #endif
 
 namespace openjij {
