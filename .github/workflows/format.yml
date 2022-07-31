@@ -70,9 +70,13 @@ jobs:
           set -eux
           python -m black ./openjij
           python -m black setup.py
-      #- name: clang-format
-      #  run: |
-      #   find src/ -iname *.hpp | xargs clang-format -i
+      - name: clang-format
+        run: |
+         find include/ -iname *.hpp | xargs clang-format -i
+         find openjij/ -iname *.hpp | xargs clang-format -i
+         find openjij/ -iname *.cpp | xargs clang-format -i
+      - name: MarkDown 
+        run: python -m mdformat .
       - name: Git ADD 
         run: |
           set -eux 
