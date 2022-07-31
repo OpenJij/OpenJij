@@ -14,11 +14,13 @@
 
 #pragma once
 
+#include <sstream>
+
+#include <nlohmann/json.hpp>
+
 #include "openjij/graph/all.hpp"
 #include "openjij/graph/json/parse.hpp"
 #include "openjij/utility/thres_hold.hpp"
-#include <nlohmann/json.hpp>
-#include <sstream>
 
 namespace openjij {
 namespace system {
