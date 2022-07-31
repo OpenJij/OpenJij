@@ -14,15 +14,18 @@
 
 #pragma once
 
-#include "openjij/graph/graph.hpp"
+#include <exception>
+#include <tuple>
+#include <vector>
+#include <numeric>
+
+#include <nlohmann/json.hpp>
+
 #include <cimod/binary_polynomial_model.hpp>
 #include <cimod/binary_quadratic_model.hpp>
 #include <cimod/binary_quadratic_model_dict.hpp>
-#include <exception>
-#include <nlohmann/json.hpp>
-#include <numeric>
-#include <tuple>
-#include <vector>
+
+#include "openjij/graph/graph.hpp"
 
 namespace openjij {
 namespace graph {
