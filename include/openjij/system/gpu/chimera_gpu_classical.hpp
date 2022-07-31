@@ -17,9 +17,10 @@
 
 #ifdef USE_CUDA
 
+#include <cstddef>
+
 #include "openjij/system/gpu/chimera_gpu_transverse.hpp"
 #include "openjij/system/system.hpp"
-#include <cstddef>
 
 namespace openjij {
 namespace system {
