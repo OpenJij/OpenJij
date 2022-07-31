@@ -22,8 +22,9 @@
 #include <type_traits>
 #include <vector>
 
-#include "openjij/utility/disable_eigen_warning.hpp"
 #include <Eigen/Dense>
+
+#include "openjij/utility/disable_eigen_warning.hpp"
 
 #include "openjij/graph/graph.hpp"
 #include "openjij/graph/json/parse.hpp"
