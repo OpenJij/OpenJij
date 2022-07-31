@@ -17,8 +17,9 @@
 
 #ifdef USE_CUDA
 
-#include "openjij/system/gpu/chimera_cuda/index.hpp"
 #include <cuda_runtime.h>
+
+#include "openjij/system/gpu/chimera_cuda/index.hpp"
 
 namespace openjij {
 namespace system {
