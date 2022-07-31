@@ -15,9 +15,10 @@
 #pragma once
 
 #include <cstddef>
-#include <nlohmann/json.hpp>
 #include <random>
 #include <vector>
+
+#include <nlohmann/json.hpp>
 
 namespace openjij {
 namespace graph {
