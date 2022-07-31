@@ -14,11 +14,12 @@
 
 #pragma once
 
-#include "openjij/graph/all.hpp"
-#include "openjij/system/all.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>
+
+#include "openjij/graph/all.hpp"
+#include "openjij/system/all.hpp"
 
 #ifdef USE_CUDA
 #include "openjij/utility/gpu/memory.hpp"
