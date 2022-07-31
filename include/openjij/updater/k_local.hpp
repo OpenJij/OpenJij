@@ -13,10 +13,10 @@
 
 #pragma once
 
+#include <random>
+
 #include "openjij/system/k_local_polynomial.hpp"
 #include "openjij/utility/schedule_list.hpp"
-
-#include <random>
 
 namespace openjij {
 namespace updater {
