@@ -16,3 +16,8 @@ isort
 black 
 autoflake
 autopep8
+mdformat
+mdformat-gfm
+mdformat-frontmatter
+mdformat-footnote
+mdformat-myst
