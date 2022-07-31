@@ -12,18 +12,17 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#include <pybind11/eval.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/eval.h>
 #include <pybind11_json/pybind11_json.hpp>
 
-#include "compile_config.hpp"
-#include "declare.hpp"
-
+#include <type_traits>
 // disable Eigen warning
 #include <openjij/utility/disable_eigen_warning.hpp>
 #include <openjij/utility/random.hpp>
 
-#include <type_traits>
+#include "compile_config.hpp"
+#include "declare.hpp"
 
 PYBIND11_MODULE(cxxjij, m) {
   m.doc() = "openjij is a framework for ising and qubo";
