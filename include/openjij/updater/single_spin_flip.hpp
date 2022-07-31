@@ -14,11 +14,11 @@
 #pragma once
 
 #include <random>
+#include <type_traits>
 
 #include "openjij/system/classical_ising.hpp"
 #include "openjij/system/transverse_ising.hpp"
 #include "openjij/utility/schedule_list.hpp"
-#include <type_traits>
 
 #ifdef USE_OMP
 #include <omp.h>
