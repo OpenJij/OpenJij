@@ -14,9 +14,10 @@
 
 #pragma once
 
+#include <functional>
+
 #include "openjij/system/system.hpp"
 #include "openjij/utility/schedule_list.hpp"
-#include <functional>
 
 namespace openjij {
 namespace algorithm {
