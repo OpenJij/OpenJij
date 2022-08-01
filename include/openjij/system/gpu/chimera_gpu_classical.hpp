@@ -18,67 +18,74 @@
 #ifdef USE_CUDA
 
 #include <cstddef>
-#include "openjij/system/system.hpp"
+
 #include "openjij/system/gpu/chimera_gpu_transverse.hpp"
+#include "openjij/system/system.hpp"
 
 namespace openjij {
-    namespace system {
+namespace system {
 
-        /**
-         * @brief Chimera Classical Ising structure with cuda
-         *
-         * @tparam FloatType
-         * @tparam rows_per_block
-         * @tparam cols_per_block
-         */
-        template<typename FloatType,
-            std::size_t rows_per_block=2,
-            std::size_t cols_per_block=2>
-                struct ChimeraClassicalGPU : public ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, 1>{
-                    using system_type = classical_system;
-                    using Base = ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, 1>;
+/**
+ * @brief Chimera Classical Ising structure with cuda
+ *
+ * @tparam FloatType
+ * @tparam rows_per_block
+ * @tparam cols_per_block
+ */
+template <typename FloatType, std::size_t rows_per_block = 2,
+          std::size_t cols_per_block = 2>
+struct ChimeraClassicalGPU
+    : public ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block,
+                                  1> {
+  using system_type = classical_system;
+  using Base =
+      ChimeraTransverseGPU<FloatType, rows_per_block, cols_per_block, 1>;
 
-                    /**
-                     * @brief Chimera classical ising constructor
-                     *
-                     * @param init_spin
-                     * @param init_interaction
-                     * @param device_num
-                     */
-                    ChimeraClassicalGPU(const graph::Spins& init_spin, const graph::Chimera<FloatType>& init_interaction, int device_num=0)
-                    : Base(init_spin, init_interaction, 1.0, 1, device_num){}
+  /**
+   * @brief Chimera classical ising constructor
+   *
+   * @param init_spin
+   * @param init_interaction
+   * @param device_num
+   */
+  ChimeraClassicalGPU(const graph::Spins &init_spin,
+                      const graph::Chimera<FloatType> &init_interaction,
+                      int device_num = 0)
+      : Base(init_spin, init_interaction, 1.0, 1, device_num) {}
 
-                    /**
-                     * @brief reset spins
-                     *
-                     * @param init__spin
-                     */
-                    void reset_spins(const graph::Spins& init_spin){
-                        Base::reset_spins(init_spin);
-                    }
-                };
+  /**
+   * @brief reset spins
+   *
+   * @param init__spin
+   */
+  void reset_spins(const graph::Spins &init_spin) {
+    Base::reset_spins(init_spin);
+  }
+};
 
-        /**
-         * @brief helper function for Chimera ClassicalIsing constructor
-         *
-         * @tparam rows_per_block
-         * @tparam cols_per_block
-         * @tparam FloatType
-         * @param init__spin
-         * @param init_interaction
-         * @param device_num
-         *
-         * @return 
-         */
-        template<std::size_t rows_per_block=2,
-            std::size_t cols_per_block=2,
-            typename FloatType>
-                ChimeraClassicalGPU<FloatType, rows_per_block, cols_per_block> make_chimera_classical_gpu(
-                        const graph::Spins& init_spin, const graph::Chimera<FloatType>& init_interaction, int device_num=0){
-                    return ChimeraClassicalGPU<FloatType, rows_per_block, cols_per_block>(init_spin, init_interaction, device_num);
-                }
+/**
+ * @brief helper function for Chimera ClassicalIsing constructor
+ *
+ * @tparam rows_per_block
+ * @tparam cols_per_block
+ * @tparam FloatType
+ * @param init__spin
+ * @param init_interaction
+ * @param device_num
+ *
+ * @return
+ */
+template <std::size_t rows_per_block = 2, std::size_t cols_per_block = 2,
+          typename FloatType>
+ChimeraClassicalGPU<FloatType, rows_per_block, cols_per_block>
+make_chimera_classical_gpu(const graph::Spins &init_spin,
+                           const graph::Chimera<FloatType> &init_interaction,
+                           int device_num = 0) {
+  return ChimeraClassicalGPU<FloatType, rows_per_block, cols_per_block>(
+      init_spin, init_interaction, device_num);
+}
 
-    } // namespace system
+} // namespace system
 } // namespace openjij
 
 #endif

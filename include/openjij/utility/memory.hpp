@@ -18,21 +18,20 @@
 #include <utility>
 
 namespace openjij {
-    namespace utility {
+namespace utility {
 
-        /**
-         * @brief make_unique function
-         *
-         * @tparam T
-         * @tparam ...Args
-         * @param ...args
-         *
-         * @return unique_ptr
-         */
-        template<typename T, typename ...Args>
-            std::unique_ptr<T> make_unique( Args&& ...args )
-            {
-                return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
-            }
-    } // namespace utility
+/**
+ * @brief make_unique function
+ *
+ * @tparam T
+ * @tparam ...Args
+ * @param ...args
+ *
+ * @return unique_ptr
+ */
+template <typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args &&...args) {
+  return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+} // namespace utility
 } // namespace openjij

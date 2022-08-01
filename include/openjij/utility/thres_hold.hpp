@@ -17,8 +17,7 @@
 namespace openjij {
 namespace utility {
 
-template<typename FloatType>
-const FloatType THRESHOLD = 0.00000001;/*10^-8*/
+template <typename FloatType> const FloatType THRESHOLD = 0.00000001; /*10^-8*/
 
 }
-}
+} // namespace openjij

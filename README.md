@@ -1,4 +1,5 @@
 # OpenJij : Framework for the Ising model and QUBO.
+
 [![PyPI version shields.io](https://img.shields.io/pypi/v/openjij.svg)](https://pypi.python.org/pypi/openjij/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/openjij.svg)](https://pypi.python.org/pypi/openjij/)
 [![PyPI implementation](https://img.shields.io/pypi/implementation/openjij.svg)](https://pypi.python.org/pypi/openjij/)
@@ -9,39 +10,48 @@
 ![build-test](https://github.com/OpenJij/OpenJij/workflows/build-test/badge.svg)
 [![Build Documentation](https://github.com/OpenJij/OpenJij/actions/workflows/buid-doc.yml/badge.svg)](https://github.com/OpenJij/OpenJij/actions/workflows/buid-doc.yml)
 [![CodeQL](https://github.com/OpenJij/OpenJij/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/OpenJij/OpenJij/actions/workflows/codeql-analysis.yml)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0204475dc07d48ffa851480d03db759e)](https://www.codacy.com/gh/OpenJij/OpenJij/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=OpenJij/OpenJij&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0204475dc07d48ffa851480d03db759e)](https://www.codacy.com/gh/OpenJij/OpenJij/dashboard?utm_source=github.com&utm_medium=referral&utm_content=OpenJij/OpenJij&utm_campaign=Badge_Grade)
 [![Maintainability](https://api.codeclimate.com/v1/badges/3b2f43f3e601ae74c497/maintainability)](https://codeclimate.com/github/OpenJij/OpenJij/maintainability)
 [![codecov](https://codecov.io/gh/OpenJij/OpenJij/branch/main/graph/badge.svg?token=WMSK3GS8E5)](https://codecov.io/gh/OpenJij/OpenJij)
 
-## Coverage Graph 
-|**Sunburst**|**Grid**|**Icicle**|
-| ---- | ---- | ---- |
-|<a href="https://codecov.io/gh/OpenJij/OpenJij"><img src="https://codecov.io/gh/OpenJij/OpenJij/branch/main/graphs/sunburst.svg?token=WMSK3GS8E5" width="100%"/></a>|<a href="https://codecov.io/gh/OpenJij/OpenJij"><img src="https://codecov.io/gh/OpenJij/OpenJij/branch/main/graphs/tree.svg?token=WMSK3GS8E5" width="100%"/></a>|<a href="https://codecov.io/gh/OpenJij/OpenJij"><img src="https://codecov.io/gh/OpenJij/OpenJij/branch/main/graphs/icicle.svg?token=WMSK3GS8E5" width="100%"/></a>|
+## Coverage Graph
 
-* python >= 3.7
-* (optional) gcc >= 7.0.0
-* (optional) cmake >= 3.22
-* (optional) Ninja 
+| **Sunburst**                                                                                                                                                         | **Grid**                                                                                                                                                         | **Icicle**                                                                                                                                                         |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <a href="https://codecov.io/gh/OpenJij/OpenJij"><img src="https://codecov.io/gh/OpenJij/OpenJij/branch/main/graphs/sunburst.svg?token=WMSK3GS8E5" width="100%"/></a> | <a href="https://codecov.io/gh/OpenJij/OpenJij"><img src="https://codecov.io/gh/OpenJij/OpenJij/branch/main/graphs/tree.svg?token=WMSK3GS8E5" width="100%"/></a> | <a href="https://codecov.io/gh/OpenJij/OpenJij"><img src="https://codecov.io/gh/OpenJij/OpenJij/branch/main/graphs/icicle.svg?token=WMSK3GS8E5" width="100%"/></a> |
+
+- python >= 3.7
+- (optional) gcc >= 7.0.0
+- (optional) cmake >= 3.22
+- (optional) Ninja
 
 ### Change **IMPORT**
+
 - OpenJij >= v0.5.0
-  ``` python
+
+  ```python
   import openjij.cxxjij
   ```
-- OpenJij <= v0.4.9
-  ``` python
+
+- OpenJij \<= v0.4.9
+
+  ```python
   import cxxjij
   ```
 
 - [Documents](https://openjij.github.io/OpenJij_Documentation/build/html/)
+
 - [Tutorials](https://openjij.github.io/OpenJijTutorial/build/html/index.html)
+
 - [C++ Docs](https://openjij.github.io/OpenJij-Reference-Page/index.html)
 
 ## install
 
 ### install via pip
+
 > Note: To use GPGPU algorithms, please follow the section [`install via pip from source codes`](#install-via-pip-from-source-codes) below.
 > GPGPU algorithms are automatically enabled once CMake finds CUDA frameworks during installation.
+
 ```
 # Binary
 $ pip install openjij 
@@ -50,11 +60,14 @@ $ pip install --no-binary=openjij,jij-cimod  openjij
 ```
 
 ### install via pip from source codes
+
 To install OpenJij from source codes, please install CMake first then install OpenJij.
 
 #### cmake setup
-If you want to use setup.py instead of PIP, You will need to install CMake\>\=3.22.  
+
+If you want to use setup.py instead of PIP, You will need to install CMake>=3.22.\
 We are Highly recommended install CMake via PYPI.
+
 ```
 $ pip install -U cmake
 ```
@@ -68,24 +81,29 @@ $ pip install --no-binary=openjij,jij-cimod openjij
 ```
 
 ### install from github repository
+
 ```
 $ git clone git@github.com:OpenJij/OpenJij.git
 $ cd openjij
 $ python -m pip install -vvv .
 ```
-## For Contributor 
+
+## For Contributor
+
 Use `pre-commit` for auto chech before git commit.
 `.pre-commit-config.yaml`
-``` 
+
+```
 # pipx install pre-commit 
 # or 
 # pip install pre-commit
 pre-commit install
 ```
 
-## Test 
+## Test
 
-### Python 
+### Python
+
 ```sh
 $ python -m venv .venv
 $ . .venv/bin/activate
@@ -100,7 +118,8 @@ $ python setup.py --build-type Debug test
 $ python -m coverage html
 ```
 
-### C++ 
+### C++
+
 ```sh
 $ mkdir build 
 $ cmake -DCMAKE_BUILD_TYPE=Debug -S . -B build
@@ -113,18 +132,21 @@ $ ctest --extra-verbose --parallel --schedule-random
 
 Needs: CMake > 3.22, C++17
 
-- Format 
+- Format
+
 ```sh
 $ pip-compile format-requirements.in
 $ pip-sync format-requirements.txt
 ```
-``` sh
+
+```sh
 $ python -m isort 
 $ python -m black 
 ```
 
 - Aggressive Format
-```sh 
+
+```sh
 $ python -m isort --force-single-line-imports --verbose ./openjij
 $ python -m autoflake --in-place --recursive --remove-all-unused-imports --ignore-init-module-imports --remove-unused-variables ./openjij
 $ python -m autopep8 --in-place --aggressive --aggressive  --recursive ./openjij
@@ -133,18 +155,19 @@ $ python -m black ./openjij
 ```
 
 - Lint
-```sh 
+
+```sh
 $ pip-compile setup.cfg
 $ pip-compile dev-requirements.in
 $ pip-compile lint-requirements.in
 $ pip-sync requirements.txt dev-requirements.txt lint-requirements.txt
 ```
-``` sh 
+
+```sh
 $ python -m flake8
 $ python -m mypy
 $ python -m pyright
 ```
-
 
 ## How to use
 
@@ -174,17 +197,20 @@ This product is maintained by Jij Inc.
 **Please visit our website for more information!**
 https://www.j-ij.com/
 
-### Licences 
-Copyright 2022 Jij Inc.  
+### Licences
 
-Licensed under the Apache License, Version 2.0 (the "License");  
-you may not use this file except in compliance with the License.  
-You may obtain a copy of the License at  
+Copyright 2022 Jij Inc.
 
-     http://www.apache.org/licenses/LICENSE-2.0  
+Licensed under the Apache License, Version 2.0 (the "License");\
+you may not use this file except in compliance with the License.\
+You may obtain a copy of the License at
 
-Unless required by applicable law or agreed to in writing, software  
-distributed under the License is distributed on an "AS IS" BASIS,  
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  
-See the License for the specific language governing permissions and  
-limitations under the License.  
+```
+ http://www.apache.org/licenses/LICENSE-2.0  
+```
+
+Unless required by applicable law or agreed to in writing, software\
+distributed under the License is distributed on an "AS IS" BASIS,\
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\
+See the License for the specific language governing permissions and\
+limitations under the License.

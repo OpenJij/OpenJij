@@ -15,32 +15,32 @@
 #pragma once
 
 #include <cstddef>
-#include <utility>
 #include <unordered_map>
+#include <utility>
 
 #include "openjij/graph/graph.hpp"
 
 namespace openjij {
-    namespace utility {
+namespace utility {
 
-        /**
-         * @brief hash class for std::pair 
-         */
-        struct PairHash{
+/**
+ * @brief hash class for std::pair
+ */
+struct PairHash {
 
-            /**
-             * @brief generate hash for std::pair
-             *
-             * @param p std::pair variable
-             *
-             * @return generated hash
-             */
-            template<class T1, class T2>
-            inline size_t operator()(const std::pair<T1, T2> & p) const{
-                size_t lhs = std::hash<T1>()(p.first);
-                size_t rhs = std::hash<T2>()(p.second);
-                return lhs^(rhs+0x9e3779b9+(lhs<<6)+(lhs>>2));
-            }
-        };
-    } // namespace utility
+  /**
+   * @brief generate hash for std::pair
+   *
+   * @param p std::pair variable
+   *
+   * @return generated hash
+   */
+  template <class T1, class T2>
+  inline size_t operator()(const std::pair<T1, T2> &p) const {
+    size_t lhs = std::hash<T1>()(p.first);
+    size_t rhs = std::hash<T2>()(p.second);
+    return lhs ^ (rhs + 0x9e3779b9 + (lhs << 6) + (lhs >> 2));
+  }
+};
+} // namespace utility
 } // namespace openjij

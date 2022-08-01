@@ -17,29 +17,50 @@
 
 #ifdef USE_CUDA
 
-#include <cuda_runtime.h>
-#include <curand.h> 
-#include <cublas_v2.h>
 #include <iostream>
 
-namespace openjij {
-    namespace utility {
-        namespace cuda {
 
-            //macro for detecting errors
-            
+#include <cublas_v2.h>
+#include <cuda_runtime.h>
+#include <curand.h>
+
+namespace openjij {
+namespace utility {
+namespace cuda {
+
+// macro for detecting errors
+
 #ifndef NDEBUG
 
 #ifndef HANDLE_ERROR_CUDA
-#define HANDLE_ERROR_CUDA(expr) {cudaError_t err=(expr); if(err != cudaSuccess) std::cerr << "cuda error_code: " << err << " err_name: " << cudaGetErrorString(err) << " at " << __FILE__ << " line " << __LINE__ << std::endl;}
+#define HANDLE_ERROR_CUDA(expr)                                                \
+  {                                                                            \
+    cudaError_t err = (expr);                                                  \
+    if (err != cudaSuccess)                                                    \
+      std::cerr << "cuda error_code: " << err                                  \
+                << " err_name: " << cudaGetErrorString(err) << " at "          \
+                << __FILE__ << " line " << __LINE__ << std::endl;              \
+  }
 #endif
 
 #ifndef HANDLE_ERROR_CURAND
-#define HANDLE_ERROR_CURAND(expr) {curandStatus_t st=(expr); if(st != CURAND_STATUS_SUCCESS) std::cerr << "curand_error: " << st << " at " << __FILE__ << " line " << __LINE__ << std::endl;}
+#define HANDLE_ERROR_CURAND(expr)                                              \
+  {                                                                            \
+    curandStatus_t st = (expr);                                                \
+    if (st != CURAND_STATUS_SUCCESS)                                           \
+      std::cerr << "curand_error: " << st << " at " << __FILE__ << " line "    \
+                << __LINE__ << std::endl;                                      \
+  }
 #endif
 
 #ifndef HANDLE_ERROR_CUBLAS
-#define HANDLE_ERROR_CUBLAS(expr) {cublasStatus_t st=(expr); if(st != CUBLAS_STATUS_SUCCESS) std::cerr << "cublas_error: " << st << " at " << __FILE__ << " line " << __LINE__ << std::endl;}
+#define HANDLE_ERROR_CUBLAS(expr)                                              \
+  {                                                                            \
+    cublasStatus_t st = (expr);                                                \
+    if (st != CUBLAS_STATUS_SUCCESS)                                           \
+      std::cerr << "cublas_error: " << st << " at " << __FILE__ << " line "    \
+                << __LINE__ << std::endl;                                      \
+  }
 #endif
 
 #else
@@ -57,10 +78,9 @@ namespace openjij {
 #endif
 
 #endif
-        }// namespace cuda
-    } // namespace utility
+} // namespace cuda
+} // namespace utility
 } // namespace openjij
 
 #endif
 #endif
-

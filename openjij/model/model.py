@@ -30,12 +30,10 @@
 """
 
 import cimod
+import cimod.cxxcimod as cxxcimod
+import dimod
 
 import openjij.cxxjij as cxxjij
-
-import cimod.cxxcimod as cxxcimod
-
-import dimod
 
 
 def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
