@@ -135,7 +135,7 @@ class SASampler(BaseSampler):
                schedule: Optional[list] = None,
                initial_state: Optional[Union[list, dict]] = None,
                updater: Optional[str] = None,
-               sparse: Optional[bool] = None,
+               sparse: Optional[bool] = True,
                reinitialize_state: Optional[bool] = None,
                seed: Optional[int] = None) -> 'openjij.sampler.response.Response':
 
@@ -150,6 +150,7 @@ class SASampler(BaseSampler):
             schedule (list): list of inverse temperature
             initial_state (dict): initial state
             updater(str): updater algorithm
+            sparse (bool): use sparse matrix or not.
             reinitialize_state (bool): if true reinitialize state for each run
             seed (int): seed for Monte Carlo algorithm
         Returns:

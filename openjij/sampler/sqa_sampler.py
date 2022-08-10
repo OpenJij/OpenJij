@@ -151,7 +151,7 @@ class SQASampler(BaseSampler):
                num_reads: Optional[int] = None,
                initial_state: Optional[Union[list, dict]] = None,
                updater: Optional[str] = None,
-               sparse: Optional[bool] = None,
+               sparse: Optional[bool] = True,
                reinitialize_state: Optional[bool] = None,
                seed: Optional[int] = None) -> 'openjij.sampler.response.Response':
 
@@ -166,6 +166,7 @@ class SQASampler(BaseSampler):
             trotter (int): Trotter number.
             num_reads (int, optional): number of sampling. Defaults to 1.
             initial_state (list[int], optional): Initial state. Defaults to None.
+            sparse (bool): use sparse matrix or not.
             updater (str, optional): update method. Defaults to 'single spin flip'.
             reinitialize_state (bool, optional): Re-initilization at each sampling. Defaults to True.
             seed (int, optional): Sampling seed. Defaults to None.
