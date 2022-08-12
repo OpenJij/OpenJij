@@ -229,18 +229,12 @@ jobs:
       shell: bash
       run: |
           set -ux
-          python -m pip install --upgrade pip setuptools wheel build
+          python -m pip install --upgrade pip setuptools wheel build cmake
     - name: Install Dependencies
       shell: bash
       run: |
           set -eux
           pip-sync requirements.txt dev-requirements.txt
-    - name: Install pytest-github-actions-annotate-failures
-      continue-on-error: true
-      shell: bash
-      run: |
-          set -eux
-          python -m pip install --upgrade pip setuptools wheel build
     - name: sccache
       if: ${{ matrix.os == 'ubuntu-latest'}}
       uses: hendrikmuhs/ccache-action@v1.2
@@ -327,7 +321,7 @@ jobs:
         set -eux
         export CIBUILDWHEEL=1
         export CMAKE_BUILD_TYPE=Debug
-        python -m pip install -vvv -e . 
+        pip install -vvv . 
     - name: Build & Install    
       if: ${{ matrix.os == 'windows-latest'}}
       shell: bash 
