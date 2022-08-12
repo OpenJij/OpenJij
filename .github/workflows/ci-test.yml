@@ -334,7 +334,7 @@ jobs:
       shell: bash
       run: |
         set -eux
-        python setup.py test
+        python setup.py --build-type Debug test 
     - name: Generate
       shell: bash
       run: |
