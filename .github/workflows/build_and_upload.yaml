@@ -288,14 +288,6 @@ jobs:
           - os: macos-latest
             arch: arm64
             CIBW_PLATFORM: macos
-            CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET='12" 
-          - os: macos-latest
-            arch: arm64
-            CIBW_PLATFORM: macos
-            CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET='11"   
-          - os: macos-latest
-            arch: arm64
-            CIBW_PLATFORM: macos
             CIBW_ENVIRONMENT: ""
     steps:
       - uses: actions/checkout@v3
