@@ -115,7 +115,7 @@ manylinux-aarch64-image = "quay.io/pypa/manylinux_2_28_aarch64:latest"
 #]
 before-build = [ 
     "source scl_source enable gcc-toolset-11",
-    "pip install pybind11 cmake ninja", 
+    "pip install --upgrade pip wheel build pybind11 cmake ninja", 
 ]
 repair-wheel-command = "auditwheel repair --lib-sdir . -w {dest_dir} {wheel}"
 
@@ -127,7 +127,7 @@ build-frontend = "build"
 #]
 #environment = "CFLAGS='-O3 -pipe' CXXFLAGS='-O3 -pipe'" 
 before-build = [ 
-    "pip install pybind11 cmake ninja", 
+    "pip install --upgrade pip wheel build pybind11 cmake ninja", 
 ]
 
 [tool.cibuildwheel.windows]
@@ -145,6 +145,6 @@ archs = ["AMD64"]
 #"vcpkg --triplet x64-windows-static install openblas[threads] --recurse", 
 #"vcpkg --triplet x64-windows-static install clapack --recurse", 
 before-build = [ 
-    "pip install cmake pybind11 delvewheel", 
+    "pip install --upgrade pip wheel build cmake pybind11 delvewheel", 
 ]
 repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel}"
