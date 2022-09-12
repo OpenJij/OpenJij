@@ -40,7 +40,11 @@ html:
   use_issues_button:      true
   use_repository_button:  true
   use_multitoc_numbering: false
-
+  
+# Launch button settings
+launch_buttons:
+  notebook_interface        : classic  # The interface interactive links will activate ["classic", "jupyterlab"]
+  binderhub_url             : https://mybinder.org  # The URL of the BinderHub (e.g., https://mybinder.org)
 sphinx:
   recursive_update: true
   config:
@@ -56,15 +60,18 @@ sphinx:
     autosummary_imported_members:     true
     autosummary_ignore_module_all:    true
     autoclass_content:                both
+    autodoc_class_signature:          separated
     autodoc_member_order:             groupwise
+    autodoc_docstring_signature:      true
+    autodoc_typehints:                both
     autodoc_typehints_format:         short
     napoleon_google_docstring:        true
     napoleon_include_init_with_doc:   true
     autosectionlabel_prefix_document: true
     autoapi_root:                     reference 
     autoapi_keep_files:               true
-    autoapi_dirs: [ ../openjij ]
-    autoapi_ignore: [ ../openjij/_version.py, '*/_version.py' ]
+    autoapi_dirs:                     [ ../openjij ]
+    autoapi_ignore:                   [ ../openjij/_version.py, '*/_version.py' ]
     autoapi_add_toctree_entry:        false
     autoapi_python_class_content:     both
     autoapi_member_order:             groupwise
@@ -77,6 +84,37 @@ sphinx:
       show-inheritance-diagram,
       imported-members,
     ]
+    intersphinx_mapping:
+      python: 
+        - "https://docs.python.org/3" 
+        - null
+      numpy:
+        - "https://numpy.org/doc/stable/" 
+        - null 
+      cimod:
+        - "https://cimod.openjij.org/" 
+        - null 
+      dymod:
+        - "https://docs.ocean.dwavesys.com/en/stable/docs_dimod/" 
+        - null
+      ebp:
+        - "https://executablebooks.org/en/latest/"
+        - null
+      myst-parser:
+        - "https://myst-parser.readthedocs.io/en/latest/"
+        - null
+      myst-nb:
+        - "https://myst-nb.readthedocs.io/en/latest/"
+        - null
+      sphinx:
+        - "https://www.sphinx-doc.org/en/master"
+        - null
+      nbformat:
+        - "https://nbformat.readthedocs.io/en/latest"
+        - null
+      sd:
+        - https://sphinx-design.readthedocs.io/en/latest
+        - null
   extra_extensions:
     - sphinx_proof
     - sphinx_inline_tabs
@@ -86,6 +124,7 @@ sphinx:
     - 'sphinx.ext.doctest'
     - 'sphinx.ext.autodoc'
     - 'sphinx.ext.napoleon'
+    - 'sphinx.ext.intersphinx'
     - 'sphinx.ext.viewcode'
     - 'sphinx.ext.autosummary'
     - 'sphinx.ext.autosectionlabel'
