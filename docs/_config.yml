@@ -103,6 +103,9 @@ sphinx:
       cimod:
         - "https://cimod.openjij.org/" 
         - null 
+      pandas:
+        - "https://pandas.pydata.org/pandas-docs/stable/" 
+        - null
       oceandocs:
         - "https://docs.ocean.dwavesys.com/en/stable/" 
         - null
