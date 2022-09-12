@@ -88,14 +88,23 @@ sphinx:
       python: 
         - "https://docs.python.org/3" 
         - null
+      typing-extensions:
+        - "https://typing.readthedocs.io/en/latest/" 
+        - null 
+      scipy:
+        - "https://docs.scipy.org/doc/scipy/reference/" 
+        - null 
+      requests:
+        - "https://requests.readthedocs.io/en/latest/" 
+        - null
       numpy:
         - "https://numpy.org/doc/stable/" 
         - null 
       cimod:
         - "https://cimod.openjij.org/" 
         - null 
-      dymod:
-        - "https://docs.ocean.dwavesys.com/en/stable/docs_dimod/" 
+      oceandocs:
+        - "https://docs.ocean.dwavesys.com/en/stable/" 
         - null
       ebp:
         - "https://executablebooks.org/en/latest/"
