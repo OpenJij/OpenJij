@@ -8,6 +8,8 @@ msbuild_version.txt
 *.o
 *.obj
 
+docs/autoapi
+
 # Precompiled Headers
 *.gch
 *.pch

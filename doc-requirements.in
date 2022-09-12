@@ -15,6 +15,9 @@
 -c requirements.txt
 -c build-requirements.txt
 
+matplotlib
+
+jupyter
 jupyter-book
 jupyter-cache
 sphinx-jupyterbook-latex
@@ -22,3 +25,5 @@ sphinx-proof
 sphinx-comments
 sphinx-autobuild
 sphinx-inline-tabs
+sphinxcontrib-katex
+sphinx-autoapi
