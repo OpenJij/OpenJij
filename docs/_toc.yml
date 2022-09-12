@@ -11,7 +11,7 @@ parts:
     numbered: false
     maxdepth: -1
     chapters:
-      - file: autoapi/openjij/index.rst
+      - file: reference/openjij/index.rst
   - caption:  OpenJij Tutorial
     title:    OpenJij Tutorial
     numbered: true
