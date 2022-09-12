@@ -4,7 +4,7 @@
 title:     OpenJij Book
 author:    Jij Inc.
 copyright: "2022"
-logo:      ../www/webp/OpenJijLogo.webp
+logo:      OpenJijLogo.webp
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
@@ -33,7 +33,7 @@ repository:
 # Add GitHub buttons to your book
 # See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
 html:
-  favicon:                ../www/icon/favicon.ico
+  favicon:                favicon.ico
   use_issues_button:      true
   use_repository_button:  true
   use_multitoc_numbering: false
