@@ -58,7 +58,7 @@ sphinx:
     napoleon_google_docstring:        true
     napoleon_include_init_with_doc:   true
     autosectionlabel_prefix_document: true
-    autoapi_root:                     autoapi
+    autoapi_root:                     reference 
     autoapi_keep_files:               true
     autoapi_dirs: [ ../openjij ]
     autoapi_ignore: [ ../openjij/_version.py, '*/_version.py' ]
