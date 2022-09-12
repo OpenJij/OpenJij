@@ -80,6 +80,9 @@ sphinx:
   extra_extensions:
     - sphinx_proof
     - sphinx_inline_tabs
+    - sphinx-hoverxref
+    - sphinx-notfound-page
+    - sphinx_examples
     - 'autoapi.extension'
     - 'sphinxcontrib.katex'
     - 'sphinx.ext.duration'
