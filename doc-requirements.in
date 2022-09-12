@@ -27,3 +27,6 @@ sphinx-autobuild
 sphinx-inline-tabs
 sphinxcontrib-katex
 sphinx-autoapi
+sphinx-notfound-page
+sphinx-hoverxref
+sphinx-examples
