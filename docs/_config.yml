@@ -4,7 +4,7 @@
 title:     OpenJij Book
 author:    Jij Inc.
 copyright: "2022"
-logo:      OpenJijLogo.webp
+logo:      OpenJij-Logo.webp
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
