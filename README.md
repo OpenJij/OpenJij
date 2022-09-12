@@ -39,7 +39,7 @@
   import cxxjij
   ```
 
-- [Documents](https://openjij.github.io/OpenJij_Documentation/build/html/)
+- [Documents](https://openjij.github.io/OpenJij-Documentation/autoapi/openjij/index.html)
 
 - [Tutorials](https://openjij.github.io/OpenJijTutorial/build/html/index.html)
 
