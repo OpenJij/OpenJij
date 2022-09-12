@@ -169,6 +169,26 @@ $ python -m mypy
 $ python -m pyright
 ```
 
+## Python Documentation 
+Use Juyter Book for build documentation.   
+Need: Graphviz
+
+``` sh
+$ pip-compile
+$ pip-compile build-requirements.in
+$ pip-compile doc-requirements.in
+$ pip-sync requirements.txt build-requirements.txt doc-requirements.txt
+```
+
+```sh
+$ pip install -vvv .
+```
+
+```sh 
+$ jupyter-book build docs --all
+```
+
+
 ## How to use
 
 ### Python example
