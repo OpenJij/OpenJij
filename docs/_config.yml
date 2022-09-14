@@ -101,7 +101,7 @@ sphinx:
         - "https://numpy.org/doc/stable/" 
         - null 
       cimod:
-        - "https://cimod.openjij.org/" 
+        - "https://openjij.github.io/cimod/" 
         - null 
       pandas:
         - "https://pandas.pydata.org/pandas-docs/stable/" 
