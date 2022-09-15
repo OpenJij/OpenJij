@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
 from dimod import SPIN
 
 import openjij
@@ -22,6 +23,7 @@ from openjij.model.model import make_BinaryQuadraticModel
 
 def make_KingGraph(linear=None, quadratic=None, king_graph=None):
     """KingGraph factory
+
     Returns:
         generated KingGraph class
     """
@@ -44,6 +46,7 @@ def make_KingGraph(linear=None, quadratic=None, king_graph=None):
     class KingGraph(make_BinaryQuadraticModel(mock_linear, mock_quadratic)):
         """
         BQM for king graph of HITACHI CMOS Annealer
+
         Attributes:
             xrange (list(int)): represents hardware (CMOS) restricts for coordinate. [xmin, xmax]
             yrange (list(int)): represents hardware (CMOS) restricts for coordinate. [ymin, ymax]
@@ -176,6 +179,7 @@ def make_KingGraph(linear=None, quadratic=None, king_graph=None):
 
 def make_KingGraph_from_JSON(obj):
     """KingGraph factory for JSON
+
     Args:
         obj (dict): JSON object
     Returns:
@@ -199,7 +203,7 @@ def KingGraph(
     vartype=SPIN,
     machine_type="",
 ):
-    """generate KingGraph model.
+    """Generate KingGraph model.
 
     Args:
         linear (dict): linear biases

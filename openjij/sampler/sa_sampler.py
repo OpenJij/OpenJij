@@ -10,7 +10,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License
-
+from __future__ import annotations
 try:
     from typing import Optional, Union
 except ImportError:
@@ -29,9 +29,7 @@ import openjij.cxxjij as cxxjij
 from openjij.sampler.sampler import BaseSampler
 from openjij.utils.graph_utils import qubo_to_ising
 
-"""
-This module contains Simulated Annealing sampler.
-"""
+"""This module contains Simulated Annealing sampler."""
 
 
 class SASampler(BaseSampler):
@@ -108,7 +106,7 @@ class SASampler(BaseSampler):
         }
 
     def _convert_validation_schedule(self, schedule):
-        """Checks if the schedule is valid and returns cxxjij schedule"""
+        """Checks if the schedule is valid and returns cxxjij schedule."""
         if not isinstance(schedule, (list, np.array)):
             raise ValueError("schedule should be list or numpy.array")
 
@@ -151,7 +149,7 @@ class SASampler(BaseSampler):
         reinitialize_state: Optional[bool] = None,
         seed: Optional[int] = None,
     ) -> "oj.sampler.response.Response":
-        """sample Ising model.
+        """Sample Ising model.
 
         Args:
             bqm (openjij.model.model.BinaryQuadraticModel) binary quadratic model
@@ -181,7 +179,6 @@ class SASampler(BaseSampler):
                 >>> Q = {(0, 0): -1, (1, 1): -1, (2, 2): 1, (3, 3): 1, (4, 4): 1, (0, 1): -1, (3, 4): 1}
                 >>> sampler = openj.SASampler()
                 >>> res = sampler.sample_qubo(Q)
-
         """
 
         # Set default parameters
@@ -344,7 +341,7 @@ class SASampler(BaseSampler):
         reinitialize_state: Optional[bool] = None,
         seed: Optional[int] = None,
     ) -> "openjij.sampler.response.Response":
-        """sampling from higher order unconstrainted binary optimization.
+        """Sampling from higher order unconstrainted binary optimization.
 
         Args:
             J (dict): Interactions.
@@ -490,7 +487,7 @@ def geometric_ising_beta_schedule(
     beta_min=None,
     num_sweeps=1000,
 ):
-    """make geometric cooling beta schedule
+    """Make geometric cooling beta schedule.
 
     Args:
         model (openjij.model.BinaryQuadraticModel)
@@ -548,7 +545,6 @@ def geometric_ising_beta_schedule(
 
 
 def geometric_hubo_beta_schedule(sa_system, beta_max, beta_min, num_sweeps):
-
     max_delta_energy = sa_system.get_max_effective_dE()
     min_delta_energy = sa_system.get_min_effective_dE()
 

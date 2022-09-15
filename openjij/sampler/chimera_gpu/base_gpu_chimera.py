@@ -11,14 +11,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License
 
-
+from __future__ import annotations
 import dimod
 
 from openjij.utils.graph_utils import chimera_to_ind
 
 
 class BaseGPUChimeraSampler(dimod.Structured):
-    """Abstract GPUChimera Sampler"""
+    """Abstract GPUChimera Sampler."""
 
     @property
     def parameters(self):

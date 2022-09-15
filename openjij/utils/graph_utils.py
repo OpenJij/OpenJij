@@ -1,12 +1,12 @@
+from __future__ import annotations
 import numpy as np
 
 
 def qubo_to_ising(mat: np.ndarray):
-    """inplace-convert numpy matrix from qubo to ising.
+    """Inplace-convert numpy matrix from qubo to ising.
 
     Args:
         mat (np.ndarray): numpy matrix
-
     """
     mat /= 4
     for i in range(mat.shape[0]):

@@ -11,12 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from __future__ import annotations
 import openjij as oj
 
 
 def convert_response(response):
-
     if isinstance(response, oj.sampler.response.Response):
         return response
 

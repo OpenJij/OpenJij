@@ -17,9 +17,15 @@
 
 matplotlib
 
+python-levenshtein
+
+breathe
+
 jupyter
 jupyter-book
 jupyter-cache
+sphinx
+sphinx_sitemap
 sphinx-jupyterbook-latex
 sphinx-proof
 sphinx-comments

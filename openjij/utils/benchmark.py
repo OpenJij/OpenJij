@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
 import inspect
 
 from logging import getLogger
@@ -32,6 +33,7 @@ def solver_benchmark(
     time_name="execution_time",
 ):
     """Calculate 'success probability', 'TTS', 'Residual energy','Standard Error' with computation time
+
     Args:
         solver (callable): returns openjij.Response, and solver has arguments 'time' and '**args'
         time_list (list):
@@ -52,7 +54,6 @@ def solver_benchmark(
         * **se_success_prob**: list of success probability's standard error at each computation time
         * **se_residual_energy**: list of residual_energy's standard error at each computation time
         * **info** (dict): Parameter information for the benchmark
-
     """
 
     if not measure_with_energy:
@@ -112,18 +113,19 @@ def solver_benchmark(
 
 def residual_energy(response, ref_energy):
     """Calculate redisual energy from measure energy
+
     Args:
         response (openjij.Response): response from solver (or sampler).
         ref_energy (float): the reference energy (usually use the ground energy)
     Returns:
         float: Residual energy which is defined as :math:`\\langle E \\rangle - E_0` (:math:`\\langle...\\rangle` represents average, :math:`E_0` is the reference energy (usually use the ground energy)).
-
     """
     return np.mean(response.energies) - ref_energy
 
 
 def se_residual_energy(response, ref_energy):
     """Calculate redisual energy's standard error from measure energy
+
     Args:
         response (openjij.Response): response from solver (or sampler).
         ref_energy (float): the reference energy (usually use the ground energy)
@@ -135,6 +137,7 @@ def se_residual_energy(response, ref_energy):
 
 def success_probability(response, solutions, ref_energy=0, measure_with_energy=False):
     """Calculate success probability from openjij.response
+
     Args:
         response (openjij.Response): response from solver (or sampler).
         solutions (list[int]): true solutions.
@@ -143,7 +146,6 @@ def success_probability(response, solutions, ref_energy=0, measure_with_energy=F
 
         * When measure_with_energy is False, success is defined as getting the same state as solutions.
         * When measure_with_energy is True, success is defined as getting a state which energy is below reference energy
-
     """
 
     if measure_with_energy:
@@ -169,6 +171,7 @@ def se_success_probability(
     response, solutions, ref_energy=0, measure_with_energy=False
 ):
     """Calculate success probability's standard error from openjij.response
+
     Args:
         response (openjij.Response): response from solver (or sampler).
         solutions (list[int]): true solutions.
@@ -177,7 +180,6 @@ def se_success_probability(
 
         * When measure_with_energy is False, success is defined as getting the same state as solutions.
         * When measure_with_energy is True, success is defined as getting a state which energy is below reference energy
-
     """
 
     if measure_with_energy:
@@ -203,6 +205,7 @@ def se_success_probability(
 def time_to_solution(success_prob, computation_time, p_r):
     """
     Args:
+
         success_prob (float): success probability.
         computation_time (float):
         p_r (float): thereshold probability to calculate time to solution.
@@ -223,6 +226,7 @@ def time_to_solution(success_prob, computation_time, p_r):
 def se_lower_tts(tts, success_prob, computation_time, p_r, se_success_prob):
     """
     Args:
+
         success_prob (float): success probability.
         computation_time (float):
         p_r (float): thereshold probability to calculate time to solution.
@@ -249,6 +253,7 @@ def se_lower_tts(tts, success_prob, computation_time, p_r, se_success_prob):
 def se_upper_tts(tts, success_prob, computation_time, p_r, se_success_prob):
     """
     Args:
+
         success_prob (float): success probability.
         computation_time (float):
         p_r (float): thereshold probability to calculate time to solution.

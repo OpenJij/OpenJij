@@ -11,10 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-This module defines the abstract sampler (BaseSampler).
-"""
-
+"""This module defines the abstract sampler (BaseSampler)."""
+from __future__ import annotations
 import time
 
 import dimod
@@ -49,7 +47,7 @@ def measure_time(func):
 
 
 class BaseSampler(dimod.Sampler):
-    """Base sampler class of python wrapper for cxxjij simulator"""
+    """Base sampler class of python wrapper for cxxjij simulator."""
 
     parameters = dict()
     properties = dict()
@@ -76,7 +74,7 @@ class BaseSampler(dimod.Sampler):
         seed=None,
         offset=None,
     ):
-        """Basic sampling function: for cxxjij sampling
+        """Basic sampling function: for cxxjij sampling.
 
         Args:
             model (openjij.BinaryQuadraticModel): model has a information of instaunce (h, J, Q)
@@ -168,6 +166,7 @@ class BaseSampler(dimod.Sampler):
     @samplemixinmethod
     def sample(self, bqm, **parameters):
         """Sample from a binary quadratic model.
+
         Args:
             bqm (openjij.BinaryQuadraticModel):
                 Binary Qudratic Model

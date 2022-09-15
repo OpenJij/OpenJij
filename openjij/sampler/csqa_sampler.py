@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 
 import openjij
@@ -8,7 +9,9 @@ from openjij.sampler.sqa_sampler import SQASampler
 
 
 class CSQASampler(SQASampler):
-    """Sampler with continuous-time simulated quantum annealing (CSQA) using Hamiltonian
+    """Sampler with continuous-time simulated quantum annealing (CSQA) using
+
+    Hamiltonian.
 
     .. math::
 
@@ -25,7 +28,6 @@ class CSQASampler(SQASampler):
         num_reads (int): Number of iterations.
         num_sweeps (int): number of sweeps
         schedule_info (dict): Information about a annealing schedule.
-
     """
 
     def __init__(
@@ -102,7 +104,6 @@ class CSQASampler(SQASampler):
                 >>> Q = {(0, 0): -1, (1, 1): -1, (2, 2): 1, (3, 3): 1, (4, 4): 1, (0, 1): -1, (3, 4): 1}
                 >>> sampler = openjijj.CSQASampler()
                 >>> res = sampler.sample_qubo(Q)
-
         """
 
         # Set default updater
