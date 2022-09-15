@@ -17,9 +17,15 @@
 
 matplotlib
 
+python-levenshtein
+
+breathe
+
 jupyter
 jupyter-book
 jupyter-cache
+sphinx
+sphinx_sitemap
 sphinx-jupyterbook-latex
 sphinx-proof
 sphinx-comments
@@ -30,3 +36,4 @@ sphinx-autoapi
 sphinx-notfound-page
 sphinx-hoverxref
 sphinx-examples
+seed_intersphinx_mapping

@@ -5,7 +5,8 @@ title:     OpenJij Book
 author:    Jij Inc.
 copyright: "2022"
 logo:      OpenJij-Logo.webp
-
+description: >- # this means to ignore newlines until "baseurl:"
+             OpenJij : Framework for the Ising model and QUBO.
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
 execute:
@@ -40,41 +41,48 @@ html:
   use_issues_button:      true
   use_repository_button:  true
   use_multitoc_numbering: false
-  
+  home_page_in_navbar:    false
+  baseurl:                https://openjij.github.io/OpenJij-Documentation
+
 # Launch button settings
 launch_buttons:
-  notebook_interface        : classic  # The interface interactive links will activate ["classic", "jupyterlab"]
-  binderhub_url             : https://mybinder.org  # The URL of the BinderHub (e.g., https://mybinder.org)
+  notebook_interface: classic  # The interface interactive links will activate ["classic", "jupyterlab"]
+  binderhub_url:      https://mybinder.org  # The URL of the BinderHub (e.g., https://mybinder.org)
 sphinx:
   recursive_update: true
   config:
-    nb_merge_streams:                 true
-    execution_show_tb:                True
-    katex_css_path:                   https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css
-    katex_js_path:                    katex.min.js
-    katex_autorender_path:            auto-render.min.js
-    katex_prerender:                  true
-    add_module_names:                 true
-    autosummary_generate:             false
-    autosummary_generate_overwrite:   true
-    autosummary_imported_members:     true
-    autosummary_ignore_module_all:    true
-    autoclass_content:                both
-    autodoc_class_signature:          separated
-    autodoc_member_order:             groupwise
-    autodoc_docstring_signature:      true
-    autodoc_typehints:                both
-    autodoc_typehints_format:         short
-    napoleon_google_docstring:        true
-    napoleon_include_init_with_doc:   true
-    autosectionlabel_prefix_document: true
-    autoapi_root:                     reference 
-    autoapi_keep_files:               true
-    autoapi_dirs:                     [ ../openjij ]
-    autoapi_ignore:                   [ ../openjij/_version.py, '*/_version.py' ]
-    autoapi_add_toctree_entry:        false
-    autoapi_python_class_content:     both
-    autoapi_member_order:             groupwise
+    show_authors:                      false
+    gettext_uuid:                      true
+    html_split_index:                  true
+    python_use_unqualified_type_names: true
+    nb_merge_streams:                  true
+    execution_show_tb:                 true
+    katex_css_path:                    https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css
+    katex_js_path:                     katex.min.js
+    katex_autorender_path:             auto-render.min.js
+    katex_prerender:                   true
+    add_module_names:                  true
+    autosummary_generate:              true
+    autosummary_generate_overwrite:    true
+    autosummary_imported_members:      true
+    autosummary_ignore_module_all:     true
+    autoclass_content:                 both
+    autodoc_class_signature:           separated
+    autodoc_member_order:              groupwise
+    autodoc_docstring_signature:       true
+    autodoc_typehints:                 both
+    autodoc_typehints_format:          short
+    napoleon_google_docstring:         true
+    napoleon_include_init_with_doc:    true
+    napoleon_preprocess_types:         true
+    autosectionlabel_prefix_document:  true
+    autoapi_root:                      reference
+    autoapi_keep_files:                true
+    autoapi_dirs: [ ../openjij ]
+    autoapi_ignore: [ ../openjij/_version.py, '*/_version.py' ]
+    autoapi_add_toctree_entry:         false
+    autoapi_python_class_content:      both
+    autoapi_member_order:              groupwise
     autoapi_options: [
       members,
       inherited-members,
@@ -84,18 +92,20 @@ sphinx:
       show-inheritance-diagram,
       imported-members,
     ]
+    repository_root:                   ../
+    viewcode_follow_imported_members:  true
     intersphinx_mapping:
-      python: 
-        - "https://docs.python.org/3" 
+      python:
+        - "https://docs.python.org/3"
         - null
       typing-extensions:
-        - "https://typing.readthedocs.io/en/latest/" 
-        - null 
+        - "https://typing.readthedocs.io/en/latest/"
+        - null
       scipy:
-        - "https://docs.scipy.org/doc/scipy/reference/" 
-        - null 
+        - "https://docs.scipy.org/doc/scipy/reference/"
+        - null
       requests:
-        - "https://requests.readthedocs.io/en/latest/" 
+        - "https://requests.readthedocs.io/en/latest/"
         - null
       numpy:
         - "https://numpy.org/doc/stable/" 
@@ -128,8 +138,11 @@ sphinx:
         - https://sphinx-design.readthedocs.io/en/latest
         - null
   extra_extensions:
+    - breathe
     - sphinx_proof
     - sphinx_inline_tabs
+    - sphinx_sitemap
+    - seed_intersphinx_mapping
     - 'autoapi.extension'
     - 'sphinxcontrib.katex'
     - 'sphinx.ext.duration'
