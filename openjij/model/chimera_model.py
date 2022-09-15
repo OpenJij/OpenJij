@@ -198,33 +198,31 @@ def make_ChimeraModel(linear, quadratic):
                 chimera = cj.graph.Chimera(chimera_L, chimera_L)
 
             for i, hi in _h.items():
-                r_i, c_i, zi = self._chimera_index(i, L=chimera_L)
+                r_i, c_i, zi = self._chimera_index(i, L = chimera_L)
                 if not self._index_validate(i, chimera_L):
                     raise ValueError(
-                        "Problem graph incompatible with chimera graph. Node {}.".format(
-                            i
-                        )
-                    )
+                            "Problem graph incompatible with chimera graph. Node {}.".format(
+                                    i
+                                    )
+                            )
                 chimera[r_i, c_i, zi] = hi
             for (i, j), Jij in _J.items():
-                r_i, c_i, zi = self._chimera_index(i, L=chimera_L)
-                r_j, c_j, zj = self._chimera_index(j, L=chimera_L)
-
+                r_i, c_i, zi = self._chimera_index(i, L = chimera_L)
+                r_j, c_j, zj = self._chimera_index(j, L = chimera_L)
+    
                 # validate connection
-                error_msg = "In the {}*{} Chimera grid, ".format(chimera_L, chimera_L)
-                error_msg += (
-                    "there is no connection between node {} and node {}.".format(i, j)
-                )
+                error_msg = f"In the {chimera_L}*{chimera_L} Chimera grid, "
+                error_msg += f"there is no connection between node {i} and node {j}."
                 linear_vldt = self._index_validate(
-                    i, chimera_L
-                ) and self._index_validate(j, chimera_L)
+                        i, chimera_L
+                        ) and self._index_validate(j, chimera_L)
                 if not (
-                    linear_vldt
-                    and self._validate((r_i, c_i, zi), (r_j, c_j, zj), chimera_L)
+                        linear_vldt
+                        and self._validate((r_i, c_i, zi), (r_j, c_j, zj), chimera_L)
                 ):
                     raise ValueError(
-                        "Problem graph incompatible with chimera graph.\n" + error_msg
-                    )
+                            "Problem graph incompatible with chimera graph.\n" + error_msg
+                            )
 
                 if r_i == r_j and c_i == c_j:
                     # connection in Chimera unit cell
@@ -259,8 +257,8 @@ def make_ChimeraModel(linear, quadratic):
 
         def energies(self, samples_like, convert_sample=False):
             return super().energies(
-                sample_like, sparse=True, convert_sample=convert_sample
-            )
+                    samples_like, sparse = True, convert_sample = convert_sample
+                    )
 
         def _validate(self, rcz1, rcz2, L):
             """Check if the connectivity is valid.
