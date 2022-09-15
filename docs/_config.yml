@@ -54,7 +54,6 @@ sphinx:
     show_authors:                      false
     gettext_uuid:                      true
     html_split_index:                  true
-    python_use_unqualified_type_names: true
     nb_merge_streams:                  true
     execution_show_tb:                 true
     katex_css_path:                    https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css
@@ -62,7 +61,7 @@ sphinx:
     katex_autorender_path:             auto-render.min.js
     katex_prerender:                   true
     add_module_names:                  true
-    autosummary_generate:              true
+    autosummary_generate: false
     autosummary_generate_overwrite:    true
     autosummary_imported_members:      true
     autosummary_ignore_module_all:     true
@@ -92,7 +91,6 @@ sphinx:
       show-inheritance-diagram,
       imported-members,
     ]
-    repository_root:                   ../
     viewcode_follow_imported_members:  true
     intersphinx_mapping:
       python:
@@ -142,7 +140,6 @@ sphinx:
     - sphinx_proof
     - sphinx_inline_tabs
     - sphinx_sitemap
-    - seed_intersphinx_mapping
     - 'autoapi.extension'
     - 'sphinxcontrib.katex'
     - 'sphinx.ext.duration'

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from __future__ import annotations
 import openjij
 import openjij as oj
 import openjij.cxxjij as cxxjij
@@ -42,7 +42,6 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
         - given problem graph is incompatible with chimera graph.
 
         AttributeError: If GPU doesn't work.
-
     """
 
     def __init__(
@@ -95,7 +94,7 @@ class GPUChimeraSQASampler(SQASampler, BaseGPUChimeraSampler):
         reinitialize_state=True,
         seed=None,
     ):
-        """Sampling from the Ising model
+        """Sampling from the Ising model.
 
         Args:
             h (dict): Linear term of the target Ising model.

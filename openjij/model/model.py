@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-| This module defines the BinaryQuadraticModel with the Hamiltonian,
+"""| This module defines the BinaryQuadraticModel with the Hamiltonian,
 
 .. math::
 
@@ -26,9 +25,8 @@
 
 | in a QUBO form.
 | The methods and usage are basically the same as `dimod <https://github.com/dwavesystems/dimod>`_.
-
 """
-
+from __future__ import annotations
 import cimod
 import cimod.cxxcimod as cxxcimod
 import dimod
@@ -47,7 +45,8 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
         cimod.make_BinaryQuadraticModel(linear, quadratic, sparse)
     ):
         """Represents Binary quadratic model.
-           Indices are listed in self.indices.
+
+        Indices are listed in self.indices.
         Attributes:
             vartype (dimod.Vartype): variable type SPIN or BINARY
             linear (dict): represents linear term
@@ -75,7 +74,7 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
             self.model_type = "openjij.BinaryQuadraticModel"
 
         def get_cxxjij_ising_graph(self):
-            """generate cxxjij Ising graph from the interactions.
+            """Generate cxxjij Ising graph from the interactions.
 
             Returns:
                 cxxjij.graph.Dense or cxxjij.graph.Sparse:
@@ -125,7 +124,7 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
 
 
 def make_BinaryQuadraticModel_from_JSON(obj: dict):
-    """make BinaryQuadraticModel from JSON.
+    """Make BinaryQuadraticModel from JSON.
 
     Returns:
         corresponding BinaryQuadraticModel type
@@ -148,7 +147,7 @@ def make_BinaryQuadraticModel_from_JSON(obj: dict):
 
 
 def BinaryQuadraticModel(linear, quadratic, *args, **kwargs):
-    """generate BinaryQuadraticModel object.
+    """Generate BinaryQuadraticModel object.
 
     Attributes:
         vartype (dimod.Vartype): variable type SPIN or BINARY

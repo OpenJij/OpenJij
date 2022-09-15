@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from __future__ import annotations
 import openjij
 import openjij as oj
 import openjij.cxxjij as cxxjij
@@ -41,7 +41,6 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
         - given problem graph is incompatible with chimera graph.
 
         AttributeError: If GPU doesn't work.
-
     """
 
     def __init__(
@@ -82,7 +81,7 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
         seed=None,
         unit_num_L=None,
     ):
-        """sample with Ising model.
+        """Sample with Ising model.
 
         Args:
             h (dict): linear biases
@@ -107,7 +106,6 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
             >>> h = {0: -1, 1: -1, 2: 1, 3: 1},
             >>> J = {(0, 4): -1, (2, 5): -1}
             >>> res = sampler.sample_ising(h, J)
-
         """
 
         if updater is None:

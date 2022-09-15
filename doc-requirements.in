@@ -36,4 +36,3 @@ sphinx-autoapi
 sphinx-notfound-page
 sphinx-hoverxref
 sphinx-examples
-seed_intersphinx_mapping

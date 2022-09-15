@@ -1,3 +1,4 @@
+from __future__ import annotations
 try:
     from typing import Optional, Union
 except ImportError:
@@ -42,7 +43,6 @@ class SQASampler(BaseSampler):
         ValueError: If the schedule violates as below.
         - not list or numpy.array.
         - schedule range is '0 <= s <= 1'.
-
     """
 
     @property
@@ -168,7 +168,7 @@ class SQASampler(BaseSampler):
         reinitialize_state: Optional[bool] = None,
         seed: Optional[int] = None,
     ) -> "openjij.sampler.response.Response":
-        """Sampling from the Ising model
+        """Sampling from the Ising model.
 
         Args:
             bqm (openjij.BinaryQuadraticModel) binary quadratic model
@@ -340,7 +340,10 @@ def linear_ising_schedule(model, beta, gamma, num_sweeps):
 
 
 def quartic_ising_schedule(model, beta, gamma, num_sweeps):
-    """Generate quartic ising schedule based on S. Morita and H. Nishimori, Journal of Mathematical Physics 49, 125210 (2008).
+    """Generate quartic ising schedule based on S
+
+    Morita and H. Nishimori,
+    Journal of Mathematical Physics 49, 125210 (2008).
 
     Args:
         model (:class:`openjij.model.model.BinaryQuadraticModel`): BinaryQuadraticModel
