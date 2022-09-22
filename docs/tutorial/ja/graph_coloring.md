@@ -10,11 +10,11 @@
 
 下図のように6個の頂点といくつかの辺からなる無向グラフが与えられたとしましょう。
 
-![](graph_coloring_01.png)
+![](../../assets/graph_coloring_01.png)
 
 これを3色で全ての頂点を塗り分けると以下のようになります。
 
-![](graph_coloring_02.png)
+![](../../assets/graph_coloring_02.png)
 
 全ての辺において、その両端に位置する頂点は異なる色で塗り分けられていることがわかります。
 
@@ -91,7 +91,7 @@ problem += jm.Sum(sum_list, x[e[0], n]*x[e[1], n])
 
 実際に実装された数式をJupyter Notebookで表示してみましょう。
 
-![](graph_coloring_03.png)
+![](../../assets/graph_coloring_03.png)
 
 ### インスタンスの作成
 
@@ -186,4 +186,4 @@ fig.savefig('graph_coloring.png')
 
 すると以下のような画像を得ます。
 
-![](graph_coloring_04.png)
+![](../../assets/graph_coloring_04.png)
