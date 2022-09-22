@@ -181,6 +181,8 @@ $ pip-compile doc-requirements.in
 $ pip-sync requirements.txt build-requirements.txt doc-requirements.txt
 ```
 
+Please place your document either `docs/tutorial`either markdown or jupyter notebook style.
+
 ```sh
 $ pip install -vvv .
 ```
