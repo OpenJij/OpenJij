@@ -29,6 +29,7 @@
 $$
     \bm{v} = \{v_0, v_1, \dots, v_i, \dots, v_{N-1}\}
 $$
+
 $$
     \bm{w} = \{w_0, w_1, \dots, w_i, \dots, w_{N-1}\}
 $$
@@ -39,9 +40,11 @@ $$
 $$
     \max \ \sum_{i=0}^{N-1} v_i x_i \tag{1}
 $$
+
 $$
     \mathrm{s.t.} \quad \sum_{i=0}^{N-1} w_i x_i \leq W \tag{2}
 $$
+
 $$
     x_i \in \{0, 1\} \quad (\forall i \in \{0, 1, \dots, N-1\}) \tag{3}
 $$
