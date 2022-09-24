@@ -2,7 +2,7 @@
 name: Deploy static content to Pages
 
 env:
-  Python_Version: '3.10'
+  Python_Version: '3.9'
 
 on:
   # Runs on pushes targeting the default branch
