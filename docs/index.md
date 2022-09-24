@@ -96,16 +96,16 @@ print(response)
 
 If you want to handle higher order model as follows:  
 
-$$
-  \allowbreak
+\( 
   \href{https://katex.org/}{\KaTeX} 
-  \newline
-  \begin{equation*}
-     H = \sum_{i}h_i\sigma_i + \sum_{i < j} J_{ij} \sigma_i \sigma_j + \sum_{i, j, k} K_{i,j,k} \sigma_i\sigma_j \sigma_k \cdots
-  \end{equation*}
-$$
+\)
 
-use ``.sample_hubo``
+\begin{equation*}
+  \allowbreak
+  H = \sum_{i}h_i\sigma_i + \sum_{i < j} J_{ij} \sigma_i \sigma_j + \sum_{i, j, k} K_{i,j,k} \sigma_i\sigma_j \sigma_k \cdots
+\end{equation*}
+
+use `.sample_hubo`
 
 > HUBO: Higher order unconstraint binary optimization
 ## Sample code
