@@ -63,13 +63,14 @@ sphinx:
     katex_js_path:                     katex.min.js
     katex_autorender_path:             auto-render.min.js
     katex_prerender:                   true
-    katex_options:
+    katex_options: |
       displayMode: true
       output: htmlAndMathml
       leqno: true
       fleqn: true
       maxSize: Infinity
-      maxExpand: Infinity      
+      maxExpand: Infinity 
+      macros: {"\\i": "\\mathrm{i}", "\\e": "\\mathrm{e}^{#1}", "\\vec": "\\mathbf{#1}", "\\x": "\\vec{x}", "\\d": "\\operatorname{d}\\!{}", "\\dirac": "\\operatorname{\\delta}\\left(#1\\right)", "\\scalarprod": "\\left\\langle#1,#2\\right\\rangle",  }
     add_module_names:                  true
     autosummary_generate:              false
     autosummary_generate_overwrite:    true
