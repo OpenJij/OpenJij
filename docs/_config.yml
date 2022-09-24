@@ -25,8 +25,8 @@ parse:
     - colon_fence
     - html_admonition
     - deflist
-#    - dollarmath
-#    - amsmath
+    - dollarmath
+    - amsmath
   myst_url_schemes: [ mailto, http, https ] # URI schemes that will be recognised as external URLs in Markdown links
   myst_heading_anchors: 3
 #  myst_dmath_double_inline: true
