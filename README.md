@@ -40,9 +40,7 @@
   import cxxjij
   ```
 
-- [Documents](https://openjij.github.io/OpenJij-Documentation/)
-
-- [Tutorials](https://openjij.github.io/OpenJijTutorial/build/html/index.html)
+- [Documents](https://openjij.github.io/OpenJij/)
 
 - [C++ Docs](https://openjij.github.io/OpenJij-Reference-Page/index.html)
 
