@@ -30,6 +30,9 @@ jobs:
         name: Install Python
         with:
           python-version: ${{env.Python_Version}}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
       - name: Python Cache Key
         shell: bash
         run: |
@@ -71,6 +74,7 @@ jobs:
          sudo apt-get install -y doxygen doxygen-doxyparse fonts-liberation python3-breathe
          sudo apt-get install -y libeigen3-dev
          sudo apt-get install -y libopenblas-dev 
+         sudo apt-get install -y katex fonts-katex libjs-katex
       - name: Prepare 
         shell: bash
         run: |
