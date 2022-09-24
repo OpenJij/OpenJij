@@ -22,7 +22,7 @@ parts:
         glob:    tutorial/en/*
   - caption:  OpenJij チュートリアル
     title:    OpenJij チュートリアル
-    numbered: true
+    numbered: false
     maxdepth: -1
     chapters:
       - title:   OpenJij チュートリアル
