@@ -18,15 +18,16 @@ execute:
 #  stderr_output: remove
 parse:
   myst_enable_extensions:
-    - smartquotes
-    - html_image
-    - linkify
-    - substitution
+    - amsmath
     - colon_fence
-    - html_admonition
     - deflist
     - dollarmath
-    - amsmath
+    - html_admonition
+    - html_image
+    - linkify
+    - replacements
+    - smartquotes
+    - substitution
   myst_url_schemes: [ mailto, http, https ] # URI schemes that will be recognised as external URLs in Markdown links
   myst_heading_anchors: 3
 #  myst_dmath_double_inline: true
