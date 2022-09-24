@@ -29,8 +29,12 @@ parse:
     - smartquotes
     - substitution
   myst_url_schemes: [ mailto, http, https ] # URI schemes that will be recognised as external URLs in Markdown links
-  myst_heading_anchors: 3
-#  myst_dmath_double_inline: true
+  myst_heading_anchors: -1
+  myst_dmath_allow_labels: true
+  myst_dmath_allow_space: true 
+  myst_dmath_allow_digits: true
+  myst_dmath_double_inline: false
+  myst_linkify_fuzzy_links: true
 # Information about where the book exists on the web
 repository:
   url:          https://github.com/OpenJij/OpenJij  # Online location of your book
