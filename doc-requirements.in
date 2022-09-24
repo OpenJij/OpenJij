@@ -17,6 +17,8 @@
 
 matplotlib
 
+myst-parser[linkify]
+
 python-levenshtein
 
 breathe
