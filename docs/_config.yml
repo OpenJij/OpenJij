@@ -63,6 +63,13 @@ sphinx:
     katex_js_path:                     katex.min.js
     katex_autorender_path:             auto-render.min.js
     katex_prerender:                   true
+    katex_options:
+      displayMode: true
+      output: htmlAndMathml
+      leqno: true
+      fleqn: true
+      maxSize: Infinity
+      maxExpand: Infinity      
     add_module_names:                  true
     autosummary_generate:              false
     autosummary_generate_overwrite:    true
