@@ -35,6 +35,7 @@ parse:
   myst_dmath_allow_digits: true
   myst_dmath_double_inline: true
   myst_linkify_fuzzy_links: true
+  myst_update_mathjax: false
   
 # Information about where the book exists on the web
 repository:
