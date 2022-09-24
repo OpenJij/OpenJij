@@ -96,14 +96,11 @@ print(response)
 
 If you want to handle higher order model as follows:  
 
-\( 
-  \href{https://katex.org/}{\KaTeX} 
-\)
-
-\begin{equation*}
-  \allowbreak
-  H = \sum_{i}h_i\sigma_i + \sum_{i < j} J_{ij} \sigma_i \sigma_j + \sum_{i, j, k} K_{i,j,k} \sigma_i\sigma_j \sigma_k \cdots
-\end{equation*}
+$$  
+  \begin{equation*}     
+    H = \sum_{i}h_i\sigma_i + \sum_{i < j} J_{ij} \sigma_i \sigma_j + \sum_{i, j, k} K_{i,j,k} \sigma_i\sigma_j \sigma_k \cdots 
+  \end{equation*}  
+$$  
 
 use `.sample_hubo`
 
