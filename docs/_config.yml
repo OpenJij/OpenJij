@@ -7,7 +7,7 @@ copyright: "2022"
 logo:      OpenJij-Logo.webp
 description: >- # this means to ignore newlines until "baseurl:"
              OpenJij : Framework for the Ising model and QUBO.
-only_build_toc_files: true
+only_build_toc_files: false
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
@@ -62,7 +62,7 @@ sphinx:
     katex_css_path:                    https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css
     katex_js_path:                     katex.min.js
     katex_autorender_path:             auto-render.min.js
-    katex_prerender:                   false
+    katex_prerender:                   true
     add_module_names:                  true
     autosummary_generate:              false
     autosummary_generate_overwrite:    true
