@@ -70,11 +70,12 @@ jobs:
       - name: Install Dep
         run: | 
          pip install typing-extensions
+         sudo apt-get update
          sudo apt-get install -y lcov graphviz mscgen dia pdf2svg astyle
          sudo apt-get install -y doxygen doxygen-doxyparse fonts-liberation python3-breathe
          sudo apt-get install -y libeigen3-dev
          sudo apt-get install -y libopenblas-dev 
-         sudo apt-get install -y katex fonts-katex libjs-katex
+         npm install -g katex
       - name: Prepare 
         shell: bash
         run: |
