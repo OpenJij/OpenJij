@@ -1,0 +1,122 @@
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy static content to Pages
+
+env:
+  Python_Version: '3.10'
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+  release:
+    types: [published]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  
+jobs:
+  build_python_docs:
+    name: Build Python Documentation 
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-py-doc-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        name: Install Python
+        with:
+          python-version: ${{env.Python_Version}}
+      - name: Python Cache Key
+        shell: bash
+        run: |
+          echo $(which python) > /tmp/python_version.txt
+      - name: Get pip cache dir
+        shell: bash
+        id: pip-cache
+        run: |
+          echo "::set-output name=dir::$(pip cache dir)"
+      - name: Pip-Tools 
+        shell: bash
+        run: |
+          python -m pip install pip-tools 
+          pip-compile
+          pip-compile build-requirements.in
+          pip-compile doc-requirements.in
+      - name: pip cache
+        uses: actions/cache@v3
+        with:
+           path: ${{ steps.pip-cache.outputs.dir }}
+           key: ${{ runner.os }}-pages-pip-${{ hashFiles('/tmp/python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}-${{ hashFiles('doc-requirements.txt') }}
+           restore-keys: |
+              ${{ runner.os }}-pages-pip-${{ hashFiles('/tmp/python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}-${{ hashFiles('doc-requirements.txt') }}
+              ${{ runner.os }}-pages-pip-${{ hashFiles('/tmp/python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}
+              ${{ runner.os }}-pip-${{ hashFiles('/tmp/python_version.txt') }}-${{ hashFiles('requirements.txt') }}
+              ${{ runner.os }}-pip-${{ hashFiles('/tmp/python_version.txt') }}
+      - name: Update
+        run: | 
+         pip install --upgrade pip wheel setuptools build cmake ninja 
+      - name: Install Dependencies
+        shell: bash
+        run: |
+          set -eux
+          pip-sync requirements.txt build-requirements.txt doc-requirements.txt
+      - name: Install Dep
+        run: | 
+         pip install typing-extensions
+         sudo apt-get install -y libeigen3-dev  graphviz
+      - name: Prepare 
+        shell: bash
+        run: pip install -vvv .
+      - name: Jupyter Book 
+        run: |
+          jupyter-book build docs --all
+      - name: du -a 
+        shell: bash
+        if: always()
+        run: |
+          du -a
+      - name: Prepare tag
+        id: prepare_tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG_NAME="${GITHUB_REF##refs/tags/}"
+          echo "::set-output name=tag_name::${TAG_NAME}"
+          echo "::set-output name=deploy_tag_name::deploy-${TAG_NAME}"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: HTML
+          path: ./docs/_build/html
+          retention-days: 30 
+  # Single deploy job since we're just deploying
+  deploy:
+    needs: build_python_docs
+    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+    permissions:
+     contents: read
+     pages: write
+     id-token: write
+    # Allow one concurrent deployment
+    concurrency:
+      group: "pages"
+      cancel-in-progress: true
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: HTML
+          path: ./html
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # Upload entire repository
+          path: './html'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
