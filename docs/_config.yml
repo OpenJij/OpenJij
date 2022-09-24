@@ -25,11 +25,11 @@ parse:
     - colon_fence
     - html_admonition
     - deflist
-    - dollarmath
-    - amsmath
+#    - dollarmath
+#    - amsmath
   myst_url_schemes: [ mailto, http, https ] # URI schemes that will be recognised as external URLs in Markdown links
   myst_heading_anchors: 3
-  myst_dmath_double_inline: true
+#  myst_dmath_double_inline: true
 # Information about where the book exists on the web
 repository:
   url:          https://github.com/OpenJij/OpenJij  # Online location of your book
@@ -63,6 +63,21 @@ sphinx:
     katex_js_path:                     katex.min.js
     katex_autorender_path:             auto-render.min.js
     katex_prerender:                   true
+    katex_inline: |
+      [
+        r'\(', r'\)'
+      ]
+    katex_display: |
+      [
+        r'$', r'$',
+        r'$$', r'$$',
+        r'\[', r'\]', 
+        "\\begin{equation}", "\\end{equation}", 
+        "\\begin{align}", "\\end{align}",
+        "\\begin{alignat}", "\\end{alignat}",
+        "\\begin{gather}", "\\end{gather}",
+        "\\begin{CD}", "\\end{CD}",
+      ]
     katex_options: |
       displayMode: true
       output: htmlAndMathml
