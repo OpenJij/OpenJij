@@ -1,4 +1,6 @@
 # Welcome to OpenJij's documentation!
+
+
 ## OpenJij : Framework for the Ising model and QUBO.
 
 [![PyPI version shields.io](https://img.shields.io/pypi/v/openjij.svg)](https://pypi.python.org/pypi/openjij/)
@@ -90,7 +92,7 @@ response = sampler.sample_ising(h, J, schedule=schedule)
 print(response)
 ```
 
-# Higher order model
+# Higher order model  
 
 If you want to handle higher order model as follows:
 
