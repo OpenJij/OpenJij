@@ -96,9 +96,9 @@ print(response)
 
 If you want to handle higher order model as follows:  
 
-<div style="text-align: center;">
+
 $$H = \sum_{i}h_i\sigma_i + \sum_{i < j} J_{ij} \sigma_i \sigma_j + \sum_{i, j, k} K_{i,j,k} \sigma_i\sigma_j \sigma_k \cdots$$  
-</div>
+
 use `.sample_hubo`
 
 > HUBO: Higher order unconstraint binary optimization
