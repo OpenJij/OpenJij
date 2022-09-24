@@ -76,9 +76,6 @@ sphinx:
         r'$', r'$',
         r'$$', r'$$',
         r'\(', r'\)',
-      ]
-    katex_display: |
-      [
         r'\[', r'\]', 
         "\\begin{equation}", "\\end{equation}", 
         "\\begin{align}", "\\end{align}",
@@ -86,13 +83,16 @@ sphinx:
         "\\begin{gather}", "\\end{gather}",
         "\\begin{CD}", "\\end{CD}",
       ]
+    katex_display:                     []
     katex_options: |
       displayMode: false
       output: htmlAndMathml
-      leqno: true
-      fleqn: true
+      leqno: false
+      fleqn: false
       maxSize: Infinity
       maxExpand: Infinity 
+      trust: true
+      globalGroup: true
       macros: {"\\i": "\\mathrm{i}", "\\e": "\\mathrm{e}^{#1}", "\\vec": "\\mathbf{#1}", "\\x": "\\vec{x}", "\\d": "\\operatorname{d}\\!{}", "\\dirac": "\\operatorname{\\delta}\\left(#1\\right)", "\\scalarprod": "\\left\\langle#1,#2\\right\\rangle",  }
     add_module_names:                  true
     autosummary_generate:              false
