@@ -58,8 +58,6 @@ launch_buttons:
   notebook_interface: classic  # The interface interactive links will activate ["classic", "jupyterlab"]
   binderhub_url:      https://mybinder.org  # The URL of the BinderHub (e.g., https://mybinder.org)
   
-latex:
-  latex_engine: pdflatex
 
 sphinx:
   recursive_update: true
@@ -69,9 +67,6 @@ sphinx:
     html_split_index:                  true
     nb_merge_streams:                  true
     execution_show_tb:                 true
-    imgmath_image_format:              svg
-    imgmath_use_preview:               true 
-    imgmath_embed:                     true
     katex_css_path:                    https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css
     katex_js_path:                     katex.min.js
     katex_autorender_path:             auto-render.min.js
@@ -92,7 +87,7 @@ sphinx:
         "\\begin{CD}", "\\end{CD}",
       ]
     katex_options: |
-      displayMode: true
+      displayMode: false
       output: htmlAndMathml
       leqno: true
       fleqn: true
@@ -181,7 +176,6 @@ sphinx:
     - sphinx_sitemap
     - 'autoapi.extension'
     - 'sphinxcontrib.katex'
-    - 'sphinx.ext.imgmath' 
     - 'sphinx.ext.duration'
     - 'sphinx.ext.doctest'
     - 'sphinx.ext.autodoc'
