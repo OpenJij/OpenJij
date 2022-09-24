@@ -45,7 +45,7 @@ html:
   use_multitoc_numbering: false
   home_page_in_navbar:    false
   use_fullscreen_button:  false
-  baseurl:                https://openjij.github.io/OpenJij-Documentation
+  baseurl:                https://openjij.github.io/OpenJij
 
 # Launch button settings
 launch_buttons:
@@ -62,9 +62,9 @@ sphinx:
     katex_css_path:                    https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css
     katex_js_path:                     katex.min.js
     katex_autorender_path:             auto-render.min.js
-    katex_prerender:                   true
+    katex_prerender:                   false
     add_module_names:                  true
-    autosummary_generate: false
+    autosummary_generate:              false
     autosummary_generate_overwrite:    true
     autosummary_imported_members:      true
     autosummary_ignore_module_all:     true
@@ -80,8 +80,8 @@ sphinx:
     autosectionlabel_prefix_document:  true
     autoapi_root:                      reference
     autoapi_keep_files:                true
-    autoapi_dirs: [ ../openjij ]
-    autoapi_ignore: [ ../openjij/_version.py, '*/_version.py' ]
+    autoapi_dirs:                      [ ../openjij ]
+    autoapi_ignore:                    [ ../openjij/_version.py, '*/_version.py' ]
     autoapi_add_toctree_entry:         false
     autoapi_python_class_content:      both
     autoapi_member_order:              groupwise
