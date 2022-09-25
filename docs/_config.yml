@@ -77,7 +77,7 @@ sphinx:
         r'$', r'$',
         r'\(', r'\)', 
       ]
-    katex_display:                     
+    katex_display: |                    
       [
         r'$$', r'$$',
         r'\[', r'\]', 
