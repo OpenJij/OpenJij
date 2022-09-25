@@ -5,8 +5,8 @@ title:     OpenJij Book
 author:    Jij Inc.
 copyright: "2022"
 logo:      OpenJij-Logo.webp
-description: >- # this means to ignore newlines until "baseurl:"
-             OpenJij : Framework for the Ising model and QUBO.
+#description: >- # this means to ignore newlines until "baseurl:"
+#             OpenJij : Framework for the Ising model and QUBO.
 only_build_toc_files: true
 
 # Force re-execution of notebooks on each build.
@@ -75,8 +75,11 @@ sphinx:
     katex_inline: |
       [
         r'$', r'$',
+        r'\(', r'\)', 
+      ]
+    katex_display:                     
+      [
         r'$$', r'$$',
-        r'\(', r'\)',
         r'\[', r'\]', 
         "\\begin{equation}", "\\end{equation}", 
         "\\begin{align}", "\\end{align}",
@@ -84,9 +87,8 @@ sphinx:
         "\\begin{gather}", "\\end{gather}",
         "\\begin{CD}", "\\end{CD}",
       ]
-    katex_display:                     []
     katex_options: |
-      displayMode: false
+      displayMode: true
       output: htmlAndMathml
       leqno: false
       fleqn: false
