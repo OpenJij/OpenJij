@@ -39,4 +39,3 @@ sphinx-autoapi
 sphinx-notfound-page
 sphinx-hoverxref
 sphinx-examples
-sphinx-autodoc-typehints
