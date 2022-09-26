@@ -5,20 +5,19 @@ title:     OpenJij Book
 author:    Jij Inc.
 copyright: "2022"
 logo:      OpenJij-Logo.webp
-#description: >- # this means to ignore newlines until "baseurl:"
-#             OpenJij : Framework for the Ising model and QUBO.
-only_build_toc_files: true
+description: >- # this means to ignore newlines until "baseurl:"
+             OpenJij : Framework for the Ising model and QUBO.
+only_build_toc_files: True
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
 execute:
   execute_notebooks: cache
-  run_in_temp:       true
-  allow_errors:      false
+  run_in_temp:       True
+  allow_errors:      True
 #  stderr_output: remove
 parse:
   myst_enable_extensions:
-    - amsmath
     - colon_fence
     - deflist
     - dollarmath
@@ -30,12 +29,12 @@ parse:
     - substitution
   myst_url_schemes: [ mailto, http, https ] # URI schemes that will be recognised as external URLs in Markdown links
   myst_heading_anchors: -1
-  myst_dmath_allow_labels: true
-  myst_dmath_allow_space: true
-  myst_dmath_allow_digits: true
-  myst_dmath_double_inline: true
-  myst_linkify_fuzzy_links: true
-  myst_update_mathjax: false
+  myst_dmath_allow_labels: True
+  myst_dmath_allow_space: True
+  myst_dmath_allow_digits: True
+  myst_dmath_double_inline: False
+  myst_linkify_fuzzy_links: True
+  myst_update_mathjax: True
   
 # Information about where the book exists on the web
 repository:
@@ -47,11 +46,12 @@ repository:
 # See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
 html:
   favicon:                favicon.ico
-  use_issues_button:      true
-  use_repository_button:  true
-  use_multitoc_numbering: false
-  home_page_in_navbar:    false
-  use_fullscreen_button:  false
+  use_issues_button:      False
+  use_repository_button:  True
+  use_multitoc_numbering: False
+  home_page_in_navbar:    False
+  use_fullscreen_button:  False
+  math_renderer:          katex
   baseurl:                https://openjij.github.io/OpenJij
 
 # Launch button settings
@@ -61,24 +61,30 @@ launch_buttons:
   
 
 sphinx:
-  recursive_update: true
+  recursive_update: False
   config:
-    show_authors:                      false
-    gettext_uuid:                      true
-    html_split_index:                  true
-    nb_merge_streams:                  true
-    execution_show_tb:                 true
-    katex_css_path:                    https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css
-    katex_js_path:                     katex.min.js
-    katex_autorender_path:             auto-render.min.js
-    katex_prerender:                   true
+    show_authors:                      False
+    add_module_names:                  True
+    gettext_allow_fuzzy_translations:  True
+    gettext_uuid:                      True
+    html_split_index:                  True
+    python_use_unqualified_type_names: True
+    nb_merge_streams:                  True
+    execution_show_tb:                 True
+    html_math_renderer:                katex
+    katex_css_path:                    https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/katex.css
+    katex_js_path:                     https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/katex.js
+    katex_autorender_path:             https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/contrib/auto-render.js
+    katex_prerender:                   True
     katex_inline: |
       [
+        '$', '$',
         r'$', r'$',
         r'\(', r'\)', 
       ]
     katex_display: |                    
       [
+        '$$', '$$',
         r'$$', r'$$',
         r'\[', r'\]', 
         "\\begin{equation}", "\\end{equation}", 
@@ -88,35 +94,34 @@ sphinx:
         "\\begin{CD}", "\\end{CD}",
       ]
     katex_options: |
-      displayMode: true
+      displayMode: True
       output: htmlAndMathml
-      leqno: false
-      fleqn: false
+      leqno: true
+      fleqn: true
       maxSize: Infinity
       maxExpand: Infinity 
-      trust: true
-      globalGroup: true
+      trust: True
+      globalGroup: True
       macros: {"\\i": "\\mathrm{i}", "\\e": "\\mathrm{e}^{#1}", "\\vec": "\\mathbf{#1}", "\\x": "\\vec{x}", "\\d": "\\operatorname{d}\\!{}", "\\dirac": "\\operatorname{\\delta}\\left(#1\\right)", "\\scalarprod": "\\left\\langle#1,#2\\right\\rangle",  }
-    add_module_names:                  true
-    autosummary_generate:              false
-    autosummary_generate_overwrite:    true
-    autosummary_imported_members:      true
-    autosummary_ignore_module_all:     true
+    autosummary_generate:              False
+    autosummary_generate_overwrite:    True
+    autosummary_imported_members:      True
+    autosummary_ignore_module_all:     True
     autoclass_content:                 both
     autodoc_class_signature:           separated
     autodoc_member_order:              groupwise
-    autodoc_docstring_signature:       true
+    autodoc_docstring_signature:       True
     autodoc_typehints:                 both
     autodoc_typehints_format:          short
-    napoleon_google_docstring:         true
-    napoleon_include_init_with_doc:    true
-    napoleon_preprocess_types:         true
-    autosectionlabel_prefix_document:  true
+    napoleon_google_docstring:         True
+    napoleon_include_init_with_doc:    True
+    napoleon_preprocess_types:         True
+    autosectionlabel_prefix_document:  True
     autoapi_root:                      reference
-    autoapi_keep_files:                true
+    autoapi_keep_files:                False
     autoapi_dirs:                      [ ../openjij ]
     autoapi_ignore:                    [ ../openjij/_version.py, '*/_version.py' ]
-    autoapi_add_toctree_entry:         false
+    autoapi_add_toctree_entry:         False
     autoapi_python_class_content:      both
     autoapi_member_order:              groupwise
     autoapi_options: [
@@ -128,7 +133,7 @@ sphinx:
       show-inheritance-diagram,
       imported-members,
     ]
-    viewcode_follow_imported_members:  true
+    viewcode_follow_imported_members:  True
     intersphinx_mapping:
       python:
         - "https://docs.python.org/3"
@@ -170,16 +175,19 @@ sphinx:
         - "https://nbformat.readthedocs.io/en/latest"
         - null
       sd:
-        - https://sphinx-design.readthedocs.io/en/latest
+        - "https://sphinx-design.readthedocs.io/en/latest"
         - null
   extra_extensions:
-    - breathe
     - sphinx_proof
     - sphinx_inline_tabs
     - sphinx_sitemap
     - 'autoapi.extension'
     - 'sphinxcontrib.katex'
     - 'sphinx.ext.duration'
+    - 'sphinx.ext.coverage'
+    - 'sphinx.ext.extlinks'
+    - 'sphinx.ext.githubpages'
+    - 'sphinx.ext.graphviz'
     - 'sphinx.ext.doctest'
     - 'sphinx.ext.autodoc'
     - 'sphinx.ext.napoleon'

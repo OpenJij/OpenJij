@@ -6,8 +6,8 @@ root:   index
 defaults: # The defaults key will be applied to all chapters and sub-sections
   titlesonly: True
 parts:
-  - caption:  OpenJij API Reference
-    title:    OpenJij API Reference
+  - caption:  OpenJi
+    title:    OpenJi
     numbered: false
     maxdepth: -1
     chapters:

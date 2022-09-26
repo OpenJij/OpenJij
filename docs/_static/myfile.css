@@ -1,0 +1,30 @@
+.math{
+    font-size: 1.0em !important; 
+    overflow: auto;
+    vertical-align: baseline;
+    text-align: justify;
+    text-justify: inter-character;
+    display: -webkit-inline-flex;
+    display: inline-flex;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-align-items: center;
+    align-items: center;
+    width: auto;
+    height: auto;
+}
+
+.math:not(span){
+        font-size: 1.2em !important; 
+        text-align: justify-all;
+        text-justify: inter-character;
+        letter-spacing: 0.1em;
+        word-spacing: 0.2em;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-justify-content: center;
+        justify-content: center;
+        -webkit-align-items: center;
+        align-items: center;
+        margin: auto;
+}

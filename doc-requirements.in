@@ -16,7 +16,7 @@
 -c build-requirements.txt
 
 matplotlib
-
+jijmodeling-transpiler; platform_machine=='x86_64'
 myst-parser[linkify]
 
 python-levenshtein
