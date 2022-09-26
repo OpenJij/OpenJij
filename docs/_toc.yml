@@ -4,29 +4,29 @@
 format: jb-book
 root:   index
 defaults: # The defaults key will be applied to all chapters and sub-sections
-  titlesonly: True
+  titlesonly: False
 options:  # The options key will be applied to all chapters, but not sub-sections
   numbered: False
 parts:
-  - caption:  OpenJi
-    title:    OpenJi
+  - caption:  OpenJij API Reference 
+    title:    OpenJij API Reference
     numbered: false
     maxdepth: -1
     chapters:
       - file: reference/openjij/index.rst
-  - caption:  OpenJij Tutorial
-    title:    OpenJij Tutorial
+  - caption:  OpenJij English Tutorial
+    title:    OpenJij English Tutorial
     numbered: false
     maxdepth: -1
     chapters:
-      - title:   OpenJij Tutorial
+      - title:   OpenJij English Tutorial
         caption: OpenJij English Tutorial
         glob:    tutorial/en/*
-  - caption:  OpenJij チュートリアル
-    title:    OpenJij チュートリアル
+  - caption:  OpenJij 日本語 チュートリアル
+    title:    OpenJij 日本語 チュートリアル
     numbered: false
     maxdepth: -1
     chapters:
-      - title:   OpenJij チュートリアル
+      - title:   OpenJij 日本語 チュートリアル
         caption: OpenJij 日本語 チュートリアル
         glob:    tutorial/ja/*
