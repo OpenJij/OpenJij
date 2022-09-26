@@ -124,5 +124,5 @@ print(response)
 ```
 
 $$ 
-\href{https://katex.org/}{\KaTeX}
+\KaTeX
 $$
