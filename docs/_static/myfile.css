@@ -1,30 +1,39 @@
-.math{
-    font-size: 1.0em !important; 
-    overflow: auto;
-    vertical-align: baseline;
-    text-align: justify;
-    text-justify: inter-character;
-    display: -webkit-inline-flex;
-    display: inline-flex;
-    -webkit-justify-content: center;
-    justify-content: center;
-    -webkit-align-items: center;
-    align-items: center;
-    width: auto;
-    height: auto;
+.math .katex-display {
+    overflow: auto hidden;
+    text-align: center;
 }
 
-.math:not(span){
-        font-size: 1.2em !important; 
-        text-align: justify-all;
-        text-justify: inter-character;
-        letter-spacing: 0.1em;
-        word-spacing: 0.2em;
-        display: -webkit-flex;
-        display: flex;
-        -webkit-justify-content: center;
-        justify-content: center;
-        -webkit-align-items: center;
-        align-items: center;
-        margin: auto;
+p .math:not(div) .katex-display {
+    font-size: 1.0em; 
+}
+p .math:not(div) {
+    display: inline-flex;
+    justify-content: center;
+    align-items: baseline;
+}
+
+div .math:not(span) {
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+    text-align: center;
+}
+
+div .math:not(span) *{
+    overflow: visible visible;
+}
+
+div .math:not(span) .vlist{
+    margin: auto auto;
+    width: min-content;
+    height: min-content;
+}
+
+
+div .math:not(span) .tag{
+    width: min-content !important;
+    position: static !important;
+    outline: none;
+    text-align: right;
 }

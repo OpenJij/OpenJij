@@ -5,8 +5,7 @@ title:     OpenJij Book
 author:    Jij Inc.
 copyright: "2022"
 logo:      OpenJij-Logo.webp
-description: >- # this means to ignore newlines until "baseurl:"
-             OpenJij : Framework for the Ising model and QUBO.
+description: 'OpenJij : Framework for the Ising model and QUBO.'
 only_build_toc_files: True
 
 # Force re-execution of notebooks on each build.
@@ -21,6 +20,7 @@ parse:
     - colon_fence
     - deflist
     - dollarmath
+    - amsmath
     - html_admonition
     - html_image
     - linkify
@@ -61,8 +61,11 @@ launch_buttons:
   
 
 sphinx:
-  recursive_update: False
+  recursive_update: True
   config:
+    numfig:                            False
+    math_number_all:                   False
+    math_numfig:                       False
     show_authors:                      False
     add_module_names:                  True
     gettext_allow_fuzzy_translations:  True
@@ -87,22 +90,17 @@ sphinx:
         '$$', '$$',
         r'$$', r'$$',
         r'\[', r'\]', 
-        "\\begin{equation}", "\\end{equation}", 
-        "\\begin{align}", "\\end{align}",
-        "\\begin{alignat}", "\\end{alignat}",
-        "\\begin{gather}", "\\end{gather}",
-        "\\begin{CD}", "\\end{CD}",
       ]
     katex_options: |
       displayMode: True
       output: htmlAndMathml
-      leqno: true
-      fleqn: true
+      leqno: True
+      fleqn: True
       maxSize: Infinity
       maxExpand: Infinity 
       trust: True
-      globalGroup: True
-      macros: {"\\i": "\\mathrm{i}", "\\e": "\\mathrm{e}^{#1}", "\\vec": "\\mathbf{#1}", "\\x": "\\vec{x}", "\\d": "\\operatorname{d}\\!{}", "\\dirac": "\\operatorname{\\delta}\\left(#1\\right)", "\\scalarprod": "\\left\\langle#1,#2\\right\\rangle",  }
+      globalGroup: False
+      macros: {"\\i": "\\mathrm{i}", "\\e": "\\mathrm{e}^{#1}", "\\vec": "\\mathbf{#1}", "\\x": "\\vec{x}", "\\d": "\\operatorname{d}\\!{}", "\\dirac": "\\operatorname{\\delta}\\left(#1\\right)", "\\scalarprod": "\\left\\langle#1,#2\\right\\rangle",  "\\eqref": "\\href{###1}{(\\text{#1})}", "\\ref": "\\href{###1}{\\text{#1}}", "\\label": "\\htmlId{#1}{}" }
     autosummary_generate:              False
     autosummary_generate_overwrite:    True
     autosummary_imported_members:      True

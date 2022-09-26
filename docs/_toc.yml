@@ -5,6 +5,8 @@ format: jb-book
 root:   index
 defaults: # The defaults key will be applied to all chapters and sub-sections
   titlesonly: True
+options:  # The options key will be applied to all chapters, but not sub-sections
+  numbered: False
 parts:
   - caption:  OpenJi
     title:    OpenJi
