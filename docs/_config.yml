@@ -99,6 +99,7 @@ sphinx:
       maxSize: Infinity
       maxExpand: Infinity 
       trust: True
+      strict: False
       globalGroup: False
       macros: {"\\i": "\\mathrm{i}", "\\e": "\\mathrm{e}^{#1}", "\\vec": "\\mathbf{#1}", "\\x": "\\vec{x}", "\\d": "\\operatorname{d}\\!{}", "\\dirac": "\\operatorname{\\delta}\\left(#1\\right)", "\\scalarprod": "\\left\\langle#1,#2\\right\\rangle",  "\\eqref": "\\href{###1}{(\\text{#1})}", "\\ref": "\\href{###1}{\\text{#1}}", "\\label": "\\htmlId{#1}{}" }
     autosummary_generate:              False
