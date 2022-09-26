@@ -155,7 +155,6 @@ sphinx:
     - sphinx_proof
     - sphinx_inline_tabs
     - sphinx_sitemap
-    - sphinx_autodoc_typehints
     - 'autoapi.extension'
     - 'sphinxcontrib.katex'
     - 'sphinx.ext.duration'
