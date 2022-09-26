@@ -85,6 +85,8 @@ sphinx:
     autodoc_docstring_signature:       True
     autodoc_typehints:                 both
     autodoc_typehints_format:          short
+    typehints_fully_qualified:         True
+    always_document_param_types:       True
     napoleon_google_docstring:         True
     napoleon_include_init_with_doc:    True
     napoleon_preprocess_types:         True
@@ -153,6 +155,7 @@ sphinx:
     - sphinx_proof
     - sphinx_inline_tabs
     - sphinx_sitemap
+    - sphinx_autodoc_typehints
     - 'autoapi.extension'
     - 'sphinxcontrib.katex'
     - 'sphinx.ext.duration'
