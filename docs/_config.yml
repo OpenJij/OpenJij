@@ -74,34 +74,7 @@ sphinx:
     python_use_unqualified_type_names: True
     nb_merge_streams:                  True
     execution_show_tb:                 True
-    html_math_renderer:                katex
-    katex_css_path:                    https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/katex.css
-    katex_js_path:                     https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/katex.js
-    katex_autorender_path:             https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/contrib/auto-render.js
     katex_prerender:                   True
-    katex_inline: |
-      [
-        '$', '$',
-        r'$', r'$',
-        r'\(', r'\)', 
-      ]
-    katex_display: |                    
-      [
-        '$$', '$$',
-        r'$$', r'$$',
-        r'\[', r'\]', 
-      ]
-    katex_options: |
-      displayMode: True
-      output: htmlAndMathml
-      leqno: True
-      fleqn: True
-      maxSize: Infinity
-      maxExpand: Infinity 
-      trust: True
-      strict: False
-      globalGroup: False
-      macros: {"\\i": "\\mathrm{i}", "\\e": "\\mathrm{e}^{#1}", "\\vec": "\\mathbf{#1}", "\\x": "\\vec{x}", "\\d": "\\operatorname{d}\\!{}", "\\dirac": "\\operatorname{\\delta}\\left(#1\\right)", "\\scalarprod": "\\left\\langle#1,#2\\right\\rangle",  "\\eqref": "\\href{###1}{(\\text{#1})}", "\\ref": "\\href{###1}{\\text{#1}}", "\\label": "\\htmlId{#1}{}" }
     autosummary_generate:              False
     autosummary_generate_overwrite:    True
     autosummary_imported_members:      True
