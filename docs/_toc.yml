@@ -9,24 +9,24 @@ options:  # The options key will be applied to all chapters, but not sub-section
   numbered: False
 parts:
   - caption:  OpenJij API Reference 
-    title:    OpenJij API Reference
+    title:    API Reference
     numbered: false
     maxdepth: -1
     chapters:
       - file: reference/openjij/index.rst
   - caption:  OpenJij English Tutorial
-    title:    OpenJij English Tutorial
+    title:    English Tutorial
     numbered: false
     maxdepth: -1
     chapters:
-      - title:   OpenJij English Tutorial
+      - title:   English Tutorial
         caption: OpenJij English Tutorial
         glob:    tutorial/en/*
   - caption:  OpenJij 日本語 チュートリアル
-    title:    OpenJij 日本語 チュートリアル
+    title:    日本語 チュートリアル
     numbered: false
     maxdepth: -1
     chapters:
-      - title:   OpenJij 日本語 チュートリアル
+      - title:   日本語 チュートリアル
         caption: OpenJij 日本語 チュートリアル
         glob:    tutorial/ja/*
