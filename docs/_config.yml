@@ -32,7 +32,7 @@ parse:
   myst_dmath_allow_labels: True
   myst_dmath_allow_space: True
   myst_dmath_allow_digits: True
-  myst_dmath_double_inline: False
+  myst_dmath_double_inline: True
   myst_linkify_fuzzy_links: True
   myst_update_mathjax: True
   
