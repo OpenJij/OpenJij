@@ -123,3 +123,6 @@ print(response)
 # ['BINARY', 1 rows, 1 samples, 3 variables]
 ```
 
+$$ 
+\href{https://katex.org/}{\KaTeX}
+$$
