@@ -13,15 +13,19 @@ parts:
     numbered: false
     maxdepth: -1
     chapters:
-      - file: reference/openjij/index.rst
+      - file:  reference/openjij/index.rst
       - title: openjij.cxxjij 
         file:  cxxjij/index.rst
-        sections:
-        - file:  cxxjij/algorithm.rst
-        - file:  cxxjij/graph.rst
-        - file:  cxxjij/result.rst
-        - file:  cxxjij/system.rst
-        - file:  cxxjij/utility.rst
+      - title: openjij.cxxjij.algorithm
+        file:  cxxjij/algorithm.rst
+      - title: openjij.cxxjij,graph
+        file:  cxxjij/graph.rst
+      - title: openjij.cxxjij.result
+        file:  cxxjij/result.rst
+      - title: openjij.cxxjij.system
+        file:  cxxjij/system.rst
+      - title: openjij.cxxjij.utility
+        file:  cxxjij/utility.rst
   - caption:  English Tutorial
     title:    OpenJij English Tutorial
     numbered: false
