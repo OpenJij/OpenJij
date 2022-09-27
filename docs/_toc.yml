@@ -13,15 +13,14 @@ parts:
     numbered: false
     maxdepth: -1
     chapters:
-      - file:     reference/openjij/index.rst
+      - file: reference/openjij/index.rst
+      - file: cxxjij.rst
   - caption:  Tutorial
     title:    OpenJij Tutorial
     numbered: false
     maxdepth: -1
     chapters:
-      - title:     OpenJij English Tutorial
-        sections:
-        - glob:    tutorial/en/*
-      - title:     OpenJij 日本語 チュートリアル
-        sections:
-        - glob:    tutorial/ja/*
+      - title: OpenJij English Tutorial
+        glob:  tutorial/en/*
+      - title: OpenJij 日本語 チュートリアル
+        glob:  tutorial/ja/*
