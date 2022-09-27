@@ -23,7 +23,9 @@ parts:
     chapters:
       - title:   OpenJij English Tutorial
         caption: English Tutorial
-        glob:    tutorial/en/*
+        file:    tutorial/en-index.md
+        sections:
+        - glob:    tutorial/en/*
   - caption:  日本語 チュートリアル
     title:    OpenJij 日本語 チュートリアル
     numbered: false
@@ -31,4 +33,6 @@ parts:
     chapters:
       - title:   OpenJij 日本語 チュートリアル
         caption: 日本語 チュートリアル
-        glob:    tutorial/ja/*
+        file:    tutorial/ja-index.md
+        sections:
+        - glob:    tutorial/ja/*
