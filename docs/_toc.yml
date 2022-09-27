@@ -16,7 +16,11 @@ parts:
       - file:  reference/openjij/index.rst
       - file:  cxxjij.rst
         sections:
-        - glob:  cxxjij/*
+        - file: algorithm.rst
+        - file: graph.rst
+        - file: result.rst
+        - file: system.rst
+        - file: utility.rst
   - caption:  English Tutorial
     title:    OpenJij English Tutorial
     numbered: false
