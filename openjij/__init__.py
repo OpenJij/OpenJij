@@ -2,6 +2,8 @@ from pkgutil import extend_path
 
 __path__ = extend_path(__path__, __name__)
 
+from openjij import cxxjij
+
 from openjij.model.model import BinaryPolynomialModel, BinaryQuadraticModel
 from openjij.sampler.csqa_sampler import CSQASampler
 from openjij.sampler.response import Response
@@ -12,6 +14,7 @@ from openjij.utils.res_convertor import convert_response
 from openjij.variable_type import BINARY, SPIN, Vartype, cast_vartype
 
 __all__ = [
+    "cxxjij",
     "SPIN",
     "BINARY",
     "Vartype",
