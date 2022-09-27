@@ -76,15 +76,31 @@ jobs:
          sudo apt-get install -y dvisvgm graphviz mscgen dia pdf2svg astyle doxygen doxygen-doxyparse fonts-liberation python3-breathe
          sudo apt-get install -y libeigen3-dev libopenblas-dev 
          npm install -g katex marked
+      - name: Mkdir Build
+        shell: bash
+        run: mkdir build
+      - name: CMake Configure
+        shell: bash
+        run: >
+          cmake 
+          -DBUILD_DOCS=ON
+          -G Ninja
+          -S .
+          -B build
+      - name: CMake Build
+        shell: bash
+        run: >
+          cmake  
+          --build build
+          --parallel
+          --verbose
+          --target cxxjij_header_only_docs
       - name: Prepare 
         shell: bash
         run: |
           set -eux
-          mkdir build
-          cmake -DCMAKE_BUILD_TYPE=Debug -DSKBUILD=TRUE  -S . -B build
-          cmake --build build
-          python setup.py --force-cmake install --build-type Debug  --verbose 
           python setup.py build_ext --inplace --verbose 
+          python -m pip install -vvv .
       - name: Jupyter Book 
         run: |
           jupyter-book build docs --all
