@@ -14,18 +14,9 @@ parts:
     maxdepth: -1
     chapters:
       - file:  reference/openjij/index.rst
-      - title: openjij.cxxjij 
-        file:  cxxjij.rst
-      - title: openjij.cxxjij.algorithm
-        file:  cxxjij/algorithm.rst
-      - title: openjij.cxxjij,graph
-        file:  cxxjij/graph.rst
-      - title: openjij.cxxjij.result
-        file:  cxxjij/result.rst
-      - title: openjij.cxxjij.system
-        file:  cxxjij/system.rst
-      - title: openjij.cxxjij.utility
-        file:  cxxjij/utility.rst
+      - file:  cxxjij.rst
+        sections:
+        - glob:  cxxjij/*
   - caption:  English Tutorial
     title:    OpenJij English Tutorial
     numbered: false
