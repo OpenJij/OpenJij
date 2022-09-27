@@ -143,13 +143,16 @@ sphinx:
         - "https://myst-nb.readthedocs.io/en/latest/"
         - null
       sphinx:
-        - "https://www.sphinx-doc.org/en/master"
+        - "https://www.sphinx-doc.org/en/master/"
+        - null
+      pybind11:
+        - "https://pybind11.readthedocs.io/en/stable/" 
         - null
       nbformat:
-        - "https://nbformat.readthedocs.io/en/latest"
+        - "https://nbformat.readthedocs.io/en/latest/"
         - null
       sd:
-        - "https://sphinx-design.readthedocs.io/en/latest"
+        - "https://sphinx-design.readthedocs.io/en/latest/"
         - null
   extra_extensions:
     - sphinx_proof
