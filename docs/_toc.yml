@@ -15,7 +15,7 @@ parts:
     chapters:
       - file: reference/openjij/index.rst
       - title: openjij.cxxjij 
-        file:  cxxjij.rst
+        file:  cxxjij/cxxjij.rst
   - caption:  English Tutorial
     title:    OpenJij English Tutorial
     numbered: false
