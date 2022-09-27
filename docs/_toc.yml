@@ -19,11 +19,9 @@ parts:
     numbered: false
     maxdepth: -1
     chapters:
-      - title:   OpenJij English Tutorial
-        file:    tutorial/en-index.md
+      - title:     OpenJij English Tutorial
         sections:
         - glob:    tutorial/en/*
-      - title:   OpenJij 日本語 チュートリアル
-        file:    tutorial/ja-index.md
+      - title:     OpenJij 日本語 チュートリアル
         sections:
         - glob:    tutorial/ja/*
