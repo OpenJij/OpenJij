@@ -170,10 +170,11 @@ $ python -m pyright
 
 ## Python Documentation 
 Use Juyter Book for build documentation.   
+With KaTeX    
 Need: Graphviz
 
 ``` sh
-$ pip-compile
+$ pip-compile setup.cfg
 $ pip-compile build-requirements.in
 $ pip-compile doc-requirements.in
 $ pip-sync requirements.txt build-requirements.txt doc-requirements.txt
