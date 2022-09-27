@@ -68,22 +68,19 @@ jobs:
           set -eux
           pip-sync requirements.txt build-requirements.txt doc-requirements.txt
           pip install --upgrade pip wheel setuptools build cmake ninja typing-extensions
+          sudo apt-get install -y libeigen3-dev libopenblas-dev 
           python -m pip install -vvv .
       - name: Install Dep
         run: | 
          sudo apt-get update
          sudo apt-get upgrade -y
          sudo apt-get install -y dvisvgm graphviz mscgen dia pdf2svg astyle doxygen doxygen-doxyparse fonts-liberation python3-breathe
-         sudo apt-get install -y libeigen3-dev libopenblas-dev 
          npm install -g katex marked
       - name: Prepare 
         shell: bash
         run: |
           set -eux
-          python setup.py build_ext --inplace --verbose 
-      - name: Mkdir Build
-        shell: bash
-        run: mkdir build
+          mkdir build
       - name: CMake Configure
         shell: bash
         run: >
