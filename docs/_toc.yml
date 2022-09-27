@@ -28,3 +28,4 @@ parts:
       - title:   OpenJij チュートリアル
         caption: OpenJij 日本語 チュートリアル
         glob:    tutorial/ja/*
+        
