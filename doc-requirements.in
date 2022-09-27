@@ -16,12 +16,13 @@
 -c build-requirements.txt
 
 matplotlib
+networkx
+scikit-learn
+
 jijmodeling-transpiler; platform_machine=='x86_64'
 myst-parser[linkify]
 
 python-levenshtein
-
-breathe
 
 jupyter
 jupyter-book
