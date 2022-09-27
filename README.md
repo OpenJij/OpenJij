@@ -170,6 +170,7 @@ $ python -m pyright
 
 ## Python Documentation 
 Use Juyter Book for build documentation.   
+With KaTeX    
 Need: Graphviz
 
 ``` sh
