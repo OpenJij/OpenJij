@@ -13,10 +13,9 @@ parts:
     numbered: false
     maxdepth: -1
     chapters:
-      - title:    OpenJij API Reference 
-        file:     reference/openjij/index.rst
-  - caption:  English Tutorial
-    title:    OpenJij English Tutorial
+      - file:     reference/openjij/index.rst
+  - caption:  Tutorial
+    title:    OpenJij Tutorial
     numbered: false
     maxdepth: -1
     chapters:
@@ -24,11 +23,6 @@ parts:
         file:    tutorial/en-index.md
         sections:
         - glob:    tutorial/en/*
-  - caption:  日本語 チュートリアル
-    title:    OpenJij 日本語 チュートリアル
-    numbered: false
-    maxdepth: -1
-    chapters:
       - title:   OpenJij 日本語 チュートリアル
         file:    tutorial/ja-index.md
         sections:
