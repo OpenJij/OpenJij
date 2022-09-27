@@ -15,7 +15,7 @@ parts:
     chapters:
       - file:  reference/openjij/index.rst
       - title: openjij.cxxjij 
-        file:  cxxjij/index.rst
+        file:  cxxjij.rst
       - title: openjij.cxxjij.algorithm
         file:  cxxjij/algorithm.rst
       - title: openjij.cxxjij,graph
