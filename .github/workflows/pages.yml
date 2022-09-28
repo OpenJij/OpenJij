@@ -67,25 +67,36 @@ jobs:
         run: |
           set -eux
           pip-sync requirements.txt build-requirements.txt doc-requirements.txt
+          pip install --upgrade pip wheel setuptools build cmake ninja typing-extensions
+          sudo apt-get install -y libeigen3-dev libopenblas-dev 
+          python -m pip install -vvv .
       - name: Install Dep
         run: | 
-         pip install typing-extensions
          sudo apt-get update
          sudo apt-get upgrade -y
          sudo apt-get install -y dvisvgm graphviz mscgen dia pdf2svg astyle doxygen doxygen-doxyparse fonts-liberation python3-breathe
-         sudo apt-get install -y texlive-lang-cjk texlive-fonts-recommended texlive-fonts-extra 
-         sudo apt-get install -y libeigen3-dev
-         sudo apt-get install -y libopenblas-dev 
          npm install -g katex marked
       - name: Prepare 
         shell: bash
         run: |
           set -eux
           mkdir build
-          export CMAKE_BUILD_TYPE=Debug
-          cmake -DCMAKE_BUILD_TYPE=Debug -DSKBUILD=TRUE  -S . -B build
-          cmake --build build
-          python setup.py --force-cmake install --build-type Debug  --verbose 
+      - name: CMake Configure
+        shell: bash
+        run: >
+          cmake 
+          -DBUILD_DOCS=ON
+          -G Ninja
+          -S .
+          -B build
+      - name: CMake Build
+        shell: bash
+        run: >
+          cmake  
+          --build build
+          --parallel
+          --verbose
+          --target cxxjij_header_only_docs
       - name: Jupyter Book 
         run: |
           jupyter-book build docs --all

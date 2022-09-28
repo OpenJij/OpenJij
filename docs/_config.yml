@@ -5,8 +5,7 @@ title:     OpenJij Book
 author:    Jij Inc.
 copyright: "2022"
 logo:      OpenJij-Logo.webp
-description: >- # this means to ignore newlines until "baseurl:"
-             OpenJij : Framework for the Ising model and QUBO.
+description: 'OpenJij : Framework for the Ising model and QUBO.'
 only_build_toc_files: True
 
 # Force re-execution of notebooks on each build.
@@ -14,13 +13,14 @@ only_build_toc_files: True
 execute:
   execute_notebooks: cache
   run_in_temp:       True
-  allow_errors:      True
+  allow_errors:      False
 #  stderr_output: remove
 parse:
   myst_enable_extensions:
     - colon_fence
     - deflist
     - dollarmath
+    - amsmath
     - html_admonition
     - html_image
     - linkify
@@ -61,8 +61,11 @@ launch_buttons:
   
 
 sphinx:
-  recursive_update: False
+  recursive_update: True
   config:
+    numfig:                            False
+    math_number_all:                   False
+    math_numfig:                       False
     show_authors:                      False
     add_module_names:                  True
     gettext_allow_fuzzy_translations:  True
@@ -71,38 +74,7 @@ sphinx:
     python_use_unqualified_type_names: True
     nb_merge_streams:                  True
     execution_show_tb:                 True
-    html_math_renderer:                katex
-    katex_css_path:                    https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/katex.css
-    katex_js_path:                     https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/katex.js
-    katex_autorender_path:             https://cdn.jsdelivr.net/npm/katex@0.16.2/dist/contrib/auto-render.js
     katex_prerender:                   True
-    katex_inline: |
-      [
-        '$', '$',
-        r'$', r'$',
-        r'\(', r'\)', 
-      ]
-    katex_display: |                    
-      [
-        '$$', '$$',
-        r'$$', r'$$',
-        r'\[', r'\]', 
-        "\\begin{equation}", "\\end{equation}", 
-        "\\begin{align}", "\\end{align}",
-        "\\begin{alignat}", "\\end{alignat}",
-        "\\begin{gather}", "\\end{gather}",
-        "\\begin{CD}", "\\end{CD}",
-      ]
-    katex_options: |
-      displayMode: True
-      output: htmlAndMathml
-      leqno: true
-      fleqn: true
-      maxSize: Infinity
-      maxExpand: Infinity 
-      trust: True
-      globalGroup: True
-      macros: {"\\i": "\\mathrm{i}", "\\e": "\\mathrm{e}^{#1}", "\\vec": "\\mathbf{#1}", "\\x": "\\vec{x}", "\\d": "\\operatorname{d}\\!{}", "\\dirac": "\\operatorname{\\delta}\\left(#1\\right)", "\\scalarprod": "\\left\\langle#1,#2\\right\\rangle",  }
     autosummary_generate:              False
     autosummary_generate_overwrite:    True
     autosummary_imported_members:      True
@@ -113,6 +85,8 @@ sphinx:
     autodoc_docstring_signature:       True
     autodoc_typehints:                 both
     autodoc_typehints_format:          short
+    typehints_fully_qualified:         True
+    always_document_param_types:       True
     napoleon_google_docstring:         True
     napoleon_include_init_with_doc:    True
     napoleon_preprocess_types:         True
@@ -169,13 +143,16 @@ sphinx:
         - "https://myst-nb.readthedocs.io/en/latest/"
         - null
       sphinx:
-        - "https://www.sphinx-doc.org/en/master"
+        - "https://www.sphinx-doc.org/en/master/"
+        - null
+      pybind11:
+        - "https://pybind11.readthedocs.io/en/stable/" 
         - null
       nbformat:
-        - "https://nbformat.readthedocs.io/en/latest"
+        - "https://nbformat.readthedocs.io/en/latest/"
         - null
       sd:
-        - "https://sphinx-design.readthedocs.io/en/latest"
+        - "https://sphinx-design.readthedocs.io/en/latest/"
         - null
   extra_extensions:
     - sphinx_proof
