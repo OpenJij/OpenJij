@@ -160,13 +160,13 @@ result = pyq_chache.decode(response)
 
 ```python
 # extract feasible solution
-onehot_violations = result.evaluation.constraint_violations['onehot']
-feasibles = [i for i, violation in enumerate(onehot_violations) if violation == 0.0]
-objectives = result.evaluation.objective
-feas_obs = {i: objectives[i] for i in feasibles}
-lowest = min(feas_obs, key=feas_obs.get)
+feasible = result.feasible()
+# get the index of the lowest objective function
+objectives = feasible.evaluation.objective
+obs_dict = {i: objectives[i] for i in range(len(objectives))}
+lowest = min(obs_dict, key=obs_dict.get)
 # get indices of x = 1
-indices, _, _ = result.record.solution['x'][lowest]
+indices, _, _ = feasible.record.solution['x'][lowest]
 # get task number and execution node
 tasks, nodes = indices
 # get instance information
