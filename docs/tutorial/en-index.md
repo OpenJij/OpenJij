@@ -1,1 +1,1 @@
-# OpenJij Tutorials
+# OpenJij English Tutorials
