@@ -26,9 +26,12 @@
 
 PYBIND11_MODULE(cxxjij, m) {
   py::options options;
-  options.disable_function_signatures();
+  #options.disable_function_signatures();
   
   m.doc() = "openjij is a framework for ising and qubo";
+  
+  auto py_size_t = py::class_<std::size_t>(m, "size_t");
+  py_size_t.def(py::init<const std::size_t&>());
 
   /**********************************************************
    //namespace graph
