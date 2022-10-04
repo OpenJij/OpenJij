@@ -22,16 +22,16 @@
 グラフを$N$個のクリークに分けることを考えると
 
 $$
-\sum_{n=0}^{N-1} x_{v, c} = 1 \quad (\forall v \in V) \tag{1}
-$$
+\sum_{n=0}^{N-1} x_{v, c} = 1 \quad (\forall v \in V) 
+$$ (1)
 
 ### 目的関数: 完全グラフとの差を最小にする
 
 $n$番目のクリークに塗り分けられた部分の頂点数を$V_n (=\sum_v x_{v, n})$とすると、この頂点たちが完全グラフを形成しているならば、その辺の数は$\frac{1}{2} V_n (V_n-1)$となります。しかし、$n$番目のクリークに属する頂点が実際に形成する辺の数は、グラフの辺集合$E$を用いて$\sum_{(uv) \in E} x_{u, n} x_{v, n}$のように書かれます。この2つの差が0に近いほど、綺麗にグラフがクリークに分けれていることになります。よって目的関数は
 
 $$
-\mathrm{obj} = \sum_{n=0}^{N-1} \left\{ \frac{1}{2} \left( \sum_{v=0}^{V-1} x_{v, n}\right) \left( \sum_{v=0}^{V-1} x_{v, n}-1\right) - \sum_{(uv) \in E}x_{u, n} x_{v, n}\right\} \tag{2}
-$$
+\mathrm{obj} = \sum_{n=0}^{N-1} \left\{ \frac{1}{2} \left( \sum_{v=0}^{V-1} x_{v, n}\right) \left( \sum_{v=0}^{V-1} x_{v, n}-1\right) - \sum_{(uv) \in E}x_{u, n} x_{v, n}\right\} 
+$$ (2)
 
 ## JijModelingによるモデル構築
 
