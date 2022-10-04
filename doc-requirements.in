@@ -19,7 +19,7 @@ matplotlib
 networkx
 scikit-learn
 
-jijmodeling-transpiler; platform_machine=='x86_64'
+jijmodeling-transpiler
 myst-parser[linkify]
 
 python-levenshtein
