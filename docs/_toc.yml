@@ -21,13 +21,6 @@ parts:
         - file: result.rst
         - file: system.rst
         - file: utility.rst
-  - caption:  English Tutorial
-    title:    OpenJij English Tutorial
-    numbered: false
-    maxdepth: -1
-    chapters:
-      - title: OpenJij English Tutorial
-        glob:  tutorial/en/*
   - caption:  日本語 チュートリアル
     title:    OpenJij 日本語 チュートリアル
     numbered: false
@@ -57,3 +50,10 @@ parts:
         - file: tutorial/ja/physics/IntroductionCoreInterface
         - file: tutorial/ja/physics/ClassicalSystem
         - file: tutorial/ja/physics/QuantumSystem
+  - caption:  English Tutorial
+    title:    OpenJij English Tutorial
+    numbered: false
+    maxdepth: -1
+    chapters:
+      - title: OpenJij English Tutorial
+        glob:  tutorial/en/*
