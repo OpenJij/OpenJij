@@ -99,7 +99,7 @@ problem += jm.Constraint('weight', const<=W)
 `Constraint(制約名, 制約式)`とすることで、制約式に適当な制約名を付与することができます。  
 実際に実装された数式をJupyter Notebookで表示してみましょう。
 
-![](../../assets/knapsack_01.png)
+![](../../../assets/knapsack_01.png)
 
 ### インスタンスの作成
 

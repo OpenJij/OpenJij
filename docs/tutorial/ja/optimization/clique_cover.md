@@ -1,14 +1,17 @@
 # クリーク被覆問題
 
-この問題は、あるグラフが与えられたときに、最小何個のクリーク(完全グラフ)に分割されるかを求める問題です。これはNP完全として知られています。
+こちらでは、[Lucas, 2014, "Ising formulations of many NP problems"](https://doi.org/10.3389/fphy.2014.00005)の 6.2. Clique Cover を OpenJij と [JijModeling](https://www.ref.documentation.jijzept.com/jijmodeling/)、そして[JijModeling transpiler](https://www.ref.documentation.jijzept.com/jijmodeling-transpiler/) を用いて解く方法をご紹介します。
+
 
 ## 概要: クリーク被覆問題
+
+クリーク被覆問題は、あるグラフが与えられたときに、最小何個のクリーク(完全グラフ)に分割されるかを求める問題です。これはNP完全として知られています。
 
 ### 完全グラフ
 
 完全グラフ(complete graph)とは、相異なる2点が全て隣接しているグラフ(ただしループや多重辺を含まない)構造のことです。具体的には以下のようなものを指します。
 
-![](../../assets/clique_cover_01.png)
+![](../../../assets/clique_cover_01.png)
 
 完全グラフは、そこに含まれる2点を選んだときに、その2点が必ず辺で結ばれているような構造を持ちます。完全グラフの頂点数を$N$とすると、辺の数は$V$個の頂点から2つを選ぶ組合せの数${}_V C_2 = \frac{1}{2} V (V-1)$だけあることがわかります。  
 完全グラフとの差が小さくなるように、最適化問題を定式化していきましょう。
@@ -81,7 +84,7 @@ problem += jm.Sum(n, clique-num_e)
 `clique`で、頂点がクリークを作っていた場合の辺の数を計算しています。次の`num_e`が、実際にその頂点たちが持っている辺の数を計算したものです。最後にその差を取ったものの総和を目的関数として追加しています。  
 実際に実装された数式をJupyter Notebookで表示してみましょう。
 
-![](../../assets/clique_cover_02.png)
+![](../../../assets/clique_cover_02.png)
 
 ### インスタンスの作成
 
@@ -108,7 +111,7 @@ instance_data = {'N': inst_N, 'V': num_V, 'E': inst_E, 'G': inst_G}
 
 このインスタンスで設定されるグラフは、以下のようなものです。
 
-![](../../assets/clique_cover_03.png)
+![](../../../assets/clique_cover_03.png)
 
 {0, 1, 2}, {3, 4, 5, 6}, {7, 8, 9}の3つのクリークから成るこのグラフが、実際にクリークに分けられるかを確認してみましょう。
 
@@ -195,4 +198,4 @@ else:
 
 `.feasible()`を用いることで、実行可能解のみを抽出することができます。ここから、クリークごとに頂点を色で塗り分ける作業を行なっています。作成されたグラフは以下のようになります。
 
-![](../../assets/clique_cover_04.png)
+![](../../../assets/clique_cover_04.png)

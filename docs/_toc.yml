@@ -21,6 +21,35 @@ parts:
         - file: result.rst
         - file: system.rst
         - file: utility.rst
+  - caption:  日本語 チュートリアル
+    title:    OpenJij 日本語 チュートリアル
+    numbered: false
+    maxdepth: -1
+    chapters:
+      - file: tutorial/ja/000-intro_optimization_and_Ising
+      - file: tutorial/ja/001-openjij_introduction
+      - file: tutorial/ja/002-HuboSolver
+      - file: tutorial/ja/003-jijmodeling_openjij_tsp
+      - file: tutorial/ja/004-Evaluation
+      - file: tutorial/ja/optimization_index
+        sections: 
+        - file: tutorial/ja/optimization/number_partition
+        - file: tutorial/ja/optimization/knapsack
+        - file: tutorial/ja/optimization/graph_coloring
+        - file: tutorial/ja/optimization/clique_cover
+        - file: tutorial/ja/optimization/integer_jobs
+        - file: tutorial/ja/optimization/ProteinFoldingHubo
+        - file: tutorial/ja/optimization/ReverseQuantumAnnealing
+      - file: tutorial/ja/machine_learning_index
+        sections:
+        - file: tutorial/ja/machine_learning/clustering
+        - file: tutorial/ja/machine_learning/qboost
+      - file: tutorial/ja/physics_index
+        sections:
+        - file: tutorial/ja/physics/MonteCarloSampling
+        - file: tutorial/ja/physics/IntroductionCoreInterface
+        - file: tutorial/ja/physics/ClassicalSystem
+        - file: tutorial/ja/physics/QuantumSystem
   - caption:  English Tutorial
     title:    OpenJij English Tutorial
     numbered: false
@@ -28,10 +57,3 @@ parts:
     chapters:
       - title: OpenJij English Tutorial
         glob:  tutorial/en/*
-  - caption:  日本語 チュートリアル
-    title:    OpenJij 日本語 チュートリアル
-    numbered: false
-    maxdepth: -1
-    chapters:
-      - title: OpenJij 日本語 チュートリアル
-        glob:  tutorial/ja/*
