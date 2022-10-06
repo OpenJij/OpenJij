@@ -14,6 +14,9 @@ execute:
   execute_notebooks: cache
   run_in_temp:       True
   allow_errors:      False
+  stderr_output:     remove
+  nb_merge_streams:  True
+  execution_show_tb: True
 #  stderr_output: remove
 parse:
   myst_enable_extensions:

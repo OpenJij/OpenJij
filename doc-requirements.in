@@ -19,7 +19,24 @@ matplotlib
 networkx
 scikit-learn
 
+openjij
+
 jijmodeling-transpiler
+pyqubo
+dimod
+dwave-cloud-client
+dwave-greedy
+dwave-hybrid
+dwave-inspector
+dwave-neal
+dwave-networkx
+dwave-preprocessing
+dwave-system
+dwave-tabu
+dwavebinarycsp
+minorminer
+penaltymodel
+
 myst-parser[linkify]
 
 python-levenshtein
