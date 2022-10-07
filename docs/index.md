@@ -95,9 +95,9 @@ print(response)
 # Higher order model  
 
 If you want to handle higher order model as follows:    
-$\KaTeX$
 ```{math}
-H = \sum_{i}h_i\sigma_i + \sum_{i < j} J_{ij} \sigma_i \sigma_j + \sum_{i, j, k} K_{i,j,k} \sigma_i\sigma_j \sigma_k \cdots
+H = \sum_{i}h_i\sigma_i + \sum_{i < j} J_{ij} \sigma_i \sigma_j + \sum_{i, j, k} K_{i,j,k} \sigma_i\sigma_j \sigma_k \cdots \\
+\includegraphics[height=0.8em, totalheight=0.9em, width=0.9em, alt=KA logo]{https://katex.org/img/khan-academy.png} \, \KaTeX \, \url{https://katex.org/}
 ``` 
 
 use `.sample_hubo`
