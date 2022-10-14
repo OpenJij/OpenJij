@@ -360,7 +360,7 @@ jobs:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: coverage.xml
     - name: Publish code coverage
-      uses: paambaati/codeclimate-action@v3.0.0
+      uses: paambaati/codeclimate-action@v3.1.0
       continue-on-error: true
       if: ${{ matrix.os != 'windows-latest'}}
       env:
