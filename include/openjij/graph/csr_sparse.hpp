@@ -93,7 +93,7 @@ public:
    *
    * @param interaction input matrix
    */
-  CSRSparse(const Interactions &interaction): Graph(interaction.rows()-1) {
+  explicit CSRSparse(const Interactions &interaction): Graph(interaction.rows()-1) {
     if (interaction.rows() != interaction.cols()) {
       std::runtime_error("interaction.rows() != interaction.cols()");
     }
@@ -162,64 +162,6 @@ public:
     }
     return energy(temp_spins);
   }
-
-  ///**
-  // * @brief access J_{ij}
-  // *
-  // * @param i Index i
-  // * @param j Index j
-  // *
-  // * @return J_{ij}
-  // */
-  //FloatType &J(Index i, Index j) {
-  //  assert(i < get_num_spins());
-  //  assert(j < get_num_spins());
-
-  //  // i <= j
-  //  // add node if it does not exist
-  //  set_adj_node(i, j);
-  //  return _J[std::make_pair(std::min(i, j), std::max(i, j))];
-  //}
-
-  ///**
-  // * @brief access J_{ij}
-  // *
-  // * @param i Index i
-  // * @param j Index j
-  // *
-  // * @return J_{ij}
-  // */
-  //const FloatType &J(Index i, Index j) const {
-  //  assert(i < get_num_spins());
-  //  assert(j < get_num_spins());
-  //  return _J.at(std::make_pair(std::min(i, j), std::max(i, j)));
-  //}
-
-  ///**
-  // * @brief access h_{i} (local field)
-  // *
-  // * @param i Index i
-  // *
-  // * @return h_{i}
-  // */
-  //FloatType &h(Index i) {
-  //  assert(i < get_num_spins());
-  //  set_adj_node(i, i);
-  //  return _J[std::make_pair(i, i)];
-  //}
-
-  ///**
-  // * @brief access h_{i} (local field)
-  // *
-  // * @param i Index i
-  // *
-  // * @return h_{i}
-  // */
-  //const FloatType &h(Index i) const {
-  //  assert(i < get_num_spins());
-  //  return _J.at(std::make_pair(i, i));
-  //}
-  //
 
   /**
    * @brief get interactions (Eigen Matrix)
