@@ -93,7 +93,12 @@ public:
    *
    * @param interaction input matrix
    */
-  CSRSparse(const Interactions &interaction): _J(interaction) {} 
+  CSRSparse(const Interactions &interaction): Graph(interaction.rows()-1) {
+    if (interaction.rows() != interaction.cols()) {
+      std::runtime_error("interaction.rows() != interaction.cols()");
+    }
+    _J = interaction.template selfadjointView<Eigen::Upper>();
+  } 
 
   /**
    * @brief CSRSparse copy constructor
