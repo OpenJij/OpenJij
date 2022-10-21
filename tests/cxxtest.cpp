@@ -23,6 +23,9 @@
 #include <openjij/utility/gpu/memory.hpp>
 #include <openjij/utility/gpu/cublas.hpp>
 
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+
 #include "polynomial_test.hpp"
 
 // #####################################
@@ -217,11 +220,19 @@ TEST(Graph, EnergyCheck){
         }
     }
 
+    // generate interaction matrix from dense graph
+    Eigen::SparseMatrix<double, Eigen::RowMajor> mat = b_d.get_interactions().sparseView();
+    // and generate CSRSparse
+    CSRSparse<double> b_csrs(mat);
+
     EXPECT_EQ(b_d.calc_energy(spins), (1./2) * (N*N - N));
     EXPECT_EQ(b_d.calc_energy(spins_neg), (1./2) * (N*N - N));
     EXPECT_EQ(b.calc_energy(spins), (1./2) * (N*N - N));
     EXPECT_EQ(b.calc_energy(spins_neg), (1./2) * (N*N - N));
+    EXPECT_EQ(b_csrs.calc_energy(spins), (1./2) * (N*N - N));
+    EXPECT_EQ(b_csrs.calc_energy(spins_neg), (1./2) * (N*N - N));
     EXPECT_EQ(b_d.calc_energy(spins_r), b.calc_energy(spins_r));
+    EXPECT_EQ(b_d.calc_energy(spins_r), b_csrs.calc_energy(spins_r));
 
     Dense<double> c_d(N);
     Sparse<double> c(N, N);
@@ -237,12 +248,19 @@ TEST(Graph, EnergyCheck){
             c.J(i, j) = 1;
         }
     }
+    // generate interaction matrix from dense graph
+    mat = c_d.get_interactions().sparseView();
+    // and generate CSRSparse
+    CSRSparse<double> c_csrs(mat);
 
     EXPECT_EQ(c_d.calc_energy(spins), (1./2) * (N*N + N));
     EXPECT_EQ(c_d.calc_energy(spins_neg), (1./2) * (N*N - 3*N));
     EXPECT_EQ(c.calc_energy(spins), (1./2) * (N*N + N));
     EXPECT_EQ(c.calc_energy(spins_neg), (1./2) * (N*N - 3*N));
+    EXPECT_EQ(c_csrs.calc_energy(spins), (1./2) * (N*N + N));
+    EXPECT_EQ(c_csrs.calc_energy(spins_neg), (1./2) * (N*N - 3*N));
     EXPECT_EQ(c_d.calc_energy(spins_r), c.calc_energy(spins_r));
+    EXPECT_EQ(c_d.calc_energy(spins_r), c_csrs.calc_energy(spins_r));
 }
 
 //json tests
