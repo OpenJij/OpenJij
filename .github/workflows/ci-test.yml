@@ -42,7 +42,7 @@ jobs:
         brew install eigen nlohmann-json lcov 
     - name: Add msbuild to PATH
       if: ${{ matrix.os == 'windows-latest'}}
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v1.1.3
     - name: Prepare Cache 
       if: ${{ matrix.os == 'windows-latest'}}
       shell: bash 
@@ -258,7 +258,7 @@ jobs:
         brew install eigen nlohmann-json
     - name: Add msbuild to PATH
       if: ${{ matrix.os == 'windows-latest'}}
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v1.1.3
     - name: Prepare Cache 
       if: ${{ matrix.os == 'windows-latest'}}
       shell: bash 
