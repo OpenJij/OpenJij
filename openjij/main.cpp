@@ -43,6 +43,7 @@ PYBIND11_MODULE(cxxjij, m) {
   // CPU version (openjij::FloatType)
   openjij::declare_Dense<openjij::FloatType>(m_graph, "");
   openjij::declare_Sparse<openjij::FloatType>(m_graph, "");
+  openjij::declare_CSRSparse<openjij::FloatType>(m_graph, "");
   openjij::declare_Square<openjij::FloatType>(m_graph, "");
   openjij::declare_Chimera<openjij::FloatType>(m_graph, "");
   openjij::declare_Polynomial<openjij::FloatType>(m_graph, "");
@@ -51,6 +52,7 @@ PYBIND11_MODULE(cxxjij, m) {
   if (!std::is_same<openjij::FloatType, openjij::GPUFloatType>::value) {
     openjij::declare_Dense<openjij::GPUFloatType>(m_graph, "GPU");
     openjij::declare_Sparse<openjij::GPUFloatType>(m_graph, "GPU");
+    openjij::declare_CSRSparse<openjij::GPUFloatType>(m_graph, "GPU");
     openjij::declare_Square<openjij::GPUFloatType>(m_graph, "GPU");
     openjij::declare_Chimera<openjij::GPUFloatType>(m_graph, "GPU");
   } else {
@@ -70,6 +72,8 @@ PYBIND11_MODULE(cxxjij, m) {
       m_system, "_Dense");
   openjij::declare_ClassicalIsing<openjij::graph::Sparse<openjij::FloatType>>(
       m_system, "_Sparse");
+  openjij::declare_ClassicalIsing<openjij::graph::CSRSparse<openjij::FloatType>>(
+      m_system, "_CSRSparse");
   openjij::declare_ClassicalIsingPolynomial<
       openjij::graph::Polynomial<openjij::FloatType>>(m_system, "_Polynomial");
   openjij::declare_KLocalPolynomial<
@@ -80,10 +84,14 @@ PYBIND11_MODULE(cxxjij, m) {
       m_system, "_Dense");
   openjij::declare_TransverseIsing<openjij::graph::Sparse<openjij::FloatType>>(
       m_system, "_Sparse");
+  openjij::declare_TransverseIsing<openjij::graph::CSRSparse<openjij::FloatType>>(
+      m_system, "_CSRSparse");
 
   // Continuous Time Transeverse Ising
   openjij::declare_ContinuousTimeIsing<
       openjij::graph::Sparse<openjij::FloatType>>(m_system, "_Sparse");
+  openjij::declare_ContinuousTimeIsing<
+      openjij::graph::CSRSparse<openjij::FloatType>>(m_system, "_CSRSparse");
 
 #ifdef USE_CUDA
   // ChimeraTransverseGPU
@@ -115,6 +123,11 @@ PYBIND11_MODULE(cxxjij, m) {
       openjij::RandomEngine>(m_algorithm, "SingleSpinFlip");
   openjij::declare_Algorithm_run<
       openjij::updater::SingleSpinFlip,
+      openjij::system::ClassicalIsing<
+          openjij::graph::CSRSparse<openjij::FloatType>>,
+      openjij::RandomEngine>(m_algorithm, "SingleSpinFlip");
+  openjij::declare_Algorithm_run<
+      openjij::updater::SingleSpinFlip,
       openjij::system::ClassicalIsingPolynomial<
           openjij::graph::Polynomial<openjij::FloatType>>,
       openjij::RandomEngine>(m_algorithm, "SingleSpinFlip");
@@ -133,6 +146,11 @@ PYBIND11_MODULE(cxxjij, m) {
       openjij::system::TransverseIsing<
           openjij::graph::Sparse<openjij::FloatType>>,
       openjij::RandomEngine>(m_algorithm, "SingleSpinFlip");
+  openjij::declare_Algorithm_run<
+      openjij::updater::SingleSpinFlip,
+      openjij::system::TransverseIsing<
+          openjij::graph::CSRSparse<openjij::FloatType>>,
+      openjij::RandomEngine>(m_algorithm, "SingleSpinFlip");
 
   // swendsen-wang
   openjij::declare_Algorithm_run<
@@ -140,12 +158,22 @@ PYBIND11_MODULE(cxxjij, m) {
       openjij::system::ClassicalIsing<
           openjij::graph::Sparse<openjij::FloatType>>,
       openjij::RandomEngine>(m_algorithm, "SwendsenWang");
+  openjij::declare_Algorithm_run<
+      openjij::updater::SwendsenWang,
+      openjij::system::ClassicalIsing<
+          openjij::graph::CSRSparse<openjij::FloatType>>,
+      openjij::RandomEngine>(m_algorithm, "SwendsenWang");
 
   // Continuous time swendsen-wang
   openjij::declare_Algorithm_run<
       openjij::updater::ContinuousTimeSwendsenWang,
       openjij::system::ContinuousTimeIsing<
           openjij::graph::Sparse<openjij::FloatType>>,
+      openjij::RandomEngine>(m_algorithm, "ContinuousTimeSwendsenWang");
+  openjij::declare_Algorithm_run<
+      openjij::updater::ContinuousTimeSwendsenWang,
+      openjij::system::ContinuousTimeIsing<
+          openjij::graph::CSRSparse<openjij::FloatType>>,
       openjij::RandomEngine>(m_algorithm, "ContinuousTimeSwendsenWang");
 
 #ifdef USE_CUDA
@@ -207,6 +235,8 @@ PYBIND11_MODULE(cxxjij, m) {
       openjij::graph::Dense<openjij::FloatType>>>(m_result);
   openjij::declare_get_solution<openjij::system::ClassicalIsing<
       openjij::graph::Sparse<openjij::FloatType>>>(m_result);
+  openjij::declare_get_solution<openjij::system::ClassicalIsing<
+      openjij::graph::CSRSparse<openjij::FloatType>>>(m_result);
   openjij::declare_get_solution<openjij::system::ClassicalIsingPolynomial<
       openjij::graph::Polynomial<openjij::FloatType>>>(m_result);
   openjij::declare_get_solution<openjij::system::KLocalPolynomial<
@@ -215,8 +245,12 @@ PYBIND11_MODULE(cxxjij, m) {
       openjij::graph::Dense<openjij::FloatType>>>(m_result);
   openjij::declare_get_solution<openjij::system::TransverseIsing<
       openjij::graph::Sparse<openjij::FloatType>>>(m_result);
+  openjij::declare_get_solution<openjij::system::TransverseIsing<
+      openjij::graph::CSRSparse<openjij::FloatType>>>(m_result);
   openjij::declare_get_solution<openjij::system::ContinuousTimeIsing<
       openjij::graph::Sparse<openjij::FloatType>>>(m_result);
+  openjij::declare_get_solution<openjij::system::ContinuousTimeIsing<
+      openjij::graph::CSRSparse<openjij::FloatType>>>(m_result);
 #ifdef USE_CUDA
   openjij::declare_get_solution<openjij::system::ChimeraTransverseGPU<
       openjij::GPUFloatType, openjij::BLOCK_ROW, openjij::BLOCK_COL,
