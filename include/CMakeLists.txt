@@ -26,9 +26,9 @@ add_library(cxxjij_header_only INTERFACE)
 #) 
 
 #for GPU
-if(CUDAToolkit_FOUND)
-    add_subdirectory(openjij/system)
-endif()
+#if(CUDAToolkit_FOUND)
+#    add_subdirectory(openjij/system)
+#endif()
 
 target_include_directories(cxxjij_header_only INTERFACE 
   $<BUILD_INTERFACE:${OPENJIJ_INCLUDE_DIR}>
