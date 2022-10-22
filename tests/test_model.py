@@ -93,9 +93,10 @@ class ModelTest(unittest.TestCase):
         bqm = oj.BinaryQuadraticModel(self.h, self.J, 'SPIN', sparse=True)
         ising_graph,offset = bqm.get_cxxjij_ising_graph()
         self.assertEqual(ising_graph.size(), len(bqm.variables))
-        for i in range(ising_graph.size()):
-            for j in ising_graph.adj_nodes(i):
-                self.assertEqual(ising_graph[i,j], bqm.interaction_matrix()[min(i,j), max(i,j)] if i != j else bqm.interaction_matrix()[i,len(bqm.variables)])
+        for i in range(len(bqm.variables)+1):
+            for j in range(i+1, len(bqm.variables)+1):
+                    self.assertAlmostEqual(bqm.interaction_matrix()[i,j], ising_graph.get_interactions()[i, j])
+                    self.assertAlmostEqual(ising_graph.get_interactions()[i, j], ising_graph.get_interactions()[j, i])
 
 
     def test_bqm_calc_energy(self):

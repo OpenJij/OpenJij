@@ -86,13 +86,13 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
                 self.change_vartype("SPIN")
 
                 GraphClass = (
-                    cxxjij.graph.Sparse if self.gpu == False else cxxjij.graph.SparseGPU
+                    cxxjij.graph.CSRSparse if self.gpu == False else cxxjij.graph.CSRSparseGPU
                 )
                 offset = self.offset
-                serialized = self.to_serializable()
+                sparse_mat = self.interaction_matrix()
 
                 self.change_vartype(old_vartype)
-                return GraphClass(serialized), offset
+                return GraphClass(sparse_mat), offset
             else:
                 old_vartype = self.vartype
                 self.change_vartype("SPIN")
