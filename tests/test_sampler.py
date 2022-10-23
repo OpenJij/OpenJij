@@ -232,7 +232,7 @@ class TestSamplers(unittest.TestCase):
             for sparse in [True, False]:
                 res = sampler.sample_ising({}, {}, sparse=sparse)
                 self.assertEqual(len(res.first.sample), 0)
-                res = sampler.sample_qubo({}, {}, sparse=sparse)
+                res = sampler.sample_qubo(Q={}, sparse=sparse)
                 self.assertEqual(len(res.first.sample), 0)
 
 
