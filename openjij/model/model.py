@@ -81,6 +81,8 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
                 offset (float): offset of the energy due to qubo->ising transformation
             """
 
+            # if sparse is true, select `cxxjij.graph.CSRSparse` graph type,
+            # else, select `cxxjij.graph.Dense` graph type.
             if sparse:
                 old_vartype = self.vartype
                 self.change_vartype("SPIN")
