@@ -160,6 +160,7 @@ class SASampler(BaseSampler):
             schedule (list): list of inverse temperature
             initial_state (dict): initial state
             updater(str): updater algorithm
+            sparse (bool): use sparse matrix or not.
             reinitialize_state (bool): if true reinitialize state for each run
             seed (int): seed for Monte Carlo algorithm
         Returns:

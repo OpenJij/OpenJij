@@ -180,6 +180,7 @@ class SQASampler(BaseSampler):
             num_reads (int, optional): number of sampling. Defaults to 1.
             initial_state (list[int], optional): Initial state. Defaults to None.
             updater (str, optional): update method. Defaults to 'single spin flip'.
+            sparse (bool): use sparse matrix or not.
             reinitialize_state (bool, optional): Re-initilization at each sampling. Defaults to True.
             seed (int, optional): Sampling seed. Defaults to None.
 
@@ -207,7 +208,7 @@ class SQASampler(BaseSampler):
 
         # Set default parameters
         if sparse is None:
-            sparse = False
+            sparse = True
         if reinitialize_state is None:
             reinitialize_state = True
         if updater is None:
