@@ -227,6 +227,15 @@ class TestSamplers(unittest.TestCase):
     #    res = sampler.sample_ising(self.afih, self.afiJ, seed=1)
     #    self.assertDictEqual(self.afiground, res.first.sample)
 
+    def test_empty(self):
+        for sampler in [oj.SASampler(), oj.SQASampler()]:
+            for sparse in [True, False]:
+                res = sampler.sample_ising({}, {}, sparse=sparse)
+                self.assertEqual(len(res.first.sample), 0)
+                res = sampler.sample_qubo(Q={}, sparse=sparse)
+                self.assertEqual(len(res.first.sample), 0)
+
+
 
 if __name__ == '__main__':
     unittest.main()

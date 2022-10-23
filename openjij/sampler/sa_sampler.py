@@ -504,22 +504,28 @@ def geometric_ising_beta_schedule(
         # generate Ising matrix (with symmetric form)
         ising_interaction = cxxgraph.get_interactions()
         abs_ising_interaction = np.abs(ising_interaction)[:-1]
-        max_abs_ising_interaction = np.max(abs_ising_interaction)
+        # if `abs_ising_interaction` is empty, set min/max delta_energy to 1 (a trivial case).
+        if abs_ising_interaction.shape[0] == 0:
+            min_delta_energy = 1
+            max_delta_energy = 1
+        else:
+            max_abs_ising_interaction = np.max(abs_ising_interaction)
 
-        # automatical setting of min, max delta energy
-        abs_bias = np.sum(abs_ising_interaction, axis=1)
+            # automatical setting of min, max delta energy
+            abs_bias = np.sum(abs_ising_interaction, axis=1)
 
-        # apply threshold to avoid extremely large beta_max
-        THRESHOLD = 1e-8
+            # apply threshold to avoid extremely large beta_max
+            THRESHOLD = 1e-8
 
-        min_delta_energy = np.min(
-            abs_ising_interaction[
-                abs_ising_interaction > max_abs_ising_interaction * THRESHOLD
-            ]
-        )
-        max_delta_energy = np.max(
-            abs_bias[abs_bias > max_abs_ising_interaction * THRESHOLD]
-        )
+
+            min_delta_energy = np.min(
+                abs_ising_interaction[
+                    abs_ising_interaction > max_abs_ising_interaction * THRESHOLD
+                ]
+            )
+            max_delta_energy = np.max(
+                abs_bias[abs_bias > max_abs_ising_interaction * THRESHOLD]
+            )
 
     # TODO: More optimal schedule ?
 
