@@ -9,6 +9,7 @@ import openjij.cxxjij.system as S
 import openjij.cxxjij.algorithm as A
 import openjij.cxxjij.utility as U
 import openjij.cxxjij.result as R
+from scipy import sparse
 
 
 class CXXTest(unittest.TestCase):
@@ -256,6 +257,25 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
 
+    def test_SingleSpinFlip_ClassicalIsing_CSRSparse(self):
+
+        #classial ising (csr sparse)
+        csr_sparse = G.CSRSparse(sparse.csr_matrix(np.triu(self.dense.get_interactions())))
+
+        system = S.make_classical_ising(self.sparse.gen_spin(self.seed_for_spin), csr_sparse)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 100)
+
+        #anneal
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
     def test_SingleSpinFlip_Polynomial_Spin(self):
         system_size = 5
         self.polynomial = G.Polynomial(system_size)
@@ -432,10 +452,46 @@ class CXXTest(unittest.TestCase):
         #compare
         self.assertTrue(self.true_groundstate == result_spin)
 
+    def test_SingleSpinFlip_TransverseIsing_CSRSparse(self):
+        #classial ising (csr sparse)
+        csr_sparse = G.CSRSparse(sparse.csr_matrix(np.triu(self.dense.get_interactions())))
+
+        system = S.make_transverse_ising(self.sparse.gen_spin(self.seed_for_spin), csr_sparse, 1.0, 10)
+
+        #schedulelist
+        schedule_list = U.make_transverse_field_schedule_list(10, 100, 100)
+
+        #anneal
+        A.Algorithm_SingleSpinFlip_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
     def test_SwendsenWang_ClassicalIsing_Sparse(self):
 
         #classial ising (sparse)
         system = S.make_classical_ising(self.sparse.gen_spin(self.seed_for_spin), self.sparse)
+
+        #schedulelist
+        schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 2000)
+
+        #anneal
+        A.Algorithm_SwendsenWang_run(system, self.seed_for_mc, schedule_list)
+
+        #result spin
+        result_spin = R.get_solution(system)
+
+        #compare
+        self.assertTrue(self.true_groundstate == result_spin)
+
+    def test_SwendsenWang_ClassicalIsing_CSRSparse(self):
+        #classial ising (csr sparse)
+        csr_sparse = G.CSRSparse(sparse.csr_matrix(np.triu(self.dense.get_interactions())))
+
+        system = S.make_classical_ising(self.sparse.gen_spin(self.seed_for_spin), csr_sparse)
 
         #schedulelist
         schedule_list = U.make_classical_schedule_list(0.1, 100.0, 100, 2000)

@@ -18,4 +18,5 @@
 #include "openjij/graph/graph.hpp"
 #include "openjij/graph/polynomial.hpp"
 #include "openjij/graph/sparse.hpp"
+#include "openjij/graph/csr_sparse.hpp"
 #include "openjij/graph/square.hpp"

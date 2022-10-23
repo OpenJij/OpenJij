@@ -190,6 +190,30 @@ inline void declare_Sparse(py::module &m, const std::string &suffix) {
           "key"_a);
 }
 
+// csr sparse
+template <typename FloatType>
+inline void declare_CSRSparse(py::module &m, const std::string &suffix) {
+
+  auto str = std::string("CSRSparse") + suffix;
+  py::class_<graph::CSRSparse<FloatType>, graph::Graph>(m, str.c_str(),
+                                                     py::module_local())
+      .def(py::init<const Eigen::SparseMatrix<FloatType, Eigen::RowMajor> &>(), "interaction"_a)
+      .def(py::init<const graph::CSRSparse<FloatType> &>(), "other"_a)
+      .def(
+          "calc_energy",
+          [](const graph::CSRSparse<FloatType> &self,
+             const Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>
+                 &spins) { return self.calc_energy(spins); },
+          "spins"_a)
+      .def(
+          "calc_energy",
+          [](const graph::CSRSparse<FloatType> &self, const graph::Spins &spins) {
+            return self.calc_energy(spins);
+          },
+          "spins"_a)
+      .def("get_interactions", &graph::CSRSparse<FloatType>::get_interactions);
+}
+
 // Polynomial
 template <typename FloatType>
 inline void declare_Polynomial(py::module &m, const std::string &suffix) {

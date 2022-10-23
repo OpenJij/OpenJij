@@ -183,6 +183,77 @@ template <typename FloatType> struct ClassicalIsing<graph::Sparse<FloatType>> {
 };
 
 /**
+ * @brief ClassicalIsing structure for CSR Sparse graph (Eigen-based)
+ *
+ * @tparam FloatType type of floating-point
+ */
+template <typename FloatType> struct ClassicalIsing<graph::CSRSparse<FloatType>> {
+  using system_type = classical_system;
+
+  // matrix (row major)
+  using SparseMatrixXx = Eigen::SparseMatrix<FloatType, Eigen::RowMajor>;
+  // vector (col major)
+  using VectorXx = Eigen::Matrix<FloatType, Eigen::Dynamic, 1, Eigen::ColMajor>;
+
+  /**
+   * @brief Constructor to initialize spin and interaction
+   *
+   * @param spin
+   * @param interaction
+   */
+  ClassicalIsing(const graph::Spins &init_spin,
+                 const graph::CSRSparse<FloatType> &init_interaction)
+      : spin(utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(
+            init_spin)),
+        interaction(init_interaction.get_interactions()),
+        num_spins(init_interaction.get_num_spins()) {
+    assert(init_spin.size() == init_interaction.get_num_spins());
+    reset_dE();
+  }
+
+  /**
+   * @brief reset spins
+   *
+   * @param init_spin
+   */
+  void reset_spins(const graph::Spins &init_spin) {
+    this->spin =
+        utility::gen_vector_from_std_vector<FloatType, Eigen::ColMajor>(
+            init_spin);
+    reset_dE();
+  }
+
+  /**
+   * @brief reset dE
+   *
+   */
+  void reset_dE() {
+    this->dE =
+        -2.0 * this->spin.array() * (this->interaction * this->spin).array();
+  }
+
+  /**
+   * @brief spins (Eigen Vector)
+   */
+  VectorXx spin;
+
+  /**
+   * @brief interaction (Eigen SparseMatrix)
+   */
+  const SparseMatrixXx interaction;
+
+  /**
+   * @brief number of real spins (dummy spin excluded)
+   */
+  const std::size_t num_spins; // spin.size()-1
+
+  /**
+   * @brief delta E for updater
+   */
+  VectorXx dE;
+};
+
+/**
  * @brief helper function for ClassicalIsing constructor
  *
  * @tparam GraphType

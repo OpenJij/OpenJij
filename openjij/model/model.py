@@ -81,18 +81,20 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
                 offset (float): offset of the energy due to qubo->ising transformation
             """
 
+            # if sparse is true, select `cxxjij.graph.CSRSparse` graph type,
+            # else, select `cxxjij.graph.Dense` graph type.
             if sparse:
                 old_vartype = self.vartype
                 self.change_vartype("SPIN")
 
                 GraphClass = (
-                    cxxjij.graph.Sparse if self.gpu == False else cxxjij.graph.SparseGPU
+                    cxxjij.graph.CSRSparse if self.gpu == False else cxxjij.graph.CSRSparseGPU
                 )
                 offset = self.offset
-                serialized = self.to_serializable()
+                sparse_mat = self.interaction_matrix()
 
                 self.change_vartype(old_vartype)
-                return GraphClass(serialized), offset
+                return GraphClass(sparse_mat), offset
             else:
                 old_vartype = self.vartype
                 self.change_vartype("SPIN")

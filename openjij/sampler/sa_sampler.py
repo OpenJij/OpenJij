@@ -160,6 +160,7 @@ class SASampler(BaseSampler):
             schedule (list): list of inverse temperature
             initial_state (dict): initial state
             updater(str): updater algorithm
+            sparse (bool): use sparse matrix or not.
             reinitialize_state (bool): if true reinitialize state for each run
             seed (int): seed for Monte Carlo algorithm
         Returns:
@@ -185,7 +186,7 @@ class SASampler(BaseSampler):
         if updater is None:
             updater = "single spin flip"
         if sparse is None:
-            sparse = False
+            sparse = True
         if reinitialize_state is None:
             reinitialize_state = True
 
@@ -205,7 +206,7 @@ class SASampler(BaseSampler):
                 sparse=sparse,
             )
 
-        if sparse and bqm.sparse == False:
+        if sparse == True and bqm.sparse == False:
             # convert to sparse bqm
             bqm = oj.model.model.BinaryQuadraticModel(
                 bqm.linear, bqm.quadratic, bqm.offset, bqm.vartype, sparse=True
@@ -227,7 +228,7 @@ class SASampler(BaseSampler):
         # set annealing schedule -------------------------------
         if self._params["schedule"] is None:
             self._params["schedule"], beta_range = geometric_ising_beta_schedule(
-                model=model,
+                cxxgraph=ising_graph,
                 beta_max=self._params["beta_max"],
                 beta_min=self._params["beta_min"],
                 num_sweeps=self._params["num_sweeps"],
@@ -482,7 +483,7 @@ class SASampler(BaseSampler):
 
 
 def geometric_ising_beta_schedule(
-    model: openjij.model.model.BinaryQuadraticModel,
+    cxxgraph: Union[openjij.cxxjij.graph.Dense, openjij.cxxjij.graph.CSRSparse],
     beta_max=None,
     beta_min=None,
     num_sweeps=1000,
@@ -490,25 +491,19 @@ def geometric_ising_beta_schedule(
     """Make geometric cooling beta schedule.
 
     Args:
-        model (openjij.model.BinaryQuadraticModel)
+        cxxgraph (Union[openjij.cxxjij.graph.Dense, openjij.cxxjij.graph.CSRSparse]): Ising graph, must be either `Dense` or `CSRSparse`.
         beta_max (float, optional): [description]. Defaults to None.
         beta_min (float, optional): [description]. Defaults to None.
         num_sweeps (int, optional): [description]. Defaults to 1000.
     Returns:
         list of cxxjij.utility.ClassicalSchedule, list of beta range [max, min]
     """
+
+ 
     if beta_min is None or beta_max is None:
-        # generate Ising matrix
-        ising_interaction = model.interaction_matrix()
-        # set the right-bottom element zero (see issue #209)
-        mat_size = ising_interaction.shape[0]
-        ising_interaction[mat_size - 1, mat_size - 1] = 0
-
-        if model.vartype == BINARY:
-            # convert to ising matrix
-            qubo_to_ising(ising_interaction)
-
-        abs_ising_interaction = np.abs(ising_interaction)
+        # generate Ising matrix (with symmetric form)
+        ising_interaction = cxxgraph.get_interactions()
+        abs_ising_interaction = np.abs(ising_interaction)[:-1]
         max_abs_ising_interaction = np.max(abs_ising_interaction)
 
         # automatical setting of min, max delta energy
@@ -528,8 +523,10 @@ def geometric_ising_beta_schedule(
 
     # TODO: More optimal schedule ?
 
-    beta_min = np.log(2) / max_delta_energy if beta_min is None else beta_min
-    beta_max = np.log(100) / min_delta_energy if beta_max is None else beta_max
+    if beta_min is None:
+        beta_min = np.log(2) / max_delta_energy
+    if beta_max is None:
+        beta_max = np.log(100) / min_delta_energy
 
     num_sweeps_per_beta = max(1, num_sweeps // 1000)
 
