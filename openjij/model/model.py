@@ -41,9 +41,9 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
         generated BinaryQuadraticModel class
     """
 
-    class BinaryQuadraticModel(
-        cimod.make_BinaryQuadraticModel(linear, quadratic, sparse)
-    ):
+    Base = cimod.make_BinaryQuadraticModel(linear, quadratic, sparse)
+
+    class BinaryQuadraticModel(Base):
         """Represents Binary quadratic model.
 
         Indices are listed in self.indices.
@@ -181,7 +181,9 @@ def BinaryQuadraticModel(linear, quadratic, *args, **kwargs):
             >>> bqm = oj.BinaryQuadraticModel(self.h, self.J)
     """
 
-    Model = make_BinaryQuadraticModel(linear, quadratic, kwargs.pop("sparse", False))
+    sparse_option = kwargs.pop("sparse", False)
+
+    Model = make_BinaryQuadraticModel(linear, quadratic, sparse_option)
 
     def __extract_offset_and_vartype(*args, **kwargs):
         if kwargs == {}:
@@ -240,30 +242,32 @@ def bqm_from_numpy_matrix(
         num_variables = mat.shape[0]
         variables = list(range(num_variables))
 
+    sparse_option = kwargs.pop("sparse", False)
+
     return make_BinaryQuadraticModel(
-        {variables[0]: 1.0}, {}, kwargs.pop("sparse", False)
+        {variables[0]: 1.0}, {}, sparse_option
     ).from_numpy_matrix(mat, variables, offset, vartype, True, **kwargs)
 
 
 BinaryQuadraticModel.from_numpy_matrix = bqm_from_numpy_matrix
 
-BinaryQuadraticModel.from_qubo = (
-    lambda Q, offset=0.0, **kwargs: make_BinaryQuadraticModel(
-        {}, Q, kwargs.pop("sparse", False)
+def bqm_from_qubo(Q, offset=0.0, **kwargs):
+    sparse_option = kwargs.pop("sparse", False)
+    return make_BinaryQuadraticModel(
+        {}, Q, sparse_option
     ).from_qubo(Q, offset, **kwargs)
-)
 
-BinaryQuadraticModel.from_qubo = (
-    lambda Q, offset=0.0, **kwargs: make_BinaryQuadraticModel(
-        {}, Q, kwargs.pop("sparse", False)
-    ).from_qubo(Q, offset, **kwargs)
-)
+BinaryQuadraticModel.from_qubo = bqm_from_qubo
 
-BinaryQuadraticModel.from_ising = (
-    lambda linear, quadratic, offset=0.0, **kwargs: make_BinaryQuadraticModel(
-        linear, quadratic, kwargs.pop("sparse", False)
+
+def bqm_from_ising(linear, quadratic, offset=0.0, **kwargs):
+    sparse_option = kwargs.pop("sparse", False)
+    return make_BinaryQuadraticModel(
+        linear, quadratic, sparse_option
     ).from_ising(linear, quadratic, offset, **kwargs)
-)
+
+BinaryQuadraticModel.from_ising = bqm_from_ising
+
 
 BinaryQuadraticModel.from_serializable = (
     lambda obj, **kwargs: make_BinaryQuadraticModel_from_JSON(obj).from_serializable(

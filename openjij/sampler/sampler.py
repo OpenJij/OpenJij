@@ -214,10 +214,12 @@ class BaseSampler(dimod.Sampler):
         Returns:
             :class:`openjij.sampler.response.Response`: results
         """
+        # default sparse mode: True
+        sparse_option = parameters.pop("sparse", True)
         bqm = oj.model.model.BinaryQuadraticModel.from_ising(
-            h, J, sparse=parameters.get("sparse", False)
+            h, J, sparse=sparse_option
         )
-        return self.sample(bqm, **parameters)
+        return self.sample(bqm, sparse=sparse_option, **parameters)
 
     @samplemixinmethod
     def sample_qubo(self, Q, **parameters):
@@ -230,14 +232,17 @@ class BaseSampler(dimod.Sampler):
             :class:`openjij.sampler.response.Response`: results
         """
         if isinstance(Q, dict):
+            sparse_option = parameters.pop("sparse", True)
             bqm = oj.model.model.BinaryQuadraticModel.from_qubo(
-                Q, sparse=parameters.get("sparse", False)
+                Q, sparse=sparse_option
             )
-            return self.sample(bqm, **parameters)
+            return self.sample(bqm, sparse=sparse_option, **parameters)
         elif isinstance(Q, np.ndarray):
+            # apply np.ndarray disables sparse option
+            sparse_option = parameters.pop("sparse", False)
             bqm = oj.model.model.BinaryQuadraticModel.from_numpy_matrix(
                 Q, vartype="BINARY"
             )
-            return self.sample(bqm, **parameters)
+            return self.sample(bqm, sparse=sparse_option, **parameters)
         else:
             raise TypeError("Q must be either dict or np.ndarray")
