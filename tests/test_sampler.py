@@ -243,9 +243,9 @@ class TestSamplers(unittest.TestCase):
         for sampler in [oj.SASampler(), oj.SQASampler()]:
             # check if the default option is sparse
             res = sampler.sample_ising({}, J)
-            self.assertEqual(len(res.first.sample), 100000)
+            self.assertEqual(len(res.first.sample), 100001)
             res = sampler.sample_qubo(Q=J)
-            self.assertEqual(len(res.first.sample), 100000)
+            self.assertEqual(len(res.first.sample), 100001)
 
 
 
