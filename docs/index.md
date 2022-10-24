@@ -120,3 +120,6 @@ print(response)
 # 0  1  1  0   -2.0       1
 # ['BINARY', 1 rows, 1 samples, 3 variables]
 ```
+
+```{tableofcontents}
+```
