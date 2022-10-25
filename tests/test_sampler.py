@@ -235,6 +235,18 @@ class TestSamplers(unittest.TestCase):
                 res = sampler.sample_qubo(Q={}, sparse=sparse)
                 self.assertEqual(len(res.first.sample), 0)
 
+    def test_large_number_of_spins_with_sparse(self):
+        J = {}
+        for i in range(100000):
+            J[i, i+1] = -1
+
+        for sampler in [oj.SASampler(), oj.SQASampler()]:
+            # check if the default option is sparse
+            res = sampler.sample_ising({}, J)
+            self.assertEqual(len(res.first.sample), 100001)
+            res = sampler.sample_qubo(Q=J)
+            self.assertEqual(len(res.first.sample), 100001)
+
 
 
 if __name__ == '__main__':
