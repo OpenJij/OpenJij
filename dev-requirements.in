@@ -27,7 +27,6 @@ setuptools
 pytest
 pytest-mock
 pytest-cov
-pytest-html
 pytest-runner
 pytest-randomly
 pytest-spec
