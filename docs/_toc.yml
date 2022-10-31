@@ -31,6 +31,7 @@ parts:
       - file: tutorial/ja/002-HuboSolver
       - file: tutorial/ja/003-jijmodeling_openjij_tsp
       - file: tutorial/ja/004-Evaluation
+      - file: tutorial/ja/005-benchmark_sparse_dense
       - file: tutorial/ja/optimization_index
         sections: 
         - file: tutorial/ja/optimization/number_partition
