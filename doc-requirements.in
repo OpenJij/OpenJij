@@ -19,8 +19,6 @@ matplotlib
 networkx
 scikit-learn
 
-openjij
-
 jijmodeling-transpiler
 pyqubo
 dimod
