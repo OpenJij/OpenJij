@@ -19,11 +19,8 @@ matplotlib
 networkx
 scikit-learn
 
-openjij
-
 jijmodeling-transpiler
 pyqubo
-dimod
 dwave-cloud-client
 dwave-greedy
 dwave-hybrid
