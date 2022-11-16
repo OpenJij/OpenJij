@@ -21,9 +21,17 @@ scikit-learn
 
 jijmodeling-transpiler
 pyqubo
-
-dwaveoceansdk
-
+dimod
+dwave-cloud-client
+dwave-greedy
+dwave-hybrid
+dwave-inspector
+dwave-neal
+dwave-networkx
+dwave-preprocessing == 0.4.0
+dwave-system
+dwave-tabu
+dwavebinarycsp
 minorminer
 penaltymodel
 
