@@ -156,6 +156,8 @@ class BaseSampler(dimod.Sampler):
             np.array(execution_time) * 10**6
         )  # micro sec
 
+        response = response.aggregate()
+
         return response
 
     def _get_result(self, system, model):
