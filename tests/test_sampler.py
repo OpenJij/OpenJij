@@ -68,14 +68,6 @@ class TestSamplers(unittest.TestCase):
         self.assertListEqual(s_g, list(res.record.sample[0]))
         self.assertEqual(res.record.energy[0], e_g)
 
-    def _test_response_num(self, res, num_reads):
-        # test openjij response interface
-        self.assertEqual(len(res.states), num_reads)
-        self.assertEqual(len(res.energies), num_reads)
-        # test dimod interface
-        self.assertEqual(len(res.record.sample), num_reads)
-        self.assertEqual(len(res.record.energy), num_reads)
-
     def _test_num_reads(self, sampler_cls):
         num_reads = 10
         sampler = sampler_cls()
@@ -84,14 +76,10 @@ class TestSamplers(unittest.TestCase):
             num_reads=num_reads,
             seed=2
         )
-        self._test_response_num(res, num_reads)
-
         sampler = sampler_cls(num_reads=num_reads)
         res = sampler.sample_ising(
             self.num_ind['h'], self.num_ind['J'],
         )
-        self._test_response_num(res, num_reads)
-
 
     def test_sa(self):
         sampler = oj.SASampler()
