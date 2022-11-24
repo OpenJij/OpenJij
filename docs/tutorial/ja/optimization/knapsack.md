@@ -180,10 +180,10 @@ print('Total weight: ', sum_w)
 すると以下のような出力を得ます。
 
 ```bash
-Indices of x = 1:  [0, 3, 4, 5]
-Value of objective function:  [-13.0]
+Indices of x = 1:  [1, 4, 5]
+Value of objective function:  [-14.0]
 Value of constraint term:  [0.0]
-Total weight:  20
+Total weight:  18
 ```
 
 目的関数の値にマイナスをかけたものが、実際にナップサックに入れた宝物の価値の合計です。また`.evaluation.constarint_violations[制約名]`とすることで、その制約がどれだけ満たされていないかを取得することができます。
