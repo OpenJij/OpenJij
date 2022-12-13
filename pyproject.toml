@@ -27,6 +27,11 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools_scm]
 write_to = "openjij/_version.py"
 
+[project.urls]
+Source = "https://github.com/OpenJij/OpenJij"
+Documentation = "https://openjij.github.io/OpenJij"
+Reference = "https://ref.openjij.org/index.html" 
+
 [tool.pytest.ini_options]
 addopts = "--continue-on-collection-errors --full-trace --color=yes --code-highlight=yes --cov-context=test --cov --cov-append --cov-report term --randomly-seed=last -vv -v --capture=no"
 testpaths = [
