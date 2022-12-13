@@ -56,6 +56,7 @@ html:
   use_fullscreen_button:  False
   math_renderer:          katex
   baseurl:                https://openjij.github.io/OpenJij
+  google_analytics_id:    G-7JM0W5QW7V
 
 # Launch button settings
 launch_buttons:
