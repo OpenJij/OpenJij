@@ -14,34 +14,20 @@
 
 import sys
 
-from packaging.version import LegacyVersion
-
 try:
     from skbuild import setup
-    from skbuild.cmaker import get_cmake_version
-    from skbuild.exceptions import SKBuildError
 except ImportError:
-    print(
-        "Please update pip, you need pip 10 or greater,\n"
-        " or you need to install the PEP 518 requirements in pyproject.toml yourself",
-        file=sys.stderr,
-    )
-    raise
+    from setuptools import setup
 
 setup_requires = [
     "numpy",
-    "pybind11 >= 2.10.0, < 2.11.0",
+    "pybind11 >=2.10.0, < 2.11.0",
+    "cmake > 3.20",
+    "scikit-build > 0.16.0"
 ]
 
 if any(arg in sys.argv for arg in ("pytest", "test")):
     setup_requires.append("pytest-runner")
-
-# Add CMake as a build requirement if cmake is not installed or is too low a version.
-try:
-    if LegacyVersion(get_cmake_version()) < LegacyVersion("3.22"):
-        setup_requires.append("cmake")
-except SKBuildError:
-    setup_requires.append("cmake")
 
 setup(
     setup_requires=setup_requires,
