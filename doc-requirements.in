@@ -21,7 +21,6 @@ scikit-learn
 
 jijmodeling-transpiler
 pyqubo
-dimod
 dwave-cloud-client
 dwave-greedy
 dwave-hybrid
