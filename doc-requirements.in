@@ -38,9 +38,9 @@ myst-parser[linkify]
 
 python-levenshtein
 
-jupyter
 jupyter-book
 jupyter-cache
+jupyter_server < 2
 sphinx
 sphinx_sitemap
 sphinx-jupyterbook-latex
