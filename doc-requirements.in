@@ -54,4 +54,4 @@ sphinx-notfound-page
 sphinx-hoverxref
 sphinx-examples
 
-jsonschema[format-nongpl]
+jsonschema[format-nongpl] > 4.0.0
