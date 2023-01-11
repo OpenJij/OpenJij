@@ -53,3 +53,5 @@ sphinx-autoapi
 sphinx-notfound-page
 sphinx-hoverxref
 sphinx-examples
+
+jsonschema[format-nongpl]
