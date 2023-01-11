@@ -40,7 +40,7 @@ python-levenshtein
 
 jupyter-book
 jupyter-cache
-jupyter_server < 2
+jupyter_server # < 2
 sphinx
 sphinx_sitemap
 sphinx-jupyterbook-latex
