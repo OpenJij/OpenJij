@@ -63,7 +63,7 @@ parts:
       - file: tutorial/en/004-Evaluation
       - file: tutorial/en/005-benchmark_sparse_dense
       - file: tutorial/en/optimization_index
-        sections:
+        sections: 
         - file: tutorial/en/optimization/number_partition
         - file: tutorial/en/optimization/knapsack
         - file: tutorial/en/optimization/graph_coloring

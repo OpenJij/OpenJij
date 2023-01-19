@@ -40,8 +40,8 @@ python-levenshtein
 
 jupyter-book
 jupyter-cache
-jupyter_server < 2
-sphinx
+jupyter_server # < 2
+#sphinx
 sphinx_sitemap
 sphinx-jupyterbook-latex
 sphinx-proof
@@ -53,3 +53,5 @@ sphinx-autoapi
 sphinx-notfound-page
 sphinx-hoverxref
 sphinx-examples
+
+jsonschema[format-nongpl]

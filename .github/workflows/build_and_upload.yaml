@@ -243,7 +243,7 @@ jobs:
         with:
             install: true
       - name: Build wheels on ${{matrix.arch}}
-        uses: pypa/cibuildwheel@v2.11.3
+        uses: pypa/cibuildwheel@v2.11.4
         env:
           CIBW_BUILD: ${{matrix.CIBW_BUILD}}
           CIBW_ENVIRONMENT: ""
@@ -276,7 +276,7 @@ jobs:
           - os: macos-latest
             arch: x86_64
             CIBW_PLATFORM: macos  
-            CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET='12.0' CFLAGS='-mtune=skylake' CXXFLAGS='-mtune=skylake'"
+            CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET='12.0'"
           - os: macos-latest
             arch: x86_64
             CIBW_PLATFORM: macos  
@@ -288,7 +288,11 @@ jobs:
           - os: macos-latest
             arch: arm64
             CIBW_PLATFORM: macos
-            CIBW_ENVIRONMENT: ""
+            CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET='12.0'"
+          - os: macos-latest
+            arch: arm64
+            CIBW_PLATFORM: macos
+            CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET='11.0'"
     steps:
       - uses: actions/checkout@v3
       - name: Install Dependency 
@@ -297,7 +301,7 @@ jobs:
           set -eux 
           brew install eigen nlohmann-json
       - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
-        uses: pypa/cibuildwheel@v2.11.3
+        uses: pypa/cibuildwheel@v2.11.4
         env:
           CIBW_ENVIRONMENT: ${{ matrix.CIBW_ENVIRONMENT }}
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
@@ -354,7 +358,7 @@ jobs:
           vcpkg --triplet x64-windows install nlohmann-json
           vcpkg integrate install
       - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
-        uses: pypa/cibuildwheel@v2.11.3
+        uses: pypa/cibuildwheel@v2.11.4
         env:
           CIBW_ENVIRONMENT: ${{ matrix.CIBW_ENVIRONMENT }}
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
