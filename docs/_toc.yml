@@ -8,7 +8,7 @@ defaults: # The defaults key will be applied to all chapters and sub-sections
 options:  # The options key will be applied to all chapters, but not sub-sections
   numbered: False
 parts:
-  - caption:  API Reference 
+  - caption:  API Reference
     title:    OpenJij API レファレンス マニュアル
     numbered: false
     maxdepth: -1
@@ -33,7 +33,7 @@ parts:
       - file: tutorial/ja/004-Evaluation
       - file: tutorial/ja/005-benchmark_sparse_dense
       - file: tutorial/ja/optimization_index
-        sections: 
+        sections:
         - file: tutorial/ja/optimization/number_partition
         - file: tutorial/ja/optimization/knapsack
         - file: tutorial/ja/optimization/graph_coloring

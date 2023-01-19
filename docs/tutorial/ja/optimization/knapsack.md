@@ -37,7 +37,7 @@ $$
 $$
 
 さらに$i$番目の荷物を選んだことを表すバイナリ変数を$x_i$としましょう。この変数は$i$をナップサックに入れるとき$x_i = 1$、入れないとき$x_i = 0$となるような変数です。最後にナップサックの最大容量を$W$とします。  
-最大化したいのは、ナップサックに入れる荷物の合計です。よってこれを目的関数として表現しましょう。さらにナップサックの容量制限以下にしなければならない制約を考えると、ナップサック問題は以下のような数式で表現されます。
+最大化したいのは、ナップサックに入れる荷物の価値の合計です。よってこれを目的関数として表現しましょう。さらにナップサックの容量制限以下にしなければならない制約を考えると、ナップサック問題は以下のような数式で表現されます。
 
 $$
 \max \ \sum_{i=0}^{N-1} v_i x_i 
@@ -64,9 +64,9 @@ import jijmodeling as jm
 # define variables
 v = jm.Placeholder('v', dim=1)
 N = v.shape[0]
-w = jm.Placeholder('w', shape=(N))
+w = jm.Placeholder('w', shape=(N,))
 W = jm.Placeholder('W')
-x = jm.Binary('x', shape=(N))
+x = jm.Binary('x', shape=(N,))
 i = jm.Element('i', (0, N))
 ```
 
@@ -92,8 +92,8 @@ problem += obj
 
 ```python
 # set total weight constraint
-const = jm.Sum(i, w[i]*x[i])
-problem += jm.Constraint('weight', const<=W)
+total_weight = jm.Sum(i, w[i]*x[i])
+problem += jm.Constraint('weight', total_weight<=W)
 ```
 
 `Constraint(制約名, 制約式)`とすることで、制約式に適当な制約名を付与することができます。  
@@ -180,10 +180,10 @@ print('Total weight: ', sum_w)
 すると以下のような出力を得ます。
 
 ```bash
-Indices of x = 1:  [0, 3, 4, 5]
-Value of objective function:  [-13.0]
+Indices of x = 1:  [1, 4, 5]
+Value of objective function:  [-14.0]
 Value of constraint term:  [0.0]
-Total weight:  20
+Total weight:  18
 ```
 
-目的関数の値にマイナスをかけたものが、実際にナップサックに入れた宝物の価値の合計です。また`.evaluation.constarint_violations[制約名]`とすることで、その制約がどれだけ満たされていないかを取得することができます。
+目的関数の値にマイナスをかけたものが、実際にナップサックに入れた宝物の価値の合計です。また`result.evaluation.constarint_violations[制約名]`とすることで、その制約がどれだけ満たされていないかを取得することができます。
