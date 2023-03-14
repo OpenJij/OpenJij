@@ -34,7 +34,7 @@ dwavebinarycsp
 minorminer
 penaltymodel
 
-myst-parser[linkify]
+myst-parser #[linkify]
 
 python-levenshtein
 
