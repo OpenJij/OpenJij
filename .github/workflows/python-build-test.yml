@@ -16,7 +16,5 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel build cmake
-    - name: Build package
-      run: python setup.py --force-cmake install --build-type Debug  --verbose
     - name: pip install
       run: pip install --no-binary=openjij openjij -vv
