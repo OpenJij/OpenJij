@@ -17,4 +17,4 @@ jobs:
       run: |
         python -m pip install --upgrade pip setuptools wheel build cmake
     - name: pip install
-      run: pip install --no-binary=openjij openjij -vv
+      run: pip install --no-binary=openjij openjij 
