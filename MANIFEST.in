@@ -8,7 +8,7 @@ prune docs
 prune example
 prune .github
 prune .git
-prun **/include
+prune **/include
 
 include setup.py
 include setup.cfg
