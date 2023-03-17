@@ -20,8 +20,8 @@ include include/CMakeLists.txt
 
 graft openjij
 graft tests 
-graft include
 graft external
+graft include/openjij
 
 include cmake/GenerateDocs.cmake
 include cmake/PythonAutoDetectOSX.cmake
