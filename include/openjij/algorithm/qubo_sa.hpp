@@ -67,9 +67,11 @@ void sa_qubo_ssf_from_coo(
     assert (row_indices.size() == col_indices.size());
     assert (row_indices.size() == values.size());
     size_t num_rows = state.size();
+
     SparseMatrix qubo(num_rows, num_rows);
+    qubo.reserve(row_indices.size());
     for (size_t i=0; i < row_indices.size(); i++){
-        qubo.insert(row_indices[i], col_indices[i]) = values[i];
+        qubo.coeffRef(row_indices[i], col_indices[i]) = values[i];
     }
     qubo.makeCompressed();
 

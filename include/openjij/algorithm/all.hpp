@@ -15,3 +15,4 @@
 #pragma once
 
 #include "openjij/algorithm/algorithm.hpp"
+#include "openjij/algorithm/qubo_sa.hpp"
