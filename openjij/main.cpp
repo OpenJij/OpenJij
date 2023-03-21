@@ -30,6 +30,8 @@ PYBIND11_MODULE(cxxjij, m) {
   
   m.doc() = "openjij is a framework for ising and qubo";
 
+  m.def("sa_qubo_ssf_coo", &sa_qubo_ssf_from_coo, "Simulated annealing with single spin flip for QUBO problems");
+
   /**********************************************************
    //namespace graph
    **********************************************************/
