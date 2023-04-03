@@ -35,7 +35,6 @@ minorminer
 penaltymodel
 
 jupyter-book >= 0.15.0, < 0.16.0
-myst-parser >= 1.0.0, < 1.1.0
 
 python-levenshtein >= 0.20.0, < 0.30.0
 
