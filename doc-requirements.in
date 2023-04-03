@@ -43,7 +43,7 @@ jupyter-cache
 jupyter_server # < 2
 #sphinx
 sphinx_sitemap
-sphinx-jupyterbook-latex
+#sphinx-jupyterbook-latex
 sphinx-proof
 sphinx-comments
 sphinx-autobuild
