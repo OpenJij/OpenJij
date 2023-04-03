@@ -26,7 +26,7 @@
 
 PYBIND11_MODULE(cxxjij, m) {
   py::options options;
-  options.disable_function_signatures();
+  #options.disable_function_signatures();
   
   m.doc() = "openjij is a framework for ising and qubo";
 
