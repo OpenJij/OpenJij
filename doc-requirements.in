@@ -34,16 +34,15 @@ dwavebinarycsp
 minorminer
 penaltymodel
 
-#myst-parser #[linkify]
+jupyter-book >= 0.15.0, < 0.16.0
+myst-parser >= 1.0.0, < 1.1.0
 
-python-levenshtein
+sphinx >= 6.1.0, < 6.2.0
 
-jupyter-book
-jupyter-cache
-jupyter_server # < 2
-#sphinx
+python-levenshtein >= 0.20.0, < 0.30.0
+
 sphinx_sitemap
-#sphinx-jupyterbook-latex
+sphinx-jupyterbook-latex
 sphinx-proof
 sphinx-comments
 sphinx-autobuild
@@ -54,4 +53,4 @@ sphinx-notfound-page
 sphinx-hoverxref
 sphinx-examples
 
-jsonschema[format-nongpl]
+#jsonschema[format-nongpl]
