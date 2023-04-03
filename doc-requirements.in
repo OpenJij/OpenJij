@@ -37,12 +37,9 @@ penaltymodel
 jupyter-book >= 0.15.0, < 0.16.0
 myst-parser >= 1.0.0, < 1.1.0
 
-sphinx >= 6.1.0, < 6.2.0
-
 python-levenshtein >= 0.20.0, < 0.30.0
 
 sphinx_sitemap
-sphinx-jupyterbook-latex
 sphinx-proof
 sphinx-comments
 sphinx-autobuild
@@ -54,3 +51,4 @@ sphinx-hoverxref
 sphinx-examples
 
 #jsonschema[format-nongpl]
+#sphinx-jupyterbook-latex
