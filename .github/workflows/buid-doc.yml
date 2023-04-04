@@ -31,7 +31,7 @@ jobs:
         shell: bash
         id: pip-cache
         run: |
-          echo "::set-output name=dir::$(pip cache dir)"
+          echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
       - name: Pip-Tools 
         shell: bash
         run: |
@@ -92,8 +92,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           TAG_NAME="${GITHUB_REF##refs/tags/}"
-          echo "::set-output name=tag_name::${TAG_NAME}"
-          echo "::set-output name=deploy_tag_name::deploy-${TAG_NAME}"
+          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "deploy_tag_name=deploy-${TAG_NAME}" >> $GITHUB_OUTPUT
       - name: Deploy
         #if: ${{github.event_name == 'release'}}
         uses: peaceiris/actions-gh-pages@v3

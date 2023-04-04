@@ -55,7 +55,7 @@
 # Binary
 $ pip install openjij 
 # From Source (CUDA)
-$ pip install --no-binary=openjij,jij-cimod  openjij
+$ pip install --no-binary=openjij openjij
 ```
 
 ### install via pip from source codes
@@ -76,7 +76,7 @@ Make sure the enviroment path for CMake is set correctly.
 #### install OpenJij
 
 ```
-$ pip install --no-binary=openjij,jij-cimod openjij
+$ pip install --no-binary=openjij openjij
 ```
 
 ### install from github repository
