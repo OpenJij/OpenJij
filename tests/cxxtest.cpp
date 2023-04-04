@@ -27,6 +27,7 @@
 #include <Eigen/Sparse>
 
 #include "polynomial_test.hpp"
+#include "./cxxtest/binary_polynomial_model.hpp"
 
 // #####################################
 // helper functions
