@@ -8,7 +8,7 @@ defaults: # The defaults key will be applied to all chapters and sub-sections
 options:  # The options key will be applied to all chapters, but not sub-sections
   numbered: False
 parts:
-  - caption:  API Reference 
+  - caption:  API Reference
     title:    OpenJij API レファレンス マニュアル
     numbered: false
     maxdepth: -1
@@ -33,7 +33,7 @@ parts:
       - file: tutorial/ja/004-Evaluation
       - file: tutorial/ja/005-benchmark_sparse_dense
       - file: tutorial/ja/optimization_index
-        sections: 
+        sections:
         - file: tutorial/ja/optimization/number_partition
         - file: tutorial/ja/optimization/knapsack
         - file: tutorial/ja/optimization/graph_coloring
@@ -56,5 +56,28 @@ parts:
     numbered: false
     maxdepth: -1
     chapters:
-      - title: OpenJij English Tutorial
-        glob:  tutorial/en/*
+      - file: tutorial/en/000-intro_optimization_and_Ising
+      - file: tutorial/en/001-openjij_introduction
+      - file: tutorial/en/002-HuboSolver
+      - file: tutorial/en/003-jijmodeling_openjij_tsp
+      - file: tutorial/en/004-Evaluation
+      - file: tutorial/en/005-benchmark_sparse_dense
+      - file: tutorial/en/optimization_index
+        sections: 
+        - file: tutorial/en/optimization/number_partition
+        - file: tutorial/en/optimization/knapsack
+        - file: tutorial/en/optimization/graph_coloring
+        - file: tutorial/en/optimization/clique_cover
+        - file: tutorial/en/optimization/integer_jobs
+        - file: tutorial/en/optimization/ProteinFoldingHubo
+        - file: tutorial/en/optimization/ReverseQuantumAnnealing
+      - file: tutorial/en/machine_learning_index
+        sections:
+        - file: tutorial/en/machine_learning/clustering
+        - file: tutorial/en/machine_learning/qboost
+      - file: tutorial/en/physics_index
+        sections:
+        - file: tutorial/en/physics/MonteCarloSampling
+        - file: tutorial/en/physics/IntroductionCoreInterface
+        - file: tutorial/en/physics/ClassicalSystem
+        - file: tutorial/en/physics/QuantumSystem

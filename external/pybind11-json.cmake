@@ -8,7 +8,7 @@ set(FETCHCONTENT_QUIET OFF)
 FetchContent_Declare(
     pybind11_json
     GIT_REPOSITORY  https://github.com/pybind/pybind11_json
-    GIT_TAG         0.2.12
+    GIT_TAG         0.2.13
     GIT_SHALLOW     TRUE
 )
 set(BUILD_TESTING OFF)

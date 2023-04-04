@@ -1,16 +1,27 @@
+prune cmake
+prune benchmark
+prune project_template
+prune public
+prune www
+prune share
+prune docs
+prune example
+prune .github
+prune .git
+prune **/include
+
 include setup.py
 include setup.cfg
 include CMakeLists.txt
 include LICENSE
 include README.md
 include pyproject.toml
+include include/CMakeLists.txt
 
 graft openjij
 graft tests 
-graft include
 graft external
-
-prune cmake
+graft include/openjij
 
 include cmake/GenerateDocs.cmake
 include cmake/PythonAutoDetectOSX.cmake
@@ -35,15 +46,7 @@ global-exclude build-requirements.txt
 global-exclude .gitignore 
 global-exclude Doxyfile
 global-exclude Doxyfile.bak
-
-prune benchmark
-prune project_template
-prune public
-prune www
-prune share
-prune include
-prune **/include
-prune docs
-prune example
-prune .github
-prune .git
+global-exclude .coveragerc
+global-exclude .gitattribute
+global-exclude CODE_OF_CONDUCT.md
+global-exclude doc-requirements
