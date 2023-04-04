@@ -14,17 +14,12 @@
 
 #pragma once
 
-// disable eigen -Wdeprecated-copy warning
-#include "openjij/utility/disable_eigen_warning.hpp"
+namespace openjij {
+namespace system {
 
-#include "openjij/system/classical_ising.hpp"
-#include "openjij/system/classical_ising_polynomial.hpp"
-#include "openjij/system/continuous_time_ising.hpp"
-#include "openjij/system/k_local_polynomial.hpp"
-#include "openjij/system/transverse_ising.hpp"
-#include "openjij/system/binary_polynomial_sa_system.hpp"
+template<class ModelType, typename RandType>
+class SASystem;
 
-#ifdef USE_CUDA
-#include "openjij/system/gpu/chimera_gpu_classical.hpp"
-#include "openjij/system/gpu/chimera_gpu_transverse.hpp"
-#endif
+
+} // namespace system
+} // namespace openjij

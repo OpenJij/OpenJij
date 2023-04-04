@@ -28,6 +28,7 @@
 
 #include "polynomial_test.hpp"
 #include "./cxxtest/binary_polynomial_model.hpp"
+#include "./cxxtest/binary_polynomial_sa_system.hpp"
 
 // #####################################
 // helper functions
