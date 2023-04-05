@@ -22,6 +22,8 @@
 #include <openjij/utility/random.hpp>
 #include <openjij/utility/gpu/memory.hpp>
 #include <openjij/utility/gpu/cublas.hpp>
+#include <openjij/sampler/sa_sampler.hpp>
+
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -29,6 +31,7 @@
 #include "polynomial_test.hpp"
 #include "./cxxtest/binary_polynomial_model.hpp"
 #include "./cxxtest/binary_polynomial_sa_system.hpp"
+#include "./cxxtest/binary_polynomial_sa_sampler.hpp"
 
 // #####################################
 // helper functions

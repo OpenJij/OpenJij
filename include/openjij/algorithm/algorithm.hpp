@@ -57,5 +57,29 @@ template <template <typename> class Updater> struct Algorithm {
 // TODO: Algorithm class will be deprecated shortly.
 template <template <typename> class Updater> using MCMC = Algorithm<Updater>;
 
+
+enum class UpdateMethod {
+   
+   //! @brief Metropolis update
+   METROPOLIS,
+   
+   //! @brief Heat bath update
+   HEAT_BATH,
+      
+};
+
+enum class RandomNumberEngine {
+  
+   //! @brief 32-bit Mersenne Twister
+   MT,
+   
+   //! @brief 64-bit Mersenne Twister
+   MT_64,
+   
+   //! @brief 32-bit Xorshift
+   XORSHIFT
+   
+};
+
 } // namespace algorithm
 } // namespace openjij
