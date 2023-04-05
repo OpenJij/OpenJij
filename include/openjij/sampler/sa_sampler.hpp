@@ -213,53 +213,15 @@ public:
       samples_.clear();
       samples_.shrink_to_fit();
       samples_.resize(num_reads_);
-      
-      std::vector<ValueType> beta_list = utility::GenerateBetaList(schedule_, beta_min_, beta_max_, num_sweeps_);
-      
+            
       if (random_number_engine_ == algorithm::RandomNumberEngine::XORSHIFT) {
-         const auto seed_pair_list = GenerateSeedPairList<utility::Xorshift>(static_cast<std::uint32_t>(seed_), num_reads_);
-         try {
-#pragma omp parallel for schedule(guided) num_threads(num_threads_)
-            for (std::int32_t i = 0; i < num_reads_; ++i) {
-               using SASystem = system::SASystem<ModelType, utility::Xorshift>;
-               auto system = SASystem{model_, seed_pair_list[i].first};
-               updater::SingleFlipUpdater<SASystem, utility::Xorshift>(&system, num_sweeps_, beta_list, seed_pair_list[i].second, update_method_);
-               samples_[i] = system.ExtractSample();
-            }
-         }
-         catch (const std::exception &e) {
-            std::cerr << e.what() << std::endl;
-         }
+         TemplateSampler<system::SASystem<ModelType, utility::Xorshift>, utility::Xorshift>();
       }
       else if (random_number_engine_ == algorithm::RandomNumberEngine::MT) {
-         const auto seed_pair_list = GenerateSeedPairList<std::mt19937>(static_cast<std::uint32_t>(seed_), num_reads_);
-         try {
-#pragma omp parallel for schedule(guided) num_threads(num_threads_)
-            for (std::int32_t i = 0; i < num_reads_; ++i) {
-               using SASystem = system::SASystem<ModelType, std::mt19937>;
-               auto system = SASystem{model_, seed_pair_list[i].first};
-               updater::SingleFlipUpdater<SASystem, std::mt19937>(&system, num_sweeps_, beta_list, seed_pair_list[i].second, update_method_);
-               samples_[i] = system.ExtractSample();
-            }
-         }
-         catch (const std::exception &e) {
-            std::cerr << e.what() << std::endl;
-         }
+         TemplateSampler<system::SASystem<ModelType, std::mt19937>, std::mt19937>();
       }
       else if (random_number_engine_ == algorithm::RandomNumberEngine::MT_64) {
-         const auto seed_pair_list = GenerateSeedPairList<std::mt19937_64>(seed_, num_reads_);
-         try {
-#pragma omp parallel for schedule(guided) num_threads(num_threads_)
-            for (std::int32_t i = 0; i < num_reads_; ++i) {
-               using SASystem = system::SASystem<ModelType, std::mt19937_64>;
-               auto system = SASystem{model_, seed_pair_list[i].first};
-               updater::SingleFlipUpdater<SASystem, std::mt19937_64>(&system, num_sweeps_, beta_list, seed_pair_list[i].second, update_method_);
-               samples_[i] = system.ExtractSample();
-            }
-         }
-         catch (const std::exception &e) {
-            std::cerr << e.what() << std::endl;
-         }
+         TemplateSampler<system::SASystem<ModelType, std::mt19937_64>, std::mt19937_64>();
       }
       else {
          throw std::runtime_error("Unknown RandomNumberEngine");
@@ -313,6 +275,19 @@ private:
       }
       
       return seed_pair_list;
+   }
+   
+   template<class SystemType, class RandType>
+   void TemplateSampler() {
+      const auto seed_pair_list = GenerateSeedPairList<RandType>(static_cast<typename RandType::result_type>(seed_), num_reads_);
+      std::vector<ValueType> beta_list = utility::GenerateBetaList(schedule_, beta_min_, beta_max_, num_sweeps_);
+      
+#pragma omp parallel for schedule(guided) num_threads(num_threads_)
+      for (std::int32_t i = 0; i < num_reads_; ++i) {
+         auto system = SystemType{model_, seed_pair_list[i].first};
+         updater::SingleFlipUpdater<SystemType, RandType>(&system, num_sweeps_, beta_list, seed_pair_list[i].second, update_method_);
+         samples_[i] = system.ExtractSample();
+      }
    }
    
 };

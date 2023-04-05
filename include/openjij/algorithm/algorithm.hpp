@@ -18,6 +18,8 @@
 
 #include "openjij/system/system.hpp"
 #include "openjij/utility/schedule_list.hpp"
+#include "openjij/utility/random.hpp"
+
 
 namespace openjij {
 namespace algorithm {
@@ -70,16 +72,33 @@ enum class UpdateMethod {
 
 enum class RandomNumberEngine {
   
+   //! @brief 32-bit Xorshift
+   XORSHIFT,
+   
    //! @brief 32-bit Mersenne Twister
    MT,
    
    //! @brief 64-bit Mersenne Twister
-   MT_64,
-   
-   //! @brief 32-bit Xorshift
-   XORSHIFT
+   MT_64
    
 };
+
+
+std::variant<utility::Xorshift, std::mt19937, std::mt19937_64>
+GenerateRandomNumberEngineClass(const RandomNumberEngine random_number_engine) {
+   if (random_number_engine == RandomNumberEngine::XORSHIFT) {
+      return utility::Xorshift();
+   }
+   else if (random_number_engine == RandomNumberEngine::MT) {
+      return std::mt19937();
+   }
+   else if (random_number_engine == RandomNumberEngine::MT) {
+      return std::mt19937_64();
+   }
+   else {
+      throw std::runtime_error("Unknown RandomNumberEngine");
+   }
+}
 
 } // namespace algorithm
 } // namespace openjij
