@@ -45,16 +45,10 @@ public:
    adjacency_list_(model.GetAdjacencyList()) {
       SetRandomConfiguration(seed);
       SetZeroCount();
-      SetEnergyDifference();
+      SetBaseEnergyDifference();
    }
    
-   //! @brief Constructor of SASystem for BinaryPolynomialModel.
-   //! @param model The BinaryPolynomialModel.
-   //! @param sample The initializing binary variables.
-   SASystem(const ModelType &model, const std::vector<VariableType> &sample):
-   system_size_(model.GetSystemSize()),
-   key_value_list_(model.GetKeyValueList()),
-   adjacency_list_(model.GetAdjacencyList()) {
+   void SetSample(const std::vector<VariableType> &sample) {
       if (static_cast<std::int32_t>(sample.size()) != system_size_) {
          throw std::runtime_error("The size of initial variables is not equal to the system size.");
       }
@@ -63,31 +57,40 @@ public:
             throw std::runtime_error("The initial variables must be 0 or 1.");
          }
       }
-      sample_.resize(system_size_);
-      for (std::int32_t i = 0; i < system_size_; ++i) {
-         sample_[i] = sample[i];
-      }
+      sample_ = sample;
       SetZeroCount();
-      SetEnergyDifference();
+      SetBaseEnergyDifference();
    }
    
    //! @brief Flip a variable.
    //! @param index The index of the variable to be flipped.
    void Flip(const std::int32_t index, const VariableType candidate_state) {
-      const VariableType update_binary = sample_[index];
-      const std::int32_t coeef = -2*update_binary + 1;
-      const std::int32_t count = +2*update_binary - 1;
-      for (const auto &index_key : adjacency_list_[index]) {
-         const ValueType val = key_value_list_[index_key].second;
-         for (const auto &index_binary: key_value_list_[index_key].first) {
-            if (zero_count_[index_key] + update_binary + sample_[index_binary] == 2 && index_binary != index) {
-               energy_difference_[index_binary] += coeef*(-2*sample_[index_binary] + 1)*val;
-            }
-         }
-         zero_count_[index_key] += count;
-      }
-      energy_difference_[index] *= -1;
+      const VariableType state = sample_[index];
       sample_[index] = candidate_state;
+      if (state == 0 && candidate_state == 1) {
+         for (const auto &index_key: adjacency_list_[index]) {
+            const ValueType val = key_value_list_[index_key].second;
+            const std::int32_t total_zero_count = zero_count_[index_key];
+            for (const auto &v_index: key_value_list_[index_key].first) {
+               if (total_zero_count + sample_[v_index] == 2 && v_index != index) {
+                  base_energy_difference_[v_index] += val;
+               }
+            }
+            zero_count_[index_key] -= 1;
+         }
+      }
+      else { //state == 1 && candidate_state == 0
+         for (const auto &index_key: adjacency_list_[index]) {
+            const ValueType val = key_value_list_[index_key].second;
+            const std::int32_t total_zero_count = zero_count_[index_key];
+            for (const auto &v_index: key_value_list_[index_key].first) {
+               if (total_zero_count + sample_[v_index] == 1 && v_index != index) {
+                  base_energy_difference_[v_index] -= val;
+               }
+            }
+            zero_count_[index_key] += 1;
+         }
+      }
    }
    
    //! @brief Get the system size.
@@ -104,15 +107,15 @@ public:
    
    //! @brief Get the energy difference when flipped and sample as list.
    //! @return The energy difference and sample.
-   const std::vector<ValueType> &GetEnergyDifference() const {
-      return energy_difference_;
+   const std::vector<ValueType> &GetBaseEnergyDifference() const {
+      return base_energy_difference_;
    }
    
    //! @brief Get the energy difference when flipped.
    //! @param index The index of variables.
    //! @return The energy difference.
    ValueType GetEnergyDifference(const std::int32_t index, const VariableType candidate_state) const {
-      return energy_difference_[index];
+      return (2*candidate_state - 1)*base_energy_difference_[index];
    }
    
    VariableType GenerateCandidateState(const std::int32_t index) const {
@@ -125,7 +128,7 @@ private:
    const std::vector<std::vector<std::size_t>> &adjacency_list_;
    
    std::vector<VariableType> sample_;
-   std::vector<ValueType> energy_difference_;
+   std::vector<ValueType> base_energy_difference_;
    std::vector<std::int32_t> zero_count_;
    
    //! @brief Set initial binary variables.
@@ -152,13 +155,14 @@ private:
       }
    }
    
-   void SetEnergyDifference() {
-      energy_difference_.resize(system_size_);
+   void SetBaseEnergyDifference() {
+      base_energy_difference_.clear();
+      base_energy_difference_.resize(system_size_);
       for (std::size_t i = 0; i < key_value_list_.size(); ++i) {
          const ValueType value = key_value_list_[i].second;
          for (const auto &index: key_value_list_[i].first) {
             if (sample_[index] + zero_count_[i] == 1) {
-               energy_difference_[index] += value*(-2*sample_[index] + 1);
+               base_energy_difference_[index] += value;
             }
          }
       }

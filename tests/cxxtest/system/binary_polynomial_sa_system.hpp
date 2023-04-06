@@ -45,15 +45,6 @@ TEST(System, BinaryPolynomialSystemConstructor) {
    EXPECT_NO_THROW((system::SASystem<BPM, std::mt19937>{bpm, 1}));
    EXPECT_NO_THROW((system::SASystem<BPM, std::mt19937_64>{bpm, 1}));
    EXPECT_NO_THROW((system::SASystem<BPM, utility::Xorshift>{bpm, 1}));
-   
-   EXPECT_NO_THROW((system::SASystem<BPM, std::mt19937>{bpm, {1,1,1,0,0}}));
-   EXPECT_NO_THROW((system::SASystem<BPM, std::mt19937_64>{bpm, {1,1,1,0,0}}));
-   EXPECT_NO_THROW((system::SASystem<BPM, utility::Xorshift>{bpm, {1,1,1,0,0}}));
-   
-   EXPECT_THROW((system::SASystem<BPM, std::mt19937>{bpm, {1,1,1,0,-1}}), std::runtime_error);
-   EXPECT_THROW((system::SASystem<BPM, std::mt19937_64>{bpm, {1,2,1,0,0}}), std::runtime_error);
-   EXPECT_THROW((system::SASystem<BPM, utility::Xorshift>{bpm, {1,1,0,0}}), std::runtime_error);
-   
 }
 
 TEST(System, BinaryPolynomialSystemSeed) {
@@ -83,7 +74,7 @@ TEST(System, BinaryPolynomialSystemSeed) {
    
    EXPECT_EQ(sa_system.GetSystemSize(), 5);
    EXPECT_EQ(sa_system.ExtractSample().size(), 5);
-   EXPECT_EQ(sa_system.GetEnergyDifference().size(), 5);
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 5);
    EXPECT_NO_THROW(sa_system.Flip(0, sa_system.GenerateCandidateState(0)));
    EXPECT_NO_THROW(sa_system.Flip(1, sa_system.GenerateCandidateState(1)));
    EXPECT_NO_THROW(sa_system.Flip(2, sa_system.GenerateCandidateState(2)));
@@ -92,7 +83,7 @@ TEST(System, BinaryPolynomialSystemSeed) {
    
 }
 
-TEST(System, BinaryPolynomialSystemExplicit) {
+TEST(System, BinaryPolynomialSystemExplicitLinearQuad) {
    using BPM = graph::BinaryPolynomialModel<double>;
          
    const std::vector<std::vector<typename BPM::IndexType>> key_list = {
@@ -114,47 +105,107 @@ TEST(System, BinaryPolynomialSystemExplicit) {
    };
    
    const auto bpm = BPM{key_list, value_list};
-   auto sa_system = system::SASystem<BPM, std::mt19937>{bpm, {+1, +1, +1}};
+   auto sa_system = system::SASystem<BPM, std::mt19937>{bpm, 1};
    
+   sa_system.SetSample({+1, +1, +1});
    EXPECT_EQ(sa_system.GetSystemSize(), 3);
    EXPECT_EQ(sa_system.ExtractSample().size(), 3);
    EXPECT_EQ(sa_system.ExtractSample().at(0), 1);
    EXPECT_EQ(sa_system.ExtractSample().at(1), 1);
    EXPECT_EQ(sa_system.ExtractSample().at(2), 1);
-   EXPECT_EQ(sa_system.GetEnergyDifference().size(), 3);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(0), -3.0);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(1), -3.5);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(2), -0.5);
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 0), -3.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 0), -3.5);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 0), -0.5);
    sa_system.Flip(0, sa_system.GenerateCandidateState(0));
-   EXPECT_EQ(sa_system.GetEnergyDifference().size(), 3);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(0), +3.0);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(1), -0.5);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(2), -1.5);
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 1), +3.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 0), -0.5);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 0), -1.5);
    sa_system.Flip(0, sa_system.GenerateCandidateState(0));
-   EXPECT_EQ(sa_system.GetEnergyDifference().size(), 3);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(0), -3.0);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(1), -3.5);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(2), -0.5);
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 0), -3.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 0), -3.5);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 0), -0.5);
    sa_system.Flip(1, sa_system.GenerateCandidateState(1));
-   EXPECT_EQ(sa_system.GetEnergyDifference().size(), 3);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(0), +0.0);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(1), +3.5);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(2), -2.0);
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 0), +0.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 1), +3.5);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 0), -2.0);
    sa_system.Flip(1, sa_system.GenerateCandidateState(1));
-   EXPECT_EQ(sa_system.GetEnergyDifference().size(), 3);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(0), -3.0);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(1), -3.5);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(2), -0.5);
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 0), -3.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 0), -3.5);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 0), -0.5);
    sa_system.Flip(2, sa_system.GenerateCandidateState(2));
-   EXPECT_EQ(sa_system.GetEnergyDifference().size(), 3);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(0), -4.0);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(1), -5.0);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(2), +0.5);
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 0), -4.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 0), -5.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 1), +0.5);
    sa_system.Flip(2, sa_system.GenerateCandidateState(2));
-   EXPECT_EQ(sa_system.GetEnergyDifference().size(), 3);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(0), -3.0);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(1), -3.5);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference().at(2), -0.5);
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 0), -3.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 0), -3.5);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 0), -0.5);
+}
+
+
+TEST(System, BinaryPolynomialSystemExplicitPoly) {
+   using BPM = graph::BinaryPolynomialModel<double>;
+         
+   const std::vector<std::vector<typename BPM::IndexType>> key_list = {
+      {0, 1, 2},
+      {0, 1, 2}
+   };
+      
+   const std::vector<double> value_list = {
+      +2.0,
+      +2.0
+   };
+   
+   const auto bpm = BPM{key_list, value_list};
+   auto sa_system = system::SASystem<BPM, std::mt19937>{bpm, 1};
+   
+   sa_system.SetSample({+1, +1, +1});
+   EXPECT_EQ(sa_system.GetSystemSize(), 3);
+   EXPECT_EQ(sa_system.ExtractSample().size(), 3);
+   EXPECT_EQ(sa_system.ExtractSample().at(0), 1);
+   EXPECT_EQ(sa_system.ExtractSample().at(1), 1);
+   EXPECT_EQ(sa_system.ExtractSample().at(2), 1);
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 0), -4.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 0), -4.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 0), -4.0);
+   sa_system.Flip(0, sa_system.GenerateCandidateState(0));
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 1), +4.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 0), +0.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 0), +0.0);
+   sa_system.Flip(0, sa_system.GenerateCandidateState(0));
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 0), -4.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 0), -4.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 0), -4.0);
+   sa_system.Flip(1, sa_system.GenerateCandidateState(1));
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 0), +0.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 1), +4.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 0), +0.0);
+   sa_system.Flip(1, sa_system.GenerateCandidateState(1));
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 0), -4.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 0), -4.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 0), -4.0);
+   sa_system.Flip(2, sa_system.GenerateCandidateState(2));
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 0), +0.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 0), +0.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 1), +4.0);
+   sa_system.Flip(2, sa_system.GenerateCandidateState(2));
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, 0), -4.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, 0), -4.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, 0), -4.0);
 }
 
 }
