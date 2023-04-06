@@ -17,3 +17,4 @@
 
 #include "binary_polynomial_model.hpp"
 #include "quadratic.hpp"
+#include "polynomial.hpp"

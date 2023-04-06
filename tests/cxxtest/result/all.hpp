@@ -14,9 +14,5 @@
 
 #pragma once
 
-#include "binary_polynomial_sa_sampler.hpp"
-#include "quadraitc.hpp"
-#include "polynomial.hpp"
-#include "k_local.hpp"
-#include "swendsen_wang.hpp"
-#include "gpu.hpp"
+#include "result.hpp"
+
