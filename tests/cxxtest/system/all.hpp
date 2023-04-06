@@ -14,7 +14,8 @@
 
 #pragma once
 
-#include "binary_polynomial_sa_system.hpp"
 #include "classical_ising.hpp"
 #include "classical_ising_polynomial.hpp"
 #include "k_local.hpp"
+#include "binary_polynomial_sa_system.hpp"
+#include "ising_polynomial_sa_system.hpp"

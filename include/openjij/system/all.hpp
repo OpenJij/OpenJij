@@ -23,6 +23,7 @@
 #include "openjij/system/k_local_polynomial.hpp"
 #include "openjij/system/transverse_ising.hpp"
 #include "openjij/system/binary_polynomial_sa_system.hpp"
+#include "openjij/system/ising_polynomial_sa_system.hpp"
 
 #ifdef USE_CUDA
 #include "openjij/system/gpu/chimera_gpu_classical.hpp"

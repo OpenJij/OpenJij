@@ -23,7 +23,7 @@ TEST(System, BinaryPolynomialSystemConstructor) {
    using BPM = graph::BinaryPolynomialModel<double>;
    
    const std::vector<std::vector<typename BPM::IndexType>> key_list = {
-      {1, 1},
+      {1, 1, 2, 3, 4},
       {"a", "a"},
       {Tup{2, "b"}, Tup{2, "b"}},
       {1, 2},
