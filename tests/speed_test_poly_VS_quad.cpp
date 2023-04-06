@@ -40,6 +40,36 @@ static openjij::utility::ClassicalScheduleList generate_schedule_list(double bet
    return list;
 }
 
+//speed test
+//TEST(Graph, speedtest){
+//    using namespace openjij::graph;
+//    std::size_t N = 5000;
+//    auto begin = std::chrono::high_resolution_clock::now();
+//    Dense<double> a(N);
+//    for(std::size_t i=0; i<N; i++){
+//        for(std::size_t j=i; j<N; j++){
+//            a.J(i, j)  = 1;
+//        }
+//    }
+//    auto end = std::chrono::high_resolution_clock::now();
+//    std::cout << "time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << std::endl;
+//
+//    auto quad = cimod::Quadratic<size_t, double>();
+//    auto lin = cimod::Linear<size_t, double>();
+//    begin = std::chrono::high_resolution_clock::now();
+//    for(std::size_t i=0; i<N; i++){
+//        for(std::size_t j=i+1; j<N; j++){
+//            quad[std::make_pair(i,j)] = 1;
+//        }
+//    }
+//    for(std::size_t i=0; i<N; i++){
+//        lin[i] = 1;
+//    }
+//    auto bqm = cimod::BinaryQuadraticModel<size_t, double>(lin, quad, 0, cimod::Vartype::BINARY);
+//    end = std::chrono::high_resolution_clock::now();
+//    std::cout << "time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << std::endl;
+//}
+
 TEST(SpeedTestPolyVsQuad, QuadraticSparseInteractions) {
    
    //Polynomial
