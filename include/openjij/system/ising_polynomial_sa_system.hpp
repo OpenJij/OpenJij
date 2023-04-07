@@ -56,7 +56,11 @@ public:
             throw std::runtime_error("The initial variables must be -1 or 1.");
          }
       }
-      sample_ = sample;
+      base_energy_difference_.clear();
+      base_energy_difference_.resize(2*system_size_);
+      for (std::int32_t i = 0; i < system_size_; ++i) {
+         base_energy_difference_[2*i + 1] = sample[i];
+      }
       SetTermProd();
       SetBaseEnergyDifference();
    }
@@ -64,13 +68,13 @@ public:
    //! @brief Flip a variable.
    //! @param index The index of the variable to be flipped.
    void Flip(const std::int32_t index, const VariableType candidate_state) {
-      sample_[index] = candidate_state;
+      base_energy_difference_[2*index + 1] = candidate_state;
       for (const auto &index_key: adjacency_list_[index]) {
          const ValueType val = -2*key_value_list_[index_key].second*term_prod_[index_key];
          term_prod_[index_key] *= -1;
          for (const auto &v_index: key_value_list_[index_key].first) {
             if (v_index != index) {
-               base_energy_difference_[v_index] += val*sample_[v_index];
+               base_energy_difference_[2*v_index] += val*base_energy_difference_[2*v_index + 1];
             }
          }
       }
@@ -84,8 +88,12 @@ public:
    
    //! @brief Extract the sample.
    //! @return The sample.
-   const std::vector<VariableType> &ExtractSample() const {
-      return sample_;
+   std::vector<VariableType> ExtractSample() const {
+      std::vector<VariableType> sample(system_size_);
+      for (std::int32_t i = 0; i < system_size_; ++i) {
+         sample[i] = static_cast<VariableType>(base_energy_difference_[2*i + 1]);
+      }
+      return sample;
    }
    
    //! @brief Get the energy difference when flipped and sample as list.
@@ -98,11 +106,11 @@ public:
    //! @param index The index of variables.
    //! @return The energy difference.
    ValueType GetEnergyDifference(const std::int32_t index, const VariableType candidate_state) const {
-      return 2*candidate_state*base_energy_difference_[index];
+      return 2*candidate_state*base_energy_difference_[2*index];
    }
    
    VariableType GenerateCandidateState(const std::int32_t index) const {
-      return -1*sample_[index];
+      return -1*base_energy_difference_[2*index + 1];
    }
    
 private:
@@ -110,18 +118,18 @@ private:
    const std::vector<std::pair<std::vector<std::int32_t>, ValueType>> &key_value_list_;
    const std::vector<std::vector<std::size_t>> &adjacency_list_;
    
-   std::vector<VariableType> sample_;
+   //std::vector<VariableType> sample_;
    std::vector<ValueType> base_energy_difference_;
    std::vector<std::int8_t> term_prod_;
    
    //! @brief Set initial binary variables.
    //! @param seed The seed for initializing binary variables.
    void SetRandomConfiguration(const SeedType seed) {
-      sample_.resize(system_size_);
+      base_energy_difference_.resize(2*system_size_);
       std::uniform_int_distribution<std::int8_t> dist(0, 1);
       RandType random_number_engine(seed);
       for (std::int32_t i = 0; i < system_size_; i++) {
-         sample_[i] = 2*dist(random_number_engine) - 1;
+         base_energy_difference_[2*i + 1] = 2*dist(random_number_engine) - 1;
       }
    }
    
@@ -130,19 +138,19 @@ private:
       for (std::size_t i = 0; i < key_value_list_.size(); ++i) {
          std::int8_t prod = 1;
          for (const auto &index: key_value_list_[i].first) {
-            prod *= sample_[index];
+            prod *= base_energy_difference_[2*index + 1];
          }
          term_prod_[i] = prod;
       }
    }
       
    void SetBaseEnergyDifference() {
-      base_energy_difference_.clear();
-      base_energy_difference_.resize(system_size_);
+      //base_energy_difference_.clear();
+      //base_energy_difference_.resize(system_size_);
       for (std::size_t i = 0; i < key_value_list_.size(); ++i) {
          const ValueType value = key_value_list_[i].second;
          for (const auto &index: key_value_list_[i].first) {
-            base_energy_difference_[index] += value*term_prod_[i]*sample_[index];
+            base_energy_difference_[2*index] += value*term_prod_[i]*base_energy_difference_[2*index + 1];
          }
       }
    }
