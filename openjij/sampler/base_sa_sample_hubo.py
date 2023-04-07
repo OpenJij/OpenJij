@@ -4,8 +4,9 @@ try:
 except ImportError:
     from typing_extensions import Optional, Union
 
-import openjij as oj
+import time
 from openjij.sampler.response import Response
+from openjij.variable_type import BINARY, SPIN
 from openjij.cxxjij.graph import (
     BinaryPolynomialModel,
     IsingPolynomialModel
@@ -43,14 +44,18 @@ def base_sample_hubo(
     temperature_schedule: str = "GEOMETRIC",
 ) -> Response:
     
-    if vartype == "BINARY":
+    start_time = time.time()
+
+    # Define cxx_sampler and set parameters
+    start_define_sampler = time.time()
+    if vartype in ("BINARY", BINARY):
         sampler = make_sa_sampler(
             BinaryPolynomialModel(
                 key_list=list(hubo.keys()), 
                 value_list=list(hubo.values())
             )
         )
-    elif vartype == "SPIN":
+    elif vartype in ("SPIN", SPIN):
         sampler = make_sa_sampler(
             IsingPolynomialModel(
                 key_list=list(hubo.keys()), 
@@ -83,18 +88,48 @@ def base_sample_hubo(
         sampler.set_beta_max(beta_max=beta_max)
     else:
         sampler.set_beta_max_auto()
+    define_sampler_time = time.time() - start_define_sampler
 
+    # Start sampling
+    start_sample = time.time()
     if seed is not None:
         sampler.sample(seed=seed)
     else:
         sampler.sample()
+    sample_time = time.time() - start_sample
 
+    # Make openjij response
+    start_make_oj_response = time.time()
     response = to_oj_response(
         sampler.get_samples(), 
         sampler.get_index_list(),
         sampler.calculate_energies(),
         vartype
     )
+    make_oj_response_time = time.time() - start_make_oj_response
+
+    response.info["schedule"] = {
+        "num_sweeps": num_sweeps,
+        "num_reads": num_reads,
+        "num_threads": num_threads,
+        "beta_min": sampler.get_beta_min(),
+        "beta_max": sampler.get_beta_max(),
+        "update_method": update_method,
+        "random_number_engine": random_number_engine,
+        "temperature_schedule": temperature_schedule,
+        "seed": sampler.get_seed(),
+    }
+
+    # Keep it in for backward compatibility.
+    response.info["sampling_time"] = (sample_time + define_sampler_time)*10**6  # micro sec
+    response.info["execution_time"] = (sample_time/num_reads)*10**6  # micro sec
+
+    response.info["time"] = {
+        "define_cxx_sampler": define_sampler_time,
+        "sample": sample_time,
+        "make_oj_response": make_oj_response_time,
+        "total": time.time() - start_time,
+    }
 
     return response
 

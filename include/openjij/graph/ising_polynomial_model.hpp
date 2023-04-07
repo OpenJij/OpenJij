@@ -59,14 +59,9 @@ public:
                   key_list[i].pop_back();
                }
             }
-            if (key_list[i].size() == 0) {
-               constant_ += value_list[i];
-            }
-            else {
-               index_set.insert(key_list[i].begin(), key_list[i].end());
-               if (std::abs(value_list[i]) > abs_max_interaction) {
-                  abs_max_interaction = std::abs(value_list[i]);
-               }
+            index_set.insert(key_list[i].begin(), key_list[i].end());
+            if (std::abs(value_list[i]) > abs_max_interaction) {
+               abs_max_interaction = std::abs(value_list[i]);
             }
          }
       }
@@ -206,7 +201,7 @@ public:
       if (variables.size() != system_size_) {
          throw std::runtime_error("The size of variables is not equal to the system size");
       }
-      ValueType val = constant_;
+      ValueType val = 0.0;
       for (std::size_t i = 0; i < key_value_list_.size(); ++i) {
          VariableType prod = 1;
          for (const auto &index: key_value_list_[i].first) {
@@ -227,9 +222,7 @@ private:
    
    //! @brief The index list of the interactions.
    std::vector<IndexType> index_list_;
-   
-   ValueType constant_ = 0;
-   
+      
    //! @brief The mapping from the index to the integer.
    std::unordered_map<IndexType, std::int32_t, IndexHash> index_map_;
    

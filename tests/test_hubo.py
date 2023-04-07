@@ -30,8 +30,22 @@ class HUBOTest(unittest.TestCase):
 
     def test_SASampler_hubo_spin_1(self):
         K, true_energy = self.gen_testcase_polynomial()
-        response = oj.SASampler().sample_hubo(K, vartype="SPIN", seed = 3)
-        self.assertAlmostEqual(true_energy, response.energies[0])
+
+        update_method_list = ["METROPOLIS", "HEAT_BATH"]
+        random_number_engine_list = ["XORSHIFT", "MT", "MT_64"]
+        temperature_schedule_list = ["GEOMETRIC", "LINEAR"]
+
+        for update_method in update_method_list:
+            for temperature_schedule in temperature_schedule_list:
+                for random_number_engine in random_number_engine_list:
+                    response = oj.SASampler().sample_hubo(
+                        K, 
+                        vartype="SPIN", 
+                        seed=3,
+                        updater=update_method,
+                        temperature_schedule=temperature_schedule,
+                        random_number_engine=random_number_engine)
+                    self.assertAlmostEqual(true_energy, response.energies[0])
 
         bpm_oj = oj.BinaryPolynomialModel(K, "SPIN")
         response = oj.SASampler().sample_hubo(bpm_oj, seed = 3)
@@ -57,8 +71,23 @@ class HUBOTest(unittest.TestCase):
         K[1,2,3] = -1.0
         K[2,3,4] = +0.9
         true_energy = -15.1
-        response = oj.SASampler().sample_hubo(K, vartype="SPIN", seed = 3)
-        self.assertAlmostEqual(true_energy, response.energies[0])
+
+        update_method_list = ["METROPOLIS", "HEAT_BATH"]
+        random_number_engine_list = ["XORSHIFT", "MT", "MT_64"]
+        temperature_schedule_list = ["GEOMETRIC", "LINEAR"]
+
+        for update_method in update_method_list:
+            for temperature_schedule in temperature_schedule_list:
+                for random_number_engine in random_number_engine_list:
+                    response = oj.SASampler().sample_hubo(
+                        K, 
+                        vartype="SPIN", 
+                        seed=1,
+                        num_reads=10,
+                        updater=update_method,
+                        temperature_schedule=temperature_schedule,
+                        random_number_engine=random_number_engine)
+                    self.assertAlmostEqual(true_energy, min(response.energies))
 
         bpm_oj = oj.BinaryPolynomialModel(K, "SPIN")
         response = oj.SASampler().sample_hubo(bpm_oj, seed = 3)
@@ -84,11 +113,26 @@ class HUBOTest(unittest.TestCase):
         K[1,2,3] = -1.0
         K[2,3,4] = +0.9
         true_energy = -3.1
+
+        update_method_list = ["METROPOLIS", "HEAT_BATH"]
+        random_number_engine_list = ["XORSHIFT", "MT", "MT_64"]
+        temperature_schedule_list = ["GEOMETRIC", "LINEAR"]
+
+        for update_method in update_method_list:
+            for temperature_schedule in temperature_schedule_list:
+                for random_number_engine in random_number_engine_list:
+                    response = oj.SASampler().sample_hubo(
+                        K, 
+                        vartype="BINARY", 
+                        seed = 3,
+                        updater=update_method,
+                        temperature_schedule=temperature_schedule,
+                        random_number_engine=random_number_engine)
+                    self.assertAlmostEqual(true_energy, response.energies[0])
+                    
         response = oj.SASampler().sample_hubo(K, vartype="BINARY", updater = "single spin flip", seed = 3)
         self.assertAlmostEqual(true_energy, response.energies[0])
         response = oj.SASampler().sample_hubo(K, vartype="BINARY", updater = "k-local", seed = 3)
-        self.assertAlmostEqual(true_energy, response.energies[0])
-        response = oj.SASampler().sample_hubo(K, vartype="BINARY", seed = 3)
         self.assertAlmostEqual(true_energy, response.energies[0])
 
         bpm_oj = oj.BinaryPolynomialModel(K, "BINARY")
