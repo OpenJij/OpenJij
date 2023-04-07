@@ -51,11 +51,11 @@
 #include "testcase.hpp"
 #include "polynomial_test.hpp"
 
-#include "sampler/all.hpp"
+//#include "sampler/all.hpp"
 #include "system/all.hpp"
-#include "graph/all.hpp"
-#include "result/all.hpp"
-#include "utility/all.hpp"
+//#include "graph/all.hpp"
+//#include "result/all.hpp"
+//#include "utility/all.hpp"
 
 std::int32_t main(std::int32_t argc, char **argv) {
    testing::InitGoogleTest(&argc, argv);

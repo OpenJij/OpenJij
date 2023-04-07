@@ -209,5 +209,46 @@ TEST(System, IsingPolynomialSystemExplicitLinearPoly) {
    EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, -1), -8.0);
 }
 
+TEST(System, IsingPolynomialSystemExplicitLinearPolyPart2) {
+   using IPM = graph::IsingPolynomialModel<double>;
+         
+   std::vector<std::vector<typename IPM::IndexType>> key_list = {
+      {0, 1, 2},
+      {0, 1, 2}
+   };
+      
+   std::vector<double> value_list = {
+      +2.0,
+      +2.0
+   };
+   
+   const auto bpm = IPM{key_list, value_list};
+   auto sa_system = system::SASystem<IPM, std::mt19937>{bpm, 1};
+   
+   sa_system.SetSample({+1, -1, +1});
+   EXPECT_EQ(sa_system.GetSystemSize(), 3);
+   EXPECT_EQ(sa_system.ExtractSample().size(), 3);
+   EXPECT_EQ(sa_system.ExtractSample().at(0), 1);
+   EXPECT_EQ(sa_system.ExtractSample().at(1), -1);
+   EXPECT_EQ(sa_system.ExtractSample().at(2), 1);
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, -1), +8.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, +1), +8.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, -1), +8.0);
+   sa_system.Flip(1, sa_system.GenerateCandidateState(1));
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, -1), -8.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, -1), -8.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, -1), -8.0);
+   sa_system.Flip(1, sa_system.GenerateCandidateState(1));
+   EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, -1), +8.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, +1), +8.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, -1), +8.0);
+}
+
+
+
+
 }
 }

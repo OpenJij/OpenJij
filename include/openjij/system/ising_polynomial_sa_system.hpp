@@ -142,7 +142,7 @@ private:
       for (std::size_t i = 0; i < key_value_list_.size(); ++i) {
          const ValueType value = key_value_list_[i].second;
          for (const auto &index: key_value_list_[i].first) {
-            base_energy_difference_[index] += value*term_prod_[i];
+            base_energy_difference_[index] += value*term_prod_[i]*sample_[index];
          }
       }
    }
