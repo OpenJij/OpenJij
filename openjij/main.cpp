@@ -117,6 +117,9 @@ PYBIND11_MODULE(cxxjij, m) {
   py::module m_algorithm =
       m.def_submodule("algorithm", "cxxjij module for algorithm");
 
+  openjij::declare_UpdateMethod(m_algorithm);
+  openjij::declare_RandomNumberEngine(m_algorithm);
+
   // singlespinflip
   openjij::declare_Algorithm_run<openjij::updater::SingleSpinFlip,
                                  openjij::system::ClassicalIsing<
@@ -207,6 +210,8 @@ PYBIND11_MODULE(cxxjij, m) {
    **********************************************************/
   py::module m_utility =
       m.def_submodule("utility", "cxxjij module for utility");
+
+  openjij::declare_TemperatureSchedule(m_utility);
 
   // schedule_list
   openjij::declare_ClassicalUpdaterParameter(m_utility);

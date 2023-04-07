@@ -1067,7 +1067,24 @@ void declare_SASampler(py::module &m, const std::string &post_name = "") {
 
 }
 
+void declare_UpdateMethod(py::module &m) {
+   py::enum_<algorithm::UpdateMethod>(m, "UpdateMethod")
+      .value("METROPOLIS", algorithm::UpdateMethod::METROPOLIS)
+      .value("HEAT_BATH", algorithm::UpdateMethod::HEAT_BATH);
+}
 
+void declare_RandomNumberEngine(py::module &m) {
+   py::enum_<algorithm::RandomNumberEngine>(m, "RandomNumberEngine")
+      .value("MT", algorithm::RandomNumberEngine::MT)
+      .value("MT_64", algorithm::RandomNumberEngine::MT_64)
+      .value("XORSHIFT", algorithm::RandomNumberEngine::XORSHIFT);
+}
+
+void declare_TemperatureSchedule(py::module &m) {
+   py::enum_<utility::TemperatureSchedule>(m, "TemperatureSchedule")
+      .value("LINEAR", utility::TemperatureSchedule::LINEAR)
+      .value("GEOMETRIC", utility::TemperatureSchedule::GEOMETRIC);
+}
 
 
 } // namespace openjij
