@@ -28,6 +28,7 @@ import openjij.cxxjij as cxxjij
 
 from openjij.sampler.sampler import BaseSampler
 from openjij.utils.graph_utils import qubo_to_ising
+from openjij.sampler.base_sa_sample_hubo import base_sample_hubo
 
 """This module contains Simulated Annealing sampler."""
 
@@ -325,6 +326,34 @@ class SASampler(BaseSampler):
         response.info["schedule"] = self.schedule_info
 
         return response
+    
+    def new_sample_hubo(
+        self,
+        J: dict[tuple, float],
+        vartype: Optional[str] = None,
+        num_sweeps: int = 1000,
+        num_reads: int = 1,
+        num_threads: int = 1,
+        beta_min: Optional[float] = None,
+        beta_max: Optional[float] = None,
+        update_method: str = "METROPOLIS",
+        random_number_engine: str = "XORSHIFT",
+        seed: Optional[int] = None,
+        temperature_schedule: str = "GEOMETRIC",
+    ):
+        return base_sample_hubo(
+            J,
+            vartype,
+            num_sweeps,
+            num_reads,
+            num_threads,
+            beta_min,
+            beta_max,
+            update_method,
+            random_number_engine,
+            seed,
+            temperature_schedule
+        )
 
     def sample_hubo(
         self,
