@@ -15,7 +15,7 @@
 #include(GoogleTest)
 
 add_executable(cxxjij_test
-    cxxtest.cpp
+    cxxtest/cxxtest.cpp
 )
 
 if(ENABLE_COVERAGE AND (NOT MSVC))

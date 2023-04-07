@@ -292,7 +292,10 @@ private:
    
 };
 
-
+template<class ModelType>
+auto make_sa_sampler(const ModelType &model) {
+   return SASampler<ModelType>{model};
+};
 
 
 

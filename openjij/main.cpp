@@ -48,6 +48,13 @@ PYBIND11_MODULE(cxxjij, m) {
   openjij::declare_Chimera<openjij::FloatType>(m_graph, "");
   openjij::declare_Polynomial<openjij::FloatType>(m_graph, "");
 
+  openjij::declare_BinaryPolynomialModel<openjij::FloatType>(m_graph);
+  openjij::declare_IsingPolynomialModel<openjij::FloatType>(m_graph);
+
+  py::module_ m_sampler = m.def_submodule("sampler");
+  openjij::declare_SASampler<openjij::graph::BinaryPolynomialModel<openjij::FloatType>>(m_sampler, "BPM");
+  openjij::declare_SASampler<openjij::graph::IsingPolynomialModel<openjij::FloatType>>(m_sampler, "IPM");
+
   // GPU version (openjij::GPUFloatType)
   if (!std::is_same<openjij::FloatType, openjij::GPUFloatType>::value) {
     openjij::declare_Dense<openjij::GPUFloatType>(m_graph, "GPU");

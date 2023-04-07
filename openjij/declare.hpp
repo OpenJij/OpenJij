@@ -28,6 +28,7 @@
 #include <openjij/result/all.hpp>
 #include <openjij/system/all.hpp>
 #include <openjij/updater/all.hpp>
+#include <openjij/sampler/sa_sampler.hpp>
 
 namespace py = pybind11;
 
@@ -977,5 +978,96 @@ template <typename System> inline void declare_get_solution(py::module &m) {
       [](const System &system) { return result::get_solution(system); },
       "system"_a);
 }
+
+
+template<typename FloatType>
+void declare_BinaryPolynomialModel(py::module &m) {
+   using BPM = graph::BinaryPolynomialModel<FloatType>;
+
+   std::string name = std::string("BinaryPolynomialModel");
+   auto py_class = py::class_<BPM>(m, name.c_str(), py::module_local());
+
+   py_class.def(py::init<const std::vector<std::vector<typename BPM::IndexType>>&,
+                         const std::vector<FloatType>&>(),
+                         "key_list"_a, "value_list"_a);
+  
+   py_class.def("get_degree", &BPM::GetDegree);
+   py_class.def("get_system_size", &BPM::GetSystemSize);
+   py_class.def("get_index_list", &BPM::GetIndexList);
+   py_class.def("get_index_map", &BPM::GetIndexMap);
+   py_class.def("get_key_value_list", &BPM::GetKeyValueList);
+   py_class.def("get_adjacency_list", &BPM::GetAdjacencyList);
+   py_class.def("get_estimated_min_energy_difference", &BPM::GetEstimatedMinEnergyDifference);
+   py_class.def("get_estimated_max_energy_difference", &BPM::GetEstimatedMaxEnergyDifference);
+   py_class.def("calculate_energy", &BPM::CalculateEnergy);
+}
+
+template<typename FloatType>
+void declare_IsingPolynomialModel(py::module &m) {
+   using IPM = graph::IsingPolynomialModel<FloatType>;
+
+   std::string name = std::string("IsingPolynomialModel");
+   auto py_class = py::class_<IPM>(m, name.c_str(), py::module_local());
+
+   py_class.def(py::init<std::vector<std::vector<typename IPM::IndexType>>&,
+                         std::vector<FloatType>&>(),
+                         "key_list"_a, "value_list"_a);
+  
+   py_class.def("get_degree", &IPM::GetDegree);
+   py_class.def("get_system_size", &IPM::GetSystemSize);
+   py_class.def("get_index_list", &IPM::GetIndexList);
+   py_class.def("get_index_map", &IPM::GetIndexMap);
+   py_class.def("get_key_value_list", &IPM::GetKeyValueList);
+   py_class.def("get_adjacency_list", &IPM::GetAdjacencyList);
+   py_class.def("get_estimated_min_energy_difference", &IPM::GetEstimatedMinEnergyDifference);
+   py_class.def("get_estimated_max_energy_difference", &IPM::GetEstimatedMaxEnergyDifference);
+   py_class.def("calculate_energy", &IPM::CalculateEnergy);
+}
+
+
+template<class ModelType>
+void declare_SASampler(py::module &m, const std::string &post_name = "") {
+   using SAS = sampler::SASampler<ModelType>;
+   
+   std::string name = std::string("SASampler") + post_name;
+
+   auto py_class = py::class_<SAS>(m, name.c_str(), py::module_local());
+
+   py_class.def(py::init<const ModelType&>(), "model"_a);
+
+   py_class.def("set_num_sweeps", &SAS::SetNumSweeps, "num_sweeps"_a);
+   py_class.def("set_num_reads", &SAS::SetNumReads, "num_reads"_a);
+   py_class.def("set_num_threads", &SAS::SetNumThreads, "num_threads"_a);
+   py_class.def("set_beta_min", &SAS::SetBetaMin, "beta_min"_a);
+   py_class.def("set_beta_max", &SAS::SetBetaMax, "beta_max"_a);
+   py_class.def("set_beta_min_auto", &SAS::SetBetaMinAuto);
+   py_class.def("set_beta_max_auto", &SAS::SetBetaMaxAuto);
+   py_class.def("set_update_method", &SAS::SetUpdateMethod, "update_method"_a);
+   py_class.def("set_random_number_engine", &SAS::SetRandomNumberEngine, "random_number_engine"_a);
+   py_class.def("set_temperature_schedule", &SAS::SetTemperatureSchedule, "temperature_schedule"_a);
+   py_class.def("get_model", &SAS::GetModel);
+   py_class.def("get_num_sweeps", &SAS::GetNumSweeps);
+   py_class.def("get_num_reads", &SAS::GetNumReads);
+   py_class.def("get_num_threads", &SAS::GetNumThreads);
+   py_class.def("get_beta_min", &SAS::GetBetaMin);
+   py_class.def("get_beta_max", &SAS::GetBetaMax);
+   py_class.def("get_update_method", &SAS::GetUpdateMethod);
+   py_class.def("get_random_number_engine", &SAS::GetRandomNumberEngine);
+   py_class.def("get_temperature_schedule", &SAS::GetTemperatureSchedule);
+   py_class.def("get_seed", &SAS::GetSeed);
+   py_class.def("get_index_list", &SAS::GetIndexList);
+   py_class.def("get_samples", &SAS::GetSamples);
+   py_class.def("calculate_energies", &SAS::CalculateEnergies);
+   py_class.def("sample", py::overload_cast<>(&SAS::Sample));
+   py_class.def("sample", py::overload_cast<const std::uint64_t>(&SAS::Sample), "seed"_a);
+
+   m.def("make_sa_sampler", [](const ModelType &model) {
+      return sampler::make_sa_sampler(model);
+   }, "model"_a);
+
+}
+
+
+
 
 } // namespace openjij
