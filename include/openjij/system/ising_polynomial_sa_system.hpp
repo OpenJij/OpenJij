@@ -63,8 +63,8 @@ public:
    
    //! @brief Flip a variable.
    //! @param index The index of the variable to be flipped.
-   void Flip(const std::int32_t index, const VariableType candidate_state) {
-      sample_[index] = candidate_state;
+   void Flip(const std::int32_t index) {
+      sample_[index] *= -1;
       for (const auto &index_key: adjacency_list_[index]) {
          const ValueType val = -2*key_value_list_[index_key].second*term_prod_[index_key];
          term_prod_[index_key] *= -1;
@@ -97,12 +97,8 @@ public:
    //! @brief Get the energy difference when flipped.
    //! @param index The index of variables.
    //! @return The energy difference.
-   ValueType GetEnergyDifference(const std::int32_t index, const VariableType candidate_state) const {
-      return 2*candidate_state*base_energy_difference_[index];
-   }
-   
-   VariableType GenerateCandidateState(const std::int32_t index) const {
-      return -1*sample_[index];
+   ValueType GetEnergyDifference(const std::int32_t index) const {
+      return -2*sample_[index]*base_energy_difference_[index];
    }
    
 private:

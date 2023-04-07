@@ -355,10 +355,9 @@ void SingleFlipUpdater(SystemType *system,
       for (std::int32_t sweep_count = 0; sweep_count < num_sweeps; sweep_count++) {
          const auto beta = beta_list[sweep_count];
          for (std::int32_t i = 0; i < system_size; i++) {
-            const auto candidate_state = system->GenerateCandidateState(i);
-            const auto delta_energy = system->GetEnergyDifference(i, candidate_state);
+            const auto delta_energy = system->GetEnergyDifference(i);
             if (delta_energy <= 0 || std::exp(-beta*delta_energy) > dist_real(random_number_engine)) {
-               system->Flip(i, candidate_state);
+               system->Flip(i);
             }
          }
       }
@@ -368,10 +367,9 @@ void SingleFlipUpdater(SystemType *system,
       for (std::int32_t sweep_count = 0; sweep_count < num_sweeps; sweep_count++) {
          const auto beta = beta_list[sweep_count];
          for (std::int32_t i = 0; i < system_size; i++) {
-            const auto candidate_state = system->GenerateCandidateState(i);
-            const auto delta_energy = system->GetEnergyDifference(i, candidate_state);
+            const auto delta_energy = system->GetEnergyDifference(i);
             if (1/(1 + std::exp(beta*delta_energy)) > dist_real(random_number_engine)) {
-               system->Flip(i, candidate_state);
+               system->Flip(i);
             }
          }
       }
