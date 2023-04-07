@@ -235,12 +235,12 @@ TEST(System, IsingPolynomialSystemExplicitLinearPolyPart2) {
    EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, -1), +8.0);
    EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, +1), +8.0);
    EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, -1), +8.0);
-   sa_system.Flip(1, sa_system.GenerateCandidateState(1));
+   sa_system.Flip(2, sa_system.GenerateCandidateState(2));
    EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
    EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, -1), -8.0);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, -1), -8.0);
-   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, -1), -8.0);
-   sa_system.Flip(1, sa_system.GenerateCandidateState(1));
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, +1), -8.0);
+   EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(2, +1), -8.0);
+   sa_system.Flip(2, sa_system.GenerateCandidateState(2));
    EXPECT_EQ(sa_system.GetBaseEnergyDifference().size(), 3);
    EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(0, -1), +8.0);
    EXPECT_DOUBLE_EQ(sa_system.GetEnergyDifference(1, +1), +8.0);

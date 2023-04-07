@@ -25,7 +25,7 @@ class SASystem<graph::IsingPolynomialModel<FloatType>, RandType> {
    //! @brief The model type, which must be IsingPolynomialModel.
    using ModelType = graph::IsingPolynomialModel<FloatType>;
    
-   //! @brief The variable type, which here represents binary variables \f$ x_i\in \{0, 1\} \f$
+   //! @brief The variable type, which here represents binary variables \f$ x_i\in \{-1, 1\} \f$
    using VariableType = typename ModelType::VariableType;
    
    //! @brief The type of seed in random number engine.
@@ -70,7 +70,7 @@ public:
          term_prod_[index_key] *= -1;
          for (const auto &v_index: key_value_list_[index_key].first) {
             if (v_index != index) {
-               base_energy_difference_[v_index] += val;
+               base_energy_difference_[v_index] += val*sample_[v_index];
             }
          }
       }
