@@ -14,6 +14,9 @@
 
 #pragma once
 
+#include <cstdint>
+#include <vector>
+#include <random>
 #include "./sa_system.hpp"
 
 namespace openjij {
