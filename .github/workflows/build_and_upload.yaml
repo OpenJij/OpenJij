@@ -5,6 +5,10 @@ on:
   release:
     types: [published]
 
+concurrency:
+      group: Buid-And-Upload
+      cancel-in-progress: false
+
 jobs:
   build_sdist:
     runs-on: ubuntu-latest
