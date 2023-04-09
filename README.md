@@ -35,7 +35,7 @@
   import openjij.cxxjij
   ```
 
-- OpenJij \<= v0.4.9
+- OpenJij <= v0.4.9
 
   ```python
   import cxxjij
