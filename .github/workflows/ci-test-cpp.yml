@@ -12,7 +12,7 @@ on:
      - synchronize
 
 concurrency:
-      group: WORKFLOW-CPP-TEST-${{ github.ref || github.run_id }}
+      group: WORKFLOW-CPP-TEST-${{ github.head_ref || github.run_id }}
       cancel-in-progress: false
 
 jobs:
