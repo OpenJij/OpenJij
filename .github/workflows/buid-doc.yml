@@ -5,6 +5,10 @@ on:
   release:
     types: [published]
 
+concurrency:
+      group: Buid-Documentation
+      cancel-in-progress: false
+
 env:
   Python_Version: '3.10'
 
@@ -14,9 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    concurrency:
-      group: ${{ github.workflow }}-doc-${{ github.ref }}
-      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
