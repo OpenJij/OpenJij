@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 try:
     from typing import Optional, Union
 except ImportError:
@@ -63,7 +64,6 @@ class SQASampler(BaseSampler):
         schedule: Optional[list] = None,
         trotter: Optional[int] = None,
     ):
-
         # Set default parameters
         if beta is None:
             beta = 5.0
@@ -309,7 +309,6 @@ class SQASampler(BaseSampler):
             self._params["schedule"] = self._convert_validation_schedule(schedule, beta)
             self.schedule_info = {"schedule": "custom schedule"}
         else:
-
             self._params["schedule"], beta_gamma = quartic_ising_schedule(
                 model=model, beta=beta, gamma=gamma, num_sweeps=num_sweeps
             )

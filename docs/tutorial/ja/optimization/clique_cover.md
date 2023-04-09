@@ -2,7 +2,6 @@
 
 こちらでは、[Lucas, 2014, "Ising formulations of many NP problems"](https://doi.org/10.3389/fphy.2014.00005)の 6.2. Clique Cover を OpenJij と [JijModeling](https://www.ref.documentation.jijzept.com/jijmodeling/)、そして[JijModeling transpiler](https://www.ref.documentation.jijzept.com/jijmodeling-transpiler/) を用いて解く方法をご紹介します。
 
-
 ## 概要: クリーク被覆問題
 
 クリーク被覆問題は、あるグラフと整数nが与えられた時に、グラフをn個のクリーク（完全グラフ）に分割できるかを決定する問題です。
@@ -13,7 +12,7 @@
 
 ![](../../../assets/clique_cover_01.png)
 
-完全グラフは、そこに含まれる2点を選んだときに、その2点が必ず辺で結ばれているような構造を持ちます。完全グラフの頂点数を$N$とすると、辺の数は$V$個の頂点から2つを選ぶ組合せの数${}_V C_2 = \frac{1}{2} V (V-1)$だけあることがわかります。  
+完全グラフは、そこに含まれる2点を選んだときに、その2点が必ず辺で結ばれているような構造を持ちます。完全グラフの頂点数を$N$とすると、辺の数は$V$個の頂点から2つを選ぶ組合せの数${}_V C_2 = \frac{1}{2} V (V-1)$だけあることがわかります。\
 完全グラフとの差が小さくなるように、最適化問題を定式化していきましょう。
 
 ### バイナリ変数
@@ -81,7 +80,7 @@ num_e = jm.Sum(e, x[e[0], n]*x[e[1], n])
 problem += jm.Sum(n, clique-num_e)
 ```
 
-`clique`で、頂点がクリークを作っていた場合の辺の数を計算しています。次の`num_e`が、実際にその頂点たちが持っている辺の数を計算したものです。最後にその差を取ったものの総和を目的関数として追加しています。  
+`clique`で、頂点がクリークを作っていた場合の辺の数を計算しています。次の`num_e`が、実際にその頂点たちが持っている辺の数を計算したものです。最後にその差を取ったものの総和を目的関数として追加しています。\
 実際に実装された数式をJupyter Notebookで表示してみましょう。
 
 ![](../../../assets/clique_cover_02.png)
@@ -153,7 +152,7 @@ import openjij as oj
 sampler = oj.SASampler()
 # solve problem
 response = sampler.sample_qubo(qubo, num_reads=100)
-```    
+```
 
 `SASampler`を設定し、そのサンプラーに先程作成したQUBOモデルの`qubo`を入力することで、計算結果が得られます。また`num_reads`に正の整数を渡すことで、アニーリングのサンプリング数を指定することができます。
 

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from __future__ import annotations
+
 import openjij
 import openjij as oj
 import openjij.cxxjij as cxxjij

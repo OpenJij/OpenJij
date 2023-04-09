@@ -187,7 +187,8 @@ template <typename FloatType> struct ClassicalIsing<graph::Sparse<FloatType>> {
  *
  * @tparam FloatType type of floating-point
  */
-template <typename FloatType> struct ClassicalIsing<graph::CSRSparse<FloatType>> {
+template <typename FloatType>
+struct ClassicalIsing<graph::CSRSparse<FloatType>> {
   using system_type = classical_system;
 
   // matrix (row major)

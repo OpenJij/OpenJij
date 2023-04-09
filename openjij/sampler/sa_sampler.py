@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License
 from __future__ import annotations
+
 try:
     from typing import Optional, Union
 except ImportError:
@@ -26,9 +27,8 @@ import openjij
 import openjij as oj
 import openjij.cxxjij as cxxjij
 
-from openjij.sampler.sampler import BaseSampler
-from openjij.utils.graph_utils import qubo_to_ising
 from openjij.sampler.base_sa_sample_hubo import base_sample_hubo
+from openjij.sampler.sampler import BaseSampler
 
 """This module contains Simulated Annealing sampler."""
 
@@ -78,7 +78,6 @@ class SASampler(BaseSampler):
         num_reads: Optional[int] = None,
         schedule: Optional[list] = None,
     ):
-
         # Set default parameters
         if num_sweeps is None:
             num_sweeps = 1000
@@ -207,7 +206,7 @@ class SASampler(BaseSampler):
                 sparse=sparse,
             )
 
-        if sparse == True and bqm.sparse == False:
+        if sparse and bqm.sparse == False:
             # convert to sparse bqm
             bqm = oj.model.model.BinaryQuadraticModel(
                 bqm.linear, bqm.quadratic, bqm.offset, bqm.vartype, sparse=True
@@ -326,7 +325,7 @@ class SASampler(BaseSampler):
         response.info["schedule"] = self.schedule_info
 
         return response
-    
+
     def _sample_hubo_old(
         self,
         J: Union[
@@ -481,7 +480,7 @@ class SASampler(BaseSampler):
         response.info["schedule"] = self.schedule_info
 
         return response
-    
+
     def sample_hubo(
         self,
         J: dict[tuple, float],
@@ -495,7 +494,7 @@ class SASampler(BaseSampler):
         random_number_engine: str = "XORSHIFT",
         seed: Optional[int] = None,
         temperature_schedule: str = "GEOMETRIC",
-    ):  
+    ):
         """Sampling from higher order unconstrainted binary optimization.
 
         Args:
@@ -507,7 +506,7 @@ class SASampler(BaseSampler):
             beta_min (float, optional): Minimum beta (initial inverse temperature). Defaults to None.
             beta_max (float, optional): Maximum beta (final inverse temperature). Defaults to None.
             updater (str, optional): Updater. One can choose "METROPOLIS", "HEAT_BATH", or "k-local". Defaults to "METROPOLIS".
-            random_number_engine (str, optional): Random number engine. One can choose "XORSHIFT", "MT", or "MT_64". Defaults to "XORSHIFT".            
+            random_number_engine (str, optional): Random number engine. One can choose "XORSHIFT", "MT", or "MT_64". Defaults to "XORSHIFT".
             seed (int, optional): seed for Monte Carlo algorithm. Defaults to None.
             temperature_schedule (str, optional): Temperature schedule. One can choose "LINEAR", "GEOMETRIC". Defaults to "GEOMETRIC".
 
@@ -526,11 +525,10 @@ class SASampler(BaseSampler):
                 >>> response = sampler.sample_hubo(J, "BINARY")
         """
 
-
-        if updater=="k-local" or not isinstance(J, dict):
+        if updater == "k-local" or not isinstance(J, dict):
             # To preserve the correspondence with the old version.
-            if updater=="METROPOLIS":
-                updater="single spin flip"
+            if updater == "METROPOLIS":
+                updater = "single spin flip"
             return self._sample_hubo_old(
                 J=J,
                 vartype=vartype,
@@ -538,16 +536,16 @@ class SASampler(BaseSampler):
                 beta_max=beta_max,
                 num_sweeps=num_sweeps,
                 num_reads=num_reads,
-                #schedule,
-                #initial_state,
+                # schedule,
+                # initial_state,
                 updater=updater,
-                #reinitialize_state,
-                seed=seed
+                # reinitialize_state,
+                seed=seed,
             )
         else:
             # To preserve the correspondence with the old version.
-            if updater=="single spin flip":
-                updater="METROPOLIS"
+            if updater == "single spin flip":
+                updater = "METROPOLIS"
             return base_sample_hubo(
                 hubo=J,
                 vartype=vartype,
@@ -559,7 +557,7 @@ class SASampler(BaseSampler):
                 update_method=updater,
                 random_number_engine=random_number_engine,
                 seed=seed,
-                temperature_schedule=temperature_schedule
+                temperature_schedule=temperature_schedule,
             )
 
 
@@ -580,7 +578,6 @@ def geometric_ising_beta_schedule(
         list of cxxjij.utility.ClassicalSchedule, list of beta range [max, min]
     """
 
- 
     if beta_min is None or beta_max is None:
         # generate Ising matrix (with symmetric form)
         ising_interaction = cxxgraph.get_interactions()
@@ -597,7 +594,6 @@ def geometric_ising_beta_schedule(
 
             # apply threshold to avoid extremely large beta_max
             THRESHOLD = 1e-8
-
 
             min_delta_energy = np.min(
                 abs_ising_interaction[

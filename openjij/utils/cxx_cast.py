@@ -1,7 +1,4 @@
-from openjij.cxxjij.algorithm import (
-    UpdateMethod,
-    RandomNumberEngine
-)
+from openjij.cxxjij.algorithm import RandomNumberEngine, UpdateMethod
 from openjij.cxxjij.utility import TemperatureSchedule
 
 

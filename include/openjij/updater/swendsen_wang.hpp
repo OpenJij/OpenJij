@@ -113,7 +113,8 @@ struct SwendsenWang<system::ClassicalIsing<graph::Sparse<FloatType>>> {
  */
 template <typename FloatType>
 struct SwendsenWang<system::ClassicalIsing<graph::CSRSparse<FloatType>>> {
-  //TODO: duplicate code of `SwendsenWang<system::ClassicalIsing<graph::Sparse<FloatType>>>`, need fix.
+  // TODO: duplicate code of
+  // `SwendsenWang<system::ClassicalIsing<graph::Sparse<FloatType>>>`, need fix.
 
   using ClIsing = system::ClassicalIsing<graph::CSRSparse<FloatType>>;
 

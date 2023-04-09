@@ -12,6 +12,7 @@
 # limitations under the License
 
 from __future__ import annotations
+
 import dimod
 
 from openjij.utils.graph_utils import chimera_to_ind

@@ -17,9 +17,7 @@
 namespace openjij {
 namespace system {
 
-template<class ModelType, typename RandType>
-class SASystem;
-
+template <class ModelType, typename RandType> class SASystem;
 
 } // namespace system
 } // namespace openjij

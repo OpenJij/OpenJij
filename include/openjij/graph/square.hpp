@@ -16,9 +16,9 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <exception>
 #include <type_traits>
 #include <utility>
-#include <exception>
 
 #include "openjij/graph/sparse.hpp"
 
