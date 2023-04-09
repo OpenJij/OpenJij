@@ -21,8 +21,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: CPP Test on ${{ matrix.os }}
     concurrency:
-      group: CPP-TEST-${{ matrix.os }}-${{ github.workflow }}-${{ github.run_id }}
-      cancel-in-progress: true
+      group: CPP-TEST-${{ matrix.os }}-${{ github.workflow }}-${{ github.ref || github.run_id }}-${{ github.head_ref || github.run_id }}
+      cancel-in-progress: false
     strategy:
       max-parallel: 3
       matrix:
