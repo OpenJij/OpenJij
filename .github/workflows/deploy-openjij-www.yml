@@ -1,8 +1,6 @@
 name: OpenJij Top Page
 
 on:
-  push:
-    branches: ["main"]
   workflow_dispatch:
   release:
     types: [published]
@@ -21,7 +19,7 @@ jobs:
     permissions:
       contents: write
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: ${{ github.workflow }}
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v3
