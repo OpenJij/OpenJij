@@ -16,7 +16,6 @@
 | The usage is almost the same as :class:`dimod.SampleSet`.
 """
 from __future__ import annotations
-
 import dimod
 
 

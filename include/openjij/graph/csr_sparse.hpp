@@ -47,7 +47,8 @@ public:
   /**
    * @brief interaction type
    */
-  using Interactions = Eigen::SparseMatrix<FloatType, Eigen::RowMajor>;
+  using Interactions =
+      Eigen::SparseMatrix<FloatType, Eigen::RowMajor>;
 
   /**
    * @brief float type
@@ -58,7 +59,7 @@ private:
   /**
    * @brief interactions (the number of intereactions is
    * num_spins*(num_spins+1)/2).
-   *
+   * 
    * The stored matrix has the following triangular form:
    *
    * \f[
@@ -74,6 +75,7 @@ private:
   Interactions _J;
 
 public:
+
   /**
    * @brief CSRSparse constructor
    *
@@ -91,13 +93,12 @@ public:
    *
    * @param interaction input matrix
    */
-  explicit CSRSparse(const Interactions &interaction)
-      : Graph(interaction.rows() - 1) {
+  explicit CSRSparse(const Interactions &interaction): Graph(interaction.rows()-1) {
     if (interaction.rows() != interaction.cols()) {
       std::runtime_error("interaction.rows() != interaction.cols()");
     }
     _J = interaction.template selfadjointView<Eigen::Upper>();
-  }
+  } 
 
   /**
    * @brief CSRSparse copy constructor

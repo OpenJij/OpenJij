@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include <string>
 #include <variant>
+#include <string>
 #include <vector>
 
 namespace openjij {
@@ -26,6 +26,7 @@ using AnyTupleType = std::vector<std::variant<std::int32_t, std::string>>;
 
 //! @brief The index type of binary variables.
 using IndexType = std::variant<std::int32_t, std::string, AnyTupleType>;
+
 
 } // namespace utility
 } // namespace openjij

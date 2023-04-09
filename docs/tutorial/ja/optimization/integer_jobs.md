@@ -9,7 +9,7 @@
 
 ### 具体例
 
-分かりやすくするために具体的に以下のような状況を考えてみましょう。
+分かりやすくするために具体的に以下のような状況を考えてみましょう。 
 
 > ここに10個のタスクと3個のコンピュータがあります。10個の仕事の長さはそれぞれ$1, 2, \dots, 10$とします。
 > これらのタスクをどのようにコンピュータに仕事を割り振れば仕事にかかる時間の最大値を最小化できるか考えます。
@@ -88,7 +88,7 @@ sumdiff2 = jm.Sum((j, j!=0), diffj*diffj)
 problem += sumdiff2
 ```
 
-`diffj`で$A_1 - A_j$を計算し、それを2乗して総和を取ったものを制約とします。\
+`diffj`で$A_1 - A_j$を計算し、それを2乗して総和を取ったものを制約とします。  
 実際に実装された数式をJupyter Notebookで表示してみましょう。
 
 ![](../../../assets/integer_jobs_02.png)
@@ -145,7 +145,7 @@ import openjij as oj
 sampler = oj.SASampler()
 # solve problem
 response = sampler.sample_qubo(qubo)
-```
+```    
 
 `SASampler`を設定し、そのサンプラーに先程作成したQUBOモデルの`qubo`を入力することで、計算結果が得られます。
 

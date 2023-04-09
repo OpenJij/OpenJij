@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import numpy as np
 
 import openjij
@@ -34,6 +33,7 @@ class CSQASampler(SQASampler):
     def __init__(
         self, beta=5.0, gamma=1.0, num_sweeps=1000, schedule=None, num_reads=1
     ):
+
         self._default_params = {
             "beta": beta,
             "gamma": gamma,

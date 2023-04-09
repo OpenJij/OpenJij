@@ -15,9 +15,9 @@
 #pragma once
 
 #include <exception>
-#include <numeric>
 #include <tuple>
 #include <vector>
+#include <numeric>
 
 #include <nlohmann/json.hpp>
 
