@@ -2,7 +2,7 @@ name: Dependabot auto-merge
 on: pull_request_target
 
 concurrency:
-  group: DEPENDABOT-AUTO-MERGE-${{ github.workflow }}-${{ github.head_ref || github.ref || github.run_id }}
+  group: DEPENDABOT-AUTO-MERGE-${{ github.head_ref || github.run_id }}
   cancel-in-progress: false
 
 permissions:
