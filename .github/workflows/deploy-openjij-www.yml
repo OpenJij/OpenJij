@@ -19,7 +19,7 @@ jobs:
     permissions:
       contents: write
     concurrency:
-      group: ${{ github.workflow }}
+      group: WWW
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v3
