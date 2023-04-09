@@ -423,7 +423,8 @@ template <typename FloatType> struct TransverseIsing<graph::Sparse<FloatType>> {
  *
  * @tparam FloatType
  */
-template <typename FloatType> struct TransverseIsing<graph::CSRSparse<FloatType>> {
+template <typename FloatType>
+struct TransverseIsing<graph::CSRSparse<FloatType>> {
   using system_type = transverse_field_system;
 
   // matrix (row major)

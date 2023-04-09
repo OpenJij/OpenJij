@@ -169,12 +169,13 @@ $ python -m mypy
 $ python -m pyright
 ```
 
-## Python Documentation 
-Use Juyter Book for build documentation.   
-With KaTeX    
+## Python Documentation
+
+Use Juyter Book for build documentation.\
+With KaTeX\
 Need: Graphviz
 
-``` sh
+```sh
 $ pip-compile setup.cfg
 $ pip-compile build-requirements.in
 $ pip-compile doc-requirements.in
@@ -187,10 +188,9 @@ Please place your document to `docs/tutorial`either markdown or jupyter notebook
 $ pip install -vvv .
 ```
 
-```sh 
+```sh
 $ jupyter-book build docs --all
 ```
-
 
 ## How to use
 

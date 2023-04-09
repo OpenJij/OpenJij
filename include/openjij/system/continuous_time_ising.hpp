@@ -285,8 +285,7 @@ struct ContinuousTimeIsing<graph::CSRSparse<FloatType>> {
   ContinuousTimeIsing(const SpinConfiguration &init_spin_config,
                       const GraphType &init_interaction, const double gamma)
       : spin_config(init_spin_config), num_spins(init_spin_config.size() + 1),
-        interaction(init_interaction.get_interactions()),
-        gamma(gamma) {
+        interaction(init_interaction.get_interactions()), gamma(gamma) {
 
     assert(init_spin_config.size() == init_interaction.get_num_spins());
 

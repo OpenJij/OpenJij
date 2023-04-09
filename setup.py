@@ -23,7 +23,7 @@ setup_requires = [
     "numpy",
     "pybind11 >=2.10.0, < 2.11.0",
     "cmake > 3.20",
-    "scikit-build > 0.16.0"
+    "scikit-build > 0.16.0",
 ]
 
 if any(arg in sys.argv for arg in ("pytest", "test")):

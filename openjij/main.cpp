@@ -12,8 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#include <pybind11/pybind11.h>
 #include <pybind11/eval.h>
+#include <pybind11/pybind11.h>
 #include <pybind11_json/pybind11_json.hpp>
 
 #include <type_traits>
@@ -26,8 +26,8 @@
 
 PYBIND11_MODULE(cxxjij, m) {
   py::options options;
-  //options.disable_function_signatures();
-  
+  // options.disable_function_signatures();
+
   m.doc() = "openjij is a framework for ising and qubo";
 
   /**********************************************************
@@ -52,8 +52,12 @@ PYBIND11_MODULE(cxxjij, m) {
   openjij::declare_IsingPolynomialModel<openjij::FloatType>(m_graph);
 
   py::module_ m_sampler = m.def_submodule("sampler");
-  openjij::declare_SASampler<openjij::graph::BinaryPolynomialModel<openjij::FloatType>>(m_sampler, "BPM");
-  openjij::declare_SASampler<openjij::graph::IsingPolynomialModel<openjij::FloatType>>(m_sampler, "IPM");
+  openjij::declare_SASampler<
+      openjij::graph::BinaryPolynomialModel<openjij::FloatType>>(m_sampler,
+                                                                 "BPM");
+  openjij::declare_SASampler<
+      openjij::graph::IsingPolynomialModel<openjij::FloatType>>(m_sampler,
+                                                                "IPM");
 
   // GPU version (openjij::GPUFloatType)
   if (!std::is_same<openjij::FloatType, openjij::GPUFloatType>::value) {
@@ -79,8 +83,8 @@ PYBIND11_MODULE(cxxjij, m) {
       m_system, "_Dense");
   openjij::declare_ClassicalIsing<openjij::graph::Sparse<openjij::FloatType>>(
       m_system, "_Sparse");
-  openjij::declare_ClassicalIsing<openjij::graph::CSRSparse<openjij::FloatType>>(
-      m_system, "_CSRSparse");
+  openjij::declare_ClassicalIsing<
+      openjij::graph::CSRSparse<openjij::FloatType>>(m_system, "_CSRSparse");
   openjij::declare_ClassicalIsingPolynomial<
       openjij::graph::Polynomial<openjij::FloatType>>(m_system, "_Polynomial");
   openjij::declare_KLocalPolynomial<
@@ -91,8 +95,8 @@ PYBIND11_MODULE(cxxjij, m) {
       m_system, "_Dense");
   openjij::declare_TransverseIsing<openjij::graph::Sparse<openjij::FloatType>>(
       m_system, "_Sparse");
-  openjij::declare_TransverseIsing<openjij::graph::CSRSparse<openjij::FloatType>>(
-      m_system, "_CSRSparse");
+  openjij::declare_TransverseIsing<
+      openjij::graph::CSRSparse<openjij::FloatType>>(m_system, "_CSRSparse");
 
   // Continuous Time Transeverse Ising
   openjij::declare_ContinuousTimeIsing<

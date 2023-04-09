@@ -19,8 +19,8 @@
 
 #ifdef USE_CUDA
 
-#include <utility>
 #include <cassert>
+#include <utility>
 
 #include <cuda_runtime.h>
 #include <curand.h>

@@ -298,7 +298,8 @@ struct ContinuousTimeSwendsenWang<
 };
 
 /**
- * @brief Continuous Time Swendsen Wang updater for CTQIsystem on CSR Sparse graph
+ * @brief Continuous Time Swendsen Wang updater for CTQIsystem on CSR Sparse
+ * graph
  *
  * @tparam FloatType
  */
@@ -310,7 +311,8 @@ struct ContinuousTimeSwendsenWang<
   using CutPoint = typename system::ContinuousTimeIsing<GraphType>::CutPoint;
   using TimeType = typename system::ContinuousTimeIsing<GraphType>::TimeType;
 
-  //TODO: duplicate code of `system::ContinuousTimeIsing<graph::Sparse<FloatType>>>`, need fix.
+  // TODO: duplicate code of
+  // `system::ContinuousTimeIsing<graph::Sparse<FloatType>>>`, need fix.
 
   /**
    * @brief continuous time Swendsen-Wang updater for transverse ising model
