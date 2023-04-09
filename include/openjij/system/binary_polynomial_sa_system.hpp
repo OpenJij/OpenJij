@@ -130,7 +130,7 @@ private:
    //! @param seed The seed for initializing binary variables.
    void SetRandomConfiguration(const SeedType seed) {
       sample_.resize(system_size_);
-      std::uniform_int_distribution<std::int8_t> dist(0, 1);
+      std::uniform_int_distribution<short> dist(0, 1);
       RandType random_number_engine(seed);
       for (std::int32_t i = 0; i < system_size_; i++) {
          sample_[i] = dist(random_number_engine);
