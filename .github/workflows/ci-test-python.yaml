@@ -11,6 +11,10 @@ on:
      - reopened
      - synchronize
 
+concurrency:
+      group: WORKFLOW-PYTHON-TEST-${{ github.head_ref || github.run_id }}
+      cancel-in-progress: false
+
 jobs:
   Python:
     if: ${{ !contains(github.head_ref, 'dependabot/github_actions')}}
@@ -32,7 +36,7 @@ jobs:
         - os: windows-latest
           path: ~\AppData\Local\pip\Cache
     concurrency:
-      group: PYTHON-TEST-${{ matrix.os }}-${{ matrix.python-version }}-${{ github.workflow }}-${{ github.head_ref || github.ref || github.run_id }}
+      group: PYTHON-TEST-${{ github.head_ref || github.run_id }}-${{ matrix.os }}-${{ matrix.python-version }}
       cancel-in-progress: false
     steps:
     - uses: actions/checkout@v3

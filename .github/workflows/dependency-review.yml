@@ -2,7 +2,7 @@ name: 'Dependency Review'
 on: [pull_request]
 
 concurrency:
-  group: DEPENDENCY-REVIEW-${{ github.workflow }}-${{ github.head_ref || github.ref || github.run_id }}
+  group: DEPENDENCY-REVIEW-${{ github.head_ref || github.run_id }}
   cancel-in-progress: false
 
 permissions:
