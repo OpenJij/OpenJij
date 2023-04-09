@@ -111,13 +111,13 @@ private:
    
    std::vector<VariableType> sample_;
    std::vector<ValueType> base_energy_difference_;
-   std::vector<std::int8_t> term_prod_;
+   std::vector<short> term_prod_;
    
    //! @brief Set initial binary variables.
    //! @param seed The seed for initializing binary variables.
    void SetRandomConfiguration(const SeedType seed) {
       sample_.resize(system_size_);
-      std::uniform_int_distribution<std::int8_t> dist(0, 1);
+      std::uniform_int_distribution<short> dist(0, 1);
       RandType random_number_engine(seed);
       for (std::int32_t i = 0; i < system_size_; i++) {
          sample_[i] = 2*dist(random_number_engine) - 1;
@@ -127,7 +127,7 @@ private:
    void SetTermProd() {
       term_prod_.resize(key_value_list_.size());
       for (std::size_t i = 0; i < key_value_list_.size(); ++i) {
-         std::int8_t prod = 1;
+         short prod = 1;
          for (const auto &index: key_value_list_[i].first) {
             prod *= sample_[index];
          }
