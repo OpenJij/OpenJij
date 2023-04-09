@@ -5,9 +5,6 @@ env:
   Python_Version: '3.9'
 
 on:
-  # Runs on pushes targeting the default branch
-  push:
-    branches: ["main"]
   release:
     types: [published]
   # Allows you to run this workflow manually from the Actions tab
@@ -20,8 +17,8 @@ jobs:
     permissions:
       contents: write
     concurrency:
-      group: ${{ github.workflow }}-py-doc-${{ github.ref }}
-      cancel-in-progress: true
+      group: Deploy-Static-Content-Pages
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v3
         with:
@@ -128,7 +125,7 @@ jobs:
     # Allow one concurrent deployment
     concurrency:
       group: "pages"
-      cancel-in-progress: true
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
