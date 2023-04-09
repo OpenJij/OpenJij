@@ -36,7 +36,7 @@ jobs:
         - os: windows-latest
           path: ~\AppData\Local\pip\Cache
     concurrency:
-      group: PYTHON-TEST-${{ matrix.os }}-${{ matrix.python-version }}-${{ github.workflow }}-${{ github.ref || github.run_id }}
+      group: PYTHON-TEST-${{ matrix.os }}-${{ matrix.python-version }}-${{ github.workflow }}-${{ github.head_ref || github.run_id }}
       cancel-in-progress: false
     steps:
     - uses: actions/checkout@v3
