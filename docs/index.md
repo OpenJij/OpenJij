@@ -1,5 +1,6 @@
 # Welcome to OpenJij's documentation!
 
+
 ## OpenJij : Framework for the Ising model and QUBO.
 
 [![PyPI version shields.io](https://img.shields.io/pypi/v/openjij.svg)](https://pypi.python.org/pypi/openjij/)
@@ -17,6 +18,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/3b2f43f3e601ae74c497/maintainability)](https://codeclimate.com/github/OpenJij/OpenJij/maintainability)
 [![codecov](https://codecov.io/gh/OpenJij/OpenJij/branch/main/graph/badge.svg?token=WMSK3GS8E5)](https://codecov.io/gh/OpenJij/OpenJij)
 
+
 # Introduction
 
 [Github repository](https://github.com/OpenJij/OpenJij)
@@ -26,6 +28,7 @@ This project is still going. If you can help, please join in the OpenJij Slack C
 [OpenJij Slack](https://openjij.slack.com/join/shared_invite/enQtNjQyMjIwMzMwNzA4LTQ5MWRjOWYxYmY1Nzk4YzdiYzlmZjIxYjhhMmMxZjAyMzE3MDc1ZWRkYmI1YjhkNjRlOTM1ODE0NTc5Yzk3ZDA)
 
 ## What is OpenJij ?
+
 
 OpenJij is a heuristic optimization library of the Ising model and QUBO.
 It has a Python interface, therefore it can be easily written in Python, although the core part of the optimization is implemented with C++.
@@ -46,7 +49,6 @@ $ pip install openjij
 ### for the Ising model
 
 to get a sample that executed SA 100 times
-
 ```python
 import openjij as oj
 n = 10
@@ -70,6 +72,7 @@ print(response.indices)
 
 ## Customize annealing schedule
 
+
 ```python
 import openjij as oj
 n = 10
@@ -89,20 +92,17 @@ response = sampler.sample_ising(h, J, schedule=schedule)
 print(response)
 ```
 
-# Higher order model
+# Higher order model  
 
-If you want to handle higher order model as follows:
-
+If you want to handle higher order model as follows:    
 ```{math}
 H = \sum_{i}h_i\sigma_i + \sum_{i < j} J_{ij} \sigma_i \sigma_j + \sum_{i, j, k} K_{i,j,k} \sigma_i\sigma_j \sigma_k \cdots \\
-```
+``` 
 
 use `.sample_hubo`
 
 > HUBO: Higher order unconstraint binary optimization
-
 ## Sample code
-
 ```python
 import openjij as oj
 # Only SASampler can handle HUBO.

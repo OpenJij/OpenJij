@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from __future__ import annotations
-
 import openjij
 import openjij as oj
 import openjij.cxxjij as cxxjij
@@ -53,6 +52,7 @@ class GPUChimeraSASampler(SASampler, BaseGPUChimeraSampler):
         num_reads=1,
         unit_num_L=None,
     ):
+
         super().__init__(
             beta_min=beta_min,
             beta_max=beta_max,

@@ -13,7 +13,6 @@
 # limitations under the License.
 """This module defines the abstract sampler (BaseSampler)."""
 from __future__ import annotations
-
 import time
 
 import dimod
@@ -217,7 +216,9 @@ class BaseSampler(dimod.Sampler):
         """
         # default sparse mode: True
         sparse_option = parameters.pop("sparse", True)
-        bqm = oj.model.model.BinaryQuadraticModel.from_ising(h, J, sparse=sparse_option)
+        bqm = oj.model.model.BinaryQuadraticModel.from_ising(
+            h, J, sparse=sparse_option
+        )
         return self.sample(bqm, sparse=sparse_option, **parameters)
 
     @samplemixinmethod
@@ -232,7 +233,9 @@ class BaseSampler(dimod.Sampler):
         """
         if isinstance(Q, dict):
             sparse_option = parameters.pop("sparse", True)
-            bqm = oj.model.model.BinaryQuadraticModel.from_qubo(Q, sparse=sparse_option)
+            bqm = oj.model.model.BinaryQuadraticModel.from_qubo(
+                Q, sparse=sparse_option
+            )
             return self.sample(bqm, sparse=sparse_option, **parameters)
         elif isinstance(Q, np.ndarray):
             # apply np.ndarray disables sparse option

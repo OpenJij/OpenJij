@@ -27,7 +27,6 @@
 | The methods and usage are basically the same as `dimod <https://github.com/dwavesystems/dimod>`_.
 """
 from __future__ import annotations
-
 import cimod
 import cimod.cxxcimod as cxxcimod
 import dimod
@@ -89,9 +88,7 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
                 self.change_vartype("SPIN")
 
                 GraphClass = (
-                    cxxjij.graph.CSRSparse
-                    if self.gpu == False
-                    else cxxjij.graph.CSRSparseGPU
+                    cxxjij.graph.CSRSparse if self.gpu == False else cxxjij.graph.CSRSparseGPU
                 )
                 offset = self.offset
                 sparse_mat = self.interaction_matrix()
@@ -254,23 +251,20 @@ def bqm_from_numpy_matrix(
 
 BinaryQuadraticModel.from_numpy_matrix = bqm_from_numpy_matrix
 
-
 def bqm_from_qubo(Q, offset=0.0, **kwargs):
     sparse_option = kwargs.pop("sparse", False)
-    return make_BinaryQuadraticModel({}, Q, sparse_option).from_qubo(
-        Q, offset, **kwargs
-    )
-
+    return make_BinaryQuadraticModel(
+        {}, Q, sparse_option
+    ).from_qubo(Q, offset, **kwargs)
 
 BinaryQuadraticModel.from_qubo = bqm_from_qubo
 
 
 def bqm_from_ising(linear, quadratic, offset=0.0, **kwargs):
     sparse_option = kwargs.pop("sparse", False)
-    return make_BinaryQuadraticModel(linear, quadratic, sparse_option).from_ising(
-        linear, quadratic, offset, **kwargs
-    )
-
+    return make_BinaryQuadraticModel(
+        linear, quadratic, sparse_option
+    ).from_ising(linear, quadratic, offset, **kwargs)
 
 BinaryQuadraticModel.from_ising = bqm_from_ising
 
