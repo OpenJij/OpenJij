@@ -11,13 +11,17 @@ on:
      - reopened
      - synchronize
 
+concurrency:
+      group: WORKFLOW-CPP-TEST-${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+      cancel-in-progress: false
+
 jobs:
   CPP:
     if: ${{ github.actor != 'dependabot[bot]' || !contains(github.head_ref, 'dependabot')}}
     runs-on: ${{ matrix.os }}
     name: CPP Test on ${{ matrix.os }}
     concurrency:
-      group: CPP-TEST-${{ matrix.os }}-${{ github.workflow }}-${{ github.head_ref || github.ref || github.run_id }}
+      group: CPP-TEST-${{ matrix.os }}-${{ github.workflow }}-${{ github.ref || github.run_id }}
       cancel-in-progress: false
     strategy:
       max-parallel: 3
