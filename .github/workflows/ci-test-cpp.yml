@@ -1,0 +1,181 @@
+name: CPP Test
+
+on: 
+  workflow_dispatch:
+  push:
+    branches: 
+      - main
+  pull_request: 
+    types: 
+     - opened
+     - reopened
+     - synchronize
+
+jobs:
+  CPP:
+    if: ${{ github.actor != 'dependabot[bot]' || !contains(github.head_ref, 'dependabot')}}
+    runs-on: ${{ matrix.os }}
+    name: CPP Test on ${{ matrix.os }}
+    concurrency:
+      group: CPP-TEST-${{ matrix.os }}-${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+      cancel-in-progress: false
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 
+      uses: actions/setup-python@v4
+      with:
+        python-version : '3.10'
+    - name: Install Dep on linux
+      if: ${{ matrix.os == 'ubuntu-latest'}}
+      shell: bash
+      run: |
+        pip install ninja
+        sudo apt-get install -y libeigen3-dev 
+        sudo apt-get install -y libopenblas-dev lcov
+    - name: Install Dep on macos
+      if: ${{ matrix.os == 'macos-latest'}}
+      shell: bash
+      run: |
+        pip install ninja
+        brew install eigen nlohmann-json lcov 
+    - name: Add msbuild to PATH
+      if: ${{ matrix.os == 'windows-latest'}}
+      uses: microsoft/setup-msbuild@v1.3.1
+    - name: Prepare Cache 
+      if: ${{ matrix.os == 'windows-latest'}}
+      shell: bash 
+      run: |
+        set -eux
+        ls  C:/vcpkg
+        MSBuild.exe -version > msbuild_version.txt
+        cat msbuild_version.txt
+    - name: Cache vcpkg
+      uses: actions/cache@v3
+      if: ${{ matrix.os == 'windows-latest'}}
+      with:
+         path: |
+           C:/Users/runneradmin/AppData/Local/vcpkg/archives
+         key: ${{ matrix.os }}-vcpkg-${{ hashFiles('msbuild_version.txt') }}
+         restore-keys: |
+           ${{ matrix.os }}-vcpkg-${{ hashFiles('msbuild_version.txt') }}
+           ${{ matrix.os }}-vcpkg
+           # C:/vcpkg/installed
+    - name: Install Dep on windows
+      if: ${{ matrix.os == 'windows-latest'}}
+      shell: powershell
+      run: |
+         vcpkg help triplet
+         vcpkg search eigen3
+         vcpkg search openblas
+         vcpkg search blas
+         vcpkg search clpack
+         vcpkg search lapack-reference
+         vcpkg --triplet x64-windows-static install eigen3
+         vcpkg --triplet x64-windows install eigen3
+         vcpkg --triplet x64-windows-static install nlohmann-json
+         vcpkg --triplet x64-windows install nlohmann-json
+         vcpkg integrate install
+    #    vcpkg --triplet x64-windows-static install openblas
+    - name: Install CMake 
+      run: |
+        pip install cmake
+        cmake --version
+    - name: sccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+          verbose: 2
+          variant: sccache
+          max-size: 1G
+          key: ${{ matrix.os }}-cpp-sccache-${{ hashFiles('**/CMakeLists.txt') }}-${{ env.RAND }}
+          restore-keys: |
+               ${{ matrix.os }}-cpp-sccache-${{ hashFiles('**/CMakeLists.txt') }}-${{ env.RAND }}
+               ${{ matrix.os }}-cpp-sccache-${{ hashFiles('**/CMakeLists.txt') }}
+               ${{ matrix.os }}-cpp-sccache
+    - name: Prepare 
+      shell: bash
+      run: mkdir build
+    - name: CMake Configure
+      if: ${{ matrix.os != 'windows-latest'}}
+      shell: bash
+      run: >
+        cmake 
+        -DCMAKE_BUILD_TYPE=Debug 
+        -DCMAKE_C_COMPILER_LAUNCHER=sccache 
+        -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+        -DENABLE_COVERAGE=On
+        -S .
+        -B build
+    - name: CMake Configure
+      if: ${{ matrix.os == 'windows-latest'}}
+      shell: powershell
+      run: >
+        cmake 
+        -DCMAKE_BUILD_TYPE=Debug 
+        -DCMAKE_C_COMPILER_LAUNCHER=sccache 
+        -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+        -DENABLE_COVERAGE=On
+        -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+        -S .
+        -B build
+    - name: CMake Build
+      shell: bash
+      run: >
+        cmake  
+        --build build
+        --parallel
+    - name: CTest Help
+      shell: bash
+      working-directory: build
+      run: |
+        ctest --help 
+    #- name: Run cimod_test
+    #  if: ${{ matrix.os == 'windows-latest'}}
+    #  shell: bash
+    #  working-directory: build
+    #  run: |
+    #    ./tests/Debug/cimod_test.exe 
+    - name: CMake Test
+      shell: bash
+      working-directory: build
+      run: >
+        ctest
+        --extra-verbose
+        --parallel
+        --schedule-random
+    - name: Run gcov
+      if: ${{ matrix.os != 'windows-latest'}}
+      shell: bash
+      working-directory: build
+      run: |
+        gcov  --object-directory ./tests/CMakeFiles/openjij_test.dir -p -l -b ./tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda
+    - name: Run gcov
+      if: ${{ matrix.os != 'windows-latest'}}
+      shell: bash
+      run: |
+        gcov   --object-directory ./build/tests/CMakeFiles/openjij_test.dir -p -l -b ./build/tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda
+    - name: Run gcov
+      if: ${{ matrix.os != 'windows-latest'}}
+      shell: bash
+      run: |
+        cd build/tests/CMakeFiles/cxxjij_test.dir
+        gcov  --object-directory ./  -p -l -b cxxtest.cpp.gcda
+    - name: du -a 
+      shell: bash
+      if: always()
+      run: |
+        cd build 
+        du -a
+    - uses: codecov/codecov-action@v3
+      if: ${{ matrix.os != 'windows-latest'}}
+      continue-on-error: true
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }} 
+        working-directory: build/tests/CMakeFiles/cxxjij_test.dir/
+        name: cxxopenjij
+        flags: cxxopenjij
+        fail_ci_if_error: false
+        verbose: true
