@@ -121,6 +121,8 @@ print(response)
 # ['BINARY', 1 rows, 1 samples, 3 variables]
 ```
 
+--------------------------------------------
+
 # Outline
 
 ```{tableofcontents}
