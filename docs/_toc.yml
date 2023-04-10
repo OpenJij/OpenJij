@@ -14,13 +14,13 @@ parts:
     maxdepth: -1
     chapters:
       - file:  reference/openjij/index.rst
-      - file:  cxxjij.rst
+      - file:  ref/cxxjij.rst
         sections:
-        - file: algorithm.rst
-        - file: graph.rst
-        - file: result.rst
-        - file: system.rst
-        - file: utility.rst
+        - file: ref/algorithm.rst
+        - file: ref/graph.rst
+        - file: ref/result.rst
+        - file: ref/system.rst
+        - file: ref/utility.rst
   - caption:  日本語 チュートリアル
     title:    OpenJij 日本語 チュートリアル
     numbered: false
