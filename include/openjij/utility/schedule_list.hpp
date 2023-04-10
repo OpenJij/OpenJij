@@ -1,4 +1,4 @@
-//    Copyright 2022 Jij Inc.
+//    Copyright 2023 Jij Inc.
 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -255,6 +255,81 @@ ScheduleList<SystemType> make_schedule_list(
   }
   return return_list;
 }
+
+enum class TemperatureSchedule {
+  
+   //! @brief Linear cooling
+   LINEAR,
+   
+   //! @brief Geometric cooling
+   GEOMETRIC,
+   
+};
+
+//! @brief Generate linear temperature schedule
+//! @tparam FloatType Floating point type
+//! @param beta_min The minimum value of inverse temperature
+//! @param beta_max The maximum value of inverse temperature
+//! @param num_sweeps The number of sweeps
+//! @return Linear temperature schedule
+template<typename FloatType>
+std::vector<FloatType> GenerateLinearBetaSchedule(const FloatType beta_min, const FloatType beta_max, const std::int32_t num_sweeps) {
+   if (num_sweeps == 1) {
+      return std::vector<FloatType>{beta_min};
+   }
+   std::vector<FloatType> beta_list(num_sweeps);
+   for (std::int32_t i = 0; i < num_sweeps; ++i) {
+      beta_list[i] = beta_min + i*(beta_max - beta_min)/(num_sweeps - 1);
+   }
+   return beta_list;
+}
+
+//! @brief Generate geometric temperature schedule
+//! @tparam FloatType Floating point type
+//! @param beta_min The minimum value of inverse temperature
+//! @param beta_max The maximum value of inverse temperature
+//! @param num_sweeps The number of sweeps
+//! @return Geometric temperature schedule
+template<typename FloatType>
+std::vector<FloatType> GenerateGeometricBetaSchedule(const FloatType beta_min, const FloatType beta_max, const std::int32_t num_sweeps) {
+   if (num_sweeps == 1) {
+      return std::vector<FloatType>{beta_min};
+   }
+   std::vector<FloatType> beta_list(num_sweeps);
+   const FloatType alpha = std::pow(beta_max/beta_min, 1/static_cast<FloatType>(num_sweeps - 1));
+   FloatType beta = beta_min;
+   for (std::int32_t i = 0; i < num_sweeps; ++i) {
+      beta_list[i] = beta;
+      beta = beta*alpha;
+   }
+   return beta_list;
+}
+
+//! @brief Generate temperature schedule from specific schedule
+//! @tparam FloatType Floating point type
+//! @param schedule_type The type of temperature schedule
+//! @param beta_min The minimum value of inverse temperature
+//! @param beta_max The maximum value of inverse temperature
+//! @param num_sweeps The number of sweeps
+//! @return Temperature schedule
+template<typename FloatType>
+std::vector<FloatType> GenerateBetaList(const TemperatureSchedule schedule_type,
+                                        const FloatType beta_min,
+                                        const FloatType beta_max,
+                                        const std::int32_t num_sweeps) {
+   std::vector<FloatType> beta_list;
+   if (schedule_type == TemperatureSchedule::LINEAR) {
+      beta_list = GenerateLinearBetaSchedule(beta_min, beta_max, num_sweeps);
+   }
+   else if (schedule_type == TemperatureSchedule::GEOMETRIC) {
+      beta_list = GenerateGeometricBetaSchedule(beta_min, beta_max, num_sweeps);
+   }
+   else {
+      throw std::runtime_error("Unknwon beta schedule list");
+   }
+   return beta_list;
+}
+
 
 } // namespace utility
 } // namespace openjij

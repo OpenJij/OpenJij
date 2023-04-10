@@ -1,4 +1,4 @@
-# Copyright 2022 Jij Inc.
+# Copyright 2023 Jij Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 #include(GoogleTest)
 
 add_executable(cxxjij_test
-    cxxtest.cpp
+    cxxtest/cxxtest.cpp
 )
 
 if(ENABLE_COVERAGE AND (NOT MSVC))

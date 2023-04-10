@@ -1,4 +1,4 @@
-//    Copyright 2022 Jij Inc.
+//    Copyright 2023 Jij Inc.
 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 //! @brief Graph class to represent polynomial unconstrained binary model or
 //! Ising model with polynomial interactions.
 //! @date 2021-03-11
-//! @copyright Copyright (c) Jij Inc. 2021
+//! @copyright Copyright (c) Jij Inc. 2023
 
 #pragma once
 
@@ -31,6 +31,8 @@
 
 #include "openjij/graph/graph.hpp"
 #include "openjij/graph/json/parse.hpp"
+#include "openjij/utility/index_type.hpp"
+#include "openjij/utility/pairhash.hpp"
 
 namespace openjij {
 namespace graph {

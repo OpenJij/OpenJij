@@ -1,4 +1,4 @@
-# Copyright 2021 Jij Inc.
+# Copyright 2023 Jij Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -28,6 +28,7 @@ import openjij.cxxjij as cxxjij
 
 from openjij.sampler.sampler import BaseSampler
 from openjij.utils.graph_utils import qubo_to_ising
+from openjij.sampler.base_sa_sample_hubo import base_sample_hubo
 
 """This module contains Simulated Annealing sampler."""
 
@@ -325,8 +326,8 @@ class SASampler(BaseSampler):
         response.info["schedule"] = self.schedule_info
 
         return response
-
-    def sample_hubo(
+    
+    def _sample_hubo_old(
         self,
         J: Union[
             dict, "openj.model.model.BinaryPolynomialModel", cimod.BinaryPolynomialModel
@@ -480,6 +481,86 @@ class SASampler(BaseSampler):
         response.info["schedule"] = self.schedule_info
 
         return response
+    
+    def sample_hubo(
+        self,
+        J: dict[tuple, float],
+        vartype: Optional[str] = None,
+        num_sweeps: int = 1000,
+        num_reads: int = 1,
+        num_threads: int = 1,
+        beta_min: Optional[float] = None,
+        beta_max: Optional[float] = None,
+        updater: str = "METROPOLIS",
+        random_number_engine: str = "XORSHIFT",
+        seed: Optional[int] = None,
+        temperature_schedule: str = "GEOMETRIC",
+    ):  
+        """Sampling from higher order unconstrainted binary optimization.
+
+        Args:
+            J (dict): Interactions.
+            vartype (str): "SPIN" or "BINARY".
+            num_sweeps (int, optional): The number of sweeps. Defaults to 1000.
+            num_reads (int, optional): The number of reads. Defaults to 1.
+            num_threads (int, optional): The number of threads. Parallelized for each sampling with num_reads > 1. Defaults to 1.
+            beta_min (float, optional): Minimum beta (initial inverse temperature). Defaults to None.
+            beta_max (float, optional): Maximum beta (final inverse temperature). Defaults to None.
+            updater (str, optional): Updater. One can choose "METROPOLIS", "HEAT_BATH", or "k-local". Defaults to "METROPOLIS".
+            random_number_engine (str, optional): Random number engine. One can choose "XORSHIFT", "MT", or "MT_64". Defaults to "XORSHIFT".            
+            seed (int, optional): seed for Monte Carlo algorithm. Defaults to None.
+            temperature_schedule (str, optional): Temperature schedule. One can choose "LINEAR", "GEOMETRIC". Defaults to "GEOMETRIC".
+
+        Returns:
+            :class:`openjij.sampler.response.Response`: results
+
+        Examples::
+            for Ising case::
+                >>> sampler = openjij.SASampler()
+                >>> J = {(0,): -1, (0, 1): -1, (0, 1, 2): 1}
+                >>> response = sampler.sample_hubo(J, "SPIN")
+
+            for Binary case::
+                >>> sampler = ooenjij.SASampler()
+                >>> J = {(0,): -1, (0, 1): -1, (0, 1, 2): 1}
+                >>> response = sampler.sample_hubo(J, "BINARY")
+        """
+
+
+        if updater=="k-local" or not isinstance(J, dict):
+            # To preserve the correspondence with the old version.
+            if updater=="METROPOLIS":
+                updater="single spin flip"
+            return self._sample_hubo_old(
+                J=J,
+                vartype=vartype,
+                beta_min=beta_min,
+                beta_max=beta_max,
+                num_sweeps=num_sweeps,
+                num_reads=num_reads,
+                #schedule,
+                #initial_state,
+                updater=updater,
+                #reinitialize_state,
+                seed=seed
+            )
+        else:
+            # To preserve the correspondence with the old version.
+            if updater=="single spin flip":
+                updater="METROPOLIS"
+            return base_sample_hubo(
+                hubo=J,
+                vartype=vartype,
+                num_sweeps=num_sweeps,
+                num_reads=num_reads,
+                num_threads=num_threads,
+                beta_min=beta_min,
+                beta_max=beta_max,
+                update_method=updater,
+                random_number_engine=random_number_engine,
+                seed=seed,
+                temperature_schedule=temperature_schedule
+            )
 
 
 def geometric_ising_beta_schedule(

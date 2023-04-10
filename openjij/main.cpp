@@ -1,4 +1,4 @@
-//    Copyright 2021 Jij Inc.
+//    Copyright 2023 Jij Inc.
 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -47,6 +47,13 @@ PYBIND11_MODULE(cxxjij, m) {
   openjij::declare_Square<openjij::FloatType>(m_graph, "");
   openjij::declare_Chimera<openjij::FloatType>(m_graph, "");
   openjij::declare_Polynomial<openjij::FloatType>(m_graph, "");
+
+  openjij::declare_BinaryPolynomialModel<openjij::FloatType>(m_graph);
+  openjij::declare_IsingPolynomialModel<openjij::FloatType>(m_graph);
+
+  py::module_ m_sampler = m.def_submodule("sampler");
+  openjij::declare_SASampler<openjij::graph::BinaryPolynomialModel<openjij::FloatType>>(m_sampler, "BPM");
+  openjij::declare_SASampler<openjij::graph::IsingPolynomialModel<openjij::FloatType>>(m_sampler, "IPM");
 
   // GPU version (openjij::GPUFloatType)
   if (!std::is_same<openjij::FloatType, openjij::GPUFloatType>::value) {
@@ -109,6 +116,9 @@ PYBIND11_MODULE(cxxjij, m) {
    **********************************************************/
   py::module m_algorithm =
       m.def_submodule("algorithm", "cxxjij module for algorithm");
+
+  openjij::declare_UpdateMethod(m_algorithm);
+  openjij::declare_RandomNumberEngine(m_algorithm);
 
   // singlespinflip
   openjij::declare_Algorithm_run<openjij::updater::SingleSpinFlip,
@@ -200,6 +210,8 @@ PYBIND11_MODULE(cxxjij, m) {
    **********************************************************/
   py::module m_utility =
       m.def_submodule("utility", "cxxjij module for utility");
+
+  openjij::declare_TemperatureSchedule(m_utility);
 
   // schedule_list
   openjij::declare_ClassicalUpdaterParameter(m_utility);

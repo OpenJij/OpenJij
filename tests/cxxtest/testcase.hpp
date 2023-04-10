@@ -1,4 +1,4 @@
-//    Copyright 2021 Jij Inc.
+//    Copyright 2023 Jij Inc.
 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -17,6 +17,16 @@
 #include "openjij/graph/all.hpp"
 #include <iostream>
 #include <bitset>
+
+static constexpr std::size_t num_system_size = 8;
+
+static openjij::utility::ClassicalScheduleList generate_schedule_list(){
+    return openjij::utility::make_classical_schedule_list(0.1, 100.0, 100, 100);
+}
+
+static openjij::utility::TransverseFieldScheduleList generate_tfm_schedule_list(){
+    return openjij::utility::make_transverse_field_schedule_list(10, 100, 100);
+}
 
 #if TEST_CASE_INDEX == 1
 //GraphType -> Dense or Sparse

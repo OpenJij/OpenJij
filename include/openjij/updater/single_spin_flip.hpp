@@ -1,4 +1,4 @@
-//    Copyright 2022 Jij Inc.
+//    Copyright 2023 Jij Inc.
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
 //    You may obtain a copy of the License at
@@ -19,6 +19,7 @@
 #include "openjij/system/classical_ising.hpp"
 #include "openjij/system/transverse_ising.hpp"
 #include "openjij/utility/schedule_list.hpp"
+#include "openjij/algorithm/algorithm.hpp"
 
 #ifdef USE_OMP
 #include <omp.h>
@@ -334,6 +335,49 @@ struct SingleSpinFlip<system::ClassicalIsingPolynomial<GraphType>> {
     }
   }
 };
+
+
+template<class SystemType, typename RandType>
+void SingleFlipUpdater(SystemType *system,
+                       const std::int32_t num_sweeps,
+                       const std::vector<typename SystemType::ValueType> &beta_list,
+                       const typename RandType::result_type seed,
+                       const algorithm::UpdateMethod update_metod) {
+   
+   const std::int32_t system_size = system->GetSystemSize();
+   
+   // Set random number engine
+   RandType random_number_engine(seed);
+   std::uniform_real_distribution<typename SystemType::ValueType> dist_real(0, 1);
+   
+   if (update_metod == algorithm::UpdateMethod::METROPOLIS) {
+      // Do sequential update
+      for (std::int32_t sweep_count = 0; sweep_count < num_sweeps; sweep_count++) {
+         const auto beta = beta_list[sweep_count];
+         for (std::int32_t i = 0; i < system_size; i++) {
+            const auto delta_energy = system->GetEnergyDifference(i);
+            if (delta_energy <= 0 || std::exp(-beta*delta_energy) > dist_real(random_number_engine)) {
+               system->Flip(i);
+            }
+         }
+      }
+   }
+   else if (update_metod == algorithm::UpdateMethod::HEAT_BATH) {
+      // Do sequential update
+      for (std::int32_t sweep_count = 0; sweep_count < num_sweeps; sweep_count++) {
+         const auto beta = beta_list[sweep_count];
+         for (std::int32_t i = 0; i < system_size; i++) {
+            const auto delta_energy = system->GetEnergyDifference(i);
+            if (1/(1 + std::exp(beta*delta_energy)) > dist_real(random_number_engine)) {
+               system->Flip(i);
+            }
+         }
+      }
+   }
+   else {
+      throw std::runtime_error("Unknown UpdateMethod");
+   }
+}
 
 } // namespace updater
 } // namespace openjij

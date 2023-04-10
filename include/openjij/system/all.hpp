@@ -1,4 +1,4 @@
-//    Copyright 2022 Jij Inc.
+//    Copyright 2023 Jij Inc.
 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@
 #include "openjij/system/continuous_time_ising.hpp"
 #include "openjij/system/k_local_polynomial.hpp"
 #include "openjij/system/transverse_ising.hpp"
+#include "openjij/system/binary_polynomial_sa_system.hpp"
+#include "openjij/system/ising_polynomial_sa_system.hpp"
 
 #ifdef USE_CUDA
 #include "openjij/system/gpu/chimera_gpu_classical.hpp"

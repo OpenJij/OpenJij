@@ -1,4 +1,4 @@
-//    Copyright 2021 Jij Inc.
+//    Copyright 2023 Jij Inc.
 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@
 
 #include "openjij/system/system.hpp"
 #include "openjij/utility/schedule_list.hpp"
+#include "openjij/utility/random.hpp"
+
 
 namespace openjij {
 namespace algorithm {
@@ -56,6 +58,47 @@ template <template <typename> class Updater> struct Algorithm {
 // type alias (Monte Carlo method)
 // TODO: Algorithm class will be deprecated shortly.
 template <template <typename> class Updater> using MCMC = Algorithm<Updater>;
+
+
+enum class UpdateMethod {
+   
+   //! @brief Metropolis update
+   METROPOLIS,
+   
+   //! @brief Heat bath update
+   HEAT_BATH,
+      
+};
+
+enum class RandomNumberEngine {
+  
+   //! @brief 32-bit Xorshift
+   XORSHIFT,
+   
+   //! @brief 32-bit Mersenne Twister
+   MT,
+   
+   //! @brief 64-bit Mersenne Twister
+   MT_64
+   
+};
+
+
+std::variant<utility::Xorshift, std::mt19937, std::mt19937_64>
+GenerateRandomNumberEngineClass(const RandomNumberEngine random_number_engine) {
+   if (random_number_engine == RandomNumberEngine::XORSHIFT) {
+      return utility::Xorshift();
+   }
+   else if (random_number_engine == RandomNumberEngine::MT) {
+      return std::mt19937();
+   }
+   else if (random_number_engine == RandomNumberEngine::MT) {
+      return std::mt19937_64();
+   }
+   else {
+      throw std::runtime_error("Unknown RandomNumberEngine");
+   }
+}
 
 } // namespace algorithm
 } // namespace openjij
