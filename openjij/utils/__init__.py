@@ -14,6 +14,7 @@ from openjij.utils.benchmark import (
     success_probability,
     time_to_solution,
 )
+from openjij.utils.validator import raise_type_error
 from openjij.utils.res_convertor import convert_response
 
 __all__ = [
@@ -26,4 +27,5 @@ __all__ = [
     "se_upper_tts",
     "se_lower_tts",
     "convert_response",
+    "raise_type_error",
 ]
