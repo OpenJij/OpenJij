@@ -30,6 +30,27 @@ PYBIND11_MODULE(cxxjij, m) {
   
   m.doc() = "openjij is a framework for ising and qubo";
 
+  /**********
+   * New Simple implementation of SA
+  ************/
+  m.def("sa_sparse_qubo_ssf", &sa_sparse_qubo_ssf,
+        py::arg("qubo"),
+        py::arg("flip_energy"),
+        py::arg("state"),
+        py::arg("beta_schedule"));
+    
+  
+  m.def("local_search_sparse_qubo_ssf", &local_search_sparse_qubo_ssf);
+
+  m.def("solve_qubo_bruteforce", &solve_qubo_bruteforce);
+
+  py::class_<SparseSymmetricGraph>(m, "SparseSymmetricGraph")
+        .def(py::init<const Eigen::Ref<const Eigen::VectorXi>&, 
+                     const Eigen::Ref<const Eigen::VectorXi>&, 
+                     const Eigen::Ref<const Eigen::VectorXd>&>(), py::arg("row"), py::arg("col"), py::arg("values"))
+        .def("calc_qubo_energy_gradient", &SparseSymmetricGraph::calc_qubo_energy_gradient, py::arg("x"), py::arg("grad"))
+        .def("calc_energy", &SparseSymmetricGraph::calc_energy, py::arg("x"));
+
   /**********************************************************
    //namespace graph
    **********************************************************/

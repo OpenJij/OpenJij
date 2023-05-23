@@ -15,3 +15,6 @@
 #pragma once
 
 #include "openjij/algorithm/algorithm.hpp"
+#include "openjij/algorithm/qubo_sa.hpp" 
+#include "openjij/algorithm/local_search.hpp"
+#include "openjij/algorithm/bruteforce_solver.hpp"
