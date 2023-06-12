@@ -86,9 +86,9 @@ class TestSamplers(unittest.TestCase):
         )
         self._test_response_num(res, num_reads)
 
-        sampler = sampler_cls(num_reads=num_reads)
+        sampler = sampler_cls()
         res = sampler.sample_ising(
-            self.num_ind['h'], self.num_ind['J'],
+            self.num_ind['h'], self.num_ind['J'], num_reads=num_reads
         )
         self._test_response_num(res, num_reads)
 
@@ -119,12 +119,12 @@ class TestSamplers(unittest.TestCase):
         self._test_num_reads(oj.SASampler)
 
         #antiferromagnetic one-dimensional Ising model
-        sampler = oj.SASampler(num_reads=100)
-        res = sampler.sample_ising(self.afih, self.afiJ, seed=1)
+        sampler = oj.SASampler()
+        res = sampler.sample_ising(self.afih, self.afiJ, seed=1, num_reads=100)
         self.assertDictEqual(self.afiground, res.first.sample)
         #antiferromagnetic one-dimensional Ising model
-        sampler = oj.SASampler(num_reads=100)
-        res = sampler.sample_ising(self.afih, self.afiJ, updater='swendsen wang', seed=1)
+        sampler = oj.SASampler()
+        res = sampler.sample_ising(self.afih, self.afiJ, updater='swendsen wang', seed=1, num_reads=100)
         self.assertDictEqual(self.afiground, res.first.sample)
 
     def test_sa_sparse(self):
@@ -153,8 +153,8 @@ class TestSamplers(unittest.TestCase):
         #self._test_num_reads(oj.SASampler)
 
         #antiferromagnetic one-dimensional Ising model
-        sampler = oj.SASampler(num_reads=100)
-        res = sampler.sample_ising(self.afih, self.afiJ, sparse=True, seed=1)
+        sampler = oj.SASampler()
+        res = sampler.sample_ising(self.afih, self.afiJ, sparse=True, seed=1, num_reads=100)
         self.assertDictEqual(self.afiground, res.first.sample)
 
     def test_sa_with_negative_interactions(self):
@@ -203,8 +203,8 @@ class TestSamplers(unittest.TestCase):
         self._test_num_reads(oj.SQASampler)
 
         #antiferromagnetic one-dimensional Ising model
-        sampler = oj.SQASampler(num_reads=100)
-        res = sampler.sample_ising(self.afih, self.afiJ, seed=1)
+        sampler = oj.SQASampler()
+        res = sampler.sample_ising(self.afih, self.afiJ, seed=1, num_reads=100)
         self.assertDictEqual(self.afiground, res.first.sample)
 
     def test_sqa_with_negative_interactions(self):
@@ -247,6 +247,27 @@ class TestSamplers(unittest.TestCase):
             res = sampler.sample_qubo(Q=J)
             self.assertEqual(len(res.first.sample), 100001)
 
+    # Since it is no longer possible to set parameters such as num_reads 
+    # in the constructor of sampler class from this version, the following test was added.
+    # This test can be removed from the next version 
+    # because this will be the specification from now on.
+    def test_error_handling(self):
+        with self.assertRaises(TypeError):
+            oj.SASampler(num_reads=100)
+        with self.assertRaises(TypeError):
+            oj.SASampler(num_sweeps=100)
+        with self.assertRaises(TypeError):
+            oj.SASampler(beta_min=10)
+        with self.assertRaises(TypeError):
+            oj.SASampler(beta_max=10)
+        with self.assertRaises(TypeError):
+            oj.SQASampler(num_reads=100)
+        with self.assertRaises(TypeError):
+            oj.SQASampler(num_sweeps=100)
+        with self.assertRaises(TypeError):
+            oj.SQASampler(beta=10)
+        with self.assertRaises(TypeError):
+            oj.SQASampler(trotter=10)
 
 
 if __name__ == '__main__':

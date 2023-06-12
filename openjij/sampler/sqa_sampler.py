@@ -53,28 +53,15 @@ class SQASampler(BaseSampler):
             "trotter": ["parameters"],
         }
 
-    @deprecated_alias(iteration="num_reads")
-    def __init__(
-        self,
-        beta: Optional[float] = None,
-        gamma: Optional[float] = None,
-        num_sweeps: Optional[int] = None,
-        num_reads: Optional[int] = None,
-        schedule: Optional[list] = None,
-        trotter: Optional[int] = None,
-    ):
+    def __init__(self):
 
         # Set default parameters
-        if beta is None:
-            beta = 5.0
-        if gamma is None:
-            gamma = 1.0
-        if num_sweeps is None:
-            num_sweeps = 1000
-        if trotter is None:
-            trotter = 4
-        if num_reads is None:
-            num_reads = 1
+        beta = 5.0
+        gamma = 1.0
+        num_sweeps = 1000
+        num_reads = 1
+        schedule = None
+        trotter = 4
 
         self._default_params = {
             "beta": beta,
