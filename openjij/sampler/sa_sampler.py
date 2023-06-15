@@ -70,20 +70,14 @@ class SASampler(BaseSampler):
             "beta_max": ["parameters"],
         }
 
-    def __init__(
-        self,
-        beta_min: Optional[float] = None,
-        beta_max: Optional[float] = None,
-        num_sweeps: Optional[int] = None,
-        num_reads: Optional[int] = None,
-        schedule: Optional[list] = None,
-    ):
+    def __init__(self):
 
         # Set default parameters
-        if num_sweeps is None:
-            num_sweeps = 1000
-        if num_reads is None:
-            num_reads = 1
+        num_sweeps = 1000
+        num_reads = 1
+        beta_min = None
+        beta_max = None
+        schedule = None
 
         self._default_params = {
             "beta_min": beta_min,
