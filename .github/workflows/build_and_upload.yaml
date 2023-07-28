@@ -38,8 +38,6 @@ jobs:
       fail-fast: false 
       matrix:  
         include:
-         - python: /opt/python/cp37-cp37m/bin/python
-           container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
          - python: /opt/python/cp38-cp38/bin/python
            container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
          - python: /opt/python/cp39-cp39/bin/python
@@ -132,8 +130,6 @@ jobs:
       fail-fast: false 
       matrix:  
         include:
-         - python: /opt/python/cp37-cp37m/bin/python
-           container: ghcr.io/openjij/openjij-builder-manylinux2014_x86_64:latest
          - python: /opt/python/cp38-cp38/bin/python
            container: ghcr.io/openjij/openjij-builder-manylinux2014_x86_64:latest
          - python: /opt/python/cp39-cp39/bin/python
@@ -223,9 +219,6 @@ jobs:
       fail-fast: false 
       matrix:  
         include:
-          - os: ubuntu-latest
-            arch: aarch64
-            CIBW_BUILD: cp37-manylinux_aarch64
           - os: ubuntu-latest
             arch: aarch64
             CIBW_BUILD: cp38-manylinux_aarch64
