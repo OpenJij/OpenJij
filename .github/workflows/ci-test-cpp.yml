@@ -103,7 +103,7 @@ jobs:
       shell: bash
       run: mkdir build
     - name: CMake Configure
-      if: ${{ matrix.os != 'windows-latest'}}
+      if: ${{ matrix.os == 'ubuntu-latest'}}
       shell: bash
       run: >
         cmake 
@@ -114,6 +114,16 @@ jobs:
         -S .
         -B build
     - name: CMake Configure
+      if: ${{ matrix.os == 'macos-latest'}}
+      shell: bash
+      run: >
+        cmake 
+        -DCMAKE_BUILD_TYPE=Debug 
+        -DCMAKE_C_COMPILER_LAUNCHER=sccache 
+        -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+        -S .
+        -B build
+    - name: CMake Configure
       if: ${{ matrix.os == 'windows-latest'}}
       shell: powershell
       run: >
@@ -121,7 +131,6 @@ jobs:
         -DCMAKE_BUILD_TYPE=Debug 
         -DCMAKE_C_COMPILER_LAUNCHER=sccache 
         -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
-        -DENABLE_COVERAGE=On
         -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
         -S .
         -B build
@@ -151,18 +160,18 @@ jobs:
         --parallel
         --schedule-random
     - name: Run gcov
-      if: ${{ matrix.os != 'windows-latest'}}
+      if: ${{ matrix.os == 'ubuntu-latest'}}
       shell: bash
       working-directory: build
       run: |
         gcov  --object-directory ./tests/CMakeFiles/openjij_test.dir -p -l -b ./tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda
     - name: Run gcov
-      if: ${{ matrix.os != 'windows-latest'}}
+      if: ${{ matrix.os == 'ubuntu-latest'}}
       shell: bash
       run: |
         gcov   --object-directory ./build/tests/CMakeFiles/openjij_test.dir -p -l -b ./build/tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda
     - name: Run gcov
-      if: ${{ matrix.os != 'windows-latest'}}
+      if: ${{ matrix.os == 'ubuntu-latest'}}
       shell: bash
       run: |
         cd build/tests/CMakeFiles/cxxjij_test.dir
@@ -174,7 +183,7 @@ jobs:
         cd build 
         du -a
     - uses: codecov/codecov-action@v3
-      if: ${{ matrix.os != 'windows-latest'}}
+      if: ${{ matrix.os == 'ubuntu-latest'}}
       continue-on-error: true
       with:
         token: ${{ secrets.CODECOV_TOKEN }} 
