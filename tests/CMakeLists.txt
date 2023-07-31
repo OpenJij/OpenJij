@@ -22,16 +22,6 @@ if(ENABLE_COVERAGE AND (NOT MSVC))
   add_coverage(cxxjij_test)
 endif()
 
-if(CUDAToolkit_FOUND)
-    set_target_properties(cxxjij_test PROPERTIES
-        CXX_VISIBILITY_PRESET "hidden"
-        INTERPROCEDURAL_OPTIMIZATION TRUE
-        POSITION_INDEPENDENT_CODE ON
-        CUDA_VISIBILITY_PRESET "hidden"
-        CUDA_SEPARABLE_COMPILATION ON
-    )
-endif()
-
 target_include_directories(cxxjij_test PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
@@ -48,7 +38,6 @@ target_link_libraries(cxxjij_test PRIVATE
     $<IF:$<TARGET_EXISTS:GTest::gtest_main>,GTest::gtest_main,gtest_main>
     $<IF:$<TARGET_EXISTS:GTest::gmock>,GTest::gmock,gmock>
     $<IF:$<TARGET_EXISTS:GTest::gmock_main>,GTest::gmock_main,gmock_main>
-    $<$<TARGET_EXISTS:cxxjij_chimera_gpu_kernel>:cxxjij_chimera_gpu_kernel>
 )
 
 gtest_discover_tests(cxxjij_test)
