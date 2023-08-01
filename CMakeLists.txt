@@ -39,9 +39,9 @@ else()
 endif()
 
 # Options
-option(OPENJIJ_INSTALL "Install cimod header files?" ${OPENJIJ_MAIN_PROJECT})
-option(OPENJIJ_TEST "Build cimod test suite?" ${OPENJIJ_MAIN_PROJECT})
-option(OPENJIJ_DOCS "Build cimod docs?" ${OPENJIJ_MAIN_PROJECT})
+option(OPENJIJ_INSTALL "Install OpenJij header files?" ${OPENJIJ_MAIN_PROJECT})
+option(OPENJIJ_TEST "Build OpenJij test suite?" ${OPENJIJ_MAIN_PROJECT})
+option(OPENJIJ_DOCS "Build OpenJij docs?" ${OPENJIJ_MAIN_PROJECT})
 option(BUILD_DOCS "Enable Doxygen support." OFF)
 option(CMAKE_REQUIRE_FAILE "If CMake could not find dependencies, build will faile." OFF)
 
