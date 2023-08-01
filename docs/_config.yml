@@ -3,7 +3,7 @@
 
 title:     OpenJij Book
 author:    Jij Inc.
-copyright: "2022"
+copyright: "2023"
 logo:      OpenJij-Logo.webp
 description: 'OpenJij : Framework for the Ising model and QUBO.'
 only_build_toc_files: True
@@ -62,7 +62,7 @@ html:
 launch_buttons:
   notebook_interface: classic  # The interface interactive links will activate ["classic", "jupyterlab"]
   binderhub_url:      https://mybinder.org  # The URL of the BinderHub (e.g., https://mybinder.org)
-  
+  colab_url:          https://colab.research.google.com
 
 sphinx:
   recursive_update: True
