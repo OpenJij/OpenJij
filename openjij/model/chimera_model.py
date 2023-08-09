@@ -50,15 +50,13 @@ def make_ChimeraModel(linear, quadratic):
             vartype=SPIN,
             unit_num_L=None,
             model=None,
-            gpu=False,
         ):
-            self.gpu = gpu
             if model:
                 super().__init__(
-                    model.linear, model.quadratic, model.offset, model.vartype, gpu=gpu
+                    model.linear, model.quadratic, model.offset, model.vartype
                 )
             else:
-                super().__init__(linear, quadratic, offset, vartype, gpu=gpu)
+                super().__init__(linear, quadratic, offset, vartype)
             if not unit_num_L:
                 raise ValueError(
                     "Input unit_num_L which is the length of the side of the two-dimensional grid where chimera unit cells are arranged."
@@ -198,10 +196,7 @@ def make_ChimeraModel(linear, quadratic):
                 raise ValueError("Problem graph incompatible with chimera graph.")
             _h, _J, _offset = self.to_ising()
 
-            if self.gpu:
-                chimera = cj.graph.ChimeraGPU(chimera_L, chimera_L)
-            else:
-                chimera = cj.graph.Chimera(chimera_L, chimera_L)
+            chimera = cj.graph.Chimera(chimera_L, chimera_L)
 
             for i, hi in _h.items():
                 r_i, c_i, zi = self._chimera_index(i, L = chimera_L)
@@ -327,7 +322,6 @@ def ChimeraModel(
         vartype = SPIN,
         unit_num_L: int = None,
         model = None,
-        gpu: bool = False,
         ):
     """Generate ChimeraModel object
 
@@ -342,7 +336,6 @@ def ChimeraModel(
         vartype: vartype ('SPIN' or 'BINARY')
         unit_num_L (int): unit_num_L
         model (BinaryQuadraticModel): if model is not None, the object is initialized by model.
-        gpu (bool): if true, this can be used for gpu samplers.
     Returns:
         generated ChimeraModel
 
@@ -357,7 +350,7 @@ def ChimeraModel(
 
     Model = make_ChimeraModel(linear, quadratic)
 
-    return Model(linear, quadratic, offset, vartype, unit_num_L, model, gpu)
+    return Model(linear, quadratic, offset, vartype, unit_num_L, model)
 
 
 # classmethods

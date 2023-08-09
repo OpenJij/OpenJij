@@ -23,8 +23,7 @@ class CXXTest(unittest.TestCase):
         self.sparse = G.Sparse(self.size)
         self.sparse = self.gen_testcase(self.sparse)
         #chimera graph
-        #Note: make sure to use ChimeraGPU (not Chimera) when using GPU since the type between FloatType and GPUFloatType is in general different.
-        self.chimera = G.ChimeraGPU(2,2)
+        self.chimera = G.Chimera(2,2)
         self.chimera = self.gen_chimera_testcase(self.chimera)
 
         self.seed_for_spin = 1234

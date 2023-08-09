@@ -55,20 +55,6 @@ PYBIND11_MODULE(cxxjij, m) {
   openjij::declare_SASampler<openjij::graph::BinaryPolynomialModel<openjij::FloatType>>(m_sampler, "BPM");
   openjij::declare_SASampler<openjij::graph::IsingPolynomialModel<openjij::FloatType>>(m_sampler, "IPM");
 
-  // GPU version (openjij::GPUFloatType)
-  if (!std::is_same<openjij::FloatType, openjij::GPUFloatType>::value) {
-    openjij::declare_Dense<openjij::GPUFloatType>(m_graph, "GPU");
-    openjij::declare_Sparse<openjij::GPUFloatType>(m_graph, "GPU");
-    openjij::declare_CSRSparse<openjij::GPUFloatType>(m_graph, "GPU");
-    openjij::declare_Square<openjij::GPUFloatType>(m_graph, "GPU");
-    openjij::declare_Chimera<openjij::GPUFloatType>(m_graph, "GPU");
-  } else {
-    // raise warning
-    std::cerr << "Warning: please use classes in Graph module without suffix "
-                 "\"GPU\" or define type aliases."
-              << std::endl;
-  }
-
   /**********************************************************
    //namespace system
    **********************************************************/
@@ -99,17 +85,6 @@ PYBIND11_MODULE(cxxjij, m) {
       openjij::graph::Sparse<openjij::FloatType>>(m_system, "_Sparse");
   openjij::declare_ContinuousTimeIsing<
       openjij::graph::CSRSparse<openjij::FloatType>>(m_system, "_CSRSparse");
-
-#ifdef USE_CUDA
-  // ChimeraTransverseGPU
-  openjij::declare_ChimeraTranseverseGPU<openjij::GPUFloatType,
-                                         openjij::BLOCK_ROW, openjij::BLOCK_COL,
-                                         openjij::BLOCK_TROT>(m_system);
-  // ChimeraClassicalGPU
-  openjij::declare_ChimeraClassicalGPU<openjij::GPUFloatType,
-                                       openjij::BLOCK_ROW, openjij::BLOCK_COL>(
-      m_system);
-#endif
 
   /**********************************************************
    //namespace algorithm
@@ -186,24 +161,6 @@ PYBIND11_MODULE(cxxjij, m) {
           openjij::graph::CSRSparse<openjij::FloatType>>,
       openjij::RandomEngine>(m_algorithm, "ContinuousTimeSwendsenWang");
 
-#ifdef USE_CUDA
-  // GPU
-  openjij::declare_Algorithm_run<
-      openjij::updater::GPU,
-      openjij::system::ChimeraTransverseGPU<
-          openjij::GPUFloatType, openjij::BLOCK_ROW, openjij::BLOCK_COL,
-          openjij::BLOCK_TROT>,
-      openjij::utility::cuda::CurandWrapper<openjij::GPUFloatType,
-                                            openjij::GPURandomEngine>>(
-      m_algorithm, "GPU");
-  openjij::declare_Algorithm_run<
-      openjij::updater::GPU,
-      openjij::system::ChimeraClassicalGPU<
-          openjij::GPUFloatType, openjij::BLOCK_ROW, openjij::BLOCK_COL>,
-      openjij::utility::cuda::CurandWrapper<openjij::GPUFloatType,
-                                            openjij::GPURandomEngine>>(
-      m_algorithm, "GPU");
-#endif
 
   /**********************************************************
    //namespace utlity
@@ -263,11 +220,4 @@ PYBIND11_MODULE(cxxjij, m) {
       openjij::graph::Sparse<openjij::FloatType>>>(m_result);
   openjij::declare_get_solution<openjij::system::ContinuousTimeIsing<
       openjij::graph::CSRSparse<openjij::FloatType>>>(m_result);
-#ifdef USE_CUDA
-  openjij::declare_get_solution<openjij::system::ChimeraTransverseGPU<
-      openjij::GPUFloatType, openjij::BLOCK_ROW, openjij::BLOCK_COL,
-      openjij::BLOCK_TROT>>(m_result);
-  openjij::declare_get_solution<openjij::system::ChimeraClassicalGPU<
-      openjij::GPUFloatType, openjij::BLOCK_ROW, openjij::BLOCK_COL>>(m_result);
-#endif
 }
