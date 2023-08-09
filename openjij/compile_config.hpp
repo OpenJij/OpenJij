@@ -16,9 +16,6 @@
 
 #include <openjij/utility/random.hpp>
 
-#ifdef USE_CUDA
-#endif
-
 namespace openjij {
 
 /**
@@ -48,32 +45,5 @@ using FloatType = double;
 using RandomEngine = utility::Xorshift;
 // using RandomEngine = std::mt19937;
 //...
-
-/**********************************************************
- default floating point precision on GPU (default: float)
- **********************************************************/
-using GPUFloatType = float;
-// using GPUFloatType = double;
-
-#ifdef USE_CUDA
-/**********************************************************
- default random number engine on GPU (default: xorwow)
- **********************************************************/
-constexpr auto GPURandomEngine = CURAND_RNG_PSEUDO_XORWOW;
-// constexpr auto GPURandomEngine = CURAND_RNG_PSEUDO_MT19937;
-// constexpr auto GPURandomEngine = CURAND_RNG_PSEUDO_DEFAULT;
-//...
-
-#endif
-
-/**********************************************************
- default row x column x trotter size in each block in GPU
- This setting will be used in Chimera GPU.
- **********************************************************/
-
-// note that the size of sharedmem must be smaller than 64kB.
-constexpr std::size_t BLOCK_ROW = 2;  // row
-constexpr std::size_t BLOCK_COL = 2;  // column
-constexpr std::size_t BLOCK_TROT = 1; // trotter size (should not be changed)
 
 } // namespace openjij

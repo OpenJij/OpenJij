@@ -64,13 +64,9 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
                 quadratic (dict): quadratic biases
                 offset (float): offset
                 vartype (openjij.variable_type.Vartype): vartype
-                gpu (bool): if true, this can be used for gpu samplers.
                 kwargs:
             """
-            # extract gpu keyword
-            gpu = kwargs.pop("gpu", False)
             super().__init__(*args, **kwargs)
-            self.gpu = gpu
             self.model_type = "openjij.BinaryQuadraticModel"
 
         def get_cxxjij_ising_graph(self):
@@ -88,7 +84,7 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
                 self.change_vartype("SPIN")
 
                 GraphClass = (
-                    cxxjij.graph.CSRSparse if self.gpu == False else cxxjij.graph.CSRSparseGPU
+                    cxxjij.graph.CSRSparse
                 )
                 offset = self.offset
                 sparse_mat = self.interaction_matrix()
@@ -100,7 +96,7 @@ def make_BinaryQuadraticModel(linear: dict, quadratic: dict, sparse):
                 self.change_vartype("SPIN")
 
                 GraphClass = (
-                    cxxjij.graph.Dense if self.gpu == False else cxxjij.graph.DenseGPU
+                    cxxjij.graph.Dense
                 )
                 # initialize with interaction matrix.
                 mat = self.interaction_matrix()
@@ -163,7 +159,6 @@ def BinaryQuadraticModel(linear, quadratic, *args, **kwargs):
         quadratic (dict): quadratic biases
         offset (float): offset
         vartype (openjij.variable_type.Vartype): vartype ('SPIN' or 'BINARY')
-        gpu (bool): if true, this can be used for gpu samplers.
         kwargs:
     Returns:
         generated BinaryQuadraticModel
