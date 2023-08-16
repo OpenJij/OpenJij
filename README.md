@@ -6,7 +6,7 @@
 [![PyPI format](https://img.shields.io/pypi/format/openjij.svg)](https://pypi.python.org/pypi/openjij/)
 [![PyPI license](https://img.shields.io/pypi/l/openjij.svg)](https://pypi.python.org/pypi/openjij/)
 [![PyPI download month](https://img.shields.io/pypi/dm/openjij.svg)](https://pypi.python.org/pypi/openjij/)
-[![Downloads](https://pepy.tech/badge/openjij)](https://pepy.tech/project/openjij)
+[![Downloads](https://static.pepy.tech/badge/openjij)](https://pepy.tech/project/openjij)
 
 [![CPP Test](https://github.com/OpenJij/OpenJij/actions/workflows/ci-test-cpp.yml/badge.svg)](https://github.com/OpenJij/OpenJij/actions/workflows/ci-test-cpp.yml)
 [![Python Test](https://github.com/OpenJij/OpenJij/actions/workflows/ci-test-python.yaml/badge.svg)](https://github.com/OpenJij/OpenJij/actions/workflows/ci-test-python.yaml)
