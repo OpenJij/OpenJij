@@ -22,7 +22,6 @@ cmake
 ninja; sys_platform != 'win32'
 pybind11
 scikit-build
-setuptools
 
 pytest
 pytest-mock
