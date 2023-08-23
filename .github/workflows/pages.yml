@@ -41,8 +41,8 @@ jobs:
           echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
       - name: Upgrade
         run: | 
-         pip install --upgrade pip wheel setuptools build cmake ninja
-      - name: Pip-Tools 
+         pip install --upgrade pip wheel setuptools build cmake ninja scikit-build
+      - name: Install Pip-Tools 
         shell: bash
         run: |
           python -m pip install -U pip
@@ -50,16 +50,18 @@ jobs:
           pip-compile setup.cfg
           pip-compile build-requirements.in
           pip-compile doc-requirements.in
-      - name: pip cache
-        uses: actions/cache@v3
-        with:
-           path: ${{ steps.pip-cache.outputs.dir }}
-           key: ${{ runner.os }}-pages-pip-${{ hashFiles('/tmp/python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}-${{ hashFiles('doc-requirements.txt') }}
-           restore-keys: |
-              ${{ runner.os }}-pages-pip-${{ hashFiles('/tmp/python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}-${{ hashFiles('doc-requirements.txt') }}
-              ${{ runner.os }}-pages-pip-${{ hashFiles('/tmp/python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}
-              ${{ runner.os }}-pip-${{ hashFiles('/tmp/python_version.txt') }}-${{ hashFiles('requirements.txt') }}
-              ${{ runner.os }}-pip-${{ hashFiles('/tmp/python_version.txt') }} 
+      - name: pip-compile setup.cfg
+        shell: bash
+        run: |
+          pip-compile setup.cfg
+      - name: pip-compile build-requirements.in
+        shell: bash
+        run: |
+          pip-compile build-requirements.in
+      - name: pip-compile doc-requirements.in
+        shell: bash
+        run: |
+          pip-compile doc-requirements.in
       - name: Install Dependencies
         shell: bash
         run: |
