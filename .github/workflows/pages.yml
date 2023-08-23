@@ -2,7 +2,7 @@
 name: Deploy static content to Pages
 
 env:
-  Python_Version: '3.10'
+  Python_Version: '3.11'
 
 on:
   release:
@@ -39,6 +39,9 @@ jobs:
         id: pip-cache
         run: |
           echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+      - name: Upgrade
+        run: | 
+         pip install --upgrade pip wheel setuptools build cmake ninja
       - name: Pip-Tools 
         shell: bash
         run: |
@@ -56,10 +59,7 @@ jobs:
               ${{ runner.os }}-pages-pip-${{ hashFiles('/tmp/python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}-${{ hashFiles('doc-requirements.txt') }}
               ${{ runner.os }}-pages-pip-${{ hashFiles('/tmp/python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}
               ${{ runner.os }}-pip-${{ hashFiles('/tmp/python_version.txt') }}-${{ hashFiles('requirements.txt') }}
-              ${{ runner.os }}-pip-${{ hashFiles('/tmp/python_version.txt') }}
-      - name: Update
-        run: | 
-         pip install --upgrade pip wheel setuptools build cmake ninja 
+              ${{ runner.os }}-pip-${{ hashFiles('/tmp/python_version.txt') }} 
       - name: Install Dependencies
         shell: bash
         run: |
