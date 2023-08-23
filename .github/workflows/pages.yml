@@ -2,7 +2,7 @@
 name: Deploy static content to Pages
 
 env:
-  Python_Version: '3.11'
+  Python_Version: '3.9'
 
 on:
   release:
