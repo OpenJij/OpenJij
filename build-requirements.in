@@ -14,11 +14,9 @@
 
 -c requirements.txt
 
-pip 
 cmake 
 ninja;sys_platform != 'win32'
-wheel 
-setuptools 
+wheel  
 setuptools_scm[toml]
 build 
 pybind11
