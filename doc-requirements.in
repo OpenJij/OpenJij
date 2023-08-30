@@ -36,14 +36,14 @@
 
 jupyter-book # >= 0.15.0, < 0.16.0
 
-python-levenshtein # >= 0.20.0, < 0.30.0
+#python-levenshtein # >= 0.20.0, < 0.30.0
 
 sphinx-autoapi # >= 2.0.0, < 2.1.0
 
 sphinx_sitemap
-sphinx-proof
+#sphinx-proof
 #sphinx-comments
-sphinx-autobuild
+#sphinx-autobuild
 sphinx-inline-tabs
 sphinxcontrib-katex
 #sphinx-notfound-page
