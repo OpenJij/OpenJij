@@ -161,7 +161,6 @@ sphinx:
         - "https://sphinx-design.readthedocs.io/en/latest/"
         - null
   extra_extensions:
-    - sphinx_proof
     - sphinx_inline_tabs
     - sphinx_sitemap
     - 'autoapi.extension'
