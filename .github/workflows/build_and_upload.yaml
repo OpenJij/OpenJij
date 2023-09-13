@@ -236,7 +236,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3       
       - name: Set up QEME
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: all
       - name: Set up Docker Buildx
