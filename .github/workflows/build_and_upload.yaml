@@ -13,7 +13,7 @@ jobs:
   build_sdist:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         name: Install Python
         with:
@@ -48,7 +48,7 @@ jobs:
            container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
                
     steps:
-      - uses: actions/checkout@v3       
+      - uses: actions/checkout@v4       
       - name: Get Python Version
         shell: bash
         run: |
@@ -138,7 +138,7 @@ jobs:
            container: ghcr.io/openjij/openjij-builder-manylinux2014_x86_64:latest
                
     steps:
-      - uses: actions/checkout@v3       
+      - uses: actions/checkout@v4       
       - name: Get Python Version
         shell: bash
         run: |
@@ -234,7 +234,7 @@ jobs:
             arch: aarch64
             CIBW_BUILD: cp311-manylinux_aarch64
     steps:
-      - uses: actions/checkout@v3       
+      - uses: actions/checkout@v4       
       - name: Set up QEME
         uses: docker/setup-qemu-action@v2
         with:
@@ -296,7 +296,7 @@ jobs:
             CIBW_PLATFORM: macos
             CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET='11.0'"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Dependency 
         shell: bash 
         run: |
@@ -327,7 +327,7 @@ jobs:
             CIBW_PLATFORM: windows 
             CIBW_ENVIRONMENT: "CFLAGS='-march=haswell -mtune=skylake' CXXFLAGS='-march=haswell -mtune=skylake' CMAKE_TOOLCHAIN_FILE='C:/vcpkg/scripts/buildsystems/vcpkg.cmake'"
     steps:
-      - uses: actions/checkout@v3       
+      - uses: actions/checkout@v4       
       - name: Add msbuild to PATH
         if: ${{ matrix.os == 'windows-latest'}}
         uses: microsoft/setup-msbuild@v1.3.1
