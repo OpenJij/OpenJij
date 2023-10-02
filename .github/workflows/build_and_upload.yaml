@@ -376,6 +376,8 @@ jobs:
   upload_pypi:
     needs: [build_wheels_linux_x86_64, build_wheels_linux_x86_64_old, build_wheels_linux_aarch64, build_wheels_macos, build_wheels_windows, build_sdist]
     runs-on: ubuntu-latest
+    permissions:
+        id-token: write
     if: ${{github.event_name == 'release'}}
     steps:
       - uses: actions/download-artifact@v3
@@ -384,8 +386,6 @@ jobs:
           path: ./dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: ${{ secrets.PYPI_USERNAME }}
-          password: ${{ secrets.PYPI_PASSWORD }}
           packages_dir: ./dist
           verify_metadata: true
           skip_existing: false
