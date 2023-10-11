@@ -46,6 +46,8 @@ jobs:
            container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
          - python: /opt/python/cp311-cp311/bin/python
            container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
+         - python: /opt/python/cp312-cp312/bin/python
+           container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
                
     steps:
       - uses: actions/checkout@v4       
@@ -124,95 +126,95 @@ jobs:
           path: ./wheelhouse/*.whl
           retention-days: 30 
   
-  build_wheels_linux_x86_64_old:
-    name: Build wheels linux x86_64 Old
-    runs-on: ubuntu-latest
-    container: ${{matrix.container}}
-    strategy:
-      fail-fast: false 
-      matrix:  
-        include:
-         - python: /opt/python/cp38-cp38/bin/python
-           container: ghcr.io/openjij/openjij-builder-manylinux2014_x86_64:latest
-         - python: /opt/python/cp39-cp39/bin/python
-           container: ghcr.io/openjij/openjij-builder-manylinux2014_x86_64:latest
+  # build_wheels_linux_x86_64_old:
+  #   name: Build wheels linux x86_64 Old
+  #   runs-on: ubuntu-latest
+  #   container: ${{matrix.container}}
+  #   strategy:
+  #     fail-fast: false 
+  #     matrix:  
+  #       include:
+  #        - python: /opt/python/cp38-cp38/bin/python
+  #          container: ghcr.io/openjij/openjij-builder-manylinux2014_x86_64:latest
+  #        - python: /opt/python/cp39-cp39/bin/python
+  #          container: ghcr.io/openjij/openjij-builder-manylinux2014_x86_64:latest
                
-    steps:
-      - uses: actions/checkout@v4       
-      - name: Get Python Version
-        shell: bash
-        run: |
-          set -eux
-          ls /opt/python
-          ${{matrix.python}} --version > python_version.txt
-          cat python_version.txt
-      - name: Pip-Tools 
-        shell: bash
-        run: |
-          set -eux
-          ${{matrix.python}} -m pip install pip-tools 
-          ${{matrix.python}} -m piptools compile setup.cfg
-          ${{matrix.python}} -m piptools compile build-requirements.in
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/pip
-            /var/cache/yum/
-          key: ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}
-            ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}
-            ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}
-            ${{ runner.os }}-intel-
-      - name: Install Dependencies
-        shell: bash
-        run: |
-          set -eux
-          ${{matrix.python}} -m piptools sync requirements.txt build-requirements.txt 
-      - name: Build 
-        run: |
-          set -x
-          echo "::group::Set Intel oneAPI"
-          mkdir -p /tmp/tmp
-          touch /tmp/tmp/config.txt
-          echo "" >> /tmp/tmp/config.txt
-          source /opt/intel/oneapi/compiler/latest/env/vars.sh 
-          source /opt/intel/oneapi/mkl/latest/env/vars.sh
-          source /opt/intel/oneapi/setvars.sh --force  --config="/tmp/tmp/config.txt"
-          du -a /opt/intel/oneapi/compiler/latest/linux/bin
-          echo "::endgroup::"
-          echo "::group::BUILD"
-          export CIBUILDWHEEL=1
-          export CC=icx
-          export CXX=icpx
-          export FC=ifx
-          export CFLAGS='-march=haswell -mtune=skylake' 
-          export CXXFLAGS='-march=haswell -mtune=skylake' 
-          export FFLAGS='-march=haswell -mtune=skylake'
-          ${{matrix.python}} -m build --wheel --outdir ./dist
-          echo "::endgroup::"
-          #. /opt/intel/oneapi/setvars.sh --force  --config="config.txt"
-          # export FC=ifx
-      - name: Show Files 
-        id: wheel
-        shell: bash
-        run: |
-          set -x 
-          source /opt/intel/oneapi/setvars.sh --force  --config="/tmp/tmp/config.txt"
-          ${{matrix.python}} -m auditwheel -h
-          ${{matrix.python}} -m auditwheel show -h
-          ${{matrix.python}} -m auditwheel repair -h
-          du -ah ./dist
-          cd dist
-          for f in *.whl; do ${{matrix.python}} -m auditwheel show $f; done 
-          for f in *.whl; do ${{matrix.python}} -m auditwheel repair -w ../wheelhouse $f; done    
-          cd ../wheelhouse
-          du -ah ./
-      - uses: actions/upload-artifact@v3
-        with:
-          name: WHEEL
-          path: ./wheelhouse/*.whl
-          retention-days: 30 
+  #   steps:
+  #     - uses: actions/checkout@v4       
+  #     - name: Get Python Version
+  #       shell: bash
+  #       run: |
+  #         set -eux
+  #         ls /opt/python
+  #         ${{matrix.python}} --version > python_version.txt
+  #         cat python_version.txt
+  #     - name: Pip-Tools 
+  #       shell: bash
+  #       run: |
+  #         set -eux
+  #         ${{matrix.python}} -m pip install pip-tools 
+  #         ${{matrix.python}} -m piptools compile setup.cfg
+  #         ${{matrix.python}} -m piptools compile build-requirements.in
+  #     - uses: actions/cache@v3
+  #       with:
+  #         path: |
+  #           ~/.cache/pip
+  #           /var/cache/yum/
+  #         key: ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('build-requirements.txt') }}
+  #           ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}-${{ hashFiles('requirements.txt') }}
+  #           ${{ runner.os }}-intel-${{ hashFiles('python_version.txt') }}
+  #           ${{ runner.os }}-intel-
+  #     - name: Install Dependencies
+  #       shell: bash
+  #       run: |
+  #         set -eux
+  #         ${{matrix.python}} -m piptools sync requirements.txt build-requirements.txt 
+  #     - name: Build 
+  #       run: |
+  #         set -x
+  #         echo "::group::Set Intel oneAPI"
+  #         mkdir -p /tmp/tmp
+  #         touch /tmp/tmp/config.txt
+  #         echo "" >> /tmp/tmp/config.txt
+  #         source /opt/intel/oneapi/compiler/latest/env/vars.sh 
+  #         source /opt/intel/oneapi/mkl/latest/env/vars.sh
+  #         source /opt/intel/oneapi/setvars.sh --force  --config="/tmp/tmp/config.txt"
+  #         du -a /opt/intel/oneapi/compiler/latest/linux/bin
+  #         echo "::endgroup::"
+  #         echo "::group::BUILD"
+  #         export CIBUILDWHEEL=1
+  #         export CC=icx
+  #         export CXX=icpx
+  #         export FC=ifx
+  #         export CFLAGS='-march=haswell -mtune=skylake' 
+  #         export CXXFLAGS='-march=haswell -mtune=skylake' 
+  #         export FFLAGS='-march=haswell -mtune=skylake'
+  #         ${{matrix.python}} -m build --wheel --outdir ./dist
+  #         echo "::endgroup::"
+  #         #. /opt/intel/oneapi/setvars.sh --force  --config="config.txt"
+  #         # export FC=ifx
+  #     - name: Show Files 
+  #       id: wheel
+  #       shell: bash
+  #       run: |
+  #         set -x 
+  #         source /opt/intel/oneapi/setvars.sh --force  --config="/tmp/tmp/config.txt"
+  #         ${{matrix.python}} -m auditwheel -h
+  #         ${{matrix.python}} -m auditwheel show -h
+  #         ${{matrix.python}} -m auditwheel repair -h
+  #         du -ah ./dist
+  #         cd dist
+  #         for f in *.whl; do ${{matrix.python}} -m auditwheel show $f; done 
+  #         for f in *.whl; do ${{matrix.python}} -m auditwheel repair -w ../wheelhouse $f; done    
+  #         cd ../wheelhouse
+  #         du -ah ./
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: WHEEL
+  #         path: ./wheelhouse/*.whl
+  #         retention-days: 30 
   
   build_wheels_linux_aarch64:
     name: Build wheels linux aarch64 ${{matrix.CIBW_BUILD}}
@@ -233,6 +235,9 @@ jobs:
           - os: ubuntu-latest
             arch: aarch64
             CIBW_BUILD: cp311-manylinux_aarch64
+          - os: ubuntu-latest
+            arch: aarch64
+            CIBW_BUILD: cp312-manylinux_aarch64
     steps:
       - uses: actions/checkout@v4       
       - name: Set up QEME
@@ -374,7 +379,7 @@ jobs:
           retention-days: 30         
           
   upload_pypi:
-    needs: [build_wheels_linux_x86_64, build_wheels_linux_x86_64_old, build_wheels_linux_aarch64, build_wheels_macos, build_wheels_windows, build_sdist]
+    needs: [build_wheels_linux_x86_64, build_wheels_linux_aarch64, build_wheels_macos, build_wheels_windows, build_sdist]
     runs-on: ubuntu-latest
     permissions:
         id-token: write

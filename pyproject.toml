@@ -64,7 +64,7 @@ auto_identify_namespace_packages = true
 src_paths = ["openjij", "tests"]
 
 [tool.black]
-target-version = ['py39', 'py310']
+target-version = ['py39', 'py310', 'py311', 'py312']
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -94,7 +94,7 @@ reportUnusedVariable =  'warning'
 reportDuplicateImport = 'warning'
 
 [tool.cibuildwheel]
-skip = ["cp36*", "cp37*", "cp312*", "*musllinux_x86_64", "*musllinux_aarch64", "pp*"]
+skip = ["cp36*", "cp37*", "*musllinux_x86_64", "*musllinux_aarch64", "pp*"]
 build-verbosity = 1
 dependency-versions = "latest"
 
