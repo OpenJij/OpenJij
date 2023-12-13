@@ -36,6 +36,7 @@
 
 jupyter-book 
 
+sphinx >= 5.2.0
 sphinx-autoapi 
 
 sphinx_sitemap
