@@ -24,7 +24,7 @@ jobs:
       - name: Build sdist
         run: |
           python -m build --sdist --outdir ./dist
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: WHEEL
           path: dist/*.tar.gz
@@ -120,7 +120,7 @@ jobs:
           for f in *.whl; do ${{matrix.python}} -m auditwheel repair -w ../wheelhouse $f; done    
           cd ../wheelhouse
           du -ah ./
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: WHEEL
           path: ./wheelhouse/*.whl
@@ -177,7 +177,7 @@ jobs:
                source scl_source enable gcc-toolset-11 &&
                pip install pybind11 cmake ninja
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: WHEEL
           path: ./wheelhouse/*.whl
@@ -212,7 +212,7 @@ jobs:
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
           CIBW_ARCHS: ${{matrix.arch}}
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: WHEEL
           path: ./wheelhouse/*.whl
@@ -270,7 +270,7 @@ jobs:
           CIBW_ARCHS: ${{matrix.arch}}
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
           
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: WHEEL
           path: ./wheelhouse/*.whl
