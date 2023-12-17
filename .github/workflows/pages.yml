@@ -112,7 +112,7 @@ jobs:
           TAG_NAME="${GITHUB_REF##refs/tags/}"
           echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
           echo "deploy_tag_name=deploy-${TAG_NAME}" >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: HTML
           path: ./docs/_build/html
