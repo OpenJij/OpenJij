@@ -40,7 +40,7 @@ jobs:
           pip-compile
           pip-compile dev-requirements.in
       - name: pip cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
            path: ${{ steps.pip-cache.outputs.dir }}
            key: ${{ runner.os }}-pip-${{ hashFiles('/tmp/python_version.txt') }}
