@@ -26,9 +26,10 @@ jobs:
           python -m build --sdist --outdir ./dist
       - uses: actions/upload-artifact@v4
         with:
-          name: WHEEL
+          name: wheel-sdist
           path: dist/*.tar.gz
           retention-days: 30
+          compression-level: 0
           
   build_wheels_linux_x86_64:
     name: Build wheels linux x86_64
@@ -38,15 +39,20 @@ jobs:
       fail-fast: false 
       matrix:  
         include:
-         - python: /opt/python/cp38-cp38/bin/python
+         - artifact: wheel-linux_x86_64_python38
+           python: /opt/python/cp38-cp38/bin/python
            container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
-         - python: /opt/python/cp39-cp39/bin/python
+         - artifact: wheel-linux_x86_64_python39
+           python: /opt/python/cp39-cp39/bin/python
            container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
-         - python: /opt/python/cp310-cp310/bin/python
+         - artifact: wheel-linux_x86_64_python310
+           python: /opt/python/cp310-cp310/bin/python
            container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
-         - python: /opt/python/cp311-cp311/bin/python
+         - artifact: wheel-linux_x86_64_python311
+           python: /opt/python/cp311-cp311/bin/python
            container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
-         - python: /opt/python/cp312-cp312/bin/python
+         - artifact: wheel-linux_x86_64_python312
+           python: /opt/python/cp312-cp312/bin/python
            container: ghcr.io/openjij/openjij-builder-minimum-manylinux_2_28_x86_64:latest
                
     steps:
@@ -122,9 +128,10 @@ jobs:
           du -ah ./
       - uses: actions/upload-artifact@v4
         with:
-          name: WHEEL
+          name: ${{matrix.artifact}}
           path: ./wheelhouse/*.whl
           retention-days: 30 
+          compression-level: 0
   
   build_wheels_linux_aarch64:
     name: Build wheels linux aarch64 ${{matrix.CIBW_BUILD}}
@@ -133,19 +140,24 @@ jobs:
       fail-fast: false 
       matrix:  
         include:
-          - os: ubuntu-latest
+          - artifact: wheel-linux_aarch64_python38
+            os: ubuntu-latest
             arch: aarch64
             CIBW_BUILD: cp38-manylinux_aarch64
-          - os: ubuntu-latest
+          - artifact: wheel-linux_aarch64_python39
+            os: ubuntu-latest
             arch: aarch64
             CIBW_BUILD: cp39-manylinux_aarch64
-          - os: ubuntu-latest
+          - artifact: wheel-linux_aarch64_python310
+            os: ubuntu-latest
             arch: aarch64
             CIBW_BUILD: cp310-manylinux_aarch64
-          - os: ubuntu-latest
+          - artifact: wheel-linux_aarch64_python311
+            os: ubuntu-latest
             arch: aarch64
             CIBW_BUILD: cp311-manylinux_aarch64
-          - os: ubuntu-latest
+          - artifact: wheel-linux_aarch64_python312
+            os: ubuntu-latest
             arch: aarch64
             CIBW_BUILD: cp312-manylinux_aarch64
     steps:
@@ -160,7 +172,7 @@ jobs:
         with:
             install: true
       - name: Build wheels on ${{matrix.arch}}
-        uses: pypa/cibuildwheel@v2.16.4
+        uses: pypa/cibuildwheel@v2.16.5
         env:
           CIBW_BUILD: ${{matrix.CIBW_BUILD}}
           CIBW_ENVIRONMENT: ""
@@ -179,9 +191,10 @@ jobs:
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
       - uses: actions/upload-artifact@v4
         with:
-          name: WHEEL
+          name: ${{matrix.artifact}}
           path: ./wheelhouse/*.whl
           retention-days: 30   
+          compression-level: 0
           
   build_wheels_macos:
     name: Build wheels macos ${{ matrix.arch }} 
@@ -190,11 +203,13 @@ jobs:
       fail-fast: false 
       matrix:  
         include:
-          - os: macos-latest
+          - artifact: wheel-macosx-13
+            os: macos-latest
             arch: universal2
             CIBW_PLATFORM: macos  
             CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET='13.0'"
-          - os: macos-latest
+          - artifact: wheel-macos-10
+            os: macos-latest
             arch: universal2
             CIBW_PLATFORM: macos
             CIBW_ENVIRONMENT: "MACOSX_DEPLOYMENT_TARGET='10.14'"
@@ -206,7 +221,7 @@ jobs:
           set -eux 
           brew install eigen nlohmann-json
       - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
-        uses: pypa/cibuildwheel@v2.16.4
+        uses: pypa/cibuildwheel@v2.16.5
         env:
           CIBW_ENVIRONMENT: ${{ matrix.CIBW_ENVIRONMENT }}
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
@@ -214,9 +229,10 @@ jobs:
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8"
       - uses: actions/upload-artifact@v4
         with:
-          name: WHEEL
+          name: ${{matrix.artifact}}
           path: ./wheelhouse/*.whl
           retention-days: 30 
+          compression-level: 0
           
   build_wheels_windows:
     name: Build wheels windows ${{ matrix.arch }} 
@@ -263,7 +279,7 @@ jobs:
           vcpkg --triplet x64-windows install nlohmann-json
           vcpkg integrate install
       - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
-        uses: pypa/cibuildwheel@v2.16.4
+        uses: pypa/cibuildwheel@v2.16.5
         env:
           CIBW_ENVIRONMENT: ${{ matrix.CIBW_ENVIRONMENT }}
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
@@ -272,9 +288,10 @@ jobs:
           
       - uses: actions/upload-artifact@v4
         with:
-          name: WHEEL
+          name: wheel-windows
           path: ./wheelhouse/*.whl
-          retention-days: 30         
+          retention-days: 30       
+          compression-level: 0
           
   upload_pypi:
     needs: [build_wheels_linux_x86_64, build_wheels_linux_aarch64, build_wheels_macos, build_wheels_windows, build_sdist]
@@ -285,8 +302,9 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: WHEEL
           path: ./dist
+          pattern: wheel-*
+          merge-multiple: true
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages_dir: ./dist
