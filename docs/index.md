@@ -22,10 +22,11 @@
 # Introduction
 
 [Github repository](https://github.com/OpenJij/OpenJij)
+[OpenJij Website](https://www.openjij.org/)
 
 This project is still going. If you can help, please join in the OpenJij Slack Community. Then, you can participate in the project, and ask questions.
 
-[OpenJij Slack](https://openjij.slack.com/join/shared_invite/enQtNjQyMjIwMzMwNzA4LTQ5MWRjOWYxYmY1Nzk4YzdiYzlmZjIxYjhhMmMxZjAyMzE3MDc1ZWRkYmI1YjhkNjRlOTM1ODE0NTc5Yzk3ZDA)
+[OpenJij Discord Community](https://discord.gg/Km5dKF9JjG)
 
 ## What is OpenJij ?
 
