@@ -27,6 +27,8 @@
 - (optional) cmake >= 3.22
 - (optional) Ninja
 
+[OpenJij Website](https://www.openjij.org/)
+
 ### Change **IMPORT**
 
 - OpenJij >= v0.5.0
@@ -210,7 +212,7 @@ response = sampler.sample_ising(h={'a': -1}, J={('a','b'): 1})
 
 ## Community
 
-- [OpenJij Slack](https://join.slack.com/t/openjij/shared_invite/enQtNjQyMjIwMzMwNzA4LTQ5MWRjOWYxYmY1Nzk4YzdiYzlmZjIxYjhhMmMxZjAyMzE3MDc1ZWRkYmI1YjhkNjRlOTM1ODE0NTc5Yzk3ZDA)
+- [OpenJij Discord Community](https://discord.gg/Km5dKF9JjG)
 
 ## About us
 
