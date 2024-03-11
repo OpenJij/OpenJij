@@ -84,7 +84,9 @@ problem += jm.Sum(n, clique-num_e)
 `clique`で、頂点がクリークを作っていた場合の辺の数を計算しています。次の`num_e`が、実際にその頂点たちが持っている辺の数を計算したものです。最後にその差を取ったものの総和を目的関数として追加しています。  
 実際に実装された数式をJupyter Notebookで表示してみましょう。
 
-![](../../../assets/clique_cover_02.png)
+```python
+problem
+```
 
 ### インスタンスの作成
 
