@@ -30,8 +30,8 @@
 
 $$
 \nonumber
-\sum_{n=0}^{N-1} x_{v, n} = 1 \quad (\forall n \in \{ 0, 1, \dots, N-1 \}) 
-$$ (1)
+\sum_{n=0}^{N-1} x_{v, n} = 1 \quad (\forall n \in \{ 0, 1, \dots, N-1 \}) \tag{1}
+$$
 
 **目的関数: 同じ色の頂点を両端に持つ辺の数を最小にする**
 
@@ -39,16 +39,17 @@ $$ (1)
 
 $$
 \nonumber
-\min \quad \sum_{n=0}^{N-1} \sum_{(uv) \in E} x_{u, n} x_{v, n}  
-$$ (2)
+\min \quad \sum_{n=0}^{N-1} \sum_{(uv) \in E} x_{u, n} x_{v, n} \tag{2}
+$$
 
 もし、全ての辺の両端の頂点が異なる色で塗り分けられているなら、この目的関数値はゼロとなります。
 
 ## JijModelingによるモデル構築
 
-### グラフ彩色問題で用いる変数を定義
+### 変数定義
 
 式(1), (2)で用いられている変数を、以下のようにして定義しましょう。
+
 
 ```python
 import jijmodeling as jm
@@ -56,51 +57,65 @@ import jijmodeling as jm
 
 # define variables
 V = jm.Placeholder('V')
-E = jm.Placeholder('E', dim=2)
+E = jm.Placeholder('E', ndim=2)
 N = jm.Placeholder('N')
-x = jm.Binary('x', shape=(V, N))
+x = jm.BinaryVar('x', shape=(V, N))
 n = jm.Element('i', (0, N))
 v = jm.Element('v', (0, V))
 e = jm.Element('e', E)
 ```
 
-`V=jm.Placeholder('V')`でグラフの頂点数、`E=jm.Placeholder('E', dim=2)`でグラフの辺集合を定義します。`N=jm.Placeholder('N')`でグラフを塗り分ける色数を定義し、その`V, N`を用いてバイナリ変数$x_{v, n}$を`x=jm.Binary('x', shape=(V, N))`のように定義します。`n, v`はバイナリ変数の添字に用いる変数です。最後の`e`は辺を表す変数です。`e[0], e[1]`が辺`e`の両端に位置する頂点となります。すなわち$(uv) = (e[0] e[1])$です。
+`V=jm.Placeholder('V')`でグラフの頂点数、`E=jm.Placeholder('E', ndim=2)`でグラフの辺集合を定義します。
+`N=jm.Placeholder('N')`でグラフを塗り分ける色数を定義し、その`V, N`を用いてバイナリ変数$x_{v, n}$を`x=jm.BinaryVar('x', shape=(V, N))`のように定義します。`n, v`はバイナリ変数の添字に用いる変数です。
+最後の`e`は辺を表す変数です。`e[0], e[1]`が辺`e`の両端に位置する頂点となります。すなわち$(u, v) = (e[0], e[1])$です。
 
-### 制約の追加
+### 制約の実装
 
-式(1)を制約として実装します。
+式(1)を実装します。
+
 
 ```python
 # set problem
 problem = jm.Problem('Graph Coloring')
 # set one-hot constraint that each vertex has only one color
-const = x[v, :]
-problem += jm.Constraint('color', const==1, forall=v)
+problem += jm.Constraint('color', x[v, :].sum()==1, forall=v)
 ```
 
-問題を作成し、そこに制約を追加しましょう。`x[v, :]`とすることで`Sum(n, x[v, n])`を簡潔に実装することができます。
+問題を作成し、そこに制約を追加しましょう。`x[v, :].sum()`とすることで`Sum(n, x[v, n])`を簡潔に実装することができます。
 
 ### 目的関数の追加
 
 式(2)の目的関数を実装しましょう。
 
+
 ```python
 # set objective function: minimize edges whose vertices connected by edges are the same color
-sum_list = [n, e]
-problem += jm.Sum(sum_list, x[e[0], n]*x[e[1], n])
+problem += jm.sum([n, e], x[e[0], n]*x[e[1], n])
 ```
 
-`sum_list=[n, e], jm.Sum(sum_list, ...)`とすることで、$\sum_n \sum_e$を表現することができます。`x[e[0], n]`は$x_{e[0], n}$、`x[e[1], n]`は$x_{e[1], n}$を表していいます。
-
+`jm.sum([n, e], ...)`とすることで、$\sum_n \sum_e$を表現することができます。`x[e[0], n]`は$x_{e[0], n}$、`x[e[1], n]`は$x_{e[1], n}$を表していいます。  
 実際に実装された数式をJupyter Notebookで表示してみましょう。
 
-![](../../../assets/graph_coloring_03.png)
+
+```python
+problem
+```
+
+
+
+
+$$\begin{array}{cccc}\text{Problem:} & \text{Graph Coloring} & & \\& & \min \quad \displaystyle \sum_{i = 0}^{N - 1} \sum_{e \in E} x_{e_{0}, i} \cdot x_{e_{1}, i} & \\\text{{s.t.}} & & & \\ & \text{color} & \displaystyle \sum_{\ast_{1} = 0}^{N - 1} x_{v, \ast_{1}} = 1 & \forall v \in \left\{0,\ldots,V - 1\right\} \\\text{{where}} & & & \\& x & 2\text{-dim binary variable}\\\end{array}$$
+
+
 
 ### インスタンスの作成
 
 実際にグラフ彩色を行うグラフを設定しましょう。
 
+
 ```python
+import networkx as nx
+
 # set the number of vertices
 inst_V = 12
 # set the number of colors
@@ -112,81 +127,91 @@ inst_E = [list(edge) for edge in inst_G.edges]
 instance_data = {'V': inst_V, 'N': inst_N, 'E': inst_E, 'G': inst_G}
 ```
 
-今回はグラフの頂点数を12個、グラフを塗り分ける色数を4つとします。
+今回は次のようなグラフを塗り分けてみましょう。
 
-### 未定乗数の設定
-
-グラフ彩色問題には制約が一つあります。よってその制約の重みを設定する必要があります。
-先程の`Constraint`部分で付けた名前と一致させるように、辞書型を用いて設定を行います。
 
 ```python
-# set multipliers
-lam1 = 1.0
-multipliers = {'color': lam1}    
+import matplotlib.pyplot as plt
+
+nx.draw_networkx(inst_G, with_labels=True)
+plt.show()
 ```
+
+
+    
+![png](graph_coloring_files/graph_coloring_12_0.png)
+    
+
 
 ### JijModeling transpilerによるPyQUBOへの変換
 
 ここまで行われてきた実装は、全てJijModelingによるものでした。
 これを[PyQUBO](https://pyqubo.readthedocs.io/en/latest/)に変換することで、OpenJijはもちろん、他のソルバーを用いた組合せ最適化計算を行うことが可能になります。
 
+
 ```python
-from jijmodeling.transpiler.pyqubo import to_pyqubo
+import jijmodeling_transpiler as jmt
 
-# convert to pyqubo
-pyq_model, pyq_chache = to_pyqubo(problem, instance_data, {})
-qubo, bias = pyq_model.compile().to_qubo(feed_dict=multipliers)
+# compile
+compiled_model = jmt.core.compile_model(problem, instance_data, {})
+# get qubo model
+pubo_builder = jmt.core.pubo.transpile_to_pubo(compiled_model=compiled_model, relax_method=jmt.core.pubo.RelaxationMethod.AugmentedLagrangian)
+qubo, const = pubo_builder.get_qubo_dict(multipliers={"color": 1.0})
 ```
-
-JijModelingで作成された`problem`、そして先ほど値を設定した`instance_data`を引数として、`to_pyqubo`によりPyQUBOモデルを作成します。次にそれをコンパイルすることで、OpenJijなどで計算が可能なQUBOモデルにします。
 
 ### OpenJijによる最適化計算の実行
 
-今回はOpenJijのシミュレーテッド・アニーリングを用いて、最適化問題を解くことにします。
-それには以下のようにします。
+今回はOpenJijのシミュレーテッド・アニーリングを用いて、最適化問題を解いてみましょう。
+
 
 ```python
+import openjij as oj
+
 # set sampler
 sampler = oj.SASampler()
 # solve problem
-response = sampler.sample_qubo(qubo)
-```    
+result = sampler.sample_qubo(qubo)
+```
 
 `SASampler`を設定し、そのサンプラーに先程作成したQUBOモデルの`qubo`を入力することで、計算結果が得られます。
 
 ### デコードと解の表示
 
-返された計算結果をデコードし、解析を行いやすくします。
+計算結果をデコードします。
+また実行可能解の中から目的関数値が最小のものを選び出し、それを可視化してみましょう。
+
 
 ```python
-# decode solution
-result = pyq_chache.decode(response)
+import numpy as np
+
+# decode a result to JijModeling sampleset
+sampleset = jmt.core.pubo.decode_from_openjij(result, pubo_builder, compiled_model)
+# get feasible samples from sampleset
+feasible_samples = sampleset.feasible()
+# get the values of objective function of feasible samples
+feasible_objectives = [objective for objective in feasible_samples.evaluation.objective]
+if len(feasible_objectives) == 0:
+    print("No feasible solution found ...")
+else:
+    # get the index of the lowest objective value
+    lowest_index = np.argmin(feasible_objectives)
+    # get the indices of x == 1
+    x_indices = feasible_samples.record.solution["x"][lowest_index][0]
+    # initialize a list for color of nodes
+    node_colors = [-1] * instance_data["V"]
+    # draw the graph
+    cmap = plt.get_cmap("tab10")
+    colors = [cmap(i) for i in range(instance_data["N"])]
+    for pair in zip(*x_indices):
+        node_colors[pair[0]] = colors[pair[1]]
+    nx.draw_networkx(inst_G, node_color=node_colors, with_labels=True)
+    plt.show()
 ```
 
-このようにして得られた結果から、グラフ彩色された結果を見てみましょう。
 
-```python
-# get indices of x = 1
-indices, _, _ = result.record.solution['x'][0]
-# get vertex number and color
-vertices, colors = indices
-# sort lists by vertex number
-zip_lists = zip(vertices, colors)
-zip_sort = sorted(zip_lists)
-sorted_vertices, sorted_colors = zip(*zip_sort)
-# initialize vertex color list
-node_colors = [-1] * len(vertices)
-# set color list for visualization
-colorlist = ['gold', 'violet', 'limegreen', 'darkorange']
-# set vertex color list
-for i, j in zip(sorted_vertices, sorted_colors):
-    node_colors[i] = colorlist[j]
-# make figure
-fig = plt.figure()
-nx.draw_networkx(instance_data['G'], node_color=node_colors, with_labels=True)
-fig.savefig('graph_coloring.png')
-```
+    
+![png](graph_coloring_files/graph_coloring_18_0.png)
+    
 
-すると以下のような画像を得ます。
 
-![](../../../assets/graph_coloring_04.png)
+
