@@ -28,74 +28,76 @@ $i$番目のタスクをコンピュータ$j$で行うことを表すバイナ�
 例えば、タスク3をコンピュータ1と2の両方で実行することは許されません。これを数式にすると
 
 $$
-\nonumber
 \sum_{j=0}^{M-1} x_{i, j} = 1 \quad (\forall i \in \{ 0, 1, \dots, N-1 \})
-$$ (1)
+\tag{1}
+$$
 
 **目的関数: コンピュータ1の実行時間と他の実行時間の差を小さくする**
 
 コンピュータ1の実行時間を基準とし、それと他のコンピュータの実行時間の差を最小にすることを考えます。これにより実行時間のばらつきが抑えられ、タスクが分散されるようになります。
 
 $$
-\nonumber
 \min\left\{ \sum_{j=1}^{M-1} (A_1 -A_j)^2\right\} 
-$$ (2)
+\tag{2}
+$$
 
-## JijModelingによるモデル構築
+## JijModelingを用いた実装
 
-### 整数長ジョブシーケンス問題で用いる変数を定義
+### 変数の定義
 
 式(1), (2)で用いられている変数を、以下のようにして定義しましょう。
+
 
 ```python
 import jijmodeling as jm
 
-
 # defin variables
-L = jm.Placeholder('L', dim=1)
-N = L.shape[0]
-M = jm.Placeholder('M')
-x = jm.Binary('x', shape=(N, M))
-i = jm.Element('i', (0, N))
-j = jm.Element('j', (0, M))
+L = jm.Placeholder("L", ndim=1)
+N = L.len_at(0, latex="N")
+M = jm.Placeholder("M")
+x = jm.BinaryVar("x", shape=(N, M))
+i = jm.Element("i", belong_to=(0, N))
+j = jm.Element("j", belong_to=(0, M))
 ```
 
-`L=jm.Placeholder('L', dim=1)`でコンピュータに実行させるタスクの実行時間のリストを定義します。
-そのリストの長さを`N=L.shape[0]`として定義します。`M`はコンピュータの台数、`x`はバイナリ変数です。最後に$x_{i, j}$のように、変数の添字として使うものを`i, j`として定義します。
+`L=jm.Placeholder('L', ndim=1)`でコンピュータに実行させるタスクの実行時間のリストを定義します。
+そのリストの長さを`N=L.len_at(0, latex="N")`として定義します。`M`はコンピュータの台数、`x`はバイナリ変数です。
+最後に$x_{i, j}$のように、変数の添字として使うものを`i, j`として定義します。
 
-### 制約の追加
+### 制約と目的関数の実装
 
-式(1)を制約として実装します。
+式(1), (2)を実装しましょう。
+
 
 ```python
 # set problem
 problem = jm.Problem('Integer Jobs')
 # set constraint: job must be executed using a certain node
-onehot = x[i, :]
-problem += jm.Constraint('onehot', onehot==1, forall=i)
+problem += jm.Constraint('onehot', x[i, :].sum()==1, forall=i)
+# set objective function: minimize difference between node 0 and others
+problem += jm.sum((j, j!=0), jm.sum(i, L[i]*(x[i, 0]-x[i, j]))**2)
 ```
 
-問題を作成し、そこに制約を追加しましょう。`x[i, :]`とすることで`Sum(j, x[i, j])`を簡潔に実装することができます。
+`x[i, :].sum()`とすることで、$\sum_j x_{i, j}$を簡潔に実装することができます。
 
-### 目的関数の追加
+実装した数式をJupyter Notebookで表示してみましょう。
 
-式(2)の目的関数を実装しましょう。
 
 ```python
-# set objective function: minimize difference between node 0 and others
-diffj = jm.Sum(i, L[i]*x[i, 0]) - jm.Sum(i, L[i]*x[i, j])
-sumdiff2 = jm.Sum((j, j!=0), diffj*diffj)
-problem += sumdiff2
+problem
 ```
 
-`diffj`で$A_1 - A_j$を計算し、それを2乗して総和を取ったものを制約とします。  
-実際に実装された数式をJupyter Notebookで表示してみましょう。
 
-![](../../../assets/integer_jobs_02.png)
+
+
+$$\begin{array}{cccc}\text{Problem:} & \text{Integer Jobs} & & \\& & \min \quad \displaystyle \sum_{\substack{j = 0\\j \neq 0}}^{M - 1} \left(\left(\sum_{i = 0}^{N - 1} L_{i} \cdot \left(x_{i, 0} - x_{i, j}\right)\right)^{2}\right) & \\\text{{s.t.}} & & & \\ & \text{onehot} & \displaystyle \sum_{\ast_{1} = 0}^{M - 1} x_{i, \ast_{1}} = 1 & \forall i \in \left\{0,\ldots,N - 1\right\} \\\text{{where}} & & & \\& x & 2\text{-dim binary variable}\\\end{array}$$
+
+
 
 ### インスタンスの作成
 
-実際に実行するタスクなどを設定しましょう。
+インスタンスを以下のようにします。
+
 
 ```python
 # set a list of jobs
@@ -105,38 +107,28 @@ inst_M = 3
 instance_data = {'L': inst_L, 'M': inst_M}
 ```
 
-先程の具体例と同様に、$\{1, 2, \dots, 10\}$の10個のタスクを3台のコンピュータで実行することを考えます。
-
-### 未定乗数の設定
-
-整数長ジョブシーケンスには制約が一つあります。よってその制約の重みを設定する必要があります。
-先程の`Constraint`部分で付けた名前と一致させるように、辞書型を用いて設定を行います。
-
-```python
-# set multipliers
-lam1 = 1.0
-multipliers = {'onehot': lam1}    
-```
+先程の具体例と同様に、$\{1, 2, \dots, 10\}$の10個のタスクを、3台のコンピュータに分散させる状況を考えます。
 
 ### JijModeling transpilerによるPyQUBOへの変換
 
 ここまで行われてきた実装は、全てJijModelingによるものでした。
 これを[PyQUBO](https://pyqubo.readthedocs.io/en/latest/)に変換することで、OpenJijはもちろん、他のソルバーを用いた組合せ最適化計算を行うことが可能になります。
 
+
 ```python
-from jijmodeling.transpiler.pyqubo import to_pyqubo
+import jijmodeling_transpiler as jmt
 
-# convert to pyqubo
-pyq_model, pyq_chache = to_pyqubo(problem, instance_data, {})
-qubo, bias = pyq_model.compile().to_qubo(feed_dict=multipliers)
+# compile
+compiled_model = jmt.core.compile_model(problem, instance_data, {})
+# get qubo model
+pubo_builder = jmt.core.pubo.transpile_to_pubo(compiled_model=compiled_model, relax_method=jmt.core.pubo.RelaxationMethod.AugmentedLagrangian)
+qubo, const = pubo_builder.get_qubo_dict(multipliers={"onehot": 1.0})
 ```
-
-JijModelingで作成された`problem`、そして先ほど値を設定した`instance_data`を引数として、`to_pyqubo`によりPyQUBOモデルを作成します。次にそれをコンパイルすることで、OpenJijなどで計算が可能なQUBOモデルにします。
 
 ### OpenJijによる最適化計算の実行
 
-今回はOpenJijのシミュレーテッド・アニーリングを用いて、最適化問題を解くことにします。
-それには以下のようにします。
+今回はOpenJijのシミュレーテッド・アニーリングを用いて、最適化問題を解いてみましょう。
+
 
 ```python
 import openjij as oj
@@ -144,51 +136,58 @@ import openjij as oj
 # set sampler
 sampler = oj.SASampler()
 # solve problem
-response = sampler.sample_qubo(qubo)
-```    
+response = sampler.sample_qubo(qubo, num_reads=100)
+```
 
 `SASampler`を設定し、そのサンプラーに先程作成したQUBOモデルの`qubo`を入力することで、計算結果が得られます。
 
 ### デコードと解の表示
 
-返された計算結果をデコードし、解析を行いやすくします。
-
-```python
-# decode solution
-result = pyq_chache.decode(response)
-```
+計算結果をデコードします。
+また実行可能解の中から目的関数値が最小のものを選び出してみましょう。
 
 このようにして得られた結果から、タスク実行が分散されている様子を見てみましょう。
 
+
 ```python
-# extract feasible solution
-feasible = result.feasible()
-# get the index of the lowest objective function
-objectives = feasible.evaluation.objective
-obs_dict = {i: objectives[i] for i in range(len(objectives))}
-lowest = min(obs_dict, key=obs_dict.get)
-# get indices of x = 1
-indices, _, _ = feasible.record.solution['x'][lowest]
-# get task number and execution node
-tasks, nodes = indices
-# get instance information
-L = instance_data['L']
-M = instance_data['M']
-# initialize execution time
-exec_time = [0] * M
-# compute summation of execution time each nodes
-for i, j in zip(tasks, nodes):
-    exec_time[j] += L[i]
-y_axis = range(0, max(exec_time)+1, 2)
-node_names = [str(j) for j in range(M)]
-fig = plt.figure()
-plt.bar(node_names, exec_time)
-plt.yticks(y_axis)
-plt.xlabel('Computer numbers')
-plt.ylabel('Execution time')
-fig.savefig('integer_jobs.png')
+import matplotlib.pyplot as plt
+import numpy as np
+
+# decode a result to JijModeling sampleset
+sampleset = jmt.core.pubo.decode_from_openjij(response, pubo_builder, compiled_model)
+# get feasible samples from sampleset
+feasible_samples = sampleset.feasible()
+# get the values of objective function of feasible samples
+feasible_objectives = [objective for objective in feasible_samples.evaluation.objective]
+if len(feasible_objectives) == 0:
+    print("No feasible solution found ...")
+else:
+    # get the index of the loweest objective value
+    lowest_index = np.argmin(feasible_objectives)
+    # get the indices of x == 1
+    tasks, nodes = feasible_samples.record.solution["x"][lowest_index][0]
+    # initialize execution time
+    exec_time = [0] * inst_M
+    # compute summation of execution each nodes
+    for i, j in zip(tasks, nodes):
+        exec_time[j] += inst_L[i]
+    # make plot
+    y_axis = range(0, max(exec_time)+1, 2)
+    node_names = [str(j) for j in range(inst_M)]
+    fig = plt.figure()
+    plt.bar(node_names, exec_time)
+    plt.yticks(y_axis)
+    plt.xlabel('Computer numbers')
+    plt.ylabel('Execution time')
+    fig.savefig('integer_jobs.png')
 ```
 
-すると以下のように、3つのコンピュータの実行時間がほぼ均等な解が得られます。
 
-![](../../../assets/integer_jobs_03.png)
+    
+![png](integer_jobs_files/integer_jobs_17_0.png)
+    
+
+
+3つのコンピュータの実行時間がほぼ均等な解が得られました。
+
+
