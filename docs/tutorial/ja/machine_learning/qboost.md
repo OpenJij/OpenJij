@@ -9,69 +9,81 @@
 
 $$
 C(\bm{x}) 
-= \mathrm{sgn} \left( \sum_{i=0}^{N-1} w_i c_i (\bm{x}) \right) 
-$$ (1)
+= \mathrm{sgn} \left( \sum_{i=0}^{N-1} w_i c_i (\bm{x}) \right) \tag{1}
+$$
 
 となります。ここで$w_i \in \{0, 1\}$で、$i$番目の予測器を使うか使わないかを表します。どの予測器を用いると、できるだけ少ない数の弱い予測器でより良い性能が得られるかを明らかにしましょう。  
 このために、教師あり学習を用いて最適な$\{w_i\}$の組を求めることにします。教師データを$(\bm{x}^{(d)}, y^{(d)}) \ (d= 0, 1, \dots, D-1)$を多数用意します($D \gg 1$)。それらをできるだけ忠実に再現するように$\{w_i\}$を調整します。  
 この方針をより具体的に表すと、次のハミルトニアンを$\{w_i\}$について最小化することを目指せば良いとわかります。
 
 $$
-H(\bm{w}) = \sum_{d=0}^{D-1} \left( \frac{1}{N} \sum_{i=0}^{N-1} w_i c_i (\bm{x}^{(d)}) - y^{(d)}\right)^2 + \lambda \sum_{i=0}^{N-1} w_i 
-$$ (2)
+H(\bm{w}) 
+= \sum_{d=0}^{D-1} \left( \frac{1}{N} \sum_{i=0}^{N-1} w_i c_i (\bm{x}^{(d)}) - y^{(d)}\right)^2 + \lambda \sum_{i=0}^{N-1} w_i \tag{2}
+$$ 
 
 このハミルトニアンの最小化を通して、教師データ$y^{(d)}$との差ができるだけ小さくなるようにします。式(1)の右辺をそのまま使うと、符号関数があるために$w_i$の2次形式にならず、イジング模型に帰着することができません。そのため、符号関数の引数$\sum_i w_i c_i$の$1/N$倍と教師データ$y^{(d)}$との差の2乗を最小化する問題にしています。$1/N$の係数は、$\sum_i w_i c_i(\bm{x})$の最大値が$N$であるために$y^{(d)}= \pm 1$との差が大きくなりすぎないのように調整するためのものです。$\lambda (>0)$がかかった項は、あまり多くの$w_i$を1にせず、比較的少数の弱い予測器で効率良く構成するための項(正則化項)を表します。
 
 ## JijModelingによるモデル構築
 
-### QBoostで用いる変数を定義
+### 変数の定義
 
 式(2)で用いられている変数を、以下のようにして定義しましょう。
+
 
 ```python
 import jijmodeling as jm
 
+# define variables
+c = jm.Placeholder("c", ndim=2)
+y = jm.Placeholder("y", ndim=1)
+N = c.len_at(0, latex="N")
+D = c.len_at(1, latex="D")
+w = jm.BinaryVar("w", shape=(N, ))
+lamb = jm.Placeholder("lamb", latex="\lambda")
+i = jm.Element("i", belong_to=(0, N))
+d = jm.Element("d", belong_to=(0, D))
+```
+
+`c = jm.Placeholder('c', ndim=2)`で式(2)の$c$を定義しています。
+そのリストの要素数から、弱い予測器の数$N$と教師データ数$D$をそれぞれ`N, D`として定義しています。
+それらを用いて、最適化に用いるバイナリ変数`w`と教師データのバイナリ値`y`を定義しています。
+式(2)の$\lambda$を`lamb`として定義し、最後に式(2)で用いられている添字を`i, d`のように表しています。
+
+### 目的関数の実装
+
+式(2)を実装しましょう。
+
+
+```python
 # set problem
-problem = jm.Problem('QBoost')
-# defin variables
-c = jm.Placeholder('c', dim=2)
-N = c.shape[0].set_latex('N')
-D = c.shape[1].set_latex('D')
-w = jm.Binary('w', shape=(N))
-y = jm.Placeholder('y', shape=(D))
-lam = jm.Placeholder('lam')
-i = jm.Element('i', (0, N))
-d = jm.Element('d', (0, D))
+problem = jm.Problem("QBoost")
+# set objective function 1: minimize the sum of differences
+obj1 = jm.sum(d, (jm.sum(i, w[i]*c[i, d])/N-y[d])**2)
+# set objective function 2: minimize regularization term
+obj2 = lamb * w[:].sum()
+problem += obj1 + obj2
 ```
 
-`c = jm.Placeholder('c', dim=2)`で式(2)の$c$を定義しています。そのリストの大きさから、弱い予測器の数$N$と教師データ数$D$をそれぞれ`N, D`として定義しています。それらを用いて、最適化に用いるバイナリ変数`w`と教師データのバイナリ値`y`を定義しています。式(2)の$\lambda$を`lam`として定義し、最後に式(2)で用いられている添字`i, d`を定義しています。
-
-### 目的関数の追加
-
-式(2)を実装しましょう。まずは第一項からです。
-
-```python
-# set objective function 1: minimize difference
-sum_i = jm.Sum(i, w[i]*c[i, d]) / N
-problem += jm.Sum(d, (sum_i-y[d])**2)
-```
-
-`sum_i`で$\sum_{i=0}^{N-1} w_i c_i / N$を計算しています。  
-この実装では第二項も目的関数として実装します。
-
-```python
-# set objective function 2: minimize the number of weak classifier
-problem += lam * w[:]
-```
-
-`w[:]`とすることで、$\sum_i w_i$を簡単に記述することができます。  
+`w[:].sum()`とすることで、$\sum_i w_i$を簡潔に実装することができます。  
 ここまでの実装が正しくされているかを確認しましょう。
 
-![](../../../assets/qboost_01.png)
+
+```python
+problem
+```
+
+
+
+
+$$\begin{array}{cccc}\text{Problem:} & \text{QBoost} & & \\& & \min \quad \displaystyle \sum_{d = 0}^{D - 1} \left(\left(\sum_{i = 0}^{N - 1} w_{i} \cdot c_{i, d} \cdot N^{(-1)} - y_{d}\right)^{2}\right) + \lambda \cdot \sum_{\ast_{0} = 0}^{N - 1} w_{\ast_{0}} & \\\text{{where}} & & & \\& w & 1\text{-dim binary variable}\\\end{array}$$
+
+
 
 ### インスタンスの作成
 
-実際に実行するタスクなどを設定しましょう。今回は弱い予測器を[scikit-learn](https://scikit-learn.org/stable/)のdecision stump(決定株: 一層の決定木)を用います。また用いるデータはscikit-learnの癌識別データセットを使用します。
+実際に実行するタスクなどを設定しましょう。今回は弱い予測器を[scikit-learn](https://scikit-learn.org/stable/)のdecision stump(決定株: 一層の決定木)を用います。
+また用いるデータはscikit-learnの癌識別データセットを使用します。
+
 
 ```python
 import numpy as np
@@ -114,44 +126,36 @@ X_test = noisy_data[num_train:, :]
 y_train = labels[:num_train]
 y_test = labels[num_train:]
 # set the number of classifer
-N = 20
+inst_N = 20
 # predict from train data using dicision tree classifier
-y_pred_list_tarin, y_pred_list_test = prediction_from_train(N, X_train, y_train, X_test)
+y_pred_list_tarin, y_pred_list_test = prediction_from_train(inst_N, X_train, y_train, X_test)
 # set lambda (coefficient of 2nd term)
-lam = 3.0
-instance_data = {'y': y_train, 'c': y_pred_list_tarin, 'lam': lam, 'y_train': y_train, 'y_test': y_test, 'y_pred_list_test': y_pred_list_test}
+inst_lamb = 10.0
+instance_data = {'y': y_train, 'c': y_pred_list_tarin, 'lamb': inst_lamb, 'y_train': y_train, 'y_test': y_test, 'y_pred_list_test': y_pred_list_test}
 ```
 
-デモンストレーションのために、ノイズとなる特徴量を加えたものを実際のデータとして用います。`prediction_from_train`関数を用いて弱い予測器の作成と、それらの予測器からの出力$c_i (\bm{x}^{(d)})$を作成しています。ここでは弱い予測器の数を20、教師データ数は200です。最後に式(2)の$\lambda$の値を3.0としています。
-
-### 未定乗数の設定
-
-今回は制約が存在しないため、未定乗数を設定する辞書を空にします。
-
-```python
-# set multipliers
-multipliers = {}    
-```
+デモンストレーションのために、ノイズとなる特徴量を加えたものを実際のデータとして用います。
+`prediction_from_train`関数を用いて弱い予測器の作成と、それらの予測器からの出力$c_i (\bm{x}^{(d)})$を作成しています。
+ここでは弱い予測器の数を20、教師データ数は200です。最後に式(2)の$\lambda$の値を3.0としています。
 
 ### JijModeling transpilerによるPyQUBOへの変換
 
 ここまで行われてきた実装は、全てJijModelingによるものでした。
 これを[PyQUBO](https://pyqubo.readthedocs.io/en/latest/)に変換することで、OpenJijはもちろん、他のソルバーを用いた組合せ最適化計算を行うことが可能になります。
 
-```python
-from jijmodeling.transpiler.pyqubo import to_pyqubo
 
-# convert to pyqubo
-pyq_model, pyq_chache = to_pyqubo(problem, instance_data, {})
-qubo, bias = pyq_model.compile().to_qubo(feed_dict=multipliers)
+```python
+import jijmodeling_transpiler as jmt
+
+# compile
+compiled_model = jmt.core.compile_model(problem, instance_data, {})
+# get qubo model
+pubo_builder = jmt.core.pubo.transpile_to_pubo(compiled_model=compiled_model, relax_method=jmt.core.pubo.RelaxationMethod.AugmentedLagrangian)
+qubo, const = pubo_builder.get_qubo_dict(multipliers={})
 ```
 
-JijModelingで作成された`problem`、そして先ほど値を設定した`instance_data`を引数として、`to_pyqubo`によりPyQUBOモデルを作成します。次にそれをコンパイルすることで、OpenJijなどで計算が可能なQUBOモデルにします。
 
-### OpenJijによる最適化計算の実行
 
-今回はOpenJijのシミュレーテッド・アニーリングを用いて、最適化問題を解くことにします。
-それには以下のようにします。
 
 ```python
 import openjij as oj
@@ -159,42 +163,38 @@ import openjij as oj
 # set sampler
 sampler = oj.SASampler()
 # solve problem
-response = sampler.sample_qubo(qubo, num_reads=5)
-```    
-
-`SASampler`を設定し、そのサンプラーに先程作成したQUBOモデルの`qubo`を入力することで、計算結果が得られます。
-
-### デコードと解の表示
-
-返された計算結果をデコードし、解析を行いやすくします。
-
-```python
-# decode solution
-result = pyq_chache.decode(response)
+result = sampler.sample_qubo(qubo, num_reads=100)
 ```
 
-シミュレーテッド・アニーリングにより選ばれた弱い予測器たちを用いて、実際にテストデータの分類精度を見てみましょう。
 
 ```python
+# decode a result to JijModeling sampleset
+sampleset = jmt.core.pubo.decode_from_openjij(result, pubo_builder, compiled_model)
+objectives = np.array(sampleset.evaluation.objective)
+lowest_index = np.argmin(objectives)
+w_indices = sampleset.record.solution["w"][lowest_index][0][0]
+```
+
+
+```python
+from sklearn.metrics import accuracy_score
+
 y_pred_list_train = instance_data['c']
 y_train = instance_data['y_train']
 y_test = instance_data['y_test']
 y_pred_list_test = instance_data['y_pred_list_test']
 accs_train_oj = []
 accs_test_oj = []
-for solution in result.record.solution['w']:
+for solution in sampleset.record.solution["w"]:
     idx_clf_oj = solution[0][0]
     y_pred_train_oj = np.sign(np.sum(y_pred_list_train[idx_clf_oj, :], axis=0))
     y_pred_test_oj = np.sign(np.sum(y_pred_list_test[idx_clf_oj, :], axis=0))
-    acc_train_oj = metrics.accuracy_score(y_true=y_train, y_pred=y_pred_train_oj)
-    acc_test_oj = metrics.accuracy_score(y_true=y_test, y_pred=y_pred_test_oj)
+    acc_train_oj = accuracy_score(y_true=y_train, y_pred=y_pred_train_oj)
+    acc_test_oj = accuracy_score(y_true=y_test, y_pred=y_pred_test_oj)
     accs_train_oj.append(acc_train_oj)
     accs_test_oj.append(acc_test_oj)    
 print('Accuracy of QBoost is {}'.format(max(accs_test_oj)))
 ```
 
-すると以下のように、テストデータでの分類精度が出力されます。
+    Accuracy of QBoost is 0.8888888888888888
 
-```bash
-Accuracy of QBoost is 0.9159891598915989
-```
