@@ -40,89 +40,89 @@ $$
 最大化したいのは、ナップサックに入れる荷物の価値の合計です。よってこれを目的関数として表現しましょう。さらにナップサックの容量制限以下にしなければならない制約を考えると、ナップサック問題は以下のような数式で表現されます。
 
 $$
-\max \ \sum_{i=0}^{N-1} v_i x_i 
-$$ (1)
+\max \quad \sum_{i=0}^{N-1} v_i x_i \tag{1}
+$$
 
 $$
-\mathrm{s.t.} \quad \sum_{i=0}^{N-1} w_i x_i \leq W
-$$ (2)
+\mathrm{s.t.} \quad \sum_{i=0}^{N-1} w_i x_i \leq W \tag{2}
+$$
 
 $$
-x_i \in \{0, 1\} \quad (\forall i \in \{0, 1, \dots, N-1\})
-$$ (3)
+x_i \in \{0, 1\} \quad (\forall i \in \{0, 1, \dots, N-1\}) \tag{3}
+$$
 
 ## JijModelingによるモデル構築
 
-### ナップサック問題で用いる変数を定義
+### 変数定義
 
-式(1), (2), (3)で用いられている変数$\bm{v}, \bm{w}, N, W, x_i, i$を、以下のようにして定義しましょう。
+ナップサック問題で用いられている変数$\bm{v}, \bm{w}, N, W, x_i, i$を、以下のようにして定義しましょう。
+
 
 ```python
 import jijmodeling as jm
 
-
 # define variables
-v = jm.Placeholder('v', dim=1)
-N = v.shape[0]
-w = jm.Placeholder('w', shape=(N,))
+v = jm.Placeholder('v', ndim=1)
+w = jm.Placeholder('w', ndim=1)
 W = jm.Placeholder('W')
-x = jm.Binary('x', shape=(N,))
+N = v.len_at(0, latex="N")
+x = jm.BinaryVar('x', shape=(N,))
 i = jm.Element('i', (0, N))
 ```
 
-`v = jm.Placeholder('v', dim=1)`でナップサックに入れる物の価値を表す一次元のリストを宣言し、その具体的な要素数を`N`としています。その`N`を用いて、ナップサックに入れる物の重さを表す一次元のリストを`w = jm.Placeholder('w', shape=(N))`のように定義することで、`v`と`w`が同じ長さであることを保証できます。`W = jm.Placeholder('W')`ではナップサックの容量制限を表す$W$を定義しています。続く`x = jm.Binary('x', shape=(N))`により、`v, w`と同じ長さのバイナリ変数リスト`x`を定義します。最後に`i = jm.Element('i', (0, N))`は$v_i, w_i, x_i$の添字を定義しており、これは$0\leq i < N$の範囲の整数であることを表しています。
+`v = jm.Placeholder('v', ndim=1), w = jm.Placeholder('w', ndim=1)`でナップサックに入れる物の価値と重さを表現する一次元のリストを定義し、さらに`W = jm.Placeholder('W')`ではナップサックの容量制限を表す$W$を定義しています。
+`N=v.len_at(0, latex="N")`のようにすることで、先ほど定義した`v`の要素数を取得しています。
+これを用いて、最適化に用いるバイナリ変数のリストを`x = jm.Binary('x', shape=(N))`を定義します。
+最後の`i = jm.Element('i', (0, N))`により$0 \leq i < N$を満たす$v_i, w_i, x_i$の添字を定義します。
 
-### 目的関数の追加
+### 制約と目的関数の実装
 
-式(1)を目的関数として実装します。
+式(1), (2)を実装しましょう。
+
 
 ```python
 # set problem
-problem = jm.Problem('Knapsack')    
+problem = jm.Problem('Knapsack', sense=jm.ProblemSense.MAXIMIZE) 
+# set constraint: less than the capacity
+problem += jm.Constraint("capacity", jm.sum(i, w[i]*x[i]) <= W)
 # set objective function
-obj = - jm.Sum(i, v[i]*x[i])
-problem += obj
+problem += jm.sum(i, v[i]*x[i])
 ```
 
-問題を作成し、そこに目的関数を追加しましょう。`Sum(i, 数式)`とすることで、数式部分の総和を添字`i`に対して行うことができます。
-
-### 制約の追加
-
-式(2)の制約を実装しましょう。
-
-```python
-# set total weight constraint
-total_weight = jm.Sum(i, w[i]*x[i])
-problem += jm.Constraint('weight', total_weight<=W)
-```
+`jm.sum(i, ...)`のようにすることで、$\sum_i$を実装することができます。
+`jm.Constraint("capacity", ...)`のようにすることで、"capacity"という名の制約を設定しています。　　
+実装した数理モデルを、Jupyter Notebookで表示してみましょう。
 
 `Constraint(制約名, 制約式)`とすることで、制約式に適当な制約名を付与することができます。  
 実際に実装された数式をJupyter Notebookで表示してみましょう。
 
-![](../../../assets/knapsack_01.png)
+
+```python
+problem
+```
+
+
+
+
+$$\begin{array}{cccc}\text{Problem:} & \text{Knapsack} & & \\& & \max \quad \displaystyle \sum_{i = 0}^{N - 1} v_{i} \cdot x_{i} & \\\text{{s.t.}} & & & \\ & \text{capacity} & \displaystyle \sum_{i = 0}^{N - 1} w_{i} \cdot x_{i} \leq W &  \\\text{{where}} & & & \\& x & 1\text{-dim binary variable}\\\end{array}$$
+
+
 
 ### インスタンスの作成
 
-先程の冒険家の物語を、インスタンスとして設定しましょう。ただし宝物の価値は$1000で規格化、さらに宝物の重さも100gで規格化された値を用います。
+先程の冒険家の物語を、インスタンスとして設定しましょう。
+ただし物の価値は$1000で規格化、さらに物の重さも100gで規格化された値を用います。
+
 
 ```python
+import numpy as np
+
 # set a list of values & weights 
-inst_v = [5, 7, 2, 1, 4, 3]
-inst_w = [8, 10, 6, 4, 5, 3]
+inst_v = np.array([5, 7, 2, 1, 4, 3])
+inst_w = np.array([8, 10, 6, 4, 5, 3])
 # set maximum weight
 inst_W = 20
-instance_data = {'v': inst_v, 'w': inst_w, 'W': inst_W}    
-```
-
-### 未定乗数の設定
-
-このナップサック問題には制約が一つあります。よってその制約の重みを設定する必要があります。
-先程の`Constraint`部分で付けた名前と一致させるように、辞書型を用いて設定を行います。
-
-```python
-# set multipliers
-lam1 = 1.0
-multipliers = {'weight': lam1}    
+instance_data = {'v': inst_v, 'w': inst_w, 'W': inst_W} 
 ```
 
 ### JijModeling transpilerによるPyQUBOへの変換
@@ -130,60 +130,61 @@ multipliers = {'weight': lam1}
 ここまで行われてきた実装は、全てJijModelingによるものでした。
 これを[PyQUBO](https://pyqubo.readthedocs.io/en/latest/)に変換することで、OpenJijはもちろん、他のソルバーを用いた組合せ最適化計算を行うことが可能になります。
 
+
 ```python
-from jijmodeling.transpiler.pyqubo import to_pyqubo
+import jijmodeling_transpiler as jmt
 
-# convert to pyqubo
-pyq_model, pyq_chache = to_pyqubo(problem, instance_data, {})
-qubo, bias = pyq_model.compile().to_qubo(feed_dict=multipliers)
+# compile
+compiled_model = jmt.core.compile_model(problem, instance_data, {})
+# get qubo model
+pubo_builder = jmt.core.pubo.transpile_to_pubo(compiled_model=compiled_model, relax_method=jmt.core.pubo.RelaxationMethod.AugmentedLagrangian)
+qubo, const = pubo_builder.get_qubo_dict(multipliers={"capacity": 1.0})
 ```
-
-JijModelingで作成された`problem`、そして先ほど値を設定した`instance_data`を引数として、`to_pyqubo`によりPyQUBOモデルを作成します。次にそれをコンパイルすることで、OpenJijなどで計算が可能なQUBOモデルにします。
 
 ### OpenJijによる最適化計算の実行
 
-今回はOpenJijのシミュレーテッド・アニーリングを用いて、最適化問題を解くことにします。
-それには以下のようにします。
+今回はOpenJijのシミュレーテッド・アニーリングを用いて、最適化問題を解いてみましょう。
+
 
 ```python
+import openjij as oj
+
 # set sampler
 sampler = oj.SASampler()
 # solve problem
-response = sampler.sample_qubo(qubo)
-```    
+response = sampler.sample_qubo(qubo, num_reads=100)
+```
 
 `SASampler`を設定し、そのサンプラーに先程作成したQUBOモデルの`qubo`を入力することで、計算結果が得られます。
 
 ### デコードと解の表示
 
-返された計算結果をデコードし、解析を行いやすくします。
+計算結果をデコードします。
+また実行可能解の名から目的関数値が最大のものを選び出してみましょう。
+
 
 ```python
-# decode solution
-result = pyq_chache.decode(response)
+# decode a result to JijModeling sampleset
+sampleset = jmt.core.pubo.decode_from_openjij(response, pubo_builder, compiled_model)
+# get feasible samples from sampleset
+feasible_samples = sampleset.feasible()
+# get the values of objective function of feasible samples
+feasible_objectives = [objective for objective in feasible_samples.evaluation.objective]
+if len(feasible_objectives) == 0:
+    print("No feasible solution found ...")
+else:
+    # get the index of the highest objective value
+    highest_index = np.argmax(feasible_objectives)
+    # get the indices of x == 1
+    x_indices = np.array(feasible_samples.record.solution["x"][highest_index][0][0])
+    print("Indices of x == 1: ", x_indices)
+    print('Value of objective function: ', feasible_objectives[highest_index])
+    print('Value of constraint term: ', feasible_samples.evaluation.constraint_violations["capacity"][highest_index])
+    print('Total weight: ', np.sum(inst_w[x_indices]))
 ```
 
-このようにして得られた結果から、実際にどの宝物をナップサックに入れたのかを見てみましょう。
+    Indices of x == 1:  [1 4 5]
+    Value of objective function:  14.0
+    Value of constraint term:  0.0
+    Total weight:  18
 
-```python
-indices, _, _ = result.record.solution['x'][0]
-inst_w = instance_data['w']
-sum_w = 0
-for i in indices[0]:
-    sum_w += inst_w[i]
-print('Indices of x = 1: ', indices[0])
-print('Value of objective function: ', result.evaluation.objective)
-print('Value of constraint term: ', result.evaluation.constraint_violations['weight'])
-print('Total weight: ', sum_w)
-```
-
-すると以下のような出力を得ます。
-
-```bash
-Indices of x = 1:  [1, 4, 5]
-Value of objective function:  [-14.0]
-Value of constraint term:  [0.0]
-Total weight:  18
-```
-
-目的関数の値にマイナスをかけたものが、実際にナップサックに入れた宝物の価値の合計です。また`result.evaluation.constarint_violations[制約名]`とすることで、その制約がどれだけ満たされていないかを取得することができます。
