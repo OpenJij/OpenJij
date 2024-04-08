@@ -72,7 +72,7 @@ i = jm.Element('i', (0, N))
 
 `v = jm.Placeholder('v', ndim=1), w = jm.Placeholder('w', ndim=1)`でナップサックに入れる物の価値と重さを表現する一次元のリストを定義し、さらに`W = jm.Placeholder('W')`ではナップサックの容量制限を表す$W$を定義しています。
 `N=v.len_at(0, latex="N")`のようにすることで、先ほど定義した`v`の要素数を取得しています。
-これを用いて、最適化に用いるバイナリ変数のリストを`x = jm.Binary('x', shape=(N))`を定義します。
+これを用いて、最適化に用いるバイナリ変数のリストを`x = jm.BinaryVar('x', shape=(N))`を定義します。
 最後の`i = jm.Element('i', (0, N))`により$0 \leq i < N$を満たす$v_i, w_i, x_i$の添字を定義します。
 
 ### 制約と目的関数の実装
@@ -82,7 +82,7 @@ i = jm.Element('i', (0, N))
 
 ```python
 # set problem
-problem = jm.Problem('Knapsack', sense=jm.ProblemSense.MAXIMIZE) 
+problem = jm.Problem('Knapsack', sense=jm.ProblemSense.MAXIMIZE)
 # set constraint: less than the capacity
 problem += jm.Constraint("capacity", jm.sum(i, w[i]*x[i]) <= W)
 # set objective function
@@ -96,17 +96,11 @@ problem += jm.sum(i, v[i]*x[i])
 `Constraint(制約名, 制約式)`とすることで、制約式に適当な制約名を付与することができます。  
 実際に実装された数式をJupyter Notebookで表示してみましょう。
 
-
 ```python
 problem
 ```
 
-
-
-
 $$\begin{array}{cccc}\text{Problem:} & \text{Knapsack} & & \\& & \max \quad \displaystyle \sum_{i = 0}^{N - 1} v_{i} \cdot x_{i} & \\\text{{s.t.}} & & & \\ & \text{capacity} & \displaystyle \sum_{i = 0}^{N - 1} w_{i} \cdot x_{i} \leq W &  \\\text{{where}} & & & \\& x & 1\text{-dim binary variable}\\\end{array}$$
-
-
 
 ### インスタンスの作成
 
@@ -188,3 +182,8 @@ else:
     Value of constraint term:  0.0
     Total weight:  18
 
+
+
+```python
+
+```
