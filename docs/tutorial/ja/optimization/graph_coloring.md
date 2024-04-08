@@ -30,7 +30,7 @@
 
 $$
 \nonumber
-\sum_{n=0}^{N-1} x_{v, n} = 1 \quad (\forall n \in \{ 0, 1, \dots, N-1 \}) \tag{1}
+\sum_{n=0}^{N-1} x_{v, n} = 1 \quad (\forall v \in V) \tag{1}
 $$
 
 **目的関数: 同じ色の頂点を両端に持つ辺の数を最小にする**
@@ -81,7 +81,7 @@ problem = jm.Problem('Graph Coloring')
 problem += jm.Constraint('color', x[v, :].sum()==1, forall=v)
 ```
 
-問題を作成し、そこに制約を追加しましょう。`x[v, :].sum()`とすることで`Sum(n, x[v, n])`を簡潔に実装することができます。
+問題を作成し、そこに制約を追加しましょう。`x[v, :].sum()`とすることで`jm.sum(n, x[v, n])`を簡潔に実装することができます。
 
 ### 目的関数の追加
 
