@@ -13,55 +13,6 @@
 !pip install jijmodeling-transpiler
 ```
 
-    Requirement already satisfied: jijmodeling in /home/nakasho/.venv/lib/python3.9/site-packages (1.3.3)
-    Requirement already satisfied: numpy in /home/nakasho/.venv/lib/python3.9/site-packages (from jijmodeling) (1.24.4)
-    Requirement already satisfied: pandas in /home/nakasho/.venv/lib/python3.9/site-packages (from jijmodeling) (2.0.3)
-    Requirement already satisfied: orjson<4.0.0,>=3.8.0 in /home/nakasho/.venv/lib/python3.9/site-packages (from jijmodeling) (3.9.2)
-    Requirement already satisfied: python-dateutil>=2.8.2 in /home/nakasho/.venv/lib/python3.9/site-packages (from pandas->jijmodeling) (2.8.2)
-    Requirement already satisfied: pytz>=2020.1 in /home/nakasho/.venv/lib/python3.9/site-packages (from pandas->jijmodeling) (2023.3)
-    Requirement already satisfied: tzdata>=2022.1 in /home/nakasho/.venv/lib/python3.9/site-packages (from pandas->jijmodeling) (2023.3)
-    Requirement already satisfied: six>=1.5 in /home/nakasho/.venv/lib/python3.9/site-packages (from python-dateutil>=2.8.2->pandas->jijmodeling) (1.16.0)
-    
-    [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m23.3.2[0m[39;49m -> [0m[32;49m24.0[0m
-    [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
-    Requirement already satisfied: jijmodeling-transpiler in /home/nakasho/.venv/lib/python3.9/site-packages (0.6.13)
-    Requirement already satisfied: jijmodeling<2.0.0,>=1.0.0 in /home/nakasho/.venv/lib/python3.9/site-packages (from jijmodeling-transpiler) (1.3.3)
-    Requirement already satisfied: numpy<1.27.0,>=1.17.0 in /home/nakasho/.venv/lib/python3.9/site-packages (from jijmodeling-transpiler) (1.24.4)
-    Requirement already satisfied: typeguard in /home/nakasho/.venv/lib/python3.9/site-packages (from jijmodeling-transpiler) (3.0.2)
-    Requirement already satisfied: pydantic in /home/nakasho/.venv/lib/python3.9/site-packages (from jijmodeling-transpiler) (2.5.2)
-    Requirement already satisfied: pyqubo in /home/nakasho/.venv/lib/python3.9/site-packages (from jijmodeling-transpiler) (1.4.0)
-    Requirement already satisfied: mip in /home/nakasho/.venv/lib/python3.9/site-packages (from jijmodeling-transpiler) (1.15.0)
-    Requirement already satisfied: dimod in /home/nakasho/.venv/lib/python3.9/site-packages (from jijmodeling-transpiler) (0.12.10)
-    Requirement already satisfied: pandas in /home/nakasho/.venv/lib/python3.9/site-packages (from jijmodeling<2.0.0,>=1.0.0->jijmodeling-transpiler) (2.0.3)
-    Requirement already satisfied: orjson<4.0.0,>=3.8.0 in /home/nakasho/.venv/lib/python3.9/site-packages (from jijmodeling<2.0.0,>=1.0.0->jijmodeling-transpiler) (3.9.2)
-    Requirement already satisfied: cffi==1.15.* in /home/nakasho/.venv/lib/python3.9/site-packages (from mip->jijmodeling-transpiler) (1.15.1)
-    Requirement already satisfied: pycparser in /home/nakasho/.venv/lib/python3.9/site-packages (from cffi==1.15.*->mip->jijmodeling-transpiler) (2.21)
-    Requirement already satisfied: annotated-types>=0.4.0 in /home/nakasho/.venv/lib/python3.9/site-packages (from pydantic->jijmodeling-transpiler) (0.6.0)
-    Requirement already satisfied: pydantic-core==2.14.5 in /home/nakasho/.venv/lib/python3.9/site-packages (from pydantic->jijmodeling-transpiler) (2.14.5)
-    Requirement already satisfied: typing-extensions>=4.6.1 in /home/nakasho/.venv/lib/python3.9/site-packages (from pydantic->jijmodeling-transpiler) (4.7.1)
-    Requirement already satisfied: dwave-neal>=0.5.7 in /home/nakasho/.venv/lib/python3.9/site-packages (from pyqubo->jijmodeling-transpiler) (0.6.0)
-    Requirement already satisfied: Deprecated>=1.2.12 in /home/nakasho/.venv/lib/python3.9/site-packages (from pyqubo->jijmodeling-transpiler) (1.2.14)
-    Requirement already satisfied: six>=1.15.0 in /home/nakasho/.venv/lib/python3.9/site-packages (from pyqubo->jijmodeling-transpiler) (1.16.0)
-    Requirement already satisfied: importlib-metadata>=3.6 in /home/nakasho/.venv/lib/python3.9/site-packages (from typeguard->jijmodeling-transpiler) (6.8.0)
-    Requirement already satisfied: wrapt<2,>=1.10 in /home/nakasho/.venv/lib/python3.9/site-packages (from Deprecated>=1.2.12->pyqubo->jijmodeling-transpiler) (1.14.1)
-    Requirement already satisfied: dwave-samplers<2.0.0,>=1.0.0 in /home/nakasho/.venv/lib/python3.9/site-packages (from dwave-neal>=0.5.7->pyqubo->jijmodeling-transpiler) (1.2.0)
-    Requirement already satisfied: zipp>=0.5 in /home/nakasho/.venv/lib/python3.9/site-packages (from importlib-metadata>=3.6->typeguard->jijmodeling-transpiler) (3.16.0)
-    Requirement already satisfied: python-dateutil>=2.8.2 in /home/nakasho/.venv/lib/python3.9/site-packages (from pandas->jijmodeling<2.0.0,>=1.0.0->jijmodeling-transpiler) (2.8.2)
-    Requirement already satisfied: pytz>=2020.1 in /home/nakasho/.venv/lib/python3.9/site-packages (from pandas->jijmodeling<2.0.0,>=1.0.0->jijmodeling-transpiler) (2023.3)
-    Requirement already satisfied: tzdata>=2022.1 in /home/nakasho/.venv/lib/python3.9/site-packages (from pandas->jijmodeling<2.0.0,>=1.0.0->jijmodeling-transpiler) (2023.3)
-    Requirement already satisfied: networkx>=2.4.0 in /home/nakasho/.venv/lib/python3.9/site-packages (from dwave-samplers<2.0.0,>=1.0.0->dwave-neal>=0.5.7->pyqubo->jijmodeling-transpiler) (3.1)
-    
-    [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m A new release of pip is available: [0m[31;49m23.3.2[0m[39;49m -> [0m[32;49m24.0[0m
-    [1m[[0m[34;49mnotice[0m[1;39;49m][0m[39;49m To update, run: [0m[32;49mpip install --upgrade pip[0m
-
-
-
-```python
-import jijmodeling as jm
-import numpy as np
-import matplotlib.pyplot as plt
-```
-
 # 巡回セールスマン問題
 制約条件付き最適化問題の例として巡回セールスマン問題を解いていきたいと思います。
 巡回セールスマン問題は、一人のセールスマンが決められた都市を全て一度づつ訪問し、最終的に元の都市に帰ってくる時に、都市を巡回する最短経路を求めろという問題です。
@@ -204,8 +155,8 @@ import numpy as np
 inst_N = 5
 np.random.seed(3)
 
-x_pos = np.random.rand(N) 
-y_pos = np.random.rand(N) 
+x_pos = np.random.rand(inst_N)
+y_pos = np.random.rand(inst_N)
 
 plt.plot(x_pos, y_pos, 'o')
 plt.xlim(0, 1)
@@ -221,7 +172,7 @@ plt.ylim(0, 1)
 
 
     
-![png](003-jijmodeling_openjij_tsp_files/003-jijmodeling_openjij_tsp_17_1.png)
+![png](003-jijmodeling_openjij_tsp_files/003-jijmodeling_openjij_tsp_16_1.png)
     
 
 
@@ -298,7 +249,7 @@ sampleset
 
 
 
-    SampleSet(record=Record(solution={'x': [(([1, 0, 2, 3, 4], [3, 1, 4, 0, 2]), [1.0, 1.0, 1.0, 1.0, 1.0], (5, 5))]}, num_occurrences=[1]), evaluation=Evaluation(energy=[-7.058802002256142], objective=[2.487579654018443], constraint_violations={"onehot_location": [0.0], "onehot_time": [0.0]}, constraint_forall={"onehot_location": [[0], [1], [2], [3], [4]], "onehot_time": [[0], [1], [2], [3], [4]]}, constraint_values=[{"onehot_location": [0.0, 0.0, 0.0, 0.0, 0.0], "onehot_time": [0.0, 0.0, 0.0, 0.0, 0.0]}], penalty={}), measuring_time=MeasuringTime(solve=SolvingTime(preprocess=None, solve=None, postprocess=None), system=SystemTime(post_problem_and_instance_data=None, request_queue=None, fetch_problem_and_instance_data=None, fetch_result=None, deserialize_solution=None), total=None), metadata={})
+    SampleSet(record=Record(solution={'x': [(([0, 1, 2, 3, 4], [0, 2, 3, 1, 4]), [1.0, 1.0, 1.0, 1.0, 1.0], (5, 5))]}, num_occurrences=[1]), evaluation=Evaluation(energy=[-7.455818314684929], objective=[2.151794813328065], constraint_violations={"onehot_location": [0.0], "onehot_time": [0.0]}, constraint_forall={"onehot_location": [[0], [1], [2], [3], [4]], "onehot_time": [[0], [1], [2], [3], [4]]}, constraint_values=[{"onehot_location": [0.0, 0.0, 0.0, 0.0, 0.0], "onehot_time": [0.0, 0.0, 0.0, 0.0, 0.0]}], penalty={}), measuring_time=MeasuringTime(solve=SolvingTime(preprocess=None, solve=None, postprocess=None), system=SystemTime(post_problem_and_instance_data=None, request_queue=None, fetch_problem_and_instance_data=None, fetch_result=None, deserialize_solution=None), total=None), metadata={})
 
 
 
@@ -316,7 +267,7 @@ sparse_index
 
 
 
-    ([1, 0, 2, 3, 4], [3, 1, 4, 0, 2])
+    ([0, 1, 2, 3, 4], [0, 2, 3, 1, 4])
 
 
 
@@ -349,7 +300,7 @@ time_indices, city_indices
 
 
 
-    ((0, 1, 2, 3, 4), (1, 3, 4, 0, 2))
+    ((0, 1, 2, 3, 4), (0, 2, 3, 1, 4))
 
 
 
@@ -369,13 +320,13 @@ plt.plot([x_pos[city_indices[-1]],x_pos[city_indices[0]]],[y_pos[city_indices[-1
 
 
 
-    [<matplotlib.lines.Line2D at 0x7fa531f4fa60>]
+    [<matplotlib.lines.Line2D at 0x7fc02cf10a00>]
 
 
 
 
     
-![png](003-jijmodeling_openjij_tsp_files/003-jijmodeling_openjij_tsp_35_1.png)
+![png](003-jijmodeling_openjij_tsp_files/003-jijmodeling_openjij_tsp_34_1.png)
     
 
 
