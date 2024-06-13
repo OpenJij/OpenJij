@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from __future__ import annotations
-from dimod import SPIN
+from dimod import SPIN, BINARY, Vartype
 import openjij.cxxjij as cj
 from openjij.model.model import make_BinaryQuadraticModel
 
