@@ -12,20 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 from __future__ import annotations
 from dimod import SPIN, BINARY, Vartype
 import openjij.cxxjij as cj
 from openjij.model.model import make_BinaryQuadraticModel
 
 
-def make_ChimeraModel(linear, quadratic,sparse):
+def make_ChimeraModel(linear, quadratic):
     """ChimeraModel factory.
 
     Returns:
         generated ChimeraModel class
     """
     
-    class ChimeraModel(make_BinaryQuadraticModel(linear, quadratic,sparse)):
+    class ChimeraModel(make_BinaryQuadraticModel(linear, quadratic,sparse=True)):
         """Binary quadnratic model dealing with chimera graph This model deal
 
         with chimera graph. ChimeraModel provide methods to verify whether a
@@ -40,23 +41,29 @@ def make_ChimeraModel(linear, quadratic,sparse):
         """
         
         def __init__(
-            self,
+                self,
             linear=None,
             quadratic=None,
-            sparse=True,
             offset=0.0,
             vartype=SPIN,
             unit_num_L=None,
             model=None,
-    ):
-            super().__init__(linear,quadratic, offset, vartype, sparse)
+        ):
+            if model:
+                super().__init__(
+                    model.linear, model.quadratic, model.offset, model.vartype
+                )
+            else:
+                super().__init__(linear, quadratic, offset, vartype)
             if not unit_num_L:
                 raise ValueError(
                     "Input unit_num_L which is the length of the side of the two-dimensional grid where chimera unit cells are arranged."
                 )
             self.unit_num_L = unit_num_L
+
             # check the type of indices is valid.
             self.coordinate = self._validate_indices(self.indices)
+
             # _chimera_index: 1-D index i,L -> chimera coordinate x,y,z
             # _to_index: chimera coordinate x,y,z,L -> 1-D index i
             if self.coordinate == "index":
@@ -65,6 +72,7 @@ def make_ChimeraModel(linear, quadratic,sparse):
             elif self.coordinate == "chimera coordinate":
                 self._chimera_index = lambda i, L: i
                 self._to_index = lambda x, y, z, L: self.to_index(x, y, z, L)
+        
         def _validate_indices(self, indices):
             """Check if the type of indices is valid.
 
@@ -83,64 +91,65 @@ def make_ChimeraModel(linear, quadratic,sparse):
                 "In the chimera graph, index should be int or tuple or list."
             )
 
-        def validate_chimera(self):  
-                """Check if the Chimera connectivity is valid."""
-                # check chimera interaction
-                for (i, j) in quadratic.keys():
-                    r_i, c_i, z_i = self._chimera_index(i, self.unit_num_L)
-                    # list up indices which can connect i
-                    adj_list = []
-                    if z_i >= 4:
-                        # part of the right side of a Chimera unit cell (in the column representation).
-                        if c_i > 0:
-                            adj_list.append(
-                                self._to_index(r_i, c_i - 1, z_i, self.unit_num_L)
-                            )
-                        if c_i < self.unit_num_L - 1:
-                            adj_list.append(
-                                self._to_index(r_i, c_i + 1, z_i, self.unit_num_L)
-                            )
-                        adj_list += [
-                            self._to_index(r_i, c_i, z, self.unit_num_L)
-                            for z in range(0, 4)
-                        ]
-                    else:
-                        # part of the left side of a Chimera unit cell (in the column representation).
-                        if r_i > 0:
-                            adj_list.append(
-                                self._to_index(r_i - 1, c_i, z_i, self.unit_num_L)
-                            )
-                        if r_i < self.unit_num_L - 1:
-                            adj_list.append(
-                                self._to_index(r_i + 1, c_i, z_i, self.unit_num_L)
-                            )
-                        adj_list += [
-                            self._to_index(r_i, c_i, z, self.unit_num_L)
-                            for z in range(4, 8)
-                        ]
+        def validate_chimera(self):
+            """Check if the Chimera connectivity is valid.
 
-                    connect_i = (
-                        j if isinstance(j, int) else self._to_index(*j, self.unit_num_L)
+            Chimera coordinate: r, c, z
+            One dimension coordinate: i
+            Relation: i = 8Lr + 8c + z
+
+            Chimera unit cell (column reprezentation)
+            0 - 4
+            1 - 5
+            2 - 6
+            3 - 7
+            """
+            # check chimera interaction
+            for (i, j) in self.quadratic.keys():
+                r_i, c_i, z_i = self._chimera_index(i, self.unit_num_L)
+                # list up indices which can connect i
+                adj_list = []
+                if z_i >= 4:
+                    # part of right side of a Chimera unit cell (in the column representation).
+                    if c_i > 0:
+                        adj_list.append(
+                            self._to_index(r_i, c_i - 1, z_i, self.unit_num_L)
+                        )
+                    if c_i < self.unit_num_L - 1:
+                        adj_list.append(
+                            self._to_index(r_i, c_i + 1, z_i, self.unit_num_L)
+                        )
+                    adj_list += [
+                        self._to_index(r_i, c_i, z, self.unit_num_L)
+                        for z in range(0, 4)
+                    ]
+                else:
+                    # part of left side of a Chimera unit cell (in the column representation).
+                    if r_i > 0:
+                        adj_list.append(
+                            self._to_index(r_i - 1, c_i, z_i, self.unit_num_L)
+                        )
+                    if r_i < self.unit_num_L - 1:
+                        adj_list.append(
+                            self._to_index(r_i + 1, c_i, z_i, self.unit_num_L)
+                        )
+                    adj_list += [
+                        self._to_index(r_i, c_i, z, self.unit_num_L)
+                        for z in range(4, 8)
+                    ]
+
+                connect_i = (
+                    j if isinstance(j, int) else self._to_index(*j, self.unit_num_L)
+                )
+                if connect_i not in adj_list:
+                    incomp_part = "The connectable nodes of {} are {}, not {}.".format(
+                        i, adj_list, j
                     )
-                    if connect_i not in adj_list:
-                        incomp_part = "The connectable nodes of {} are {}, not {}.".format(
-                            i, adj_list, j
-                        )
-                        raise ValueError(
-                            "Problem graph incompatible with chimera graph.\n" + incomp_part
-                        )
-
-                return True
-        def from_serializable(cls, obj):
-            """Make ChimeraModel from JSON."""
-            label = obj["variable_labels"][0]
-            if isinstance(label, list):
-                # convert to tuple
-                label = tuple(label)
-
-            mock_linear = {label: 1.0}
-
-            return cls(mock_linear, {}, sparse=True)
+                    raise ValueError(
+                        "Problem graph incompatible with chimera graph.\n" + incomp_part
+                    )
+                    return False
+            return True
 
         def to_index(self, r, c, i, unit_num_L):
             """
@@ -236,7 +245,7 @@ def make_ChimeraModel(linear, quadratic,sparse):
 
             return chimera
 
-        def energy(self, sample,convert_sample=False):
+        def energy(self, sample, convert_sample=False):
             """Calc energy of the BinaryQuadraticModel.
 
             Args:
@@ -301,15 +310,15 @@ def make_ChimeraModel_from_JSON(obj):
 
     mock_linear = {label: 1.0}
 
-    return make_ChimeraModel(mock_linear, {},sparse=True)
+    return make_ChimeraModel(mock_linear, {})
 
 
 def ChimeraModel(
-        linear: dict = {},
-        quadratic: dict = {},
+        linear: dict = None,
+        quadratic: dict = None,
         offset: float = 0.0,
         vartype = SPIN,
-        unit_num_L: int = 0,
+        unit_num_L: int = None,
         model = None,
         ):
     """Generate ChimeraModel object
@@ -337,27 +346,22 @@ def ChimeraModel(
             >>> chimera_self.validate_chimera()
     """
 
-    #Model = make_ChimeraModel(linear, quadratic,sparse=True)
+    Model = make_ChimeraModel(linear, quadratic)
 
-    #return Model
-    ChimeraModelClass = make_ChimeraModel(linear, quadratic, sparse=True)
+    return Model(linear, quadratic, offset, vartype, unit_num_L, model)
 
-    return ChimeraModelClass
 
 # classmethods
 ChimeraModel.from_qubo = lambda Q, offset=0.0, **kwargs: make_ChimeraModel(
-    {}, Q,sparse=True
+    {}, Q
 ).from_qubo(Q, offset, **kwargs)
 
 ChimeraModel.from_ising = (
     lambda linear, quadratic, offset=0.0, **kwargs: make_ChimeraModel(
-        linear, quadratic,sparse=True
+        linear, quadratic
     ).from_ising(linear, quadratic, offset, **kwargs)
 )
 
 ChimeraModel.from_serializable = lambda obj: make_ChimeraModel_from_JSON(
     obj
 ).from_serializable(obj)
-
-
-
