@@ -41,14 +41,14 @@ def make_ChimeraModel(linear, quadratic):
         """
         
         def __init__(
-                self,
-            linear=None,
-            quadratic=None,
-            offset=0.0,
-            vartype=SPIN,
-            unit_num_L=None,
-            model=None,
-        ):
+                    self,
+                    linear: dict = {},
+                    quadratic: dict = {},
+                    offset: float = 0.0,
+                    vartype: Vartype = SPIN,
+                    unit_num_L: int = 2,
+                    model = None,
+                ):
             if model:
                 super().__init__(
                     model.linear, model.quadratic, model.offset, model.vartype
@@ -314,11 +314,11 @@ def make_ChimeraModel_from_JSON(obj):
 
 
 def ChimeraModel(
-        linear: dict = None,
-        quadratic: dict = None,
+        linear: dict = {},
+        quadratic: dict = {},
         offset: float = 0.0,
         vartype = SPIN,
-        unit_num_L: int = None,
+        unit_num_L: int = 2,
         model = None,
         ):
     """Generate ChimeraModel object
