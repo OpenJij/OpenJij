@@ -192,12 +192,12 @@ def se_success_probability(
             sampled_states = response.samples()
             se_suc_prob = np.std(
                 [1 if dict(state) in solutions else 0 for state in sampled_states]
-            )
+            )/np.sqrt(len(sampled_states))
         else:
             sampled_states = response.states
             se_suc_prob = np.std(
                 [1 if list(state) in solutions else 0 for state in sampled_states]
-            )
+            )/np.sqrt(len(sampled_states))
 
     return se_suc_prob
 
