@@ -12,12 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 from __future__ import annotations
-
-from dimod import SPIN
-
+from dimod import SPIN, BINARY, Vartype
 import openjij.cxxjij as cj
-
 from openjij.model.model import make_BinaryQuadraticModel
 
 
@@ -28,7 +26,7 @@ def make_ChimeraModel(linear, quadratic):
         generated ChimeraModel class
     """
     
-    class ChimeraModel(make_BinaryQuadraticModel(linear, quadratic)):
+    class ChimeraModel(make_BinaryQuadraticModel(linear, quadratic,sparse=True)):
         """Binary quadnratic model dealing with chimera graph This model deal
 
         with chimera graph. ChimeraModel provide methods to verify whether a
@@ -43,14 +41,14 @@ def make_ChimeraModel(linear, quadratic):
         """
         
         def __init__(
-                self,
-            linear=None,
-            quadratic=None,
-            offset=0.0,
-            vartype=SPIN,
-            unit_num_L=None,
-            model=None,
-        ):
+                    self,
+                    linear: dict = {},
+                    quadratic: dict = {},
+                    offset: float = 0.0,
+                    vartype: Vartype = SPIN,
+                    unit_num_L: int = 2,
+                    model = None,
+                ):
             if model:
                 super().__init__(
                     model.linear, model.quadratic, model.offset, model.vartype
@@ -316,11 +314,11 @@ def make_ChimeraModel_from_JSON(obj):
 
 
 def ChimeraModel(
-        linear: dict = None,
-        quadratic: dict = None,
+        linear: dict = {},
+        quadratic: dict = {},
         offset: float = 0.0,
         vartype = SPIN,
-        unit_num_L: int = None,
+        unit_num_L: int = 2,
         model = None,
         ):
     """Generate ChimeraModel object

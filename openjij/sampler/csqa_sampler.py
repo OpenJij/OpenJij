@@ -31,24 +31,24 @@ class CSQASampler(SQASampler):
     """
 
     def __init__(
-        self, beta=5.0, gamma=1.0, num_sweeps=1000, schedule=None, num_reads=1
+    self, beta=5.0, gamma=1.0, num_sweeps=1000, schedule=None, num_reads=1
     ):
 
         self._default_params = {
-            "beta": beta,
-            "gamma": gamma,
-            "num_sweeps": num_sweeps,
-            "schedule": schedule,
-            "num_reads": num_reads,
-        }
+        "beta": beta,
+        "gamma": gamma,
+        "num_sweeps": num_sweeps,
+        "schedule": schedule,
+        "num_reads": num_reads,
+    }
 
         self._params = {
-            "beta": beta,
-            "gamma": gamma,
-            "num_sweeps": num_sweeps,
-            "schedule": schedule,
-            "num_reads": num_reads,
-        }
+        "beta": beta,
+        "gamma": gamma,
+        "num_sweeps": num_sweeps,
+        "schedule": schedule,
+        "num_reads": num_reads,
+    }
 
     def _get_result(self, system, model):
         info = {}
@@ -62,11 +62,11 @@ class CSQASampler(SQASampler):
         self,
         h,
         J,
-        beta=None,
-        gamma=None,
-        num_sweeps=None,
+        beta:float=5.0,
+        gamma:float = 1.0,
+        num_sweeps: int=1000,
         schedule=None,
-        num_reads=None,
+        num_reads:int=1,
         initial_state=None,
         updater=None,
         reinitialize_state=True,
@@ -145,7 +145,7 @@ class CSQASampler(SQASampler):
 
         # choose updater -------------------------------------------
         sqa_system = cxxjij.system.make_continuous_time_ising(
-            init_generator(), ising_graph, self.gamma
+            init_generator(), ising_graph[0], self._params["gamma"]
         )
         _updater_name = updater.lower().replace("_", "").replace(" ", "")
         if _updater_name == "swendsenwang":
