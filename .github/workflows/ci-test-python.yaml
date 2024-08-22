@@ -200,7 +200,7 @@ jobs:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: coverage.xml
     - name: Publish code coverage
-      uses: paambaati/codeclimate-action@v8.0.0
+      uses: paambaati/codeclimate-action@v9.0.0
       continue-on-error: true
       if: ${{ matrix.os == 'ubuntu-latest'}}
       env:
