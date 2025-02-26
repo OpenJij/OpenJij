@@ -64,19 +64,6 @@ if (NOT CPPFILT_BIN STREQUAL "")
 	set(GENHTML_CPPFILT_FLAG "--demangle-cpp")
 endif (NOT CPPFILT_BIN STREQUAL "")
 
-# enable ignore-errors mismatch flag for geninfo, to bypass line number mismatch errors
-if (GENINFO_BIN AND NOT DEFINED GENINFO_IGNORE_ERRORS_FLAG)
-	set(FLAG "")
-	execute_process(COMMAND ${GENINFO_BIN} --help OUTPUT_VARIABLE GENINFO_HELP)
-	string(REGEX MATCH "ignore-errors" GENINFO_RES "${GENINFO_HELP}")
-	if (GENINFO_RES)
-		set(FLAG "--ignore-errors mismatch")
-	endif ()
-
-	set(GENINFO_IGNORE_ERRORS_FLAG "${FLAG}"
-		CACHE STRING "Geninfo flag to ignore line number mismatch errors.")
-endif ()
-
 # enable no-external flag for lcov, if available.
 if (GENINFO_BIN AND NOT DEFINED GENINFO_EXTERN_FLAG)
 	set(FLAG "")
@@ -89,6 +76,20 @@ if (GENINFO_BIN AND NOT DEFINED GENINFO_EXTERN_FLAG)
 	set(GENINFO_EXTERN_FLAG "${FLAG}"
 		CACHE STRING "Geninfo flag to exclude system sources.")
 endif ()
+
+# enable ignore-errors mismatch flag for geninfo, to bypass line number mismatch errors
+if (GENINFO_BIN AND NOT DEFINED GENINFO_IGNORE_ERRORS_FLAG)
+	set(FLAG "")
+	execute_process(COMMAND ${GENINFO_BIN} --help OUTPUT_VARIABLE GENINFO_HELP)
+	string(REGEX MATCH "ignore-errors" GENINFO_RES "${GENINFO_HELP}")
+	if (GENINFO_RES)
+		set(FLAG "--ignore-errors mismatch")
+	endif ()
+
+	set(GENINFO_IGNORE_ERRORS_FLAG ${FLAG}
+		CACHE STRING "Geninfo flag to ignore line number mismatch errors.")
+endif ()
+
 
 # If Lcov was not found, exit module now.
 if (NOT LCOV_FOUND)
