@@ -83,10 +83,10 @@ if (GENINFO_BIN AND NOT DEFINED GENINFO_IGNORE_ERRORS_FLAG)
 	execute_process(COMMAND ${GENINFO_BIN} --help OUTPUT_VARIABLE GENINFO_HELP)
 	string(REGEX MATCH "ignore-errors" GENINFO_RES "${GENINFO_HELP}")
 	if (GENINFO_RES)
-		set(FLAG "--ignore-errors mismatch")
+		set(FLAG --ignore-errors mismatch)
 	endif ()
 
-	set(GENINFO_IGNORE_ERRORS_FLAG ${FLAG}
+	set(GENINFO_IGNORE_ERRORS_FLAG "${FLAG}"
 		CACHE STRING "Geninfo flag to ignore line number mismatch errors.")
 endif ()
 
