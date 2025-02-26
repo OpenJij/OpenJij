@@ -159,12 +159,13 @@ jobs:
         --extra-verbose
         --parallel
         --schedule-random
-    - name: Run gcov
-      if: ${{ matrix.os == 'ubuntu-latest'}}
-      shell: bash
-      working-directory: build
-      run: |
-        gcov  --object-directory ./tests/CMakeFiles/openjij_test.dir -p -l -b ./tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda
+    # TODO: Skip as currently (2025/2/27) it is not working
+    #- name: Run gcov
+    #  if: ${{ matrix.os == 'ubuntu-latest'}}
+    #  shell: bash
+    #  working-directory: build
+    #  run: |
+    #    gcov  --object-directory ./tests/CMakeFiles/openjij_test.dir -p -l -b ./tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda
     # TODO: Skip as currently (2025/2/27) it is not working
     #- name: Run gcov
     #  if: ${{ matrix.os == 'ubuntu-latest'}}
