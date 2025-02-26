@@ -165,17 +165,18 @@ jobs:
       working-directory: build
       run: |
         gcov  --object-directory ./tests/CMakeFiles/openjij_test.dir -p -l -b ./tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda
-    - name: Run gcov
-      if: ${{ matrix.os == 'ubuntu-latest'}}
-      shell: bash
-      run: |
-        gcov   --object-directory ./build/tests/CMakeFiles/openjij_test.dir -p -l -b ./build/tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda
-    - name: Run gcov
-      if: ${{ matrix.os == 'ubuntu-latest'}}
-      shell: bash
-      run: |
-        cd build/tests/CMakeFiles/cxxjij_test.dir
-        gcov  --object-directory ./  -p -l -b cxxtest.cpp.gcda
+    # TODO: Skip as currently (2025/2/27) it is not working
+    #- name: Run gcov
+    #  if: ${{ matrix.os == 'ubuntu-latest'}}
+    #  shell: bash
+    #  run: |
+    #    gcov   --object-directory ./build/tests/CMakeFiles/openjij_test.dir -p -l -b ./build/tests/CMakeFiles/cxxjij_test.dir/cxxtest.cpp.gcda
+    #- name: Run gcov
+    #  if: ${{ matrix.os == 'ubuntu-latest'}}
+    #  shell: bash
+    #  run: |
+    #    cd build/tests/CMakeFiles/cxxjij_test.dir
+    #    gcov  --object-directory ./  -p -l -b cxxtest.cpp.gcda
     - name: du -a 
       shell: bash
       if: always()
