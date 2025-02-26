@@ -143,7 +143,7 @@ plt.show()
     
 
 
-### JijModeling transpilerによるPyQUBOへの変換
+### JijModeling + OMMXによるQUBOへの変換
 
 ここまで行われてきた実装は、全てJijModelingによるものでした。
 これを[PyQUBO](https://pyqubo.readthedocs.io/en/latest/)に変換することで、OpenJijはもちろん、他のソルバーを用いた組合せ最適化計算を行うことが可能になります。
