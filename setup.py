@@ -19,7 +19,18 @@ try:
 except ImportError:
     from setuptools import setup
 
+setup_requires = [
+    "numpy",
+    "pybind11",
+    "cmake > 3.20",
+    "scikit-build > 0.16.0"
+]
+
+if any(arg in sys.argv for arg in ("pytest", "test")):
+    setup_requires.append("pytest-runner")
+
 setup(
+    setup_requires=setup_requires,
     packages=[
         "openjij",
         "openjij.model",
