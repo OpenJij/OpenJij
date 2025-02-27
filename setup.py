@@ -30,7 +30,7 @@ if any(arg in sys.argv for arg in ("pytest", "test")):
     setup_requires.append("pytest-runner")
 
 setup(
-    extras_require=setup_requires,
+    setup_requires=setup_requires,
     packages=[
         "openjij",
         "openjij.model",
