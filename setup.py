@@ -20,6 +20,12 @@ except ImportError:
     from setuptools import setup
 
 setup(
+    packages=[
+        "openjij",
+        "openjij.model",
+        "openjij.sampler",
+        "openjij.utils",
+    ],
     cmake_install_dir="openjij",
     include_package_data=False,
     zip_safe=False,
