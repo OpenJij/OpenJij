@@ -77,6 +77,20 @@ if (GENINFO_BIN AND NOT DEFINED GENINFO_EXTERN_FLAG)
 		CACHE STRING "Geninfo flag to exclude system sources.")
 endif ()
 
+# enable ignore-errors mismatch flag for geninfo, to bypass line number mismatch errors
+if (GENINFO_BIN AND NOT DEFINED GENINFO_IGNORE_ERRORS_FLAG)
+	set(FLAG "")
+	execute_process(COMMAND ${GENINFO_BIN} --help OUTPUT_VARIABLE GENINFO_HELP)
+	string(REGEX MATCH "ignore-errors" GENINFO_RES "${GENINFO_HELP}")
+	if (GENINFO_RES)
+		set(FLAG --ignore-errors mismatch)
+	endif ()
+
+	set(GENINFO_IGNORE_ERRORS_FLAG "${FLAG}"
+		CACHE STRING "Geninfo flag to ignore line number mismatch errors.")
+endif ()
+
+
 # If Lcov was not found, exit module now.
 if (NOT LCOV_FOUND)
 	return()
@@ -171,7 +185,7 @@ function (lcov_capture_initial_tgt TNAME)
 		add_custom_command(OUTPUT ${OUTFILE} COMMAND ${GCOV_ENV} ${GENINFO_BIN}
 				--quiet --base-directory ${PROJECT_SOURCE_DIR} --initial
 				--gcov-tool ${GCOV_BIN} --output-filename ${OUTFILE}
-				${GENINFO_EXTERN_FLAG} ${TDIR}/${FILE}.gcno
+				${GENINFO_EXTERN_FLAG} ${GENINFO_IGNORE_ERRORS_FLAG} ${TDIR}/${FILE}.gcno
 			DEPENDS ${TNAME}
 			COMMENT "Capturing initial coverage data for ${FILE}"
 		)
@@ -271,7 +285,7 @@ function (lcov_capture_tgt TNAME)
 			COMMAND test -s "${TDIR}/${FILE}.gcda"
 				&& ${GCOV_ENV} ${GENINFO_BIN} --quiet --base-directory
 					${PROJECT_SOURCE_DIR} --gcov-tool ${GCOV_BIN}
-					--output-filename ${OUTFILE} ${GENINFO_EXTERN_FLAG}
+					--output-filename ${OUTFILE} ${GENINFO_EXTERN_FLAG} ${GENINFO_IGNORE_ERRORS_FLAG}
 					${TDIR}/${FILE}.gcda
 				|| cp ${OUTFILE}.init ${OUTFILE}
 			DEPENDS ${TNAME} ${TNAME}-capture-init "${TDIR}/${FILE}.gcda"
