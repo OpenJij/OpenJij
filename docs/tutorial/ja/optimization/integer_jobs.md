@@ -109,7 +109,7 @@ instance_data = {'L': inst_L, 'M': inst_M}
 
 先程の具体例と同様に、$\{1, 2, \dots, 10\}$の10個のタスクを、3台のコンピュータに分散させる状況を考えます。
 
-### JijModeling transpilerによるPyQUBOへの変換
+### JijModeling + OMMXによるQUBOへの変換
 
 ここまで行われてきた実装は、全てJijModelingによるものでした。
 これを[PyQUBO](https://pyqubo.readthedocs.io/en/latest/)に変換することで、OpenJijはもちろん、他のソルバーを用いた組合せ最適化計算を行うことが可能になります。
